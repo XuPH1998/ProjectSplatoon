@@ -1,0 +1,102 @@
+[
+  {
+    "key": "MatchSeconds",
+    "value": 180,
+    "description": "正式比赛时长（秒）"
+  },
+  {
+    "key": "MaxPlayers",
+    "value": 4,
+    "description": "房间最大人数（固定为 4，修改需同步调整场地）"
+  },
+  {
+    "key": "MaxHealth",
+    "value": 100,
+    "description": "满生命值"
+  },
+  {
+    "key": "Damage",
+    "value": 25,
+    "description": "每发命中伤害"
+  },
+  {
+    "key": "FireRate",
+    "value": 6,
+    "description": "每秒射击次数（发/秒）"
+  },
+  {
+    "key": "MaxInk",
+    "value": 100,
+    "description": "墨水上限"
+  },
+  {
+    "key": "ShotInk",
+    "value": 2,
+    "description": "每发消耗墨水"
+  },
+  {
+    "key": "RecoverInk",
+    "value": 10,
+    "description": "普通状态回墨速度（点/秒）"
+  },
+  {
+    "key": "SwimRecoverInk",
+    "value": 35,
+    "description": "己方墨水中潜行回墨速度（点/秒）"
+  },
+  {
+    "key": "RespawnSeconds",
+    "value": 3,
+    "description": "击倒后重生等待（秒）"
+  },
+  {
+    "key": "ProtectionSeconds",
+    "value": 2,
+    "description": "重生保护时长（秒，主动射击提前结束）"
+  },
+  {
+    "key": "MoveSpeed",
+    "value": 5,
+    "description": "步行速度（米/秒）"
+  },
+  {
+    "key": "SwimSpeed",
+    "value": 8,
+    "description": "己方墨水中潜行速度（米/秒）"
+  },
+  {
+    "key": "EnemyInkMultiplier",
+    "value": 0.55,
+    "description": "敌方墨水中的移动速度倍率"
+  },
+  {
+    "key": "JumpSpeed",
+    "value": 7,
+    "description": "起跳速度（米/秒）"
+  },
+  {
+    "key": "Gravity",
+    "value": 22,
+    "description": "重力加速度（米/秒²）"
+  },
+  {
+    "key": "Range",
+    "value": 45,
+    "description": "武器最大射程（米）"
+  },
+  {
+    "key": "PaintRadius",
+    "value": 1.2,
+    "description": "单次涂墨半径（米）"
+  },
+  {
+    "key": "ArenaSize",
+    "value": 32,
+    "description": "场地边长（固定为 32 米，修改需同步调整场地）"
+  },
+  {
+    "key": "CellSize",
+    "value": 0.5,
+    "description": "涂色格边长（固定为 0.5 米，修改需同步调整网格）"
+  }
+]

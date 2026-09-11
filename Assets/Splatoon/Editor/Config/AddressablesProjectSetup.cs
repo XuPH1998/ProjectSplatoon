@@ -9,22 +9,12 @@ namespace Splatoon.Editor
 {
     public static class AddressablesProjectSetup
     {
-        [MenuItem("Project Splatoon/Config/Setup Addressables Root")]
+        [MenuItem("喷墨对战/配置/注册本地 Addressables 资源")]
         public static void Setup()
         {
-            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-            if (settings == null) { EditorUtility.DisplayDialog("Addressables", "Could not create settings.", "OK"); return; }
-            var group = settings.FindGroup("Splatoon Local") ?? settings.CreateGroup("Splatoon Local", false, false, true, null, typeof(BundledAssetGroupSchema), typeof(ContentUpdateGroupSchema));
-            const string root = "Assets/GameResource";
-            var guid = AssetDatabase.AssetPathToGUID(root);
-            if (!string.IsNullOrEmpty(guid) && settings.FindAssetEntry(guid) == null)
-            {
-                var entry = settings.CreateOrMoveEntry(guid, group);
-                entry.address = root;
-                entry.SetLabel("Splatoon", true);
-            }
-            AssetDatabase.SaveAssets();
-            EditorUtility.DisplayDialog("Addressables", "Configured Assets/GameResource as the runtime root.", "OK");
+            // 与构建入口复用同一逐项注册逻辑，保证 Luban 标签和场景地址一致。
+            PrototypeBuilder.ConfigureAddressables();
+            EditorUtility.DisplayDialog("本地资源配置", "已注册原型场景、网络预制体和 Luban 配置。首次使用请先搭建灰盒场景。", "确定");
         }
     }
 }

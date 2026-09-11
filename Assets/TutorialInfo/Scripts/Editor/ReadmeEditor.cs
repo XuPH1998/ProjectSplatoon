@@ -23,11 +23,11 @@ public class ReadmeEditor : Editor
 
     static void RemoveTutorial()
     {
-        if (EditorUtility.DisplayDialog("Remove Readme Assets",
+        if (EditorUtility.DisplayDialog("移除项目说明资产",
             
-            $"All contents under {s_ReadmeSourceDirectory} will be removed, are you sure you want to proceed?",
-            "Proceed",
-            "Cancel"))
+            $"将移除 {s_ReadmeSourceDirectory} 下的所有说明资产，确定继续吗？",
+            "继续移除",
+            "取消"))
         {
             if (Directory.Exists(s_ReadmeSourceDirectory))
             {
@@ -36,7 +36,7 @@ public class ReadmeEditor : Editor
             }
             else
             {
-                Debug.Log($"Could not find the Readme folder at {s_ReadmeSourceDirectory}");
+                Debug.Log($"找不到项目说明目录：{s_ReadmeSourceDirectory}");
             }
 
             var readmeAsset = SelectReadme();
@@ -87,7 +87,7 @@ public class ReadmeEditor : Editor
         }
         else
         {
-            Debug.Log("Couldn't find a readme");
+            Debug.Log("找不到项目说明资产");
             return null;
         }
     }
@@ -148,7 +148,7 @@ public class ReadmeEditor : Editor
             GUILayout.Space(k_Space);
         }
 
-        if (GUILayout.Button("Remove Readme Assets", ButtonStyle))
+        if (GUILayout.Button("移除项目说明资产", ButtonStyle))
         {
             RemoveTutorial();
         }

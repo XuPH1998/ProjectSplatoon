@@ -1,7 +1,7 @@
 {
   "name": "Splatoon",
   "rootNamespace": "Splatoon",
-  "references": ["Splatoon.Config", "Splatoon.Skills.Data", "Splatoon.Skills.Support"],
+  "references": ["Splatoon.Config", "Splatoon.Skills.Data", "Splatoon.Skills.Support", "UniTask", "Unity.Addressables", "Unity.ResourceManager", "Unity.Netcode.Runtime", "Unity.Networking.Transport", "Unity.InputSystem"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

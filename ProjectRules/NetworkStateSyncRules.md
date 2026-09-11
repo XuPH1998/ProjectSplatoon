@@ -1,7 +1,7 @@
-# Network State Sync Rules
+# 网络状态同步规范
 
-- NGO Host is authoritative for gameplay state, damage, hit results, random values and match phase.
-- Clients submit input frames and display interpolated snapshots.
-- Replicate stable IDs and tick numbers; never replicate Unity InstanceID or ScriptableObject references.
-- VFX, audio and camera feedback are presentation-only and cannot mutate authoritative state.
-- Dedicated server, rollback prediction and matchmaking are future extensions behind `ILanSessionService`.
+- NGO 房主负责权威玩法状态、伤害、命中结果、随机值和比赛阶段。
+- 客户端提交输入帧，插值显示状态快照。
+- 同步稳定标识和模拟帧号，禁止同步 Unity InstanceID 或 ScriptableObject 引用。
+- 特效、音效和相机反馈仅影响表现，不能修改权威状态。
+- 专用服务器、预测回滚和匹配服务作为 `ILanSessionService` 后续扩展。

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Splatoon Local
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Splatoon Local
+  m_GUID: 7554ee92eddefaa4fb2ee7be8109bac6
+  m_SerializeEntries:
+  - m_GUID: 0040e805963344e4eac928fe89a30d73
+    m_Address: Prototype/Player
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 435990b2cbaede84080e1b9071e0a9f6
+    m_Address: tbprototype
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a7ac244454f41c4190ec80984f701e6
+    m_Address: Prototype/Arena
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb40c19915243c44cac8eebfcf3bc7dd
+    m_Address: Prototype/Match
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c37a37c5f9680ed4fa8b246f400b724d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: fe45f795e42c32849a3399a3ebdb2dbf, type: 2}
+    - {fileID: 11400000, guid: e5ec0182ad77d954d929de8437719370, type: 2}

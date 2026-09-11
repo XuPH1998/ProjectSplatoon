@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using SimpleJSON;
-using Unity.Addressables;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Splatoon.Config
 {
@@ -13,29 +14,28 @@ namespace Splatoon.Config
         bool IsReady { get; }
         UniTask InitializeAsync(CancellationToken cancellationToken);
     }
-
     public sealed class LubanConfigService : IConfigService
     {
         public static LubanConfigService Current { get; } = new();
         public bool IsReady { get; private set; }
         public cfg.Tables Tables { get; private set; }
-        private readonly Dictionary<string, TextAsset> _assets = new(StringComparer.OrdinalIgnoreCase);
-        public async UniTask InitializeAsync(CancellationToken cancellationToken)
+        public async UniTask InitializeAsync(CancellationToken token)
         {
             if (IsReady) return;
-            await Addressables.InitializeAsync().Task;
-            var locations = await Addressables.LoadResourceLocationsAsync("Assets/GameResource/Bootstrap/Config/Luban").Task;
-            foreach (var location in locations)
+            token.ThrowIfCancellationRequested();
+            var handle = Addressables.LoadAssetsAsync<TextAsset>("Luban", null);
+            try
             {
-                var asset = await Addressables.LoadAssetAsync<TextAsset>(location).Task;
-                if (asset != null) _assets[location.PrimaryKey] = asset;
+                while (!handle.IsDone) await UniTask.Yield(token);
+                token.ThrowIfCancellationRequested();
+                if (handle.Status != AsyncOperationStatus.Succeeded) throw new InvalidOperationException("缺少 Luban 资源，请运行菜单：喷墨对战/原型/搭建灰盒场景。", handle.OperationException);
+                var json = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var asset in handle.Result) json.Add(asset.name, asset.text);
+                Tables = new cfg.Tables(name => json.TryGetValue(name, out var text) ? JSONNode.Parse(text) : throw new InvalidOperationException("缺少 Luban 配置表：" + name));
+                IsReady = true;
             }
-            Tables = new cfg.Tables(name =>
-            {
-                foreach (var pair in _assets) if (pair.Key.EndsWith(name + ".json", StringComparison.OrdinalIgnoreCase)) return JSON.Parse(pair.Value.text);
-                throw new InvalidOperationException("Missing Luban table: " + name);
-            });
-            IsReady = true;
+            finally { if (handle.IsValid()) Addressables.Release(handle); }
         }
+        public void Reset() { Tables = null; IsReady = false; }
     }
 }

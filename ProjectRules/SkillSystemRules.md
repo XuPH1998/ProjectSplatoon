@@ -1,6 +1,6 @@
-# Skill System Rules
+# 技能系统规范
 
-- `SkillDefinition` is immutable runtime data; editing happens through the Editor assembly.
-- Runtime skill playback communicates through `ISkillEventHandler` adapters.
-- Editor validation must reject null clips and non-positive durations.
-- JSON import/export is an authoring utility and must preserve the definition data.
+- `SkillDefinition` 是运行时不可变数据，编辑操作放在编辑器程序集。
+- 运行时技能播放通过 `ISkillEventHandler` 适配器传递事件。
+- 编辑器校验必须拒绝空片段和非正数时长。
+- JSON 导入导出是内容制作工具，必须完整保留定义数据。

@@ -1,6 +1,7 @@
-# Luban Data Rules
+# Luban 数据规范
 
-- Excel in `Config/Luban/source` is the sole data authority.
-- Run `cmd /c Config\\Luban\\gen_luban.bat` after source changes.
-- Never hand-edit `Assets/Splatoon/Config/Generated` or `Assets/GameResource/Bootstrap/Config/Luban`.
-- Runtime accesses the generated table cache only after the centralized config service is ready.
+- `Config/Luban/source` 中的 Excel 是唯一权威数据源。
+- 修改后运行 `cmd /c Config\Luban\gen_luban.bat`。
+- 禁止手改 `Assets/Splatoon/Config/Generated` 和 `Assets/GameResource/Bootstrap/Config/Luban` 中的生成文件。
+- 集中配置服务初始化完成后，运行时才能访问生成的表缓存。
+- 参数稳定键保持兼容；列标题、参数单位与约束提供中文说明。
