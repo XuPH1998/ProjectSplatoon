@@ -41,7 +41,11 @@ namespace Splatoon.Painting
     public sealed class PaintSurface : MonoBehaviour
     {
         [Tooltip("场景内稳定且唯一的表面 ID")] public int SurfaceId;
-        [Tooltip("仅竞技场地面启用计分")] public bool Scores;
+        [Tooltip("可行走地面启用计分，包含坡道及高台")] public bool Scores;
+        [Tooltip("可行走面的局部 X/Z 尺寸（米），缩放必须为 1")] public Vector2 WalkableSize;
+        [Tooltip("编辑器烘焙的不可达归属格索引")] public int[] BlockedCells = Array.Empty<int>();
+        public SurfaceOwnershipGrid Ownership { get; private set; }
+        public void InitializeOwnership(float cellSize) => Ownership = Scores ? new SurfaceOwnershipGrid(WalkableSize, cellSize, BlockedCells) : null;
         [Tooltip("绘制纹理尺寸，地面 1024，掩体 512")] public int Resolution = 512;
         public Shader PainterShader;
         public Shader ExtendShader;
@@ -79,7 +83,7 @@ namespace Splatoon.Painting
         }
         public void Clear()
         {
-            HasPaint = false; if (Mask == null) return;
+            Ownership?.Clear(); HasPaint = false; if (Mask == null) return;
             var command = CommandBufferPool.Get("Clear ink");
             command.SetRenderTarget(Mask); command.ClearRenderTarget(false, true, Color.clear);
             Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);

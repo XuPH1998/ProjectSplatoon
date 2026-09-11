@@ -18,7 +18,7 @@ namespace Splatoon.Prototype
 {
     public sealed class PrototypeApp : MonoBehaviour
     {
-        public const string ArenaAddress = "Prototype/Arena";
+        public const string ArenaAddress = "maps/TrainingGround";
         public const string PlayerAddress = "Prototype/Player";
         public const string MatchAddress = "Prototype/Match";
         public static PrototypeApp Current { get; private set; }
@@ -117,6 +117,12 @@ namespace Splatoon.Prototype
                 _bootRoots = bootScene.IsValid() ? bootScene.GetRootGameObjects().Where(x => x.activeSelf).ToArray() : Array.Empty<GameObject>();
                 foreach (var root in _bootRoots) root.SetActive(false);
                 _scene = await _loader.LoadAsync(GameplayConfig.Arena.SceneAddress, new Progress<float>(p => _progress = p), _operation.Token); _loaded = true;
+                UnityEngine.SceneManagement.SceneManager.SetActiveScene(_scene.Scene.Scene);
+                if (PrototypeArena.Current == null) throw new InvalidOperationException("场景缺少地图组件");
+                PrototypeArena.Current.InitializeRuntime();
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                    _signature = sha.ComputeHash(LubanConfigService.Current.ContentSignature.Concat(Encoding.UTF8.GetBytes(PrototypeArena.Current.BakedTopology)).ToArray());
+                Manager.NetworkConfig.ConnectionData = _signature;
                 if (_bootCamera != null) _bootCamera.gameObject.SetActive(false);
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);
                 _matchPrefab = Addressables.LoadAssetAsync<GameObject>(MatchAddress);
@@ -182,6 +188,8 @@ namespace Splatoon.Prototype
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
             if (_characterContent.IsValid()) Addressables.Release(_characterContent); _characterContent = default;
             if (_weaponContent.IsValid()) Addressables.Release(_weaponContent); _weaponContent = default;
+            var boot = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Main/Boot.unity");
+            if (boot.IsValid() && boot.isLoaded) UnityEngine.SceneManagement.SceneManager.SetActiveScene(boot);
             if (_loaded) { await _loader.UnloadAsync(_scene); _loaded = false; }
             if (_bootRoots != null) foreach (var root in _bootRoots) if (root != null) root.SetActive(true);
             _bootRoots = null;
@@ -271,16 +279,16 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
             var state=match.State.Value; var player=local.Snapshot.Value;
-            float total=Mathf.Max(1,state.TotalCells);
+            double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
-            GUI.color=PrototypeArena.Orange; GUI.Label(new Rect(378,37,200,35),$"橙队  {state.OrangeCells/total:P1}",_label);
-            GUI.color=PrototypeArena.Blue; GUI.Label(new Rect(704,37,215,35),$"蓝队  {state.BlueCells/total:P1}",_label); GUI.color=Color.white;
+            GUI.color=PrototypeArena.Orange; GUI.Label(new Rect(378,37,200,35),$"橙队  {state.OrangeArea/total:P1}",_label);
+            GUI.color=PrototypeArena.Blue; GUI.Label(new Rect(704,37,215,35),$"蓝队  {state.BlueArea/total:P1}",_label); GUI.color=Color.white;
             double remaining=state.Phase==MatchPhase.Playing?Math.Max(0,state.EndsAt-Manager.ServerTime.Time):0;
             string clock=state.Phase==MatchPhase.Practice?"热身":state.Phase==MatchPhase.Finished?"已结束":$"{(int)remaining/60:00}:{(int)remaining%60:00}";
             GUI.Label(new Rect(575,38,155,35),clock,_label);
             Panel(new Rect(378,86,524,8),new Color(.25f,.28f,.3f));
-            Panel(new Rect(378,86,524*state.OrangeCells/total,8),PrototypeArena.Orange);
-            Panel(new Rect(902-524*state.BlueCells/total,86,524*state.BlueCells/total,8),PrototypeArena.Blue);
+            Panel(new Rect(378,86,(float)(524*state.OrangeArea/total),8),PrototypeArena.Orange);
+            Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
             ulong ping=Manager.IsHost?0:((UnityTransport)Manager.NetworkConfig.NetworkTransport).GetCurrentRtt(0);
             GUI.Label(new Rect(24,25,310,55),$"{Status}  /  {state.PlayerCount}/4\n延迟 {ping} 毫秒",_small);
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
@@ -295,7 +303,7 @@ namespace Splatoon.Prototype
             if(!_captured || state.Phase==MatchPhase.Finished)
             {
                 Panel(new Rect(430,222,420,295),new Color(.055f,.075f,.1f,.97f));
-                string winner=PrototypeRules.Winner(state.OrangeCells,state.BlueCells) switch {1=>"橙队获胜",2=>"蓝队获胜",_=>"平局"};
+                string winner=PrototypeRules.Winner(state.OrangeArea,state.BlueArea) switch {1=>"橙队获胜",2=>"蓝队获胜",_=>"平局"};
                 GUI.Label(new Rect(463,242,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
                 if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,303,350,48),"继续游戏",_button)) CaptureMouse(true);
                 GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase,GameplayConfig.Mode.MinPlayers);

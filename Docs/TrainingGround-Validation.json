@@ -1,0 +1,14 @@
+{
+  "unity": "6000.3.9f1",
+  "scene": "Assets/GameResource/Gameplay/maps/TrainingGround.unity",
+  "scene_sha256": "2d537074458b461764df9c002d3b5c4a4f26fbf501f7c56ac30eeca4ff30a06f",
+  "tests": {
+    "total": "45",
+    "passed": "45",
+    "failed": "0",
+    "result": "Passed"
+  },
+  "gpu_surfaces_passed": 36,
+  "source_matches_validated_copy": true,
+  "baked_topology": "2033A13D5309176A4E929BFC0C239AB9D8E6C844A644B525434A7D8D132B653C"
+}

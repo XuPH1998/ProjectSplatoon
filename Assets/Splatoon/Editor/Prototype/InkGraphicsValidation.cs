@@ -21,30 +21,18 @@ namespace Splatoon.Editor
             var tables = new cfg.Tables(name => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + name + ".json")));
             typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current, tables);
             GameplayConfig.Validate();
-            EditorSceneManager.OpenScene("Assets/GameResource/Gameplay/Prototype/PrototypeArena.unity");
+            EditorSceneManager.OpenScene(TrainingGroundBuilder.ScenePath);
             Directory.CreateDirectory("Logs/InkGraphics");
             foreach (var surface in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None))
             {
-                var bounds = surface.GetComponent<Renderer>().bounds;
-                Vector3 normal = surface.Scores ? Vector3.up : bounds.size.x < bounds.size.z ? Vector3.right : Vector3.forward;
-                Vector3 hit = bounds.center + Vector3.Scale(bounds.extents, normal);
+                var mesh = surface.GetComponent<MeshFilter>().sharedMesh;
+                var triangles = mesh.triangles; var vertices = mesh.vertices;
+                Vector3 a = vertices[triangles[0]], b = vertices[triangles[1]], c = vertices[triangles[2]];
+                Vector3 normal = surface.transform.TransformDirection(Vector3.Cross(b - a, c - a).normalized);
+                Vector3 hit = surface.transform.TransformPoint((a + b + c) / 3);
                 surface.Apply(new PaintStamp { Position = hit, Normal = normal, Radius = 1.5f, Hardness = .01f, Strength = 1, Team = 1 });
                 var painted = Read(surface.Mask);
                 int pixels = painted.GetPixels32().Count(c => c.a > 128 && c.r > 128);
-                if (!surface.Scores)
-                {
-                    // The box atlas reserves a distinct tile for each disconnected face.
-                    Vector2 tile = normal == Vector3.right ? new Vector2(2f / 3, 0) : new Vector2(1f / 3, .5f);
-                    float margin = 2f / surface.Resolution;
-                    var colors = painted.GetPixels32();
-                    for (int i = 0; i < colors.Length; i++)
-                    {
-                        if (colors[i].a <= 128) continue;
-                        float u = (i % surface.Resolution + .5f) / surface.Resolution, v = (i / surface.Resolution + .5f) / surface.Resolution;
-                        if (u < tile.x - margin || u > tile.x + 1f / 3 + margin || v < tile.y - margin || v > tile.y + .5f + margin)
-                            throw new InvalidOperationException("Ink leaked onto another face: " + surface.name);
-                    }
-                }
                 File.WriteAllBytes("Logs/InkGraphics/mask-" + surface.SurfaceId + ".png", painted.EncodeToPNG());
                 if (pixels < 10) throw new InvalidOperationException("Empty painted mask: " + surface.name + " pixels=" + pixels);
                 var bytes = painted.GetRawTextureData<byte>().ToArray();

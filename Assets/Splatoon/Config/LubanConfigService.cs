@@ -34,7 +34,7 @@ namespace Splatoon.Config
                 foreach (var asset in handle.Result) json.Add(asset.name, asset.text);
                 Tables = new cfg.Tables(name => json.TryGetValue(name, out var text) ? JSONNode.Parse(text) : throw new InvalidOperationException("缺少 Luban 配置表：" + name));
                 var names = new List<string>(json.Keys); names.Sort(StringComparer.Ordinal);
-                var content = new System.Text.StringBuilder("ink-lan-v2\n");
+                var content = new System.Text.StringBuilder("ink-lan-v3\n");
                 foreach (var name in names) content.Append(name).Append('\n').Append(json[name]).Append('\n');
                 using (var sha = System.Security.Cryptography.SHA256.Create())
                     ContentSignature = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(content.ToString()));

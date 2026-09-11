@@ -1,10 +1,11 @@
 [
   {
     "id": 1,
-    "name": "对称竞技场",
-    "sceneAddress": "Prototype/Arena",
-    "size": 32,
+    "name": "立体训练场",
+    "sceneAddress": "maps/TrainingGround",
+    "width": 32,
+    "length": 64,
     "cellSize": 0.125,
-    "layoutVersion": 2
+    "layoutVersion": 3
   }
 ]

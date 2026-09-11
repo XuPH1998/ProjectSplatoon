@@ -84,7 +84,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// </summary>
     public readonly bool FriendlyFire;
     /// <summary>
-    /// 仅竞技场地面计分
+    /// 仅可行走地面计分（含坡道、高台及桥面）
     /// </summary>
     public readonly bool GroundOnlyScore;
    

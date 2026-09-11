@@ -53,16 +53,16 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7a7ac244454f41c4190ec80984f701e6
-    m_Address: Prototype/Arena
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a2ae82d2d55f53b795f638d938078ee5
     m_Address: tbglobal
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2e1d8961603e2d4d9c0bb3fef27bcc7
+    m_Address: maps/TrainingGround
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba9857d2828655c48aa4a94d77a6a88a
     m_Address: Weapon/Splattershot

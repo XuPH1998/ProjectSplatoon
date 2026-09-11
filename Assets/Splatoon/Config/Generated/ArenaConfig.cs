@@ -23,7 +23,8 @@ public sealed partial class ArenaConfig : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["sceneAddress"].IsString) { throw new SerializationException(); }  SceneAddress = _buf["sceneAddress"]; }
-        { if(!_buf["size"].IsNumber) { throw new SerializationException(); }  Size = _buf["size"]; }
+        { if(!_buf["width"].IsNumber) { throw new SerializationException(); }  Width = _buf["width"]; }
+        { if(!_buf["length"].IsNumber) { throw new SerializationException(); }  Length = _buf["length"]; }
         { if(!_buf["cellSize"].IsNumber) { throw new SerializationException(); }  CellSize = _buf["cellSize"]; }
         { if(!_buf["layoutVersion"].IsNumber) { throw new SerializationException(); }  LayoutVersion = _buf["layoutVersion"]; }
     }
@@ -46,9 +47,13 @@ public sealed partial class ArenaConfig : Luban.BeanBase
     /// </summary>
     public readonly string SceneAddress;
     /// <summary>
-    /// 场地边长（米）
+    /// 场地宽度 X（米）
     /// </summary>
-    public readonly float Size;
+    public readonly float Width;
+    /// <summary>
+    /// 场地长度 Z（米）
+    /// </summary>
+    public readonly float Length;
     /// <summary>
     /// 归属网格边长（米）
     /// </summary>
@@ -71,7 +76,8 @@ public sealed partial class ArenaConfig : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "sceneAddress:" + SceneAddress + ","
-        + "size:" + Size + ","
+        + "width:" + Width + ","
+        + "length:" + Length + ","
         + "cellSize:" + CellSize + ","
         + "layoutVersion:" + LayoutVersion + ","
         + "}";

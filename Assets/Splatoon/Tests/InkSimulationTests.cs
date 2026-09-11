@@ -41,18 +41,18 @@ namespace Splatoon.Tests
         }
         [Test] public void SnapshotRoundTripPreservesLargeGridAndEveryPaintedSurface()
         {
-            var state = new PaintCheckpoint { Round = 3, Sequence = 521, Grid = new byte[65536] };
-            state.Grid[65535] = 2; state.Grid[0] = 255; state.Surfaces[7] = new byte[] { 255, 0, 0, 255, 0, 0, 255, 255 };
+            var state = new PaintCheckpoint { Round = 3, Sequence = 521, Topology = "test-v3", Ownership = new System.Collections.Generic.Dictionary<int, byte[]> { [1] = new byte[65536] } };
+            state.Ownership[1][65535] = 2; state.Ownership[1][0] = 255; state.Surfaces[7] = new byte[] { 255, 0, 0, 255, 0, 0, 255, 255 };
             var encoded = PaintSnapshotCodec.Encode(state);
-            var result = PaintSnapshotCodec.Decode(encoded, 65536, new Dictionary<int, int> { [7] = 8 });
+            var result = PaintSnapshotCodec.Decode(encoded, "test-v3", new Dictionary<int, int> { [1] = 65536 }, new Dictionary<int, int> { [7] = 8 });
             Assert.That(result.Round, Is.EqualTo(3)); Assert.That(result.Sequence, Is.EqualTo(521));
-            CollectionAssert.AreEqual(state.Grid, result.Grid); CollectionAssert.AreEqual(state.Surfaces[7], result.Surfaces[7]);
+            CollectionAssert.AreEqual(state.Ownership[1], result.Ownership[1]); CollectionAssert.AreEqual(state.Surfaces[7], result.Surfaces[7]);
         }
         [Test] public void SnapshotRejectsUnknownSurfacesAndDifferentTopology()
         {
-            var state = new PaintCheckpoint { Grid = new byte[65536] }; state.Surfaces[1] = new byte[4]; var bytes = PaintSnapshotCodec.Encode(state);
-            Assert.Throws<InvalidDataException>(() => PaintSnapshotCodec.Decode(bytes, 4096, new Dictionary<int, int> { [1] = 4 }));
-            Assert.Throws<InvalidDataException>(() => PaintSnapshotCodec.Decode(bytes, 65536, new Dictionary<int, int> { [2] = 4 }));
+            var state = new PaintCheckpoint { Topology = "test-v3", Ownership = new System.Collections.Generic.Dictionary<int, byte[]> { [1] = new byte[65536] } }; state.Surfaces[1] = new byte[4]; var bytes = PaintSnapshotCodec.Encode(state);
+            Assert.Throws<InvalidDataException>(() => PaintSnapshotCodec.Decode(bytes, "test-v3", new Dictionary<int, int> { [1] = 4096 }, new Dictionary<int, int> { [1] = 4 }));
+            Assert.Throws<InvalidDataException>(() => PaintSnapshotCodec.Decode(bytes, "test-v3", new Dictionary<int, int> { [1] = 65536 }, new Dictionary<int, int> { [2] = 4 }));
         }
         [Test] public void SnapshotChecksumDetectsCorruptedChunk()
         {

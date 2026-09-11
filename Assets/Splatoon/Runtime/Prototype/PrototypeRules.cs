@@ -10,7 +10,7 @@ namespace Splatoon.Prototype
         public static byte ChooseTeam(int orange, int blue) => (byte)(orange <= blue ? 1 : 2);
         public static bool CanStart(int players, MatchPhase phase, int minimumPlayers = 2) => players >= minimumPlayers && phase != MatchPhase.Playing;
         public static bool HasEnded(MatchPhase phase, double now, double end) => phase == MatchPhase.Playing && now >= end;
-        public static int Winner(int orange, int blue) => orange == blue ? 0 : orange > blue ? 1 : 2;
+        public static int Winner(double orange, double blue) => Math.Abs(orange - blue) < .000001 ? 0 : orange > blue ? 1 : 2;
         public static float Recover(float ink, float maximum, float rate, float dt) => Mathf.Min(maximum, ink + rate * dt);
         public static bool Spend(ref float ink, float amount)
         { if (ink + .00001f < amount) return false; ink = Mathf.Max(0, ink - amount); return true; }

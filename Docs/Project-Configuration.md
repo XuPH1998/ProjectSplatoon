@@ -19,7 +19,7 @@
 | 连接超时 | 20 秒，支持取消与失败重试 |
 | `Splatoon Local` 资源组 | 本地内容打包组，使用 LocalBuildPath / LocalLoadPath |
 | `Luban` 标签 | 运行时批量加载配置 JSON 的标签 |
-| `Prototype/Arena / Player / Match` | 场地、玩家与比赛状态的稳定资源地址 |
+| `maps/TrainingGround`、`Prototype/Player`、`Prototype/Match` | 场地、玩家与比赛状态的稳定资源地址 |
 | `Packages/manifest.json` | 包依赖清单；保留包的正式名称与版本标识 |
 | `*.asmdef` | 程序集依赖清单，标识需与代码引用一致 |
 

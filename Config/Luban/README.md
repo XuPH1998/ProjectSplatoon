@@ -12,7 +12,7 @@
 
 修改工作簿后运行 `cmd /c Config\Luban\gen_luban.bat`。运行时通过 Addressables 的 `Luban` 标签加载 JSON，再通过 `GameplayConfig` 访问五张表。字段定义位于 `source/Defines/gameplay.xml`。构建入口为 **喷墨对战/构建/Windows 正式资源版本**。全部生成表参与联机内容签名。
 
-生成的 C#/JSON 禁止手工编辑。当前场地 32 米，归属网格默认 0.125 米，最多 4 人。修改场地布局时必须同步正式场景、SurfaceId 和场地布局版本。人物重力 22 与墨弹重力 19.62 分别配置，不能混用。旧 Range 已由初速、重力和寿命替代；旧固定 PaintRadius 改为半径范围。
+生成的 C#/JSON 禁止手工编辑。当前立体训练场 X 宽 32 米、Z 长 64 米（Width/Length），各可行走表面归属网格默认 0.125 米，最多 4 人。修改场地布局时必须同步正式场景、SurfaceId 和场地布局版本。人物重力 22 与墨弹重力 19.62 分别配置，不能混用。旧 Range 已由初速、重力和寿命替代；旧固定 PaintRadius 改为半径范围。
 
 ## luban.conf 字段说明
 

@@ -221,7 +221,7 @@ namespace Splatoon.Editor
         }
         public static void ValidateInstalled()
         {
-            foreach (string path in new[] { CharacterPath, WeaponPath, StreamPath, ImpactPath, PlayerPath, ArenaPath })
+            foreach (string path in new[] { CharacterPath, WeaponPath, StreamPath, ImpactPath, PlayerPath, TrainingGroundBuilder.ScenePath })
             {
                 Load<UnityEngine.Object>(path);
                 foreach (var dependency in AssetDatabase.GetDependencies(path, true))

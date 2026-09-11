@@ -23,7 +23,7 @@ namespace Splatoon.Tests
             var t = Tables(); GameplayConfig.Validate(t);
             Assert.That(t.TbCharacter.Get(1).MaxHealth, Is.EqualTo(100));
             Assert.That(t.TbWeapon.Get(1).FireRate * t.TbWeapon.Get(1).Damage, Is.EqualTo(150));
-            Assert.That(t.TbArena.Get(1).Size / t.TbArena.Get(1).CellSize, Is.EqualTo(256));
+            Assert.That(t.TbArena.Get(1).Width / t.TbArena.Get(1).CellSize, Is.EqualTo(256));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()

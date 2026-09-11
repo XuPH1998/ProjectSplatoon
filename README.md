@@ -27,3 +27,7 @@
 本项目界面、编辑器菜单和配置说明采用中文。API、稳定参数键、资源地址和第三方包名称保留英文，中文字段说明见 [配置指南](Config/Luban/README.md)。Unity 自带设置与第三方插件界面沿用其自身语言设置；本项目实际使用的参数见 [工程配置说明](Docs/Project-Configuration.md)。
 
 正式移植分析、资源与弹道链路见 [实现说明](Docs/InkMigration/Implementation.md)，验收证据见 [移植验证](Docs/InkMigration/Validation.md)。
+
+## 固定立体训练场
+
+默认地图为 `Assets/GameResource/Gameplay/maps/TrainingGround.unity`，X 宽 32 米、Z 长 64 米。可通过 **喷墨对战/地图/打开立体训练场** 直接编辑，游戏仍从 Boot 启动。地面、高台、坡道、桥面独立涂地与面积计分；进入房间加载固定 Scene，退出卸载。编辑地图几何或出生点后执行 **校验并烘焙当前地图**，再重新构建资源。见 [地图说明与验证](Docs/TrainingGround.md)。

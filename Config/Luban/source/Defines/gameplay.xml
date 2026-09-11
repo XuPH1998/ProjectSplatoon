@@ -45,14 +45,15 @@
     <var name="respawnSeconds" type="float" comment="重生等待（秒）"/>
     <var name="protectionSeconds" type="float" comment="重生保护（秒）"/>
     <var name="friendlyFire" type="bool" comment="是否友伤"/>
-    <var name="groundOnlyScore" type="bool" comment="仅竞技场地面计分"/>
+    <var name="groundOnlyScore" type="bool" comment="仅可行走地面计分（含坡道、高台及桥面）"/>
   </bean>
   <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id"/>
   <bean name="ArenaConfig" comment="Arena 强类型配置">
     <var name="id" type="int" comment="场地 ID"/>
     <var name="name" type="string" comment="场地名称"/>
     <var name="sceneAddress" type="string" comment="场景地址"/>
-    <var name="size" type="float" comment="场地边长（米）"/>
+    <var name="width" type="float" comment="场地宽度 X（米）"/>
+    <var name="length" type="float" comment="场地长度 Z（米）"/>
     <var name="cellSize" type="float" comment="归属网格边长（米）"/>
     <var name="layoutVersion" type="int" comment="场地布局协议版本"/>
   </bean>

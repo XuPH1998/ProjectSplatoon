@@ -13,7 +13,7 @@ namespace Splatoon.Prototype
         public static PrototypeMatch Current { get; private set; }
         public readonly NetworkVariable<MatchStateSnapshot> State = new();
         public readonly List<PrototypePlayer> Players = new();
-        public PaintGrid Grid => PrototypeArena.Current.Grid;
+        public PrototypeArena Arena => PrototypeArena.Current;
         public readonly InkProjectileService Projectiles = new();
         public uint PaintSequence { get; private set; }
         public uint AppliedPaintSequence => IsServer ? PaintSequence : _appliedSequence;
@@ -27,11 +27,11 @@ namespace Splatoon.Prototype
             Current = this; _paintRound = State.Value.Round;
             if (IsServer)
             {
-                State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalCells = Grid.Total };
+                State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalArea = Arena.TotalArea };
                 InitialSyncComplete = true; NetworkManager.NetworkTickSystem.Tick += ServerTick;
             }
             else RequestSnapshotRpc();
-            Debug.Log($"[LAN] Match spawned server={IsServer} cells={Grid.Cells.Length} hash={Grid.Hash()}");
+            Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
         }
         public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength)
         {
@@ -55,7 +55,7 @@ namespace Splatoon.Prototype
         {
             if (!IsServer || Players.Count < GameplayConfig.Mode.MinPlayers || State.Value.Phase == MatchPhase.Playing) return;
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing; s.EndsAt = NetworkManager.ServerTime.Time + GameplayConfig.Mode.MatchSeconds;
-            s.OrangeCells = s.BlueCells = 0; State.Value = s;
+            s.OrangeArea = s.BlueArea = 0; State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round);
             foreach (var p in Players) p.Respawn();
             Debug.Log($"[LAN] Round started round={s.Round} ends={s.EndsAt:F2}");
@@ -72,14 +72,14 @@ namespace Splatoon.Prototype
         {
             double now = NetworkManager.ServerTime.Time; var s = State.Value;
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished orange={Grid.Orange} blue={Grid.Blue} hash={Grid.Hash()}"); }
+            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished orange={Arena.OrangeArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             foreach (var p in Players) p.Simulate(1f / NetworkManager.NetworkConfig.TickRate, now, s.Phase);
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(Projectiles.Spawned.ToArray()); Projectiles.Spawned.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(Projectiles.Impacts.ToArray()); Projectiles.Impacts.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(_pending.ToArray()); _pending.Clear(); }
-            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.OrangeCells = Grid.Orange; s.BlueCells = Grid.Blue; State.Value = s;
+            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.OrangeArea = Arena.OrangeArea; s.BlueArea = Arena.BlueArea; State.Value = s;
         }
         [ClientRpc] private void ShotsClientRpc(InkShot[] shots) { if (State.Value.Phase != MatchPhase.Finished) foreach (var shot in shots) if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); }
         [ClientRpc] private void ImpactsClientRpc(InkImpact[] impacts) { foreach (var impact in impacts) if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); }

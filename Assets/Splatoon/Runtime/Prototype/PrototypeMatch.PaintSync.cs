@@ -64,7 +64,7 @@ namespace Splatoon.Prototype
         private async UniTaskVoid CaptureCheckpoint()
         {
             _capturing = true; int generation = _captureGeneration;
-            var checkpoint = new PaintCheckpoint { Round = State.Value.Round, Sequence = PaintSequence, Grid = (byte[])Grid.Cells.Clone() };
+            var checkpoint = new PaintCheckpoint { Round = State.Value.Round, Sequence = PaintSequence, Topology = Arena.BakedTopology, Ownership = Arena.CaptureOwnership() };
             int pending = 0; bool failed = false;
             try
             {
@@ -141,19 +141,15 @@ namespace Splatoon.Prototype
             {
                 if (PaintSnapshotCodec.Hash(t.Bytes) != t.Hash) throw new InvalidOperationException("快照完整性校验失败");
                 var sizes = PrototypeArena.Current.Surfaces.ToDictionary(p => p.Key, p => p.Value.Resolution * p.Value.Resolution * 4);
-                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Grid.Cells.Length, sizes);
+                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Arena.BakedTopology, Arena.Surfaces.Values.Where(s => s.Ownership != null).ToDictionary(s => s.SurfaceId, s => s.Ownership.Cells.Length), sizes);
                 if (checkpoint.Round != _paintRound) return;
                 PrototypeArena.Current.ClearPaint();
-                for (int i = 0; i < checkpoint.Grid.Length; i++)
-                {
-                    if ((Grid.Cells[i] == 255) != (checkpoint.Grid[i] == 255)) throw new InvalidOperationException("场景计分拓扑不一致");
-                    if (checkpoint.Grid[i] != 255) Grid.Set(i, checkpoint.Grid[i]);
-                }
+                Arena.RestoreOwnership(checkpoint.Ownership);
                 foreach (var pair in checkpoint.Surfaces) PrototypeArena.Current.Surfaces[pair.Key].Restore(pair.Value);
                 _appliedSequence = checkpoint.Sequence;
                 foreach (var sequence in _buffered.Keys.Where(s => s <= _appliedSequence).ToArray()) _buffered.Remove(sequence);
                 _incoming = null; InitialSyncComplete = true; DrainPaint(); AckSnapshotRpc(id);
-                Debug.Log($"[INK] Snapshot applied round={_paintRound} seq={_appliedSequence} surfaces={checkpoint.Surfaces.Count} hash={Grid.Hash()}");
+                Debug.Log($"[INK] Snapshot applied round={_paintRound} seq={_appliedSequence} surfaces={checkpoint.Surfaces.Count} hash={Arena.OwnershipHash()}");
             }
             catch (Exception e) { Debug.LogException(e); _incoming = null; RequestSnapshotRpc(); }
         }

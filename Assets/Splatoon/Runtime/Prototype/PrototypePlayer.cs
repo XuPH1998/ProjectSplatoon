@@ -142,7 +142,7 @@ namespace Splatoon.Prototype
             var input = _input;
             if (now - _lastInput > GameplayConfig.Global.InputTimeout) { input.Move = Vector2.zero; input.Fire = input.Swim = false; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
-            byte floor = PrototypeMatch.Current.Grid.At(transform.position);
+            byte floor = PrototypeArena.Current.FloorOwner(transform.position);
             s.Swimming = input.Swim && floor == s.Team && _controller.isGrounded;
             _controller.height = s.Swimming ? .7f : 1.8f; _controller.center = Vector3.up * (_controller.height * .5f);
             float speed = (s.Swimming ? GameplayConfig.Character.SwimSpeed : GameplayConfig.Character.MoveSpeed);
@@ -185,6 +185,41 @@ namespace Splatoon.Prototype
             if (s.Health <= 0) { s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.Swimming = false; _controller.enabled = false; }
             Snapshot.Value = s;
         }
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        internal void ValidateMapSwimming()
+        {
+            if (!IsServer) return;
+            var original = Snapshot.Value; var oldInput = _input; float oldVertical = _vertical; double oldLastInput = _lastInput;
+            try
+            {
+                foreach (var position in new[] { new Vector3(1, .08f, 1), new Vector3(1, 3.08f, 1), new Vector3(10.5f, 1.58f, -8) })
+                {
+                    _controller.enabled = false; transform.position = position; _controller.enabled = true; Physics.SyncTransforms();
+                    for (int i = 0; i < 8; i++) _controller.Move(Vector3.down * .04f);
+                    if (!Physics.Raycast(transform.position + Vector3.up * .2f, Vector3.down, out var hit, .55f, ~(1 << 8))) throw new System.InvalidOperationException("诊断角色未落地");
+                    var surface = hit.collider.GetComponent<Splatoon.Painting.PaintSurface>();
+                    var state = original; state.Ink = 40; state.Position = transform.position; state.Health = 100; Snapshot.Value = state;
+                    double now = NetworkManager.ServerTime.Time; _lastInput = now; _vertical = -2;
+                    _input = new PlayerInputFrame { Swim = true, Look = Vector2.zero };
+                    PrototypeMatch.Current.Paint(surface, hit.point, hit.normal, 1.5f, state.Team, .5f, 1);
+                    Simulate(1f / 30, now, MatchPhase.Practice);
+                    if (!Snapshot.Value.Swimming || Snapshot.Value.Ink <= 40) throw new System.InvalidOperationException("实际角色潜墨或回墨失败：" + surface.name);
+                    PrototypeMatch.Current.Paint(surface, hit.point, hit.normal, 1.5f, (byte)(state.Team == 1 ? 2 : 1), .5f, 1);
+                    _input.Move = Vector2.right;
+                    Simulate(1f / 30, now, MatchPhase.Practice);
+                    var velocity = Snapshot.Value.Velocity; velocity.y = 0;
+                    if (Snapshot.Value.Swimming || velocity.magnitude > GameplayConfig.Character.MoveSpeed * GameplayConfig.Character.EnemyInkMultiplier + .15f)
+                        throw new System.InvalidOperationException("实际角色敌墨判定失败：" + surface.name);
+                }
+                Debug.Log("[MAP-SMOKE] Player simulation PASS ground/bridge/ramp swimming/recovery/enemy slowdown");
+            }
+            finally
+            {
+                _controller.enabled = false; transform.position = original.Position; _controller.height = 1.8f; _controller.center = Vector3.up * .9f; _controller.enabled = true;
+                Snapshot.Value = original; _input = oldInput; _vertical = oldVertical; _lastInput = oldLastInput;
+            }
+        }
+#endif
         public static Vector3 CameraPosition(Vector3 pivot, Quaternion rotation)
         {
             Vector3 offset = rotation * new Vector3(.65f, .15f, -3.8f);

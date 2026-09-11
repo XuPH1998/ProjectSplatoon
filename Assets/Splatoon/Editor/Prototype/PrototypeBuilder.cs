@@ -38,7 +38,9 @@ namespace Splatoon.Editor
             {
                 var entry=settings.CreateOrMoveEntry(AssetDatabase.AssetPathToGUID(path),group);entry.address=Path.GetFileNameWithoutExtension(path);entry.SetLabel("Luban",true,true);
             }
-            AddAddress(settings,group,Root+"/PrototypeArena.unity",PrototypeApp.ArenaAddress);
+            var legacy = settings.FindAssetEntry(AssetDatabase.AssetPathToGUID(Root+"/PrototypeArena.unity"));
+            if (legacy != null) settings.RemoveAssetEntry(legacy.guid);
+            AddAddress(settings,group,TrainingGroundBuilder.ScenePath,PrototypeApp.ArenaAddress);
             AddAddress(settings,group,Root+"/Prefabs/PrototypePlayer.prefab",PrototypeApp.PlayerAddress);
             AddAddress(settings,group,Root+"/Prefabs/PrototypeMatch.prefab",PrototypeApp.MatchAddress);
             AddAddress(settings,group,"Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab","Character/Jammo");
@@ -54,6 +56,7 @@ namespace Splatoon.Editor
         public static void BuildWindows()
         {
             InkMigrationBuilder.ValidateInstalled();
+            TrainingGroundBuilder.ValidateSavedScene();
             ConfigureAddressables();
             AddressableAssetSettings.BuildPlayerContent(out var content);
             if(!string.IsNullOrEmpty(content.Error))throw new BuildFailedException(content.Error);

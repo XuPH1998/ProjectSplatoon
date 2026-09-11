@@ -41,7 +41,7 @@ namespace Splatoon.Config
                 Require(m.MaxPlayers >= 2 && m.MaxPlayers <= 4 && m.MinPlayers >= 2 && m.MinPlayers <= m.MaxPlayers && m.MatchSeconds > 0 && m.GroundOnlyScore, "当前模式要求 2–4 人且仅地面计分");
             }
             foreach (var a in tables.TbArena.DataList)
-                Require(a.Size == 32 && a.CellSize >= .0625f && a.CellSize <= .5f && Math.Abs(a.Size / a.CellSize - Math.Round(a.Size / a.CellSize)) < .0001 && a.LayoutVersion > 0 && !string.IsNullOrWhiteSpace(a.SceneAddress), "场地尺寸或网格配置无效");
+                Require(a.Width > 0 && a.Length > 0 && a.Width <= 256 && a.Length <= 256 && a.CellSize >= .0625f && a.CellSize <= .5f && Math.Abs(a.Width / a.CellSize - Math.Round(a.Width / a.CellSize)) < .0001 && Math.Abs(a.Length / a.CellSize - Math.Round(a.Length / a.CellSize)) < .0001 && a.LayoutVersion > 0 && !string.IsNullOrWhiteSpace(a.SceneAddress), "场地尺寸或网格配置无效");
             Require(global.NetworkTickRate >= 10 && global.NetworkTickRate <= 120 && global.ProjectileStepRate >= global.NetworkTickRate && global.ProjectileStepRate % global.NetworkTickRate == 0 && global.ProjectileStepRate <= 480, "网络频率与子步频率必须整除");
             Require(global.DefaultPort > 0 && global.DefaultPort <= 65535 && global.ConnectionTimeout > 0 && global.InputTimeout > 0, "网络超时或端口无效");
             Require(global.SnapshotChunkBytes >= 512 && global.SnapshotChunkBytes <= 8192 && global.ChunksPerFrame > 0 && global.ChunksPerFrame <= 32 && global.CheckpointStamps >= 32, "同步预算无效");

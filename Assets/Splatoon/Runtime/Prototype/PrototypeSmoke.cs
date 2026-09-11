@@ -57,6 +57,7 @@ namespace Splatoon.Prototype
             if (!Active) return;
             float t=Time.realtimeSinceStartup-_connectedAt;
             if (_inkCase == "observer") { frame.Move = Vector2.zero; frame.Look = new Vector2(0, 45); frame.Fire = frame.Swim = false; return; }
+            if (_inkCase == "map") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 12); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "surfaces")
             {
                 frame.Move = t < 5 && p.Snapshot.Value.Position.x < 13.8f ? new Vector2(.7f, 0) : Vector2.zero;
@@ -101,13 +102,18 @@ namespace Splatoon.Prototype
         {
             if (!Active || !PrototypeApp.Current.InRoom || PrototypeMatch.Current==null) return;
             var match=PrototypeMatch.Current;var s=match.State.Value;float t=Time.realtimeSinceStartup-_connectedAt;
+            if (_inkCase == "map")
+            {
+                try { TrainingGroundSmoke.Tick(match); }
+                catch (Exception e) { Debug.LogException(e); Application.Quit(5); return; }
+            }
             if(_leaveAfter>0&&t>_leaveAfter&&!_cycling){Cycle().Forget();return;}
             if (_inkCase == "combat" && _host&&!_started&&s.PlayerCount>=2&&t>25) {match.StartRound();_started=true;}
             if (Time.realtimeSinceStartup-_lastLog>2)
             {
                 _lastLog=Time.realtimeSinceStartup;var p=PrototypePlayer.Local.Snapshot.Value;
                 int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
-                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} orange={s.OrangeCells} blue={s.BlueCells} hash={match.Grid.Hash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Grid.Cells.Length} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
+                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} orange={s.OrangeArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
             }
             if (!_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {
