@@ -1,0 +1,74 @@
+[
+  {
+    "id": 101,
+    "settingId": 1,
+    "sortOrder": 10,
+    "value": "ZhHans",
+    "labelKey": "ui.settings.zh_hans",
+    "debugNote": "简体中文。"
+  },
+  {
+    "id": 102,
+    "settingId": 1,
+    "sortOrder": 20,
+    "value": "English",
+    "labelKey": "ui.settings.english",
+    "debugNote": "英文。"
+  },
+  {
+    "id": 103,
+    "settingId": 1,
+    "sortOrder": 30,
+    "value": "Arabic",
+    "labelKey": "ui.settings.arabic",
+    "debugNote": "阿拉伯语。"
+  },
+  {
+    "id": 201,
+    "settingId": 2,
+    "sortOrder": 10,
+    "value": "Extreme",
+    "labelKey": "ui.settings.quality_extreme",
+    "debugNote": "极致画质占位。"
+  },
+  {
+    "id": 202,
+    "settingId": 2,
+    "sortOrder": 20,
+    "value": "High",
+    "labelKey": "ui.settings.quality_high",
+    "debugNote": "高画质占位。"
+  },
+  {
+    "id": 203,
+    "settingId": 2,
+    "sortOrder": 30,
+    "value": "Smooth",
+    "labelKey": "ui.settings.quality_smooth",
+    "debugNote": "流畅画质占位。"
+  },
+  {
+    "id": 901,
+    "settingId": 9,
+    "sortOrder": 10,
+    "value": "On",
+    "labelKey": "ui.settings.on",
+    "debugNote": "旧模式自动开火。"
+  },
+  {
+    "id": 902,
+    "settingId": 9,
+    "sortOrder": 20,
+    "value": "Off",
+    "labelKey": "ui.settings.off",
+    "debugNote": "新模式自动开火。"
+  },
+  {
+    "id": 903,
+    "settingId": 9,
+    "sortOrder": 30,
+    "value": "Manual",
+    "labelKey": "ui.settings.manual_fire",
+    "debugNote": "按住射击按钮开火，横向拖动控制转镜。"
+  }
+]

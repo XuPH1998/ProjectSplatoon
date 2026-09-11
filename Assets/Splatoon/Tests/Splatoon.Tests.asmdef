@@ -1,0 +1,7 @@
+{
+  "name": "Splatoon.Tests",
+  "rootNamespace": "Splatoon.Tests",
+  "references": ["Splatoon", "Splatoon.Skills.Data", "Splatoon.Skills.Support", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

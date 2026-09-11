@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "excelcompare"
+version = "0.1.0"
+description = "Excel 3-way merge tool with visual conflict resolution and git integration"
+requires-python = ">=3.10"
+dependencies = [
+    "openpyxl>=3.1",
+    "flask>=3.0",
+    "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]
+
+[project.scripts]
+excelcompare = "excelcompare.cli:cli"
+excelcompare-driver = "excelcompare.git.driver:main"
+excelcompare-mergetool = "excelcompare.git.mergetool:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/excelcompare"]

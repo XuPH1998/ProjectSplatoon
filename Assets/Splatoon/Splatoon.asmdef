@@ -1,0 +1,14 @@
+{
+  "name": "Splatoon",
+  "rootNamespace": "Splatoon",
+  "references": ["Splatoon.Config", "Splatoon.Skills.Data", "Splatoon.Skills.Support"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

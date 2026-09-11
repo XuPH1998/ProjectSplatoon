@@ -1,0 +1,34 @@
+[
+  {
+    "id": 5002001,
+    "mapId": 5002,
+    "lockType": 2,
+    "cardId": 3562,
+    "prefabPath": "Assets/Prefabs/Interactables/Doors/PF_OneWayDoor.prefab",
+    "debugNote": "测试用01"
+  },
+  {
+    "id": 5002002,
+    "mapId": 5002,
+    "lockType": 2,
+    "cardId": 3562,
+    "prefabPath": "Assets/Prefabs/Interactables/Doors/PF_OneWayDoor.prefab",
+    "debugNote": "左侧训练场"
+  },
+  {
+    "id": 5002003,
+    "mapId": 5002,
+    "lockType": 2,
+    "cardId": 3562,
+    "prefabPath": "Assets/Prefabs/Interactables/Doors/PF_OneWayDoor.prefab",
+    "debugNote": "右侧加油站"
+  },
+  {
+    "id": 5002004,
+    "mapId": 5002,
+    "lockType": 2,
+    "cardId": 3562,
+    "prefabPath": "Assets/Prefabs/Interactables/Doors/PF_CardDoor.prefab",
+    "debugNote": "CardDoor钥匙测试"
+  }
+]

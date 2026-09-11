@@ -1,0 +1,6162 @@
+[
+  {
+    "key": "buff.10001.description",
+    "zhHans": "限时提升移动速度 20%。",
+    "en": "Temporarily increases movement speed by 20%.",
+    "ar": "يزيد سرعة الحركة مؤقتًا بنسبة 20%.",
+    "context": "TbBuff 10001 description"
+  },
+  {
+    "key": "buff.10001.name",
+    "zhHans": "急速测试",
+    "en": "Speed Test",
+    "ar": "اختبار السرعة",
+    "context": "TbBuff 10001 display name"
+  },
+  {
+    "key": "buff.10002.description",
+    "zhHans": "恢复 80 点生命值。",
+    "en": "Restores 80 health.",
+    "ar": "يستعيد 80 نقطة صحة.",
+    "context": "TbBuff 10002 description"
+  },
+  {
+    "key": "buff.10002.name",
+    "zhHans": "医疗包",
+    "en": "Medical Kit",
+    "ar": "حقيبة طبية",
+    "context": "TbBuff 10002 display name"
+  },
+  {
+    "key": "buff.10003.description",
+    "zhHans": "受到的伤害降低 30%。",
+    "en": "Reduces damage taken by 30%.",
+    "ar": "يقلل الضرر المتلقى بنسبة 30%.",
+    "context": "TbBuff 10003 description"
+  },
+  {
+    "key": "buff.10003.name",
+    "zhHans": "防护测试",
+    "en": "Protection Test",
+    "ar": "اختبار الحماية",
+    "context": "TbBuff 10003 display name"
+  },
+  {
+    "key": "buff.10004.description",
+    "zhHans": "每秒受到 3 点伤害，持续 30 秒。",
+    "en": "Takes 3 damage per second for 30 seconds.",
+    "ar": "يتلقى 3 نقاط ضرر كل ثانية لمدة 30 ثانية.",
+    "context": "TbBuff 10004 description"
+  },
+  {
+    "key": "buff.10004.name",
+    "zhHans": "流血",
+    "en": "Bleeding",
+    "ar": "نزيف",
+    "context": "TbBuff 10004 display name"
+  },
+  {
+    "key": "buff.10005.description",
+    "zhHans": "移除 1 层流血并恢复 10 点生命值。",
+    "en": "Removes 1 stack of Bleeding and restores 10 health.",
+    "ar": "يزيل طبقة واحدة من النزيف ويستعيد 10 نقاط صحة.",
+    "context": "TbBuff 10005 description"
+  },
+  {
+    "key": "buff.10005.name",
+    "zhHans": "绷带处理",
+    "en": "Bandage Treatment",
+    "ar": "علاج بالضماد",
+    "context": "TbBuff 10005 display name"
+  },
+  {
+    "key": "buff.10006.description",
+    "zhHans": "移动速度降低 20%，持续 120 秒。",
+    "en": "Reduces movement speed by 20% for 120 seconds.",
+    "ar": "يقلل سرعة الحركة بنسبة 20% لمدة 120 ثانية.",
+    "context": "TbBuff 10006 description"
+  },
+  {
+    "key": "buff.10006.name",
+    "zhHans": "骨折",
+    "en": "Fracture",
+    "ar": "كسر",
+    "context": "TbBuff 10006 display name"
+  },
+  {
+    "key": "buff.10007.description",
+    "zhHans": "移除骨折并恢复 10 点生命值。",
+    "en": "Removes Fracture and restores 10 health.",
+    "ar": "يعالج الكسر ويستعيد 10 نقاط صحة.",
+    "context": "TbBuff 10007 description"
+  },
+  {
+    "key": "buff.10007.name",
+    "zhHans": "夹板固定",
+    "en": "Splint Treatment",
+    "ar": "تثبيت بالجبيرة",
+    "context": "TbBuff 10007 display name"
+  },
+  {
+    "key": "buff.10008.description",
+    "zhHans": "恢复 20 点生命值。",
+    "en": "Restores 20 health.",
+    "ar": "يستعيد 20 نقطة صحة.",
+    "context": "TbBuff 10008 description"
+  },
+  {
+    "key": "buff.10008.name",
+    "zhHans": "小型医疗包",
+    "en": "Small Medical Kit",
+    "ar": "حقيبة طبية صغيرة",
+    "context": "TbBuff 10008 display name"
+  },
+  {
+    "key": "buff.10009.description",
+    "zhHans": "恢复全部生命值并移除附魔效果。",
+    "en": "Restores all health and removes enchantment effects.",
+    "ar": "يستعيد الصحة بالكامل ويزيل تأثيرات السحر.",
+    "context": "TbBuff 10009 description"
+  },
+  {
+    "key": "buff.10009.name",
+    "zhHans": "急救包",
+    "en": "First Aid Kit",
+    "ar": "حقيبة إسعافات أولية",
+    "context": "TbBuff 10009 display name"
+  },
+  {
+    "key": "buff.10010.description",
+    "zhHans": "移动速度和冲刺速度提升 15%，持续 120 秒。",
+    "en": "Increases movement and sprint speed by 15% for 120 seconds.",
+    "ar": "يزيد سرعة الحركة والركض بنسبة 15% لمدة 120 ثانية.",
+    "context": "TbBuff 10010 description"
+  },
+  {
+    "key": "buff.10010.name",
+    "zhHans": "肾上腺素注射器",
+    "en": "Adrenaline Injector",
+    "ar": "حقنة أدرينالين",
+    "context": "TbBuff 10010 display name"
+  },
+  {
+    "key": "buff.10011.description",
+    "zhHans": "负重提升 20%，持续 120 秒。",
+    "en": "Increases carry capacity by 20% for 120 seconds.",
+    "ar": "يزيد سعة الحمل بنسبة 20% لمدة 120 ثانية.",
+    "context": "TbBuff 10011 description"
+  },
+  {
+    "key": "buff.10011.name",
+    "zhHans": "负重强化注射器",
+    "en": "Carry Capacity Injector",
+    "ar": "حقنة تعزيز سعة الحمل",
+    "context": "TbBuff 10011 display name"
+  },
+  {
+    "key": "buff.10012.description",
+    "zhHans": "体力消耗降低 20%，持续 120 秒。",
+    "en": "Reduces stamina consumption by 20% for 120 seconds.",
+    "ar": "يقلل استهلاك التحمل بنسبة 20% لمدة 120 ثانية.",
+    "context": "TbBuff 10012 description"
+  },
+  {
+    "key": "buff.10012.name",
+    "zhHans": "耐力注射器",
+    "en": "Stamina Injector",
+    "ar": "حقنة التحمل",
+    "context": "TbBuff 10012 display name"
+  },
+  {
+    "key": "buff.10013.description",
+    "zhHans": "造成伤害提升 30%，持续 120 秒。",
+    "en": "Increases damage dealt by 30% for 120 seconds.",
+    "ar": "يزيد الضرر المسبب بنسبة 30% لمدة 120 ثانية.",
+    "context": "TbBuff 10013 description"
+  },
+  {
+    "key": "buff.10013.name",
+    "zhHans": "强效注射器",
+    "en": "Power Injector",
+    "ar": "حقنة القوة",
+    "context": "TbBuff 10013 display name"
+  },
+  {
+    "key": "buff.10014.description",
+    "zhHans": "每秒恢复 2 点生命值，持续 30 秒。",
+    "en": "Restores 2 health per second for 30 seconds.",
+    "ar": "يستعيد نقطتي صحة كل ثانية لمدة 30 ثانية.",
+    "context": "TbBuff 10014 description"
+  },
+  {
+    "key": "buff.10014.name",
+    "zhHans": "恢复注射器",
+    "en": "Regeneration Injector",
+    "ar": "حقنة التجدد",
+    "context": "TbBuff 10014 display name"
+  },
+  {
+    "key": "buff.11001.description",
+    "zhHans": "Wolf dash active speed buff",
+    "en": "Wolf dash active speed buff",
+    "ar": "تعزيز سرعة اندفاع الذئب النشط",
+    "context": "TbBuff 11001 description"
+  },
+  {
+    "key": "buff.11001.name",
+    "zhHans": "WolfDashActive",
+    "en": "WolfDashActive",
+    "ar": "WolfDashActive",
+    "context": "TbBuff 11001 display name"
+  },
+  {
+    "key": "flow.entering_map",
+    "zhHans": "正在进入 {0}...",
+    "en": "Entering {0}...",
+    "ar": "جارٍ الدخول إلى {0}...",
+    "context": "Loading selected map"
+  },
+  {
+    "key": "flow.map_unavailable",
+    "zhHans": "选中的地图当前不可用。",
+    "en": "The selected map is currently unavailable.",
+    "ar": "الخريطة المحددة غير متاحة حاليًا.",
+    "context": "Selected map unavailable"
+  },
+  {
+    "key": "flow.profile_backup_restored",
+    "zhHans": "主档损坏，已从备份恢复。",
+    "en": "The main profile was corrupted and restored from backup.",
+    "ar": "كان ملف الحفظ الرئيسي تالفًا وتمت استعادته من النسخة الاحتياطية.",
+    "context": "Profile recovery notice"
+  },
+  {
+    "key": "flow.profile_load_notice",
+    "zhHans": "玩家档案已加载，但需要注意恢复信息。",
+    "en": "Player profile loaded. Review the recovery information.",
+    "ar": "تم تحميل ملف اللاعب. راجع معلومات الاستعادة.",
+    "context": "Generic profile load notice"
+  },
+  {
+    "key": "flow.profile_recreated",
+    "zhHans": "主档与备份均损坏，已隔离并创建新档。",
+    "en": "Both the main profile and backup were corrupted. They were isolated and a new player profile was created.",
+    "ar": "كان ملف اللاعب الرئيسي والنسخة الاحتياطية تالفين. تم عزلهما وإنشاء ملف لاعب جديد.",
+    "context": "Profile recreation notice"
+  },
+  {
+    "key": "flow.raid_bootstrap_failed",
+    "zhHans": "行动场景初始化失败。",
+    "en": "Failed to initialize the raid scene.",
+    "ar": "فشل تهيئة مشهد العملية.",
+    "context": "Player-facing raid bootstrap error"
+  },
+  {
+    "key": "flow.settlement_save_failed",
+    "zhHans": "结算保存失败，请重试。",
+    "en": "Failed to save the settlement. Please try again.",
+    "ar": "فشل حفظ نتيجة العملية. يرجى المحاولة مجددًا.",
+    "context": "Player-facing settlement save error"
+  },
+  {
+    "key": "flow.unexpected_error",
+    "zhHans": "发生意外错误，请重试。",
+    "en": "An unexpected error occurred. Please try again.",
+    "ar": "حدث خطأ غير متوقع. يرجى المحاولة مجددًا.",
+    "context": "Generic player-facing error"
+  },
+  {
+    "key": "item.3001.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3001 description"
+  },
+  {
+    "key": "item.3001.name",
+    "zhHans": "现金",
+    "en": "Cash",
+    "ar": "نقد",
+    "context": "TbItem 3001 display name"
+  },
+  {
+    "key": "item.3002.description",
+    "zhHans": "可以恢复80生命值",
+    "en": "Restores 80 health.",
+    "ar": "يستعيد 80 نقطة صحة.",
+    "context": "TbItem 3002 description"
+  },
+  {
+    "key": "item.3002.name",
+    "zhHans": "医疗包",
+    "en": "Medical Kit",
+    "ar": "حقيبة طبية",
+    "context": "TbItem 3002 display name"
+  },
+  {
+    "key": "item.3003.description",
+    "zhHans": "可以治疗流血效果",
+    "en": "Treats Bleeding.",
+    "ar": "يعالج النزيف.",
+    "context": "TbItem 3003 description"
+  },
+  {
+    "key": "item.3003.name",
+    "zhHans": "绷带",
+    "en": "Bandage",
+    "ar": "ضماد",
+    "context": "TbItem 3003 display name"
+  },
+  {
+    "key": "item.3004.description",
+    "zhHans": "可以治疗骨折效果",
+    "en": "Treats Fracture.",
+    "ar": "يعالج الكسر.",
+    "context": "TbItem 3004 description"
+  },
+  {
+    "key": "item.3004.name",
+    "zhHans": "夹板",
+    "en": "Splint",
+    "ar": "جبيرة",
+    "context": "TbItem 3004 display name"
+  },
+  {
+    "key": "item.3005.description",
+    "zhHans": "可以恢复20生命值",
+    "en": "Restores 20 health.",
+    "ar": "يستعيد 20 نقطة صحة.",
+    "context": "TbItem 3005 description"
+  },
+  {
+    "key": "item.3005.name",
+    "zhHans": "小型医疗包",
+    "en": "Small Medical Kit",
+    "ar": "حقيبة طبية صغيرة",
+    "context": "TbItem 3005 display name"
+  },
+  {
+    "key": "item.3006.description",
+    "zhHans": "恢复全部生命值并移除负面效果",
+    "en": "Restores all health and removes negative effects.",
+    "ar": "يستعيد الصحة بالكامل ويزيل التأثيرات السلبية.",
+    "context": "TbItem 3006 description"
+  },
+  {
+    "key": "item.3006.name",
+    "zhHans": "急救包",
+    "en": "First Aid Kit",
+    "ar": "حقيبة إسعافات أولية",
+    "context": "TbItem 3006 display name"
+  },
+  {
+    "key": "item.3007.description",
+    "zhHans": "提升移动速度",
+    "en": "Increases movement speed.",
+    "ar": "يزيد سرعة الحركة.",
+    "context": "TbItem 3007 description"
+  },
+  {
+    "key": "item.3007.name",
+    "zhHans": "肾上腺素注射器",
+    "en": "Adrenaline Injector",
+    "ar": "حقنة أدرينالين",
+    "context": "TbItem 3007 display name"
+  },
+  {
+    "key": "item.3008.description",
+    "zhHans": "提升负重",
+    "en": "Increases carry capacity.",
+    "ar": "يزيد سعة الحمل.",
+    "context": "TbItem 3008 description"
+  },
+  {
+    "key": "item.3008.name",
+    "zhHans": "负重强化注射器",
+    "en": "Carry Capacity Injector",
+    "ar": "حقنة تعزيز سعة الحمل",
+    "context": "TbItem 3008 display name"
+  },
+  {
+    "key": "item.3009.description",
+    "zhHans": "体力消耗更慢",
+    "en": "Reduces stamina consumption.",
+    "ar": "يقلل استهلاك التحمل.",
+    "context": "TbItem 3009 description"
+  },
+  {
+    "key": "item.3009.name",
+    "zhHans": "耐力注射器",
+    "en": "Stamina Injector",
+    "ar": "حقنة التحمل",
+    "context": "TbItem 3009 display name"
+  },
+  {
+    "key": "item.3010.description",
+    "zhHans": "增加攻击力",
+    "en": "Increases attack power.",
+    "ar": "يزيد قوة الهجوم.",
+    "context": "TbItem 3010 description"
+  },
+  {
+    "key": "item.3010.name",
+    "zhHans": "强效注射器",
+    "en": "Power Injector",
+    "ar": "حقنة القوة",
+    "context": "TbItem 3010 display name"
+  },
+  {
+    "key": "item.3011.description",
+    "zhHans": "持续恢复血量",
+    "en": "Continuously restores health.",
+    "ar": "يستعيد الصحة باستمرار.",
+    "context": "TbItem 3011 description"
+  },
+  {
+    "key": "item.3011.name",
+    "zhHans": "恢复注射器",
+    "en": "Regeneration Injector",
+    "ar": "حقنة التجدد",
+    "context": "TbItem 3011 display name"
+  },
+  {
+    "key": "item.3101.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3101 description"
+  },
+  {
+    "key": "item.3101.name",
+    "zhHans": "AK-103 步枪",
+    "en": "AK-103 Rifle",
+    "ar": "بندقية AK-103",
+    "context": "TbItem 3101 display name"
+  },
+  {
+    "key": "item.3102.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3102 description"
+  },
+  {
+    "key": "item.3102.name",
+    "zhHans": "AR-15 步枪",
+    "en": "AR-15 Rifle",
+    "ar": "بندقية AR-15",
+    "context": "TbItem 3102 display name"
+  },
+  {
+    "key": "item.3103.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3103 description"
+  },
+  {
+    "key": "item.3103.name",
+    "zhHans": "MP5 冲锋枪",
+    "en": "MP5 Submachine Gun",
+    "ar": "رشاش MP5",
+    "context": "TbItem 3103 display name"
+  },
+  {
+    "key": "item.3104.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3104 description"
+  },
+  {
+    "key": "item.3104.name",
+    "zhHans": "UZI 冲锋枪",
+    "en": "UZI Submachine Gun",
+    "ar": "رشاش UZI",
+    "context": "TbItem 3104 display name"
+  },
+  {
+    "key": "item.3105.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3105 description"
+  },
+  {
+    "key": "item.3105.name",
+    "zhHans": "PM 手枪",
+    "en": "PM Pistol",
+    "ar": "مسدس PM",
+    "context": "TbItem 3105 display name"
+  },
+  {
+    "key": "item.3106.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3106 description"
+  },
+  {
+    "key": "item.3106.name",
+    "zhHans": "格洛克手枪",
+    "en": "Glock Pistol",
+    "ar": "مسدس غلوك",
+    "context": "TbItem 3106 display name"
+  },
+  {
+    "key": "item.3107.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3107 description"
+  },
+  {
+    "key": "item.3107.name",
+    "zhHans": "MP-155 霰弹枪",
+    "en": "MP-155 Shotgun",
+    "ar": "بندقية خرطوش MP-155",
+    "context": "TbItem 3107 display name"
+  },
+  {
+    "key": "item.3108.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3108 description"
+  },
+  {
+    "key": "item.3108.name",
+    "zhHans": "TOZ-66 霰弹枪",
+    "en": "TOZ-66 Shotgun",
+    "ar": "بندقية خرطوش TOZ-66",
+    "context": "TbItem 3108 display name"
+  },
+  {
+    "key": "item.3109.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3109 description"
+  },
+  {
+    "key": "item.3109.name",
+    "zhHans": "沙漠之鹫手枪",
+    "en": "Desert Eagle Pistol",
+    "ar": "مسدس ديزرت إيغل",
+    "context": "TbItem 3109 display name"
+  },
+  {
+    "key": "item.3110.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3110 description"
+  },
+  {
+    "key": "item.3110.name",
+    "zhHans": "莫辛纳甘",
+    "en": "Mosin-Nagant",
+    "ar": "موسين ناغانت",
+    "context": "TbItem 3110 display name"
+  },
+  {
+    "key": "item.3111.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3111 description"
+  },
+  {
+    "key": "item.3111.name",
+    "zhHans": "测试枪",
+    "en": "Test Weapon",
+    "ar": "سلاح اختباري",
+    "context": "TbItem 3111 display name"
+  },
+  {
+    "key": "item.3112.description",
+    "zhHans": "用于近距离战斗的单手剑。",
+    "en": "A one-handed sword for close combat.",
+    "ar": "سيف بيد واحدة للقتال القريب.",
+    "context": "TbItem 3112 description"
+  },
+  {
+    "key": "item.3112.name",
+    "zhHans": "棒球棍",
+    "en": "Baseball Bat",
+    "ar": "مضرب بيسبول",
+    "context": "TbItem 3112 display name"
+  },
+  {
+    "key": "item.3201.description",
+    "zhHans": "1级通用子弹",
+    "en": "Tier 1 Universal Ammo",
+    "ar": "ذخيرة عامة من المستوى 1",
+    "context": "TbItem 3201 description"
+  },
+  {
+    "key": "item.3201.name",
+    "zhHans": "1级子弹",
+    "en": "Tier 1 Ammo",
+    "ar": "ذخيرة المستوى 1",
+    "context": "TbItem 3201 display name"
+  },
+  {
+    "key": "item.3202.description",
+    "zhHans": "2级通用子弹，伤害略微提升",
+    "en": "Tier 2 universal ammo with slightly increased damage.",
+    "ar": "ذخيرة عامة من المستوى 2 تزيد الضرر قليلا.",
+    "context": "TbItem 3202 description"
+  },
+  {
+    "key": "item.3202.name",
+    "zhHans": "2级子弹",
+    "en": "Tier 2 Ammo",
+    "ar": "ذخيرة المستوى 2",
+    "context": "TbItem 3202 display name"
+  },
+  {
+    "key": "item.3203.description",
+    "zhHans": "3级通用子弹，伤害提高",
+    "en": "Tier 3 universal ammo with increased damage.",
+    "ar": "ذخيرة عامة من المستوى 3 تزيد الضرر.",
+    "context": "TbItem 3203 description"
+  },
+  {
+    "key": "item.3203.name",
+    "zhHans": "3级子弹",
+    "en": "Tier 3 Ammo",
+    "ar": "ذخيرة المستوى 3",
+    "context": "TbItem 3203 display name"
+  },
+  {
+    "key": "item.3204.description",
+    "zhHans": "4级通用子弹，伤害较高",
+    "en": "Tier 4 universal ammo with high damage.",
+    "ar": "ذخيرة عامة من المستوى 4 ذات ضرر مرتفع.",
+    "context": "TbItem 3204 description"
+  },
+  {
+    "key": "item.3204.name",
+    "zhHans": "4级子弹",
+    "en": "Tier 4 Ammo",
+    "ar": "ذخيرة المستوى 4",
+    "context": "TbItem 3204 display name"
+  },
+  {
+    "key": "item.3205.description",
+    "zhHans": "5级通用子弹，最强子弹",
+    "en": "Tier 5 universal ammo, the most powerful ammunition.",
+    "ar": "ذخيرة عامة من المستوى 5، وهي أقوى أنواع الذخيرة.",
+    "context": "TbItem 3205 description"
+  },
+  {
+    "key": "item.3205.name",
+    "zhHans": "5级子弹",
+    "en": "Tier 5 Ammo",
+    "ar": "ذخيرة المستوى 5",
+    "context": "TbItem 3205 display name"
+  },
+  {
+    "key": "item.3301.description",
+    "zhHans": "能有效减弱枪声",
+    "en": "Effectively reduces gunshot noise.",
+    "ar": "يخفف صوت إطلاق النار بفعالية.",
+    "context": "TbItem 3301 description"
+  },
+  {
+    "key": "item.3301.name",
+    "zhHans": "手枪消音器",
+    "en": "Pistol Suppressor",
+    "ar": "كاتم صوت للمسدس",
+    "context": "TbItem 3301 display name"
+  },
+  {
+    "key": "item.3302.description",
+    "zhHans": "能有效减弱枪声",
+    "en": "Effectively reduces gunshot noise.",
+    "ar": "يخفف صوت إطلاق النار بفعالية.",
+    "context": "TbItem 3302 description"
+  },
+  {
+    "key": "item.3302.name",
+    "zhHans": "步枪消音器",
+    "en": "Rifle Suppressor",
+    "ar": "كاتم صوت للبندقية",
+    "context": "TbItem 3302 display name"
+  },
+  {
+    "key": "item.3303.description",
+    "zhHans": "能有效减弱枪声",
+    "en": "Effectively reduces gunshot noise.",
+    "ar": "يخفف صوت إطلاق النار بفعالية.",
+    "context": "TbItem 3303 description"
+  },
+  {
+    "key": "item.3303.name",
+    "zhHans": "冲锋枪消音器",
+    "en": "SMG Suppressor",
+    "ar": "كاتم صوت للرشاش",
+    "context": "TbItem 3303 display name"
+  },
+  {
+    "key": "item.3304.description",
+    "zhHans": "能有效提示枪械操作性",
+    "en": "Effectively improves weapon handling.",
+    "ar": "يحسن التحكم بالسلاح بفعالية.",
+    "context": "TbItem 3304 description"
+  },
+  {
+    "key": "item.3304.name",
+    "zhHans": "步枪制退器",
+    "en": "Rifle Muzzle Brake",
+    "ar": "مكبح فوهة للبندقية",
+    "context": "TbItem 3304 display name"
+  },
+  {
+    "key": "item.3305.description",
+    "zhHans": "能有效提示枪械操作性",
+    "en": "Effectively improves weapon handling.",
+    "ar": "يحسن التحكم بالسلاح بفعالية.",
+    "context": "TbItem 3305 description"
+  },
+  {
+    "key": "item.3305.name",
+    "zhHans": "冲锋枪制退器",
+    "en": "SMG Muzzle Brake",
+    "ar": "مكبح فوهة للرشاش",
+    "context": "TbItem 3305 display name"
+  },
+  {
+    "key": "item.3306.description",
+    "zhHans": "有效增加枪械伤害",
+    "en": "Effectively increases weapon damage.",
+    "ar": "يزيد ضرر السلاح بفعالية.",
+    "context": "TbItem 3306 description"
+  },
+  {
+    "key": "item.3306.name",
+    "zhHans": "手枪增伤枪口",
+    "en": "Pistol Damage Muzzle Device",
+    "ar": "ملحق فوهة لزيادة ضرر المسدس",
+    "context": "TbItem 3306 display name"
+  },
+  {
+    "key": "item.3307.description",
+    "zhHans": "有效增加枪械伤害",
+    "en": "Effectively increases weapon damage.",
+    "ar": "يزيد ضرر السلاح بفعالية.",
+    "context": "TbItem 3307 description"
+  },
+  {
+    "key": "item.3307.name",
+    "zhHans": "冲锋枪增伤枪口",
+    "en": "SMG Damage Muzzle Device",
+    "ar": "ملحق فوهة لزيادة ضرر الرشاش",
+    "context": "TbItem 3307 display name"
+  },
+  {
+    "key": "item.3308.description",
+    "zhHans": "有效减少腰射散布",
+    "en": "Effectively reduces hip-fire spread.",
+    "ar": "يقلل تشتت الإطلاق من الخصر بفعالية.",
+    "context": "TbItem 3308 description"
+  },
+  {
+    "key": "item.3308.name",
+    "zhHans": "腰射握把",
+    "en": "Hip-Fire Grip",
+    "ar": "قبضة للإطلاق من الخصر",
+    "context": "TbItem 3308 display name"
+  },
+  {
+    "key": "item.3309.description",
+    "zhHans": "有效减少后坐力",
+    "en": "Effectively reduces recoil.",
+    "ar": "يقلل الارتداد بفعالية.",
+    "context": "TbItem 3309 description"
+  },
+  {
+    "key": "item.3309.name",
+    "zhHans": "垂直握把",
+    "en": "Vertical Grip",
+    "ar": "قبضة عمودية",
+    "context": "TbItem 3309 display name"
+  },
+  {
+    "key": "item.3310.description",
+    "zhHans": "能有效提示枪械操作性",
+    "en": "Effectively improves weapon handling.",
+    "ar": "يحسن التحكم بالسلاح بفعالية.",
+    "context": "TbItem 3310 description"
+  },
+  {
+    "key": "item.3310.name",
+    "zhHans": "平衡枪托",
+    "en": "Balanced Stock",
+    "ar": "أخمص متوازن",
+    "context": "TbItem 3310 display name"
+  },
+  {
+    "key": "item.3311.description",
+    "zhHans": "有效减少腰射散布",
+    "en": "Effectively reduces hip-fire spread.",
+    "ar": "يقلل تشتت الإطلاق من الخصر بفعالية.",
+    "context": "TbItem 3311 description"
+  },
+  {
+    "key": "item.3311.name",
+    "zhHans": "腰射枪托",
+    "en": "Hip-Fire Stock",
+    "ar": "أخمص للإطلاق من الخصر",
+    "context": "TbItem 3311 display name"
+  },
+  {
+    "key": "item.3312.description",
+    "zhHans": "有效提升换弹速度",
+    "en": "Effectively increases reload speed.",
+    "ar": "يزيد سرعة إعادة التلقيم بفعالية.",
+    "context": "TbItem 3312 description"
+  },
+  {
+    "key": "item.3312.name",
+    "zhHans": "手枪快速弹匣",
+    "en": "Pistol Fast-Reload Magazine",
+    "ar": "مخزن سريع التلقيم للمسدس",
+    "context": "TbItem 3312 display name"
+  },
+  {
+    "key": "item.3313.description",
+    "zhHans": "有效提升换弹速度",
+    "en": "Effectively increases reload speed.",
+    "ar": "يزيد سرعة إعادة التلقيم بفعالية.",
+    "context": "TbItem 3313 description"
+  },
+  {
+    "key": "item.3313.name",
+    "zhHans": "步枪快速弹匣",
+    "en": "Rifle Fast-Reload Magazine",
+    "ar": "مخزن سريع التلقيم للبندقية",
+    "context": "TbItem 3313 display name"
+  },
+  {
+    "key": "item.3314.description",
+    "zhHans": "有效提升换弹速度",
+    "en": "Effectively increases reload speed.",
+    "ar": "يزيد سرعة إعادة التلقيم بفعالية.",
+    "context": "TbItem 3314 description"
+  },
+  {
+    "key": "item.3314.name",
+    "zhHans": "冲锋枪快速弹匣",
+    "en": "SMG Fast-Reload Magazine",
+    "ar": "مخزن سريع التلقيم للرشاش",
+    "context": "TbItem 3314 display name"
+  },
+  {
+    "key": "item.3315.description",
+    "zhHans": "有效提升换弹速度",
+    "en": "Effectively increases reload speed.",
+    "ar": "يزيد سرعة إعادة التلقيم بفعالية.",
+    "context": "TbItem 3315 description"
+  },
+  {
+    "key": "item.3315.name",
+    "zhHans": "霰弹枪快速弹匣",
+    "en": "Shotgun Fast-Reload Magazine",
+    "ar": "مخزن سريع التلقيم لبندقية الخرطوش",
+    "context": "TbItem 3315 display name"
+  },
+  {
+    "key": "item.3316.description",
+    "zhHans": "增加弹匣容量",
+    "en": "Increases magazine capacity.",
+    "ar": "يزيد سعة المخزن.",
+    "context": "TbItem 3316 description"
+  },
+  {
+    "key": "item.3316.name",
+    "zhHans": "手枪扩容弹匣",
+    "en": "Pistol Extended Magazine",
+    "ar": "مخزن موسع للمسدس",
+    "context": "TbItem 3316 display name"
+  },
+  {
+    "key": "item.3317.description",
+    "zhHans": "增加弹匣容量",
+    "en": "Increases magazine capacity.",
+    "ar": "يزيد سعة المخزن.",
+    "context": "TbItem 3317 description"
+  },
+  {
+    "key": "item.3317.name",
+    "zhHans": "步枪扩容弹匣",
+    "en": "Rifle Extended Magazine",
+    "ar": "مخزن موسع للبندقية",
+    "context": "TbItem 3317 display name"
+  },
+  {
+    "key": "item.3318.description",
+    "zhHans": "增加弹匣容量",
+    "en": "Increases magazine capacity.",
+    "ar": "يزيد سعة المخزن.",
+    "context": "TbItem 3318 description"
+  },
+  {
+    "key": "item.3318.name",
+    "zhHans": "冲锋枪扩容弹匣",
+    "en": "SMG Extended Magazine",
+    "ar": "مخزن موسع للرشاش",
+    "context": "TbItem 3318 display name"
+  },
+  {
+    "key": "item.3319.description",
+    "zhHans": "增加弹匣容量",
+    "en": "Increases magazine capacity.",
+    "ar": "يزيد سعة المخزن.",
+    "context": "TbItem 3319 description"
+  },
+  {
+    "key": "item.3319.name",
+    "zhHans": "霰弹枪扩容弹匣",
+    "en": "Shotgun Extended Magazine",
+    "ar": "مخزن موسع لبندقية الخرطوش",
+    "context": "TbItem 3319 display name"
+  },
+  {
+    "key": "item.3320.description",
+    "zhHans": "提升枪械暴击率",
+    "en": "Increases weapon critical hit chance.",
+    "ar": "يزيد احتمال الضربة الحرجة للسلاح.",
+    "context": "TbItem 3320 description"
+  },
+  {
+    "key": "item.3320.name",
+    "zhHans": "红点瞄具",
+    "en": "Red Dot Sight",
+    "ar": "منظار النقطة الحمراء",
+    "context": "TbItem 3320 display name"
+  },
+  {
+    "key": "item.3321.description",
+    "zhHans": "2倍镜",
+    "en": "2x Scope",
+    "ar": "منظار 2x",
+    "context": "TbItem 3321 description"
+  },
+  {
+    "key": "item.3321.name",
+    "zhHans": "2倍镜",
+    "en": "2x Scope",
+    "ar": "منظار 2x",
+    "context": "TbItem 3321 display name"
+  },
+  {
+    "key": "item.3322.description",
+    "zhHans": "4倍镜",
+    "en": "4x Scope",
+    "ar": "منظار 4x",
+    "context": "TbItem 3322 description"
+  },
+  {
+    "key": "item.3322.name",
+    "zhHans": "4倍镜",
+    "en": "4x Scope",
+    "ar": "منظار 4x",
+    "context": "TbItem 3322 display name"
+  },
+  {
+    "key": "item.3323.description",
+    "zhHans": "激光",
+    "en": "Laser",
+    "ar": "ليزر",
+    "context": "TbItem 3323 description"
+  },
+  {
+    "key": "item.3323.name",
+    "zhHans": "激光",
+    "en": "Laser",
+    "ar": "ليزر",
+    "context": "TbItem 3323 display name"
+  },
+  {
+    "key": "item.3324.description",
+    "zhHans": "战术手电",
+    "en": "Tactical Flashlight",
+    "ar": "مصباح تكتيكي",
+    "context": "TbItem 3324 description"
+  },
+  {
+    "key": "item.3324.name",
+    "zhHans": "战术手电",
+    "en": "Tactical Flashlight",
+    "ar": "مصباح تكتيكي",
+    "context": "TbItem 3324 display name"
+  },
+  {
+    "key": "item.3325.description",
+    "zhHans": "霰弹枪收束器",
+    "en": "Shotgun Choke",
+    "ar": "خانق بندقية الخرطوش",
+    "context": "TbItem 3325 description"
+  },
+  {
+    "key": "item.3325.name",
+    "zhHans": "霰弹枪收束器",
+    "en": "Shotgun Choke",
+    "ar": "خانق بندقية الخرطوش",
+    "context": "TbItem 3325 display name"
+  },
+  {
+    "key": "item.3401.description",
+    "zhHans": "头部护甲等级 1，耐久 35；破损后失去护甲效果。",
+    "en": "Head armor level 1 with 35 durability. Loses protection when broken.",
+    "ar": "درع رأس من المستوى 1 بمتانة 35. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3401 description"
+  },
+  {
+    "key": "item.3401.name",
+    "zhHans": "摩托头盔",
+    "en": "Motorcycle Helmet",
+    "ar": "خوذة دراجة نارية",
+    "context": "TbItem 3401 display name"
+  },
+  {
+    "key": "item.3402.description",
+    "zhHans": "身体护甲等级 1，耐久 45；破损后失去护甲效果。",
+    "en": "Body armor level 1 with 45 durability. Loses protection when broken.",
+    "ar": "درع جسدي من المستوى 1 بمتانة 45. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3402 description"
+  },
+  {
+    "key": "item.3402.name",
+    "zhHans": "一级防弹衣",
+    "en": "Tier 1 Body Armor",
+    "ar": "درع جسدي من المستوى 1",
+    "context": "TbItem 3402 display name"
+  },
+  {
+    "key": "item.3403.description",
+    "zhHans": "装备后背包容量增加 8 格，最大负重增加 8。",
+    "en": "Increases backpack capacity by 8 slots and maximum carry weight by 8.",
+    "ar": "يزيد سعة الحقيبة بمقدار 8 خانات والحد الأقصى للحمل بمقدار 8.",
+    "context": "TbItem 3403 description"
+  },
+  {
+    "key": "item.3403.name",
+    "zhHans": "小学背包",
+    "en": "School Backpack",
+    "ar": "حقيبة مدرسية",
+    "context": "TbItem 3403 display name"
+  },
+  {
+    "key": "item.3404.description",
+    "zhHans": "识别敌人弱点，武器暴击率提升 10%。",
+    "en": "Identifies enemy weak points and increases weapon critical chance by 10%.",
+    "ar": "تحدد نقاط ضعف الأعداء وتزيد فرصة الضربة الحرجة للسلاح بنسبة 10%.",
+    "context": "TbItem 3404 description"
+  },
+  {
+    "key": "item.3404.name",
+    "zhHans": "战术眼镜",
+    "en": "Tactical Glasses",
+    "ar": "نظارات تكتيكية",
+    "context": "TbItem 3404 display name"
+  },
+  {
+    "key": "item.3405.description",
+    "zhHans": "装备后敌方声音可听距离提升 30%，并提示迷雾外或屏幕外的声音方向。",
+    "en": "Increases enemy sound detection range by 30% and indicates sounds beyond the fog or screen when equipped.",
+    "ar": "يزيد مدى سماع أصوات الأعداء بنسبة 30% ويشير إلى اتجاه الأصوات خارج الضباب أو الشاشة عند التجهيز.",
+    "context": "TbItem 3405 description"
+  },
+  {
+    "key": "item.3405.name",
+    "zhHans": "耳机",
+    "en": "Headset",
+    "ar": "سماعة",
+    "context": "TbItem 3405 display name"
+  },
+  {
+    "key": "lootbox.4001.name",
+    "zhHans": "测试战利品箱",
+    "en": "Test Loot Box",
+    "ar": "صندوق غنائم اختباري",
+    "context": "TbLootBox 4001 display name"
+  },
+  {
+    "key": "lootbox.4002.name",
+    "zhHans": "新手1箱子",
+    "en": "Beginner Crate 1",
+    "ar": "صندوق المبتدئ 1",
+    "context": "TbLootBox 4002 display name"
+  },
+  {
+    "key": "lootbox.4003.name",
+    "zhHans": "新手2箱子",
+    "en": "Beginner Crate 2",
+    "ar": "صندوق المبتدئ 2",
+    "context": "TbLootBox 4003 display name"
+  },
+  {
+    "key": "lootbox.4004.name",
+    "zhHans": "新手3箱子",
+    "en": "Beginner Crate 3",
+    "ar": "صندوق المبتدئ 3",
+    "context": "TbLootBox 4004 display name"
+  },
+  {
+    "key": "lootbox.4005.name",
+    "zhHans": "新手4箱子",
+    "en": "Beginner Crate 4",
+    "ar": "صندوق المبتدئ 4",
+    "context": "TbLootBox 4005 display name"
+  },
+  {
+    "key": "map.5001.description",
+    "zhHans": "完成基础训练并成功撤离。",
+    "en": "Complete basic training and extract successfully.",
+    "ar": "أكمل التدريب الأساسي وأنهِ الإخلاء بنجاح.",
+    "context": "TbMap 5001 description"
+  },
+  {
+    "key": "map.5001.name",
+    "zhHans": "新手关卡",
+    "en": "Tutorial Level",
+    "ar": "مرحلة التدريب",
+    "context": "TbMap 5001 display name"
+  },
+  {
+    "key": "map.5002.description",
+    "zhHans": "位于郊区的营地，可用于常规行动。",
+    "en": "An outskirts camp for regular raids.",
+    "ar": "مخيم في الضواحي مخصص للعمليات الاعتيادية.",
+    "context": "TbMap 5002 description"
+  },
+  {
+    "key": "map.5002.name",
+    "zhHans": "郊区营地",
+    "en": "Outskirts Camp",
+    "ar": "مخيم الضواحي",
+    "context": "TbMap 5002 display name"
+  },
+  {
+    "key": "ui.app.title",
+    "zhHans": "Project Vanguard",
+    "en": "Project Vanguard",
+    "ar": "Project Vanguard",
+    "context": "Boot and main title"
+  },
+  {
+    "key": "ui.boot.initializing_assets",
+    "zhHans": "正在初始化本地资源...",
+    "en": "Initializing local assets...",
+    "ar": "جارٍ تهيئة الموارد المحلية...",
+    "context": "Boot asset initialization"
+  },
+  {
+    "key": "ui.boot.loading_config",
+    "zhHans": "正在加载游戏配置...",
+    "en": "Loading game configuration...",
+    "ar": "جارٍ تحميل إعدادات اللعبة...",
+    "context": "Boot config loading"
+  },
+  {
+    "key": "ui.boot.loading_main",
+    "zhHans": "正在加载基地界面...",
+    "en": "Loading base interface...",
+    "ar": "جارٍ تحميل واجهة القاعدة...",
+    "context": "Boot main UI loading"
+  },
+  {
+    "key": "ui.boot.starting",
+    "zhHans": "正在启动...",
+    "en": "Starting...",
+    "ar": "جارٍ بدء التشغيل...",
+    "context": "Boot initial status"
+  },
+  {
+    "key": "ui.combat.cancel_medicine",
+    "zhHans": "按X取消",
+    "en": "Press X to cancel",
+    "ar": "اضغط X للإلغاء",
+    "context": "Cancel medicine use hint"
+  },
+  {
+    "key": "ui.combat.distance",
+    "zhHans": "{0:0.0} m",
+    "en": "{0:0.0} m",
+    "ar": "{0:0.0} م",
+    "context": "Target distance in meters"
+  },
+  {
+    "key": "ui.combat.distance_unknown",
+    "zhHans": "--.- m",
+    "en": "--.- m",
+    "ar": "--.- م",
+    "context": "Unavailable target distance"
+  },
+  {
+    "key": "ui.combat.minimap_placeholder",
+    "zhHans": "小地图预留",
+    "en": "Minimap Placeholder",
+    "ar": "موضع الخريطة المصغرة",
+    "context": "Minimap placeholder"
+  },
+  {
+    "key": "ui.combat.stamina",
+    "zhHans": "体力 {0:0}/{1:0}",
+    "en": "Stamina {0:0}/{1:0}",
+    "ar": "التحمل {0:0}/{1:0}",
+    "context": "Current and maximum stamina"
+  },
+  {
+    "key": "ui.combat.stamina_unknown",
+    "zhHans": "体力 --/--",
+    "en": "Stamina --/--",
+    "ar": "التحمل --/--",
+    "context": "Unavailable stamina values"
+  },
+  {
+    "key": "ui.common.cancel",
+    "zhHans": "取消",
+    "en": "Cancel",
+    "ar": "إلغاء",
+    "context": "Common cancel action"
+  },
+  {
+    "key": "ui.common.close",
+    "zhHans": "关闭",
+    "en": "Close",
+    "ar": "إغلاق",
+    "context": "Common close action"
+  },
+  {
+    "key": "ui.common.confirm",
+    "zhHans": "确认",
+    "en": "Confirm",
+    "ar": "تأكيد",
+    "context": "Common confirm action"
+  },
+  {
+    "key": "ui.common.item_fallback",
+    "zhHans": "物品 {0}",
+    "en": "Item {0}",
+    "ar": "العنصر {0}",
+    "context": "Unknown item fallback"
+  },
+  {
+    "key": "ui.common.retry",
+    "zhHans": "重试",
+    "en": "Retry",
+    "ar": "إعادة المحاولة",
+    "context": "Common retry action"
+  },
+  {
+    "key": "ui.interaction.loot_box",
+    "zhHans": "战利品",
+    "en": "Loot",
+    "ar": "غنائم",
+    "context": "Available loot box label"
+  },
+  {
+    "key": "ui.interaction.loot_box_looted",
+    "zhHans": "已搜刮",
+    "en": "Looted",
+    "ar": "تم جمع الغنائم",
+    "context": "Looted box label"
+  },
+  {
+    "key": "ui.interaction.open",
+    "zhHans": "打开",
+    "en": "Open",
+    "ar": "فتح",
+    "context": "Loot box interaction action"
+  },
+  {
+    "key": "ui.interaction.pick_up",
+    "zhHans": "拾取",
+    "en": "Pick Up",
+    "ar": "التقاط",
+    "context": "World item interaction action"
+  },
+  {
+    "key": "ui.interaction.quantity",
+    "zhHans": "数量 {0}",
+    "en": "Quantity {0}",
+    "ar": "الكمية {0}",
+    "context": "World item stack quantity"
+  },
+  {
+    "key": "ui.inventory.attachment.grip",
+    "zhHans": "握把",
+    "en": "Grip",
+    "ar": "قبضة",
+    "context": "Grip attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.magazine",
+    "zhHans": "弹匣",
+    "en": "Magazine",
+    "ar": "مخزن",
+    "context": "Magazine attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.muzzle",
+    "zhHans": "枪口",
+    "en": "Muzzle",
+    "ar": "فوهة",
+    "context": "Muzzle attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.optic",
+    "zhHans": "瞄具",
+    "en": "Optic",
+    "ar": "منظار",
+    "context": "Optic attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.special",
+    "zhHans": "特殊",
+    "en": "Special",
+    "ar": "خاص",
+    "context": "Special attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.stock",
+    "zhHans": "枪托",
+    "en": "Stock",
+    "ar": "أخمص",
+    "context": "Stock attachment slot"
+  },
+  {
+    "key": "ui.inventory.attachment.tactical",
+    "zhHans": "战术",
+    "en": "Tactical",
+    "ar": "تكتيكي",
+    "context": "Tactical attachment slot"
+  },
+  {
+    "key": "ui.inventory.carry",
+    "zhHans": "负重",
+    "en": "Carry Weight",
+    "ar": "وزن الحمل",
+    "context": "Carry weight label"
+  },
+  {
+    "key": "ui.inventory.carry_value",
+    "zhHans": "{0:0.##}/{1:0.##}kg",
+    "en": "{0:0.##}/{1:0.##} kg",
+    "ar": "{0:0.##}/{1:0.##} كجم",
+    "context": "Current and maximum carry weight"
+  },
+  {
+    "key": "ui.inventory.drop",
+    "zhHans": "丢弃",
+    "en": "Drop",
+    "ar": "إسقاط",
+    "context": "Drop item action"
+  },
+  {
+    "key": "ui.inventory.equipment_title",
+    "zhHans": "装备",
+    "en": "Equipment",
+    "ar": "المعدات",
+    "context": "Inventory equipment section title"
+  },
+  {
+    "key": "ui.inventory.header",
+    "zhHans": "背包({0}/{1})",
+    "en": "Backpack ({0}/{1})",
+    "ar": "الحقيبة ({0}/{1})",
+    "context": "Inventory used and capacity"
+  },
+  {
+    "key": "ui.inventory.modify",
+    "zhHans": "改装",
+    "en": "Modify",
+    "ar": "تعديل",
+    "context": "Weapon modification action"
+  },
+  {
+    "key": "ui.inventory.modify_title",
+    "zhHans": "改装",
+    "en": "Modify",
+    "ar": "تعديل",
+    "context": "Modify dialog title"
+  },
+  {
+    "key": "ui.inventory.no_description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "Missing item description"
+  },
+  {
+    "key": "ui.inventory.slot.backpack",
+    "zhHans": "背包",
+    "en": "Backpack",
+    "ar": "حقيبة",
+    "context": "Backpack equipment slot"
+  },
+  {
+    "key": "ui.inventory.slot.body",
+    "zhHans": "身体",
+    "en": "Body",
+    "ar": "الجسم",
+    "context": "Body equipment slot"
+  },
+  {
+    "key": "ui.inventory.slot.face",
+    "zhHans": "面部",
+    "en": "Face",
+    "ar": "الوجه",
+    "context": "Face equipment slot"
+  },
+  {
+    "key": "ui.inventory.slot.head",
+    "zhHans": "头部",
+    "en": "Head",
+    "ar": "الرأس",
+    "context": "Head equipment slot"
+  },
+  {
+    "key": "ui.inventory.slot.headset",
+    "zhHans": "耳机",
+    "en": "Headset",
+    "ar": "سماعة",
+    "context": "Headset equipment slot"
+  },
+  {
+    "key": "ui.inventory.slot.melee",
+    "zhHans": "近战",
+    "en": "Melee",
+    "ar": "سلاح اشتباك",
+    "context": "Melee weapon slot"
+  },
+  {
+    "key": "ui.inventory.slot.primary",
+    "zhHans": "主武器",
+    "en": "Primary Weapon",
+    "ar": "السلاح الأساسي",
+    "context": "Primary weapon slot"
+  },
+  {
+    "key": "ui.inventory.slot.secondary",
+    "zhHans": "副武器",
+    "en": "Secondary Weapon",
+    "ar": "السلاح الثانوي",
+    "context": "Secondary weapon slot"
+  },
+  {
+    "key": "ui.inventory.sort",
+    "zhHans": "整理",
+    "en": "Sort",
+    "ar": "ترتيب",
+    "context": "Inventory sort action"
+  },
+  {
+    "key": "ui.inventory.split",
+    "zhHans": "拆分",
+    "en": "Split",
+    "ar": "تقسيم",
+    "context": "Split stack action"
+  },
+  {
+    "key": "ui.inventory.split_title",
+    "zhHans": "拆分数量",
+    "en": "Split Quantity",
+    "ar": "كمية التقسيم",
+    "context": "Split dialog title"
+  },
+  {
+    "key": "ui.inventory.task",
+    "zhHans": "任务",
+    "en": "Tasks",
+    "ar": "المهام",
+    "context": "Disabled inventory task tab"
+  },
+  {
+    "key": "ui.inventory.title",
+    "zhHans": "背包",
+    "en": "Backpack",
+    "ar": "حقيبة",
+    "context": "Inventory title/button"
+  },
+  {
+    "key": "ui.inventory.use",
+    "zhHans": "使用",
+    "en": "Use",
+    "ar": "استخدام",
+    "context": "Use item action"
+  },
+  {
+    "key": "ui.inventory.weapon_title",
+    "zhHans": "武器",
+    "en": "Weapons",
+    "ar": "الأسلحة",
+    "context": "Inventory weapon section title"
+  },
+  {
+    "key": "ui.item.damaged",
+    "zhHans": "已损坏 {0}",
+    "en": "Broken {0}",
+    "ar": "تالف {0}",
+    "context": "Broken item durability label"
+  },
+  {
+    "key": "ui.item.durability",
+    "zhHans": "耐久 {0}",
+    "en": "Durability {0}",
+    "ar": "المتانة {0}",
+    "context": "Item durability label"
+  },
+  {
+    "key": "ui.loot.title",
+    "zhHans": "搜刮",
+    "en": "Loot",
+    "ar": "جمع الغنائم",
+    "context": "Loot box window title"
+  },
+  {
+    "key": "ui.main.backpack_title",
+    "zhHans": "行动背包 {0} / {1} 格",
+    "en": "Raid Backpack {0} / {1} Slots",
+    "ar": "حقيبة العملية {0} / {1} خانة",
+    "context": "Backpack capacity title"
+  },
+  {
+    "key": "ui.main.buy",
+    "zhHans": "购买",
+    "en": "Buy",
+    "ar": "شراء",
+    "context": "Buy action"
+  },
+  {
+    "key": "ui.main.equipment_title",
+    "zhHans": "七槽装备",
+    "en": "Seven-Slot Equipment",
+    "ar": "معدات بسبع خانات",
+    "context": "Equipment panel title"
+  },
+  {
+    "key": "ui.main.funds",
+    "zhHans": "信用点  {0:N0}",
+    "en": "Credits  {0:N0}",
+    "ar": "الأرصدة  {0:N0}",
+    "context": "Player funds"
+  },
+  {
+    "key": "ui.main.loadout",
+    "zhHans": "战备",
+    "en": "Loadout",
+    "ar": "التجهيز",
+    "context": "Loadout tab"
+  },
+  {
+    "key": "ui.main.map_none",
+    "zhHans": "未选择地图",
+    "en": "No Map Selected",
+    "ar": "لم يتم تحديد خريطة",
+    "context": "No map selected"
+  },
+  {
+    "key": "ui.main.map_selected",
+    "zhHans": "地图  {0}",
+    "en": "Map  {0}",
+    "ar": "الخريطة  {0}",
+    "context": "Selected map"
+  },
+  {
+    "key": "ui.main.map_unavailable",
+    "zhHans": "地图不可用",
+    "en": "Map Unavailable",
+    "ar": "الخريطة غير متاحة",
+    "context": "Unavailable map"
+  },
+  {
+    "key": "ui.main.maps",
+    "zhHans": "地图",
+    "en": "Maps",
+    "ar": "الخرائط",
+    "context": "Maps tab"
+  },
+  {
+    "key": "ui.main.no_asset",
+    "zhHans": "未选择资产",
+    "en": "No Asset Selected",
+    "ar": "لم يتم تحديد عنصر",
+    "context": "No selected asset"
+  },
+  {
+    "key": "ui.main.repair",
+    "zhHans": "维修 {0:N0}",
+    "en": "Repair {0:N0}",
+    "ar": "إصلاح {0:N0}",
+    "context": "Repair action and cost"
+  },
+  {
+    "key": "ui.main.repair_insufficient_funds",
+    "zhHans": "资金不足 {0:N0}",
+    "en": "Insufficient Funds {0:N0}",
+    "ar": "أموال غير كافية {0:N0}",
+    "context": "Repair cost when funds are insufficient"
+  },
+  {
+    "key": "ui.main.repair_not_needed",
+    "zhHans": "无需维修",
+    "en": "No Repair Needed",
+    "ar": "لا حاجة إلى الإصلاح",
+    "context": "Repair not needed"
+  },
+  {
+    "key": "ui.main.repair_quote",
+    "zhHans": "{0}  →  {1}  |  费用 {2:N0}",
+    "en": "{0}  →  {1}  |  Cost {2:N0}",
+    "ar": "{0}  →  {1}  |  التكلفة {2:N0}",
+    "context": "Repair preview summary"
+  },
+  {
+    "key": "ui.main.repair_unavailable",
+    "zhHans": "不可维修",
+    "en": "Cannot Repair",
+    "ar": "لا يمكن الإصلاح",
+    "context": "Repair unavailable"
+  },
+  {
+    "key": "ui.main.selected_asset",
+    "zhHans": "已选：{0} x{1}",
+    "en": "Selected: {0} x{1}",
+    "ar": "المحدد: {0} x{1}",
+    "context": "Selected inventory asset"
+  },
+  {
+    "key": "ui.main.selected_prefix",
+    "zhHans": "[已选]",
+    "en": "[Selected]",
+    "ar": "[محدد]",
+    "context": "Selected map prefix"
+  },
+  {
+    "key": "ui.main.sell_selected",
+    "zhHans": "出售选中",
+    "en": "Sell Selected",
+    "ar": "بيع المحدد",
+    "context": "Sell selected action"
+  },
+  {
+    "key": "ui.main.settings",
+    "zhHans": "设置",
+    "en": "Settings",
+    "ar": "الإعدادات",
+    "context": "Settings button"
+  },
+  {
+    "key": "ui.main.shop",
+    "zhHans": "商店",
+    "en": "Shop",
+    "ar": "المتجر",
+    "context": "Shop tab"
+  },
+  {
+    "key": "ui.main.shop_title",
+    "zhHans": "商店 / 无限库存",
+    "en": "Shop / Unlimited Stock",
+    "ar": "المتجر / مخزون غير محدود",
+    "context": "Shop panel title"
+  },
+  {
+    "key": "ui.main.slot_empty",
+    "zhHans": "{0}\n空",
+    "en": "{0}\nEmpty",
+    "ar": "{0}\nفارغ",
+    "context": "Empty equipment slot"
+  },
+  {
+    "key": "ui.main.slot_locked",
+    "zhHans": "{0}\n锁定",
+    "en": "{0}\nLocked",
+    "ar": "{0}\nمقفل",
+    "context": "Locked equipment slot"
+  },
+  {
+    "key": "ui.main.slot.backpack",
+    "zhHans": "背包",
+    "en": "Backpack",
+    "ar": "حقيبة",
+    "context": "Backpack asset slot"
+  },
+  {
+    "key": "ui.main.slot.body",
+    "zhHans": "身体",
+    "en": "Body",
+    "ar": "الجسم",
+    "context": "Body asset slot"
+  },
+  {
+    "key": "ui.main.slot.face",
+    "zhHans": "面部",
+    "en": "Face",
+    "ar": "الوجه",
+    "context": "Face asset slot"
+  },
+  {
+    "key": "ui.main.slot.head",
+    "zhHans": "头部",
+    "en": "Head",
+    "ar": "الرأس",
+    "context": "Head asset slot"
+  },
+  {
+    "key": "ui.main.slot.headset",
+    "zhHans": "耳机",
+    "en": "Headset",
+    "ar": "سماعة",
+    "context": "Headset asset slot"
+  },
+  {
+    "key": "ui.main.slot.weapon_1",
+    "zhHans": "武器 1",
+    "en": "Weapon 1",
+    "ar": "السلاح 1",
+    "context": "Primary weapon asset slot"
+  },
+  {
+    "key": "ui.main.slot.weapon_2",
+    "zhHans": "武器 2",
+    "en": "Weapon 2",
+    "ar": "السلاح 2",
+    "context": "Secondary weapon asset slot"
+  },
+  {
+    "key": "ui.main.start_raid",
+    "zhHans": "开始行动",
+    "en": "Start Raid",
+    "ar": "بدء العملية",
+    "context": "Start raid button"
+  },
+  {
+    "key": "ui.main.stash_title",
+    "zhHans": "仓库 {0} 格",
+    "en": "Stash {0} Slots",
+    "ar": "المخزن {0} خانة",
+    "context": "Stash capacity title"
+  },
+  {
+    "key": "ui.main.status.buy_failed",
+    "zhHans": "购买失败，请重试。",
+    "en": "Purchase failed. Please try again.",
+    "ar": "فشل الشراء. يرجى المحاولة مجددًا.",
+    "context": "Purchase failed"
+  },
+  {
+    "key": "ui.main.status.buy_succeeded",
+    "zhHans": "购买完成，物品已放入背包。",
+    "en": "Purchase complete. The item was placed in the backpack.",
+    "ar": "اكتمل الشراء. تم وضع العنصر في الحقيبة.",
+    "context": "Purchase succeeded"
+  },
+  {
+    "key": "ui.main.status.drag_cancelled",
+    "zhHans": "拖拽取消：没有放到可用资产槽。",
+    "en": "Drag cancelled: the asset was not placed in an available slot.",
+    "ar": "تم إلغاء السحب: لم يتم وضع العنصر في خانة متاحة.",
+    "context": "Asset drag cancelled"
+  },
+  {
+    "key": "ui.main.status.drag_started",
+    "zhHans": "拖拽 {0} 到目标槽位。",
+    "en": "Drag {0} to the target slot.",
+    "ar": "اسحب {0} إلى الخانة المستهدفة.",
+    "context": "Asset drag started"
+  },
+  {
+    "key": "ui.main.status.map_failed",
+    "zhHans": "选择地图失败，请重试。",
+    "en": "Failed to select the map. Please try again.",
+    "ar": "فشل تحديد الخريطة. يرجى المحاولة مجددًا.",
+    "context": "Map selection failed"
+  },
+  {
+    "key": "ui.main.status.map_selected",
+    "zhHans": "已选择地图：{0}",
+    "en": "Map selected: {0}",
+    "ar": "تم تحديد الخريطة: {0}",
+    "context": "Map selection succeeded"
+  },
+  {
+    "key": "ui.main.status.move_failed",
+    "zhHans": "移动失败，请重试。",
+    "en": "Move failed. Please try again.",
+    "ar": "فشل النقل. يرجى المحاولة مجددًا.",
+    "context": "Asset move failed"
+  },
+  {
+    "key": "ui.main.status.move_succeeded",
+    "zhHans": "资产已移动。",
+    "en": "Asset moved.",
+    "ar": "تم نقل العنصر.",
+    "context": "Asset move succeeded"
+  },
+  {
+    "key": "ui.main.status.repair_failed",
+    "zhHans": "维修失败，请重试。",
+    "en": "Repair failed. Please try again.",
+    "ar": "فشل الإصلاح. يرجى المحاولة مجددًا.",
+    "context": "Repair failed"
+  },
+  {
+    "key": "ui.main.status.repair_succeeded",
+    "zhHans": "维修完成，花费 {0:N0} 信用点。",
+    "en": "Repair complete. Cost: {0:N0} credits.",
+    "ar": "اكتمل الإصلاح. التكلفة: {0:N0} رصيد.",
+    "context": "Repair succeeded"
+  },
+  {
+    "key": "ui.main.status.select_to_repair",
+    "zhHans": "请先选择要维修的枪械或装备。",
+    "en": "Select a weapon or piece of equipment to repair first.",
+    "ar": "حدد أولًا سلاحًا أو قطعة معدات لإصلاحها.",
+    "context": "No selected asset to repair"
+  },
+  {
+    "key": "ui.main.status.select_to_sell",
+    "zhHans": "请先选择要出售的资产。",
+    "en": "Select an asset to sell first.",
+    "ar": "حدد عنصرا لبيعه أولا.",
+    "context": "No selected asset to sell"
+  },
+  {
+    "key": "ui.main.status.sell_failed",
+    "zhHans": "出售失败，请重试。",
+    "en": "Sale failed. Please try again.",
+    "ar": "فشل البيع. يرجى المحاولة مجددًا.",
+    "context": "Asset sale failed"
+  },
+  {
+    "key": "ui.main.status.sell_succeeded",
+    "zhHans": "出售完成。",
+    "en": "Sale complete.",
+    "ar": "اكتمل البيع.",
+    "context": "Asset sale succeeded"
+  },
+  {
+    "key": "ui.main.title",
+    "zhHans": "行动基地",
+    "en": "Operations Base",
+    "ar": "قاعدة العمليات",
+    "context": "Main-system title"
+  },
+  {
+    "key": "ui.raid.extracted",
+    "zhHans": "撤离成功",
+    "en": "Extraction Successful",
+    "ar": "تم الإخلاء بنجاح",
+    "context": "Successful extraction outcome"
+  },
+  {
+    "key": "ui.raid.extracting",
+    "zhHans": "正在撤离",
+    "en": "Extracting",
+    "ar": "جارٍ الإخلاء",
+    "context": "Extraction progress title"
+  },
+  {
+    "key": "ui.raid.extraction_value",
+    "zhHans": "撤离价值  {0:N0}",
+    "en": "Extraction Value  {0:N0}",
+    "ar": "قيمة الإخلاء  {0:N0}",
+    "context": "Extracted inventory value"
+  },
+  {
+    "key": "ui.raid.failed",
+    "zhHans": "行动失败",
+    "en": "Raid Failed",
+    "ar": "فشلت العملية",
+    "context": "Failed raid outcome"
+  },
+  {
+    "key": "ui.raid.net_loss",
+    "zhHans": "本局亏损  {0}",
+    "en": "Raid Loss  {0}",
+    "ar": "خسارة العملية  {0}",
+    "context": "Negative settlement value"
+  },
+  {
+    "key": "ui.raid.net_profit",
+    "zhHans": "本局净收益  {0}",
+    "en": "Net Raid Profit  {0}",
+    "ar": "صافي ربح العملية  {0}",
+    "context": "Positive settlement value"
+  },
+  {
+    "key": "ui.raid.retry_save",
+    "zhHans": "重试保存",
+    "en": "Retry Save",
+    "ar": "إعادة محاولة الحفظ",
+    "context": "Retry settlement save"
+  },
+  {
+    "key": "ui.raid.return_main",
+    "zhHans": "返回基地",
+    "en": "Return to Base",
+    "ar": "العودة إلى القاعدة",
+    "context": "Return to main system"
+  },
+  {
+    "key": "ui.raid.save_failed",
+    "zhHans": "存档失败，返回基地前必须重试。",
+    "en": "Save failed. You must retry before returning to base.",
+    "ar": "فشل الحفظ. يجب إعادة المحاولة قبل العودة إلى القاعدة.",
+    "context": "Settlement save failure"
+  },
+  {
+    "key": "ui.raid.saved",
+    "zhHans": "资产已保存",
+    "en": "Assets Saved",
+    "ar": "تم حفظ العناصر",
+    "context": "Settlement saved status"
+  },
+  {
+    "key": "ui.raid.starting_value",
+    "zhHans": "开局价值  {0:N0}",
+    "en": "Starting Value  {0:N0}",
+    "ar": "قيمة البداية  {0:N0}",
+    "context": "Starting inventory value"
+  },
+  {
+    "key": "ui.settings.arabic",
+    "zhHans": "العربية",
+    "en": "العربية",
+    "ar": "العربية",
+    "context": "Arabic locale option"
+  },
+  {
+    "key": "ui.settings.english",
+    "zhHans": "English",
+    "en": "English",
+    "ar": "English",
+    "context": "English locale option"
+  },
+  {
+    "key": "ui.settings.title",
+    "zhHans": "设置",
+    "en": "Settings",
+    "ar": "الإعدادات",
+    "context": "Settings window title"
+  },
+  {
+    "key": "ui.settings.zh_hans",
+    "zhHans": "中文",
+    "en": "中文",
+    "ar": "中文",
+    "context": "Simplified Chinese locale option"
+  },
+  {
+    "key": "item.3406.description",
+    "zhHans": "头部护甲等级 2，耐久 45；破损后失去护甲效果。",
+    "en": "Head armor level 2 with 45 durability. Loses protection when broken.",
+    "ar": "درع رأس من المستوى 2 بمتانة 45. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3406 description"
+  },
+  {
+    "key": "item.3406.name",
+    "zhHans": "老钢盔",
+    "en": "Old Steel Helmet",
+    "ar": "خوذة فولاذية قديمة",
+    "context": "TbItem 3406 display name"
+  },
+  {
+    "key": "item.3407.description",
+    "zhHans": "头部护甲等级 3，耐久 55；破损后失去护甲效果。",
+    "en": "Head armor level 3 with 55 durability. Loses protection when broken.",
+    "ar": "درع رأس من المستوى 3 بمتانة 55. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3407 description"
+  },
+  {
+    "key": "item.3407.name",
+    "zhHans": "特警头盔",
+    "en": "SWAT Helmet",
+    "ar": "خوذة قوات خاصة",
+    "context": "TbItem 3407 display name"
+  },
+  {
+    "key": "item.3408.description",
+    "zhHans": "头部护甲等级 4，耐久 65；破损后失去护甲效果。",
+    "en": "Head armor level 4 with 65 durability. Loses protection when broken.",
+    "ar": "درع رأس من المستوى 4 بمتانة 65. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3408 description"
+  },
+  {
+    "key": "item.3408.name",
+    "zhHans": "军用头盔",
+    "en": "Military Helmet",
+    "ar": "خوذة عسكرية",
+    "context": "TbItem 3408 display name"
+  },
+  {
+    "key": "item.3409.description",
+    "zhHans": "头部护甲等级 5，耐久 75；破损后失去护甲效果。",
+    "en": "Head armor level 5 with 75 durability. Loses protection when broken.",
+    "ar": "درع رأس من المستوى 5 بمتانة 75. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3409 description"
+  },
+  {
+    "key": "item.3409.name",
+    "zhHans": "坦克头盔",
+    "en": "Tank Crew Helmet",
+    "ar": "خوذة طاقم دبابة",
+    "context": "TbItem 3409 display name"
+  },
+  {
+    "key": "item.3410.description",
+    "zhHans": "身体护甲等级 2，耐久 60；破损后失去护甲效果。",
+    "en": "Body armor level 2 with 60 durability. Loses protection when broken.",
+    "ar": "درع جسدي من المستوى 2 بمتانة 60. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3410 description"
+  },
+  {
+    "key": "item.3410.name",
+    "zhHans": "二级防弹衣",
+    "en": "Tier 2 Body Armor",
+    "ar": "درع جسدي من المستوى 2",
+    "context": "TbItem 3410 display name"
+  },
+  {
+    "key": "item.3411.description",
+    "zhHans": "身体护甲等级 3，耐久 80；破损后失去护甲效果。",
+    "en": "Body armor level 3 with 80 durability. Loses protection when broken.",
+    "ar": "درع جسدي من المستوى 3 بمتانة 80. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3411 description"
+  },
+  {
+    "key": "item.3411.name",
+    "zhHans": "三级防弹衣",
+    "en": "Tier 3 Body Armor",
+    "ar": "درع جسدي من المستوى 3",
+    "context": "TbItem 3411 display name"
+  },
+  {
+    "key": "item.3412.description",
+    "zhHans": "身体护甲等级 4，耐久 100；破损后失去护甲效果。",
+    "en": "Body armor level 4 with 100 durability. Loses protection when broken.",
+    "ar": "درع جسدي من المستوى 4 بمتانة 100. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3412 description"
+  },
+  {
+    "key": "item.3412.name",
+    "zhHans": "四级防弹衣",
+    "en": "Tier 4 Body Armor",
+    "ar": "درع جسدي من المستوى 4",
+    "context": "TbItem 3412 display name"
+  },
+  {
+    "key": "item.3413.description",
+    "zhHans": "身体护甲等级 5，耐久 120；破损后失去护甲效果。",
+    "en": "Body armor level 5 with 120 durability. Loses protection when broken.",
+    "ar": "درع جسدي من المستوى 5 بمتانة 120. يفقد الحماية عند تحطمه.",
+    "context": "TbItem 3413 description"
+  },
+  {
+    "key": "item.3413.name",
+    "zhHans": "五级防弹衣",
+    "en": "Tier 5 Body Armor",
+    "ar": "درع جسدي من المستوى 5",
+    "context": "TbItem 3413 display name"
+  },
+  {
+    "key": "item.3414.description",
+    "zhHans": "装备后背包容量增加 16 格，最大负重增加 16。",
+    "en": "Increases backpack capacity by 16 slots and maximum carry weight by 16.",
+    "ar": "يزيد سعة الحقيبة بمقدار 16 خانة والحد الأقصى للحمل بمقدار 16.",
+    "context": "TbItem 3414 description"
+  },
+  {
+    "key": "item.3414.name",
+    "zhHans": "旅行包",
+    "en": "Travel Backpack",
+    "ar": "حقيبة سفر",
+    "context": "TbItem 3414 display name"
+  },
+  {
+    "key": "item.3415.description",
+    "zhHans": "装备后背包容量增加 24 格，最大负重增加 24。",
+    "en": "Increases backpack capacity by 24 slots and maximum carry weight by 24.",
+    "ar": "يزيد سعة الحقيبة بمقدار 24 خانة والحد الأقصى للحمل بمقدار 24.",
+    "context": "TbItem 3415 description"
+  },
+  {
+    "key": "item.3415.name",
+    "zhHans": "生存者背包",
+    "en": "Survivor Backpack",
+    "ar": "حقيبة الناجي",
+    "context": "TbItem 3415 display name"
+  },
+  {
+    "key": "item.3416.description",
+    "zhHans": "装备后背包容量增加 32 格，最大负重增加 32。",
+    "en": "Increases backpack capacity by 32 slots and maximum carry weight by 32.",
+    "ar": "يزيد سعة الحقيبة بمقدار 32 خانة والحد الأقصى للحمل بمقدار 32.",
+    "context": "TbItem 3416 description"
+  },
+  {
+    "key": "item.3416.name",
+    "zhHans": "行军背包",
+    "en": "Field Backpack",
+    "ar": "حقيبة ميدانية",
+    "context": "TbItem 3416 display name"
+  },
+  {
+    "key": "item.3417.description",
+    "zhHans": "装备后敌方声音可听距离提升 60%，并提示迷雾外或屏幕外的声音方向。",
+    "en": "Increases enemy sound detection range by 60% and indicates sounds beyond the fog or screen when equipped.",
+    "ar": "يزيد مدى سماع أصوات الأعداء بنسبة 60% ويشير إلى اتجاه الأصوات خارج الضباب أو الشاشة عند التجهيز.",
+    "context": "TbItem 3417 description"
+  },
+  {
+    "key": "item.3417.name",
+    "zhHans": "战术耳机",
+    "en": "Tactical Headset",
+    "ar": "سماعة تكتيكية",
+    "context": "TbItem 3417 display name"
+  },
+  {
+    "key": "ui.main.slot.melee",
+    "zhHans": "近战武器",
+    "en": "Melee Weapon",
+    "ar": "سلاح اشتباك",
+    "context": "Main loadout melee weapon slot"
+  },
+  {
+    "key": "ui.interaction.enemy_loot",
+    "zhHans": "敌人掉落箱",
+    "en": "Enemy Loot",
+    "ar": "غنائم العدو",
+    "context": "Enemy death loot interaction label"
+  },
+  {
+    "key": "ui.interaction.enemy_loot_looted",
+    "zhHans": "敌人掉落箱（已搜空）",
+    "en": "Enemy Loot (Empty)",
+    "ar": "غنائم العدو (فارغة)",
+    "context": "Looted enemy death container label"
+  },
+  {
+    "key": "ui.enemy_loot.title",
+    "zhHans": "敌人遗留物",
+    "en": "Enemy Remains",
+    "ar": "مقتنيات العدو",
+    "context": "Enemy death loot window title"
+  },
+  {
+    "key": "ui.loading.enter_map",
+    "zhHans": "正在进入 {0}",
+    "en": "Heading to {0}",
+    "ar": "جارٍ التوجه إلى {0}",
+    "context": "Map loading headline; {0} is the styled localized map name"
+  },
+  {
+    "key": "ui.loading.return_base",
+    "zhHans": "正在返回 {0}",
+    "en": "Returning to {0}",
+    "ar": "جارٍ العودة إلى {0}",
+    "context": "Return-to-base loading headline; {0} is the styled destination name"
+  },
+  {
+    "key": "ui.location.base",
+    "zhHans": "基地",
+    "en": "Base",
+    "ar": "القاعدة",
+    "context": "Main system/base destination name"
+  },
+  {
+    "key": "ui.loading.tip.base.1",
+    "zhHans": "正在加载基地界面...",
+    "en": "Loading the base interface...",
+    "ar": "جار تحميل واجهة القاعدة...",
+    "context": "Placeholder loading tip for base pool 51000"
+  },
+  {
+    "key": "ui.loading.tip.base.2",
+    "zhHans": "返回基地前必须重试。",
+    "en": "You must retry before returning to base.",
+    "ar": "يجب إعادة المحاولة قبل العودة إلى القاعدة.",
+    "context": "Placeholder loading tip for base pool 51000"
+  },
+  {
+    "key": "ui.loading.tip.map.5001.1",
+    "zhHans": "正在加载地图...",
+    "en": "Loading the map...",
+    "ar": "جار تحميل الخريطة...",
+    "context": "Placeholder loading tip for map 5001 pool 51001"
+  },
+  {
+    "key": "ui.loading.tip.map.5001.2",
+    "zhHans": "行动地图用于战备、撤离和失败结算。",
+    "en": "Raid maps are used for loadouts, extraction, and failed-raid settlement.",
+    "ar": "تستخدم خرائط العمليات للتجهيز والإخلاء وتسوية العمليات الفاشلة.",
+    "context": "Placeholder loading tip for map 5001 pool 51001"
+  },
+  {
+    "key": "ui.loading.tip.map.5002.1",
+    "zhHans": "正在准备地图，请稍候。",
+    "en": "Preparing the map, please wait.",
+    "ar": "جار تجهيز الخريطة، يرجى الانتظار.",
+    "context": "Placeholder loading tip for map 5002 pool 51002"
+  },
+  {
+    "key": "ui.loading.tip.map.5002.2",
+    "zhHans": "正在加载地图，请稍候。",
+    "en": "Loading the map, please wait.",
+    "ar": "جار تحميل الخريطة، يرجى الانتظار.",
+    "context": "Placeholder loading tip for map 5002 pool 51002"
+  },
+  {
+    "key": "ui.settings.enable_new_3c",
+    "zhHans": "开启新版3C",
+    "en": "Enable New 3C",
+    "ar": "تفعيل نظام 3C الجديد",
+    "context": "Control mode toggle shown in main-system and in-raid settings"
+  },
+  {
+    "key": "ui.settings.control_save_failed",
+    "zhHans": "控制设置保存失败，请重试。",
+    "en": "Failed to save control settings. Please try again.",
+    "ar": "تعذر حفظ إعدادات التحكم. يرجى المحاولة مرة أخرى.",
+    "context": "Player-visible error shown when control_settings.json cannot be saved"
+  },
+  {
+    "key": "ui.combat.using_medicine",
+    "zhHans": "正在使用 [{0}]",
+    "en": "Using [{0}]",
+    "ar": "جارٍ استخدام [{0}]",
+    "context": "Combat HUD current medicine use label"
+  },
+  {
+    "key": "ui.settings.language",
+    "zhHans": "语言",
+    "en": "Language",
+    "ar": "اللغة",
+    "context": "Language section label"
+  },
+  {
+    "key": "ui.settings.quality",
+    "zhHans": "画质",
+    "en": "Graphics",
+    "ar": "الرسومات",
+    "context": "Graphics quality section label"
+  },
+  {
+    "key": "ui.settings.quality_extreme",
+    "zhHans": "极致",
+    "en": "Ultra",
+    "ar": "فائقة",
+    "context": "Ultra graphics placeholder option"
+  },
+  {
+    "key": "ui.settings.quality_high",
+    "zhHans": "高",
+    "en": "High",
+    "ar": "عالية",
+    "context": "High graphics placeholder option"
+  },
+  {
+    "key": "ui.settings.quality_smooth",
+    "zhHans": "流畅",
+    "en": "Smooth",
+    "ar": "سلسة",
+    "context": "Smooth graphics placeholder option"
+  },
+  {
+    "key": "ui.settings.controls",
+    "zhHans": "操作方式",
+    "en": "Controls",
+    "ar": "التحكم",
+    "context": "Control mode section label"
+  },
+  {
+    "key": "ui.settings.legacy_3c",
+    "zhHans": "旧版3C",
+    "en": "Legacy 3C",
+    "ar": "نظام 3C القديم",
+    "context": "Legacy control mode option"
+  },
+  {
+    "key": "ui.settings.new_3c",
+    "zhHans": "新版3C",
+    "en": "New 3C",
+    "ar": "نظام 3C الجديد",
+    "context": "New control mode option"
+  },
+  {
+    "key": "ui.settings.look_sensitivity",
+    "zhHans": "视角灵敏度",
+    "en": "Look Sensitivity",
+    "ar": "حساسية الرؤية",
+    "context": "Look sensitivity placeholder label"
+  },
+  {
+    "key": "ui.settings.exit_game",
+    "zhHans": "退出游戏",
+    "en": "Exit Game",
+    "ar": "الخروج من اللعبة",
+    "context": "Settings exit button"
+  },
+  {
+    "key": "ui.settings.exit_confirm_raid",
+    "zhHans": "确认返回基地？本局将按失败结算并丢失携带物品。",
+    "en": "Return to base? This raid will count as a failure and all carried items will be lost.",
+    "ar": "هل تريد العودة إلى القاعدة؟ ستحتسب هذه العملية فاشلة وستفقد جميع العناصر التي تحملها.",
+    "context": "In-raid exit confirmation"
+  },
+  {
+    "key": "ui.settings.exit_confirm_app",
+    "zhHans": "确认退出游戏？",
+    "en": "Exit the game?",
+    "ar": "هل تريد الخروج من اللعبة؟",
+    "context": "Out-of-raid app exit confirmation"
+  },
+  {
+    "key": "ui.settings.locale_save_failed",
+    "zhHans": "语言设置保存失败，请重试。",
+    "en": "Failed to save language settings. Please try again.",
+    "ar": "تعذر حفظ إعدادات اللغة. يرجى المحاولة مرة أخرى.",
+    "context": "Player-visible language settings save failure"
+  },
+  {
+    "key": "ui.settings.raid_exit_failed",
+    "zhHans": "返回基地失败，请重试。",
+    "en": "Failed to return to base. Please try again.",
+    "ar": "تعذرت العودة إلى القاعدة. يرجى المحاولة مرة أخرى.",
+    "context": "In-raid exit failure"
+  },
+  {
+    "key": "ui.main.contacts",
+    "zhHans": "联络人",
+    "en": "Contacts",
+    "ar": "جهات الاتصال",
+    "context": "Main navigation contacts tab"
+  },
+  {
+    "key": "ui.main.contact.missions",
+    "zhHans": "任务",
+    "en": "Missions",
+    "ar": "المهام",
+    "context": "Contact missions tab"
+  },
+  {
+    "key": "ui.main.contact.trade",
+    "zhHans": "交易",
+    "en": "Trade",
+    "ar": "التجارة",
+    "context": "Contact trade tab"
+  },
+  {
+    "key": "ui.main.contact.trust",
+    "zhHans": "信任等级 {0}  {1}/{2}",
+    "en": "Trust level {0}  {1}/{2}",
+    "ar": "مستوى الثقة {0}  {1}/{2}",
+    "context": "Contact trust progress"
+  },
+  {
+    "key": "ui.main.contact.shop_locked",
+    "zhHans": "{0}  需要信任等级 {1}",
+    "en": "{0}  Requires trust level {1}",
+    "ar": "{0}  يتطلب مستوى الثقة {1}",
+    "context": "Locked contact shop row"
+  },
+  {
+    "key": "ui.main.mission.accept",
+    "zhHans": "接取",
+    "en": "Accept",
+    "ar": "قبول",
+    "context": "Mission accept action"
+  },
+  {
+    "key": "ui.main.mission.track",
+    "zhHans": "追踪",
+    "en": "Track",
+    "ar": "تتبع",
+    "context": "Mission track action"
+  },
+  {
+    "key": "ui.main.mission.untrack",
+    "zhHans": "取消追踪",
+    "en": "Untrack",
+    "ar": "إلغاء التتبع",
+    "context": "Mission untrack action"
+  },
+  {
+    "key": "ui.main.mission.turn_in",
+    "zhHans": "提交",
+    "en": "Submit",
+    "ar": "تسليم",
+    "context": "Mission item turn-in action"
+  },
+  {
+    "key": "ui.main.mission.claim",
+    "zhHans": "领取奖励",
+    "en": "Claim Reward",
+    "ar": "استلام المكافأة",
+    "context": "Mission reward claim action"
+  },
+  {
+    "key": "ui.main.mission.action_succeeded",
+    "zhHans": "任务状态已更新。",
+    "en": "Mission updated.",
+    "ar": "تم تحديث المهمة.",
+    "context": "Mission action success"
+  },
+  {
+    "key": "ui.main.mission.action_failed",
+    "zhHans": "当前无法执行该任务操作。",
+    "en": "That mission action is currently unavailable.",
+    "ar": "إجراء المهمة غير متاح حاليا.",
+    "context": "Mission action failure"
+  },
+  {
+    "key": "ui.main.mission.prerequisite",
+    "zhHans": "前置：{0}",
+    "en": "Prerequisite: {0}",
+    "ar": "المتطلب السابق: {0}",
+    "context": "Mission prerequisite label"
+  },
+  {
+    "key": "ui.main.mission.death_keep",
+    "zhHans": "死亡保留",
+    "en": "Retained on Death",
+    "ar": "يحتفظ به عند الموت",
+    "context": "Objective death preservation"
+  },
+  {
+    "key": "ui.main.mission.death_reset",
+    "zhHans": "死亡不结算",
+    "en": "Not Counted on Death",
+    "ar": "لا يحتسب عند الموت",
+    "context": "Objective death reset"
+  },
+  {
+    "key": "ui.main.mission.rewards",
+    "zhHans": "奖励：",
+    "en": "Rewards:",
+    "ar": "المكافآت:",
+    "context": "Mission rewards heading"
+  },
+  {
+    "key": "ui.main.mission.reward.currency",
+    "zhHans": "资金 {0}",
+    "en": "Funds {0}",
+    "ar": "أموال {0}",
+    "context": "Currency mission reward"
+  },
+  {
+    "key": "ui.main.mission.reward.trust.1",
+    "zhHans": "伊万 科瓦尔信任值 {0}",
+    "en": "Ivan Koval Trust {0}",
+    "ar": "ثقة إيفان كوفال {0}",
+    "context": "Contact-specific trust mission reward"
+  },
+  {
+    "key": "ui.main.mission.reward.unlock",
+    "zhHans": "解锁 {0}",
+    "en": "Unlock {0}",
+    "ar": "فتح {0}",
+    "context": "Shop unlock mission reward"
+  },
+  {
+    "key": "ui.main.mission.state.locked",
+    "zhHans": "未开放",
+    "en": "Locked",
+    "ar": "مقفلة",
+    "context": "Mission state"
+  },
+  {
+    "key": "ui.main.mission.state.available",
+    "zhHans": "新任务",
+    "en": "New",
+    "ar": "مهمة جديدة",
+    "context": "Mission state"
+  },
+  {
+    "key": "ui.main.mission.state.active",
+    "zhHans": "进行中",
+    "en": "Active",
+    "ar": "نشطة",
+    "context": "Mission state"
+  },
+  {
+    "key": "ui.main.mission.state.objectivescomplete",
+    "zhHans": "可上交",
+    "en": "Ready to turn in",
+    "ar": "جاهزة للتسليم",
+    "context": "Mission state"
+  },
+  {
+    "key": "ui.main.mission.state.rewardready",
+    "zhHans": "可领奖",
+    "en": "Reward ready",
+    "ar": "المكافأة جاهزة",
+    "context": "Mission state"
+  },
+  {
+    "key": "ui.main.mission.state.completed",
+    "zhHans": "已完成",
+    "en": "Completed",
+    "ar": "مكتملة",
+    "context": "Mission state"
+  },
+  {
+    "key": "contact.1.name",
+    "zhHans": "伊万 科瓦尔",
+    "en": "Ivan Koval",
+    "ar": "إيفان كوفال",
+    "context": "Contact name"
+  },
+  {
+    "key": "contact.1.role",
+    "zhHans": "求生者向导",
+    "en": "Survivor Guide",
+    "ar": "مرشد الناجين",
+    "context": "Contact role"
+  },
+  {
+    "key": "contact.2.name",
+    "zhHans": "保尔 柯察金",
+    "en": "Pavel Korchagin",
+    "ar": "بافيل كورتشاغين",
+    "context": "Contact name"
+  },
+  {
+    "key": "contact.2.role",
+    "zhHans": "武器和部件",
+    "en": "Weapons and Parts",
+    "ar": "الأسلحة والقطع",
+    "context": "Contact role"
+  },
+  {
+    "key": "mission.1001.title",
+    "zhHans": "复仇先开枪",
+    "en": "Let the Gun Speak First",
+    "ar": "دع البندقية تتكلم أولاً",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1001.description",
+    "zhHans": "营地刚分到一批旧枪，弹匣却比枪更难找。先买些子弹，让武器能够开火。想查清哥哥的死因，第一步是活着拿起枪。",
+    "en": "The settlement has received a batch of old guns, but magazines are harder to find than the guns themselves. Buy some ammunition so your weapon can fire; here, the first shot is also a ticket through the gate.",
+    "ar": "وصلت إلى المستوطنة دفعة من البنادق القديمة، لكن العثور على المخازن أصعب من العثور على البنادق نفسها. اشترِ بعض الذخيرة كي يصبح سلاحك جاهزاً لإطلاق النار؛ فالطلقة الأولى هنا هي أيضاً بطاقة دخول.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1001.objective.1",
+    "zhHans": "购买任意 1 份子弹",
+    "en": "Purchase 1 pack of ammunition",
+    "ar": "اشترِ حزمة ذخيرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1002.title",
+    "zhHans": "郊外寻痕",
+    "en": "The First Door in the Outskirts",
+    "ar": "الباب الأول في الضواحي",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1002.description",
+    "zhHans": "郊外的屋子看起来都空了，容器里却留下了上一批人的痕迹。去一趟郊区，搜索两个容器，看看那里是否藏着与哥哥有关的线索。",
+    "en": "The houses outside look empty, but their containers still hold traces of the people who left before us. Make one trip to the outskirts, search two containers, and bring back whatever the settlement can use.",
+    "ar": "تبدو بيوت الضواحي خالية، لكن حاوياتها ما زالت تخبئ آثار من رحلوا قبلنا. اذهب إلى الضواحي مرة واحدة، وابحث في حاويتين، وأعد إلى المستوطنة ما يمكنها استخدامه.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1002.objective.1",
+    "zhHans": "前往 1 次郊区",
+    "en": "Travel to the Outskirts once",
+    "ar": "توجّه إلى الضواحي مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1002.objective.2",
+    "zhHans": "搜索任意 2 个容器",
+    "en": "Search 2 containers",
+    "ar": "فتّش حاويتين",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1002.objective.3",
+    "zhHans": "成功撤离",
+    "en": "Extract successfully",
+    "ar": "أكمل الإخلاء بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1003.title",
+    "zhHans": "活着回来",
+    "en": "Proof of Return",
+    "ar": "دليل العودة",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1003.description",
+    "zhHans": "重要的不是你带走了什么，而是你能不能活着回来。成功撤离一次并交上 1000 现金。只有活下来，你才有资格继续追查仇人的踪迹。",
+    "en": "Ivan is not interested in what you take away. He wants to know whether you can come back alive. Extract successfully once and turn in 1,000 cash; afterward, Pavel Korchagin will open his weapons and parts network to you.",
+    "ar": "إيفان لا يهتم بما تأخذه معك، بل يريد أن يعرف إن كنت تستطيع العودة حياً. نفّذ إخلاءً ناجحاً مرة واحدة وسلّم 1000 نقداً؛ بعدها سيفتح بافيل كورتشاغين أمامك شبكة الأسلحة والقطع.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1003.objective.1",
+    "zhHans": "成功撤离 1 次",
+    "en": "Extract successfully",
+    "ar": "أكمل الإخلاء بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1003.objective.2",
+    "zhHans": "提交 1000 现金",
+    "en": "Submit 1000 cash",
+    "ar": "سلّم 1000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1004.title",
+    "zhHans": "靶纸不还手",
+    "en": "The Target Will Not Shoot Back",
+    "ar": "الهدف لن يردّ إطلاق النار",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1004.description",
+    "zhHans": "在基地靶子上造成 10 次伤害。真正面对杀死哥哥的敌人之前，先让每一发子弹都落在该落的位置。",
+    "en": "Deal damage to the base targets 10 times. Before your muzzle points at a person, learn to make every round land where it should.",
+    "ar": "ألحق الضرر بأهداف القاعدة 10 مرات. قبل أن توجّه فوهتك إلى إنسان، تعلّم أولاً أن تصيب كل رصاصة موضعها.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1004.objective.1",
+    "zhHans": "对基地靶子造成 10 次伤害",
+    "en": "Deal 10 damage to the base target",
+    "ar": "ألحق 10 نقاط ضرر بهدف القاعدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1005.title",
+    "zhHans": "第一个对手",
+    "en": "Those Who Survived the Same Shelling",
+    "ar": "من نجا من القصف نفسه",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1005.description",
+    "zhHans": "战争留下的不只有废墟，还有仍在外面活动的武装幸存者。击杀一名敌对幸存者，再交上一把 PM 手枪，证明你已经准备面对杀死哥哥的那类人。",
+    "en": "The war left more than ruins behind. It left people like us who refused to die. Kill one hostile survivor and turn in a PM pistol, so the settlement knows you have faced a real opponent.",
+    "ar": "لم تترك الحرب وراءها الأنقاض وحدها، بل تركت أيضاً أناساً مثلنا رفضوا الموت. اقتل ناجياً معادياً وسلّم مسدس PM واحداً، كي تعرف المستوطنة أنك واجهت خصماً حقيقياً.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1005.objective.1",
+    "zhHans": "击杀 1 名幸存者",
+    "en": "Kill 1 survivor",
+    "ar": "اقتل ناجيًا واحدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1005.objective.2",
+    "zhHans": "提交 1 把 PM 手枪",
+    "en": "Submit 1 PM pistol",
+    "ar": "سلّم مسدس PM واحدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1006.title",
+    "zhHans": "公路南撤离",
+    "en": "The Green Light at Road South",
+    "ar": "الضوء الأخضر عند الطريق الجنوبي",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1006.description",
+    "zhHans": "公路南撤离点还能使用，但那条路不会一直为陌生人亮着。从公路南成功撤离并交上 2000 现金。你需要装备和资源，才能靠近真正的仇人。",
+    "en": "The Road South extraction point is still usable, but that route will not stay open for strangers. Extract successfully from Road South and turn in 2,000 cash; afterward, Joyner will give you access to protective gear.",
+    "ar": "ما زالت نقطة الإخلاء عند الطريق الجنوبي صالحة للاستخدام، لكن هذا الطريق لن يبقى مفتوحاً للغرباء. نفّذ إخلاءً ناجحاً من الطريق الجنوبي وسلّم 2000 نقداً؛ بعدها ستمنحك جوينر الوصول إلى معدات الحماية.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1007.objective.1",
+    "zhHans": "击杀 3 匹狼",
+    "en": "Kill 3 wolves",
+    "ar": "اقتل 3 ذئاب",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1007.objective.2",
+    "zhHans": "提交 1 块生肉",
+    "en": "Submit 1 piece of raw meat",
+    "ar": "سلّم قطعة واحدة من اللحم النيئ",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1007.title",
+    "zhHans": "战火留狼群",
+    "en": "The Wolves Remember the Fire",
+    "ar": "الذئاب تتذكر النار",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1007.description",
+    "zhHans": "狼群已经不再躲避营地的火光。击杀三匹狼并带回一块生肉。战火改变了这里的一切，哥哥留下的仇恨也不会因为时间过去而消失。",
+    "en": "The wolves no longer keep away from the settlement fire. Kill three wolves and bring back a piece of raw meat; some things survived the war and now come closer than they ever did before.",
+    "ar": "لم تعد الذئاب تبتعد عن نار المستوطنة. اقتل ثلاثة ذئاب وأعد قطعة من اللحم النيئ؛ فقد نجت بعض الكائنات من الحرب وأصبحت تقترب منا أكثر من أي وقت مضى.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1008.objective.1",
+    "zhHans": "从任意撤离点撤离 2 次",
+    "en": "Extract twice from any extraction point",
+    "ar": "أكمل الإخلاء مرتين من أي نقطة إخلاء",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1008.title",
+    "zhHans": "第二次归来",
+    "en": "The Second Echo",
+    "ar": "الصدى الثاني",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1008.description",
+    "zhHans": "一次成功撤离可能只是运气，第二次回来才说明你找到了自己的路。完成两次任意撤离并交上 5000 现金，为下一步追查敌人的行动做好准备。",
+    "en": "One successful extraction may be luck. Returning a second time means you have found your own way. Complete two extractions from any point and turn in 5,000 cash; afterward, Koyanskaya will give you access to her medical supply list.",
+    "ar": "قد يكون الإخلاء الناجح مرة واحدة محض حظ، أما العودة للمرة الثانية فتعني أنك وجدت طريقك بنفسك. أكمل عمليتي إخلاء من أي نقطة وسلّم 5000 نقداً؛ بعدها ستشاركك كويانسكايا قائمة مستلزماتها الطبية.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1009.objective.1",
+    "zhHans": "购买任意 10 个医疗消耗品",
+    "en": "Purchase 10 medical consumables",
+    "ar": "اشترِ 10 مستهلكات طبية",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1009.objective.2",
+    "zhHans": "上交 1 份狼肉",
+    "en": "Turn in 1 piece of wolf meat.",
+    "ar": "سلّم قطعة واحدة من لحم الذئب.",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1009.title",
+    "zhHans": "别留伤到明天",
+    "en": "Do Not Leave Wounds for Tomorrow",
+    "ar": "لا تؤجل جروحك إلى الغد",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.1009.description",
+    "zhHans": "营地里的伤员比药品清单增长得更快。购买 10 个医疗消耗品，把能救命的东西准备好。下一次出门时，你不能倒在哥哥仇人的枪下。",
+    "en": "The number of wounded in the settlement is growing faster than the medical inventory. Buy 10 medical consumables and prepare what can save a life; next time you go out, do not expect someone else to stop your bleeding.",
+    "ar": "يزداد عدد الجرحى في المستوطنة أسرع من ازدياد قائمة الأدوية. اشترِ 10 مستلزمات طبية وجهّز ما قد ينقذ حياة؛ وفي المرة القادمة التي تخرج فيها، لا تتوقع من الآخرين أن يوقفوا نزيفك.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.1010.objective.1",
+    "zhHans": "从任意撤离点成功撤离 2 次",
+    "en": "Extract successfully twice from any extraction point",
+    "ar": "نفّذ إخلاءً ناجحًا مرتين من أي نقطة إخلاء",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1010.objective.2",
+    "zhHans": "上交 1 件紫色品质物品",
+    "en": "Turn in 1 purple-quality item",
+    "ar": "سلّم غرضًا واحدًا بجودة بنفسجية",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1011.objective.1",
+    "zhHans": "与高扬斯卡娅交流 1 次",
+    "en": "Speak with Koyanskaya once",
+    "ar": "تحدث مع كويانسكايا مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1011.objective.2",
+    "zhHans": "与军医交流 1 次",
+    "en": "与军医交流 1 次",
+    "ar": "与军医交流 1 次",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2001.title",
+    "zhHans": "让枪报上名",
+    "en": "Let the Gun Know You",
+    "ar": "دع البندقية تتعرّف إليك",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2001.description",
+    "zhHans": "新枪和新同伴一样，都要先看它能不能熬过第一场交火。从军火商商店购买一把任意枪械，并击杀三名敌人。让枪声告诉他们，你是来替哥哥讨回公道的。",
+    "en": "Pavel says a new gun is like a new companion: first, you have to see whether it can survive its first firefight. Buy any firearm from the weapons dealer's shop and kill three enemies. Let the gunfire introduce you.",
+    "ar": "يقول بافيل إن السلاح الجديد يشبه الرفيق الجديد: يجب أولاً أن ترى إن كان سيصمد في أول اشتباك. اشترِ أي سلاح ناري من متجر تاجر الأسلحة واقتل ثلاثة أعداء، ودع صوت إطلاق النار يعرّف بك.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2001.objective.1",
+    "zhHans": "从军火商商店购买 1 把任意枪械",
+    "en": "Buy 1 firearm of any type from the weapons dealer's shop",
+    "ar": "اشترِ سلاحاً نارياً واحداً من أي نوع من متجر تاجر الأسلحة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2001.objective.2",
+    "zhHans": "击杀 3 名敌人",
+    "en": "Kill 3 enemies",
+    "ar": "اقتل 3 أعداء",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2002.title",
+    "zhHans": "擦掉枪上锈",
+    "en": "Wipe Away the Rust, Not the Memory",
+    "ar": "امسح الصدأ، لا الذاكرة",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2002.description",
+    "zhHans": "这里没有真正的新枪，只有被修过很多次的旧枪。维修一次枪械，让它重新承担下一趟行动的重量。你的武器必须撑到你找到仇人的那一天。",
+    "en": "There are no truly new guns here, only old ones repaired again and again. Repair a firearm once and let it bear the weight of the next operation.",
+    "ar": "لا توجد هنا أسلحة جديدة حقاً، بل أسلحة قديمة أُصلحت مرة بعد مرة. أصلح سلاحاً نارياً مرة واحدة ودعه يحمل عبء العملية القادمة.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2002.objective.1",
+    "zhHans": "维修 1 次枪械",
+    "en": "Repair a firearm once",
+    "ar": "أصلح سلاحاً نارياً مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2003.title",
+    "zhHans": "换弹别迟疑",
+    "en": "Half a Second to Reload",
+    "ar": "نصف ثانية لإعادة التلقيم",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2003.description",
+    "zhHans": "换弹时丢掉的半秒，足够让猎手变成尸体。从军火商商店购买一个快速弹匣并完成装配。面对杀死哥哥的敌人时，你不能给他们第二次开枪的机会。",
+    "en": "The half-second lost while reloading is enough to turn a hunter into a target. Buy one fast-reload magazine from the weapons dealer's shop and install it.",
+    "ar": "نصف الثانية التي تضيع أثناء إعادة التلقيم تكفي لتحويل الصياد إلى هدف. اشترِ مخزناً سريع التلقيم من متجر تاجر الأسلحة وركّبه.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2003.objective.1",
+    "zhHans": "从军火商商店购买 1 个快速弹匣",
+    "en": "Buy 1 fast-reload magazine from the weapons dealer's shop",
+    "ar": "اشترِ مخزناً سريع التلقيم واحداً من متجر تاجر الأسلحة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2003.objective.2",
+    "zhHans": "装配 1 个快速弹匣",
+    "en": "Install 1 fast-reload magazine",
+    "ar": "ركّب مخزناً سريع التلقيم واحداً",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2004.title",
+    "zhHans": "拉开复仇距离",
+    "en": "Keep Your Distance",
+    "ar": "حافظ على المسافة",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2004.description",
+    "zhHans": "更好的弹药能让步枪在交火中发挥作用。从军火商商店购买一组 30 发的 2 级子弹，再使用步枪击杀三名敌人。先从外围敌人开始，逐步逼近真正的目标。",
+    "en": "Better ammunition lets a rifle do its job in a firefight. Buy one stack (30 rounds) of Tier 2 Ammo from the weapons dealer's shop, then kill three enemies with a rifle.",
+    "ar": "تتيح الذخيرة الأفضل للبندقية أن تؤدي دورها في الاشتباك. اشترِ حزمة واحدة (30 طلقة) من ذخيرة المستوى 2 من متجر تاجر الأسلحة، ثم اقتل ثلاثة أعداء ببندقية.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2004.objective.1",
+    "zhHans": "从军火商商店购买 30 发2级子弹",
+    "en": "Buy 30 rounds of Tier 2 Ammo from the weapons dealer's shop",
+    "ar": "اشترِ 30 طلقة من ذخيرة المستوى 2 من متجر تاجر الأسلحة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2004.objective.2",
+    "zhHans": "使用步枪击杀 3 名敌人",
+    "en": "Kill 3 enemies with a rifle",
+    "ar": "اقتل 3 أعداء باستخدام بندقية",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2005.title",
+    "zhHans": "军火箱标记",
+    "en": "The Owner of the Military Supply Box",
+    "ar": "صاحب صندوق الإمداد العسكري",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2005.description",
+    "zhHans": "军火箱里装的不只是武器，还有外来军队撤离时留下的编号和标记。搜索一个军火箱并交上两个武器配件，也许这些痕迹能把你引向中央营地。",
+    "en": "A military supply box holds more than weapons. It also holds traces left behind by foreign troops who withdrew before they could take everything. Search one military supply box and turn in two weapon attachments.",
+    "ar": "لا يحتوي صندوق الإمداد العسكري على أسلحة فقط، بل يحمل أيضاً آثاراً تركتها قوات أجنبية انسحبت قبل أن تتمكن من أخذ كل شيء. فتّش صندوق إمداد عسكري واحداً وسلّم ملحقين للأسلحة.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2005.objective.1",
+    "zhHans": "搜索 1 个军火箱",
+    "en": "Search 1 military supply box",
+    "ar": "فتّش صندوق إمداد عسكري واحداً",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2005.objective.2",
+    "zhHans": "提交 2 个武器配件",
+    "en": "Turn in 2 weapon attachments",
+    "ar": "سلّم ملحقين للأسلحة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2006.title",
+    "zhHans": "多一发子弹",
+    "en": "The Extra Round",
+    "ar": "الطلقة الإضافية",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2006.description",
+    "zhHans": "扩容弹匣不是为了炫耀，而是为了少一次低头换弹。装配一个扩容弹匣，并在不换弹的情况下击杀两名敌人。复仇时，不能让弹药耗尽成为你的死因。",
+    "en": "An extended magazine is not for showing off. It means one less time lowering your head to reload. Install one extended magazine and kill two enemies without reloading.",
+    "ar": "المخزن الموسع ليس للاستعراض، بل لتضطر إلى خفض رأسك وإعادة التلقيم مرة أقل. ركّب مخزناً موسعاً واقتل عدوين من دون إعادة تلقيم.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2006.objective.1",
+    "zhHans": "装配 1 个扩容弹匣",
+    "en": "Install 1 extended magazine",
+    "ar": "ركّب مخزناً موسعاً واحداً",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2006.objective.2",
+    "zhHans": "不换弹击杀 2 名敌人",
+    "en": "Kill 2 enemies without reloading",
+    "ar": "اقتل عدوين من دون إعادة تلقيم",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2007.title",
+    "zhHans": "勋章不杀人",
+    "en": "A Medal Won't Pull the Trigger",
+    "ar": "الوسام لن يضغط على الزناد",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2007.description",
+    "zhHans": "英勇勋章证明有人曾经拼命战斗，却不能替你完成下一次复仇。击杀十名敌人，再交上一枚英勇勋章。搜集他们留下的东西，确认他们是否属于同一支部队。",
+    "en": "A Medal of Valor can prove that someone once fought with everything they had, but it cannot complete the next mission for you. Kill ten enemies, then turn in one Medal of Valor.",
+    "ar": "يمكن لوسام الشجاعة أن يثبت أن شخصاً ما قاتل بكل ما لديه، لكنه لن ينجز المهمة التالية بدلاً منك. اقتل عشرة أعداء، ثم سلّم وسام شجاعة واحداً.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2007.objective.1",
+    "zhHans": "击杀 10 名敌人",
+    "en": "Kill 10 enemies",
+    "ar": "اقتل 10 أعداء",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2007.objective.2",
+    "zhHans": "提交 1 个英勇勋章",
+    "en": "Turn in 1 Medal of Valor",
+    "ar": "سلّم وسام شجاعة واحداً",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2008.title",
+    "zhHans": "巷中短枪声",
+    "en": "Short Bursts in the Alley",
+    "ar": "رشقات قصيرة في الزقاق",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2008.description",
+    "zhHans": "增伤枪口能让冲锋枪的每次命中更接近结束。装配一个增伤枪口，使用冲锋枪击杀五名敌人并成功撤离。城市外围的枪声，可能正在替你指向更大的目标。",
+    "en": "A damage muzzle device makes every SMG hit closer to the end. Install one damage muzzle device, kill five enemies with an SMG, and extract successfully.",
+    "ar": "يجعل ملحق الفوهة الذي يزيد الضرر كل إصابة بالرشاش أقرب إلى النهاية. ركّب ملحق فوهة واحداً لزيادة الضرر، واقتل خمسة أعداء برشاش، ثم انسحب بنجاح.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2008.objective.1",
+    "zhHans": "装配 1 个增伤枪口",
+    "en": "Install 1 damage muzzle device",
+    "ar": "ركّب ملحق فوهة واحداً لزيادة الضرر",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2008.objective.2",
+    "zhHans": "使用冲锋枪击杀 5 名敌人并成功撤离",
+    "en": "Kill 5 enemies with an SMG and extract successfully",
+    "ar": "اقتل 5 أعداء باستخدام رشاش وانسحب بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2009.title",
+    "zhHans": "散弹收成一束",
+    "en": "Bring the Pellets Together",
+    "ar": "اجمع حبيبات الخرطوش",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2009.description",
+    "zhHans": "霰弹枪的每颗弹丸都在争夺同一个方向。装配一个霰弹枪收束器，再用霰弹枪击杀五名敌人。靠近敌人时，你必须比他们更快结束交火。",
+    "en": "Every pellet from a shotgun is fighting for the same path. Install one shotgun choke, then kill five enemies with a shotgun.",
+    "ar": "تتنافس كل حبيبة من خرطوش البندقية على المسار نفسه. ركّب خانقاً واحداً لبندقية الخرطوش، ثم اقتل خمسة أعداء بها.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2009.objective.1",
+    "zhHans": "装配 1 个霰弹枪收束器",
+    "en": "Install 1 shotgun choke",
+    "ar": "ركّب خانقاً واحداً لبندقية خرطوش",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2009.objective.2",
+    "zhHans": "使用霰弹枪击杀 5 名敌人",
+    "en": "Kill 5 enemies with a shotgun",
+    "ar": "اقتل 5 أعداء باستخدام بندقية خرطوش",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.2010.title",
+    "zhHans": "不穿铁也活",
+    "en": "Survive Without Steel",
+    "ar": "ابقَ حياً من دون درع",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.2010.description",
+    "zhHans": "护甲能挡下一部分危险，却也容易让人误以为自己不会受伤。未装备头部和身体护甲时击杀三名敌人。真正的复仇者必须知道何时冒险，何时撤退。",
+    "en": "Armor can stop part of the danger, but it can also make you believe you cannot be hurt. Kill three enemies while wearing neither head armor nor body armor.",
+    "ar": "قد يصدّ الدرع بعض الخطر، لكنه قد يجعلك تظن أنك لن تُصاب. اقتل ثلاثة أعداء من دون ارتداء درع للرأس أو الجسم.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.2010.objective.1",
+    "zhHans": "未装备头部和身体护甲时击杀任意 3 名敌人",
+    "en": "Kill any 3 enemies without head or body armor",
+    "ar": "اقتل أي 3 أعداء من دون ارتداء درع للرأس أو الجسم",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3001.title",
+    "zhHans": "先护住自己",
+    "en": "Cover Yourself First",
+    "ar": "غطِّ نفسك أولاً",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3001.description",
+    "zhHans": "营地里没有多余的身体，只有还没找到合适装备的人。装备头部护甲、身体护甲和背包。想进入更危险的区域追查仇人，先确保自己能带着线索回来。",
+    "en": "The settlement has no spare bodies, only people who have not found the right gear yet. Equip head armor, body armor, and a backpack before you think about what to bring back next.",
+    "ar": "لا تملك المستوطنة أجساداً فائضة، بل أشخاصاً لم يجدوا المعدات المناسبة بعد. جهّز درعاً للرأس ودرعاً للجسد وحقيبة ظهر قبل أن تفكر فيما ستعيده في الرحلة التالية.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3001.objective.1",
+    "zhHans": "装备任意头部护甲",
+    "en": "Equip any head armor",
+    "ar": "جهّز أي درع للرأس",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3001.objective.2",
+    "zhHans": "装备任意身体护甲",
+    "en": "Equip any body armor",
+    "ar": "جهّز أي درع للجسم",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3001.objective.3",
+    "zhHans": "装备任意背包",
+    "en": "Equip any backpack",
+    "ar": "جهّز أي حقيبة ظهر",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3002.title",
+    "zhHans": "搜出活命粮",
+    "en": "Search Before You Eat",
+    "ar": "ابحث قبل أن تأكل",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3002.description",
+    "zhHans": "郊外的食物箱比人更早学会等待。前往一次郊区并搜索一个食物箱。营地必须继续活下去，而你也需要从这片战区找到更多关于敌人的痕迹。",
+    "en": "The food crates outside learned to wait before the people did. Visit the outskirts once and search one food crate; what keeps the settlement fighting must first keep it fed.",
+    "ar": "تعلّمت صناديق الطعام في الضواحي الانتظار قبل البشر بوقت طويل. اذهب إلى الضواحي مرة واحدة وابحث في صندوق طعام؛ فما يبقي المستوطنة مقاتلة يجب أولاً أن يبقيها شبعى.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3002.objective.1",
+    "zhHans": "前往 1 次郊区",
+    "en": "Travel to the Outskirts once",
+    "ar": "توجّه إلى الضواحي مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3002.objective.2",
+    "zhHans": "搜索 1 个食物箱",
+    "en": "Search 1 food crate",
+    "ar": "فتّش صندوق طعام واحدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3003.title",
+    "zhHans": "先看见他们",
+    "en": "Eyes and Ears",
+    "ar": "العينان والأذنان",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3003.description",
+    "zhHans": "看得更远、听得更早，有时比多带一把枪更有用。购买一个护目镜和一个安卓耳机，把危险留在它还没有发现你的时候。",
+    "en": "Seeing farther and hearing sooner can be more useful than carrying one more gun. Buy a pair of goggles and an Android headset, and catch danger before it notices you.",
+    "ar": "قد يكون النظر أبعد والسمع أبكر أنفع من حمل بندقية إضافية. اشترِ نظارة واقية وسماعة أندرويد، واكتشف الخطر قبل أن يكتشفك.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3003.objective.1",
+    "zhHans": "购买 1 个护目镜",
+    "en": "Purchase 1 pair of goggles",
+    "ar": "اشترِ نظارة واقية واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3003.objective.2",
+    "zhHans": "购买 1 个安卓耳机",
+    "en": "Purchase 1 Android headset",
+    "ar": "اشترِ سماعة أندرويد واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3004.title",
+    "zhHans": "箱中藏线索",
+    "en": "The Second Layer in the Crate",
+    "ar": "الطبقة الثانية في الصندوق",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3004.description",
+    "zhHans": "战争结束后，真正重要的东西往往不会放在最显眼的位置。搜索三个任意箱子，再交上 10000 现金。有人还在用钱交换消息，也许其中就有中央营地的情报。",
+    "en": "After a war, the things that matter are rarely left in plain sight. Search three containers, then turn in 10,000 cash and see who is still trading information for money.",
+    "ar": "بعد الحرب، نادراً ما تُترك الأشياء المهمة في مكان ظاهر. ابحث في ثلاثة صناديق، ثم سلّم 10000 نقداً وانظر من لا يزال يبادل المعلومات بالمال.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3004.objective.1",
+    "zhHans": "搜索任意 3 个箱子",
+    "en": "Search 3 crates of any type",
+    "ar": "فتّش 3 صناديق من أي نوع",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3004.objective.2",
+    "zhHans": "提交 10000 现金",
+    "en": "Submit 10000 cash",
+    "ar": "سلّم 10000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3005.title",
+    "zhHans": "农场枪声",
+    "en": "The Farm Is Still Ringing",
+    "ar": "المزرعة ما زالت تضج",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3005.description",
+    "zhHans": "被占领的农场没有安静下来，只是换了一批人在里面活动。前往农场，击杀三名敌人并成功撤离。别让那里的枪声成为营地收到的最后一条消息，也别放过任何指向仇人的线索。",
+    "en": "The occupied farm has not gone quiet; only the people moving through it have changed. Go to the farm, kill three enemies, and extract successfully. Do not let its gunfire become the last message the settlement receives.",
+    "ar": "لم تهدأ المزرعة المحتلة، بل تغيّر فقط من يتحرك داخلها. اذهب إلى المزرعة، واقتل ثلاثة أعداء، ثم نفّذ إخلاءً ناجحاً. لا تدع طلقاتها تكون آخر رسالة تصل إلى المستوطنة.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3005.objective.1",
+    "zhHans": "在被占领的农场击杀 3 名敌人并成功撤离",
+    "en": "Kill 3 enemies at the Occupied Farm and extract successfully",
+    "ar": "اقتل 3 أعداء في المزرعة المحتلة ثم أكمل الإخلاء بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3005.objective.2",
+    "zhHans": "成功撤离 1 次",
+    "en": "Extract successfully once",
+    "ar": "نفّذ إخلاءً ناجحًا مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3006.title",
+    "zhHans": "藏箱换情报",
+    "en": "The Weight Hidden Away",
+    "ar": "ثقل مخبأ",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3006.description",
+    "zhHans": "藏匿箱里装着别人不敢带走、也不愿彻底放弃的东西。搜索两个藏匿箱并交上 20000 现金，换一份没有公开的情报。你要知道，谁在向中央营地输送物资。",
+    "en": "Hidden stashes hold what people were afraid to carry and unwilling to abandon completely. Search two hidden stashes and turn in 20,000 cash in exchange for a clue that has not yet been made public.",
+    "ar": "تحتوي المخابئ على أشياء خاف أصحابها من حملها ولم يرغبوا في التخلي عنها تماماً. ابحث في مخبأين وسلّم 20000 نقداً مقابل دليل لم يُكشف بعد.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3006.objective.1",
+    "zhHans": "搜索 2 个藏匿箱",
+    "en": "Search 2 stash crates",
+    "ar": "فتّش صندوقي مخبأ",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3006.objective.2",
+    "zhHans": "提交 20000 现金",
+    "en": "Submit 20000 cash",
+    "ar": "سلّم 20000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3007.title",
+    "zhHans": "高山见证者",
+    "en": "The Mountain Keeps No Secrets",
+    "ar": "الجبل لا يحفظ الأسرار",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3007.description",
+    "zhHans": "高山营地看得见远处的路，也看得见谁没有回来。击杀五名敌人并成功撤离，把在那里看到的东西带回营地。也许那些敌人已经不再是普通幸存者。",
+    "en": "The mountain camp can see the roads in the distance, and it can see who did not come back. Kill five enemies and extract successfully, then bring what you saw there back to the settlement.",
+    "ar": "يستطيع معسكر الجبل رؤية الطرق البعيدة، كما يرى من لم يعد. اقتل خمسة أعداء ونفّذ إخلاءً ناجحاً، ثم أعد إلى المستوطنة ما رأيته هناك.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3007.objective.1",
+    "zhHans": "在高山营地击杀 5 名敌人并成功撤离",
+    "en": "Kill 5 enemies at the Mountain Camp and extract successfully",
+    "ar": "اقتل 5 أعداء في المعسكر الجبلي ثم أكمل الإخلاء بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3007.objective.2",
+    "zhHans": "成功撤离 1 次",
+    "en": "Extract successfully once",
+    "ar": "نفّذ إخلاءً ناجحًا مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3008.title",
+    "zhHans": "仓库远征旗",
+    "en": "The Old Flag at the Warehouse",
+    "ar": "راية المستودع القديمة",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3008.description",
+    "zhHans": "仓库里的武器箱还保留着外来部队留下的编号和标记。搜索两个武器箱，再交上 50000 现金。那些标记终于拼出了一个名字：远征军。",
+    "en": "The weapons crates in the warehouse still carry the numbers and marks left by the foreign army. Search two weapons crates, then turn in 50,000 cash; some people buy equipment with money, while others trade equipment for a place to stand.",
+    "ar": "ما زالت صناديق السلاح في المستودع تحمل الأرقام والعلامات التي تركها الجيش الأجنبي. ابحث في صندوقي سلاح ثم سلّم 50000 نقداً؛ فهناك من يشتري المعدات بالمال، ومن يبادلها بمكان يحتمي فيه.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3008.objective.1",
+    "zhHans": "搜索 2 个武器箱",
+    "en": "Search 2 weapon crates",
+    "ar": "فتّش صندوقي أسلحة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3008.objective.2",
+    "zhHans": "提交 50000 现金",
+    "en": "Submit 50000 cash",
+    "ar": "سلّم 50000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3009.title",
+    "zhHans": "前哨指中央",
+    "en": "The Outpost Echo",
+    "ar": "صدى المخفر",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.3009.description",
+    "zhHans": "仓库前哨附近的枪声总会重复出现，像是有人在守着一段不愿被找到的过去。击杀十名敌人并成功撤离。确认那里剩下的，正是与中央营地远征军有关的人。",
+    "en": "The gunfire near the Warehouse Outpost keeps repeating, as if someone is guarding a past that does not want to be found. Kill 10 enemies and extract successfully to learn who is still there.",
+    "ar": "يتكرر إطلاق النار قرب مخفر المستودع، كأن أحداً يحرس ماضياً لا يريد أن يعثر عليه أحد. اقتل 10 أعداء ونفّذ إخلاءً ناجحاً لتعرف من بقي هناك.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.3009.objective.1",
+    "zhHans": "在仓库前哨附近击杀 10 名敌人并成功撤离",
+    "en": "Kill 10 enemies near the Warehouse Outpost and extract successfully",
+    "ar": "اقتل 10 أعداء بالقرب من مخفر المستودع ثم أكمل الإخلاء بنجاح",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.3009.objective.2",
+    "zhHans": "成功撤离 1 次",
+    "en": "Extract successfully once",
+    "ar": "نفّذ إخلاءً ناجحًا مرة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.4001.title",
+    "zhHans": "先数绷带",
+    "en": "Count the Bandages Before Tomorrow",
+    "ar": "أحصِ الضمادات قبل أن تفكر في الغد",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.4001.description",
+    "zhHans": "营地里的伤员不会因为药柜空了就停止呼吸。提交三个任意医疗消耗品，先救回最紧急的人。你还要继续活着，才能向远征军讨回代价。",
+    "en": "The wounded in the settlement will not stop breathing just because the medicine cabinet is empty. Turn in any three medical consumables so Koyanskaya can treat the most urgent cases first.",
+    "ar": "لن يتوقف جرحى المستوطنة عن التنفس لمجرد أن خزانة الدواء فارغة. سلّم أي ثلاثة مستهلكات طبية كي تتمكن كويانسكايا من علاج الحالات الأكثر إلحاحاً أولاً.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.4001.objective.1",
+    "zhHans": "提交 3 个任意医疗消耗品",
+    "en": "Turn in any 3 medical consumables",
+    "ar": "سلّم أي 3 مستهلكات طبية",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.4002.title",
+    "zhHans": "会用才算准备",
+    "en": "You Own It Only If You Can Use It",
+    "ar": "لا تملك الدواء حتى تعرف استخدامه",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.4002.description",
+    "zhHans": "医疗用品放在背包里不会自动救命。使用三次医疗消耗品，熟悉止血、恢复和重新站起来的时机。中央营地不会因为你受伤就停火。",
+    "en": "Medical consumables do not save lives while they sit in your backpack. Use medical consumables three times and learn when to stop bleeding, recover, and stand again.",
+    "ar": "لا تنقذ المستهلكات الطبية الأرواح وهي في حقيبتك. استخدم مستهلكات طبية ثلاث مرات وتعلّم متى توقف النزيف وتتعافى وتقف من جديد.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.4002.objective.1",
+    "zhHans": "使用 3 次医疗消耗品",
+    "en": "Use medical consumables 3 times",
+    "ar": "استخدم المستهلكات الطبية 3 مرات",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.4003.title",
+    "zhHans": "别只靠一种药",
+    "en": "Do Not Treat One Medicine as the Answer",
+    "ar": "لا تجعل دواءً واحداً هو الحل",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.4003.description",
+    "zhHans": "不同的伤势需要不同的处理方式，单靠一种药撑不过太久。单局使用三种不同的医疗消耗品。面对远征军之前，先学会在情况恶化前做出选择。",
+    "en": "Different wounds need different treatment, and one medicine will not carry you very far. Use three different medical consumables in one raid and learn to choose before the situation worsens.",
+    "ar": "تحتاج الإصابات المختلفة إلى علاجات مختلفة، ولن يكفي دواء واحد طويلاً. استخدم ثلاثة مستهلكات طبية مختلفة في غارة واحدة، وتعلّم الاختيار قبل أن يسوء الوضع.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.4003.objective.1",
+    "zhHans": "单局使用 3 种不同医疗消耗品",
+    "en": "Use 3 different medical consumables in a single raid",
+    "ar": "استخدم 3 مستهلكات طبية مختلفة في غارة واحدة",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.4004.title",
+    "zhHans": "强效之后",
+    "en": "After the Power Fades",
+    "ar": "بعد زوال القوة",
+    "context": "Mission title"
+  },
+  {
+    "key": "mission.4004.description",
+    "zhHans": "强效注射器能让身体暂时越过极限，却不会替你承担代价。在药效持续期间击杀一名突击兵。那名敌人可能来自中央营地，完成任务后你还必须活着回来。",
+    "en": "A Power Injector can push the body past its limits for a while, but it will not pay the price for you. Kill one Assault Trooper while the effect is active and see whether you can finish before your heartbeat runs out of control.",
+    "ar": "يمكن لحقنة القوة أن تدفع الجسد إلى ما بعد حدوده مؤقتاً، لكنها لن تتحمل الثمن بدلاً منك. اقتل جندي اقتحام واحداً أثناء سريان مفعولها، وانظر إن كنت تستطيع إنهاء المهمة قبل أن يخرج نبضك عن السيطرة.",
+    "context": "Mission description"
+  },
+  {
+    "key": "mission.4004.objective.1",
+    "zhHans": "强效注射器效果下，击杀 1 名突击兵",
+    "en": "While under the effect of a Power Injector, kill 1 Assault Trooper",
+    "ar": "أثناء سريان مفعول حقنة القوة، اقتل جندي اقتحام واحداً",
+    "context": "Mission objective"
+  },
+  {
+    "key": "ui.inventory.task_empty",
+    "zhHans": "暂无已接任务",
+    "en": "No accepted missions",
+    "ar": "لا توجد مهام مقبولة",
+    "context": "Empty accepted mission list"
+  },
+  {
+    "key": "ui.main.enter_tutorial",
+    "zhHans": "进入新手关卡",
+    "en": "Enter Tutorial",
+    "ar": "دخول مرحلة التدريب",
+    "context": "MainSystem development DEBUG tutorial entry"
+  },
+  {
+    "key": "ui.raid.tutorial_death_reward",
+    "zhHans": "确认后原地复活，装备满耐久 AR-15（弹匣内 30 发 3 级弹），背包获得 90 发备用弹。",
+    "en": "Confirm to revive in place with a full-durability AR-15 loaded with 30 tier-3 rounds and 90 reserve rounds in the backpack.",
+    "ar": "أكّد للعودة إلى الحياة في مكانك مع بندقية AR-15 بمتانة كاملة، محمّلة بـ30 طلقة من المستوى الثالث، و90 طلقة احتياطية في الحقيبة.",
+    "context": "First tutorial death recovery summary"
+  },
+  {
+    "key": "ui.raid.tutorial_death_revive",
+    "zhHans": "确认后原地满血复活，本局补给已领取。",
+    "en": "Confirm to revive at full health in place. This raid's recovery supply has already been claimed.",
+    "ar": "أكّد للعودة إلى الحياة بكامل الصحة في مكانك. لقد استلمت إمدادات هذه العملية بالفعل.",
+    "context": "Repeated tutorial death recovery summary"
+  },
+  {
+    "key": "ui.raid.tutorial_reward_failed",
+    "zhHans": "补给发放失败，请重试。",
+    "en": "Failed to issue supplies. Please try again.",
+    "ar": "فشل منح الإمدادات. يرجى المحاولة مجددا.",
+    "context": "Tutorial death reward transaction failure"
+  },
+  {
+    "key": "ui.raid.tutorial_confirm",
+    "zhHans": "确定",
+    "en": "Confirm",
+    "ar": "تأكيد",
+    "context": "Tutorial death recovery confirm action"
+  },
+  {
+    "key": "ui.raid.action_time",
+    "zhHans": "行动时间  {0}",
+    "en": "Raid Time  {0}",
+    "ar": "وقت العملية  {0}",
+    "context": "Raid countdown time label"
+  },
+  {
+    "key": "ui.raid.timed_out",
+    "zhHans": "行动超时",
+    "en": "Raid Timed Out",
+    "ar": "انتهى وقت العملية",
+    "context": "Raid timeout settlement outcome"
+  },
+  {
+    "key": "tutorial.system.health_floor",
+    "zhHans": "新手保护已生效，本次行动中生命不会低于 1。",
+    "en": "Beginner protection is active. Your health will not drop below 1 during this raid.",
+    "ar": "تم تفعيل حماية المبتدئين. لن تنخفض صحتك عن 1 خلال هذه العملية.",
+    "context": "M1 教程哥哥通信"
+  },
+  {
+    "key": "tutorial.m1.move_to_combat",
+    "zhHans": "继续往前走，我掩护你。",
+    "en": "Keep moving. I've got you covered.",
+    "ar": "واصل التقدم. سأغطيك.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.combat_guard_dogs",
+    "zhHans": "小心！前面有两个哨兵。",
+    "en": "Careful! Two sentries up ahead.",
+    "ar": "احذر! هناك حارسان أمامك.",
+    "context": "M1 教程哥哥射击通信：发现两名守卫"
+  },
+  {
+    "key": "tutorial.m1.defeat_soldier_pair",
+    "zhHans": "保持准星贴近你选中的敌人，武器会自动开火。",
+    "en": "Keep the reticle close to your chosen enemy. Your weapon will fire automatically.",
+    "ar": "أبق علامة التصويب قريبة من العدو الذي اخترته، وسيطلق سلاحك النار تلقائيا.",
+    "context": "M1 教程哥哥通信：击杀选中士兵"
+  },
+  {
+    "key": "tutorial.m1.kill_survivor",
+    "zhHans": "发现敌对目标。保持移动，瞄准并击倒他。",
+    "en": "Hostile target spotted. Keep moving, aim, and take him down.",
+    "ar": "تم رصد هدف معاد. واصل التحرك وصوب عليه واقض عليه.",
+    "context": "M1 教程步骤 2 伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.open_supply",
+    "zhHans": "做得不错。打开前面的补给箱。",
+    "en": "Nice work. Open the supply crate ahead.",
+    "ar": "عمل جيد. افتح صندوق الإمدادات أمامك.",
+    "context": "M1 教程步骤 3 伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.collect_supplies",
+    "zhHans": "拿上这个小学背包和医疗包，接下来用得上。",
+    "en": "Take this school backpack and medkit. They'll come in handy.",
+    "ar": "خذ هذه الحقيبة المدرسية وحقيبة الإسعافات. ستحتاج إليهما لاحقًا.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.use_medicine",
+    "zhHans": "你受伤了，先处理伤口。使用快捷栏里的医疗包。",
+    "en": "You are hurt. Treat the wound first with the medical kit in the quick slot.",
+    "ar": "أنت مصاب. عالج الجرح أولا باستخدام الحقيبة الطبية في خانة الاستخدام السريع.",
+    "context": "M1 教程哥哥通信"
+  },
+  {
+    "key": "tutorial.m1.open_inventory",
+    "zhHans": "打开背包，准备装备小学背包。",
+    "en": "Open the backpack and prepare to equip the school backpack.",
+    "ar": "افتح الحقيبة واستعد لتجهيز الحقيبة المدرسية.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.open_enemy_loot",
+    "zhHans": "靠近看看，他们身上应该有能用的装备。",
+    "en": "Move closer and take a look. They should have some useful gear.",
+    "ar": "اقترب وألق نظرة. لا بد أن لديهم بعض المعدات المفيدة.",
+    "context": "M1 教程哥哥通信：打开任一死亡箱"
+  },
+  {
+    "key": "tutorial.speaker.ivan_koval",
+    "zhHans": "伊万 科瓦尔:",
+    "en": "Ivan Koval:",
+    "ar": "إيفان كوفال:",
+    "context": "伊万 科瓦尔通信姓名标签"
+  },
+  {
+    "key": "tutorial.m1.equip_backpack.item",
+    "zhHans": "点选小学背包，查看详情。",
+    "en": "Select the school backpack to view its details.",
+    "ar": "حدد الحقيبة المدرسية لعرض تفاصيلها.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.equip_backpack",
+    "zhHans": "把小学背包装到背包装备位。",
+    "en": "Equip the school backpack in the backpack slot.",
+    "ar": "جهز الحقيبة المدرسية في خانة الحقيبة.",
+    "context": "M1 教程步骤 7 伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.move_to_ambush",
+    "zhHans": "准备好了。沿标记前往撤离点。",
+    "en": "You are ready. Follow the marker to the extraction point.",
+    "ar": "أنت جاهز. اتبع العلامة إلى نقطة الإخلاء.",
+    "context": "M1 教程步骤 8 伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.kill_wolf",
+    "zhHans": "有狼扑过来了。别慌，稳住准星解决它们。",
+    "en": "Wolves are charging. Stay calm, keep your aim steady, and take them down.",
+    "ar": "الذئاب تهاجم. لا تهلع، ثبت علامة التصويب واقض عليها.",
+    "context": "M1 教程步骤 9 伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.reach_extraction",
+    "zhHans": "有敌人追上来了。别恋战，立刻去撤离点！",
+    "en": "Enemies are on your trail. Do not get bogged down; head to the extraction point now!",
+    "ar": "الأعداء يلاحقونك. لا تنشغل بالقتال، توجه إلى نقطة الإخلاء حالا!",
+    "context": "M1 tutorial Ivan Koval [Leader] communication: chased to extraction"
+  },
+  {
+    "key": "tutorial.m1.extract",
+    "zhHans": "留在撤离范围内，坚持一下，很快就能回家。",
+    "en": "Stay inside the extraction zone. Hold on a little longer and we will be home soon.",
+    "ar": "ابق داخل منطقة الإخلاء. اصمد قليلا، وسنعود إلى المنزل قريبا.",
+    "context": "M1 tutorial Ivan Koval [Leader] communication: remain inside extraction zone"
+  },
+  {
+    "key": "tutorial.m1.speaker_label",
+    "zhHans": "伊万 科瓦尔:",
+    "en": "Ivan Koval:",
+    "ar": "إيفان كوفال:",
+    "context": "M1 教程 NPC 姓名标签"
+  },
+  {
+    "key": "lootbox.5101.name",
+    "zhHans": "弹药箱",
+    "en": "Ammo Box",
+    "ar": "صندوق ذخيرة",
+    "context": "TbLootBox 5101 display name"
+  },
+  {
+    "key": "lootbox.5102.name",
+    "zhHans": "医疗箱",
+    "en": "Medical Box",
+    "ar": "صندوق طبي",
+    "context": "TbLootBox 5102 display name"
+  },
+  {
+    "key": "lootbox.5103.name",
+    "zhHans": "爱心箱",
+    "en": "Care Package",
+    "ar": "صندوق دعم",
+    "context": "TbLootBox 5103 display name"
+  },
+  {
+    "key": "lootbox.5104.name",
+    "zhHans": "工具箱",
+    "en": "Tool Box",
+    "ar": "صندوق أدوات",
+    "context": "TbLootBox 5104 display name"
+  },
+  {
+    "key": "lootbox.5105.name",
+    "zhHans": "杂货箱",
+    "en": "Miscellaneous Box",
+    "ar": "صندوق متنوع",
+    "context": "TbLootBox 5105 display name"
+  },
+  {
+    "key": "lootbox.5106.name",
+    "zhHans": "普通箱",
+    "en": "Common Box",
+    "ar": "صندوق عادي",
+    "context": "TbLootBox 5106 display name"
+  },
+  {
+    "key": "lootbox.5107.name",
+    "zhHans": "食物箱",
+    "en": "Food Box",
+    "ar": "صندوق طعام",
+    "context": "TbLootBox 5107 display name"
+  },
+  {
+    "key": "lootbox.5108.name",
+    "zhHans": "资料箱",
+    "en": "Intel Box",
+    "ar": "صندوق معلومات",
+    "context": "TbLootBox 5108 display name"
+  },
+  {
+    "key": "lootbox.5109.name",
+    "zhHans": "藏匿箱",
+    "en": "Stash",
+    "ar": "مخبأ",
+    "context": "TbLootBox 5109 display name"
+  },
+  {
+    "key": "lootbox.5110.name",
+    "zhHans": "军火箱",
+    "en": "Military Supply Box",
+    "ar": "صندوق إمداد عسكري",
+    "context": "TbLootBox 5110 display name"
+  },
+  {
+    "key": "lootbox.5111.name",
+    "zhHans": "武器箱",
+    "en": "Weapon Box",
+    "ar": "صندوق أسلحة",
+    "context": "TbLootBox 5111 display name"
+  },
+  {
+    "key": "lootbox.5112.name",
+    "zhHans": "小保险",
+    "en": "Small Safe",
+    "ar": "خزنة صغيرة",
+    "context": "TbLootBox 5112 display name"
+  },
+  {
+    "key": "lootbox.5113.name",
+    "zhHans": "大保险",
+    "en": "Large Safe",
+    "ar": "خزنة كبيرة",
+    "context": "TbLootBox 5113 display name"
+  },
+  {
+    "key": "item.3113.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3113 description"
+  },
+  {
+    "key": "item.3113.name",
+    "zhHans": "AA-12 霰弹枪",
+    "en": "AA-12 Shotgun",
+    "ar": "بندقية خرطوش AA-12",
+    "context": "TbItem 3113 display name"
+  },
+  {
+    "key": "item.3114.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3114 description"
+  },
+  {
+    "key": "item.3114.name",
+    "zhHans": "Vector 冲锋枪",
+    "en": "Vector Submachine Gun",
+    "ar": "رشاش Vector",
+    "context": "TbItem 3114 display name"
+  },
+  {
+    "key": "tutorial.m1.rotate_view",
+    "zhHans": "先看看周围。左右滑动屏幕右侧，转动视角。",
+    "en": "Look around first. Swipe left and right on the right side of the screen to turn the view.",
+    "ar": "ألق نظرة حولك أولا. مرر إلى اليسار واليمين على الجانب الأيمن من الشاشة لتدوير الرؤية.",
+    "context": "M1 教程哥哥通信"
+  },
+  {
+    "key": "tutorial.m1.combat_choose_target",
+    "zhHans": "趁他们分心，你干掉一个，另一个交给我。",
+    "en": "While they're distracted, take one out. Leave the other to me.",
+    "ar": "استغل انشغالهما واقض على أحدهما. اترك الآخر لي.",
+    "context": "M1 教程哥哥射击通信：配合击杀"
+  },
+  {
+    "key": "tutorial.m1.aim_soldiers",
+    "zhHans": "拖动屏幕右侧，把准星靠近敌人，武器就会自动开火。",
+    "en": "Drag on the right side of the screen. Bring the crosshair near an enemy to fire automatically.",
+    "ar": "اسحب على الجانب الأيمن من الشاشة. قرّب علامة التصويب من العدو ليطلق السلاح النار تلقائيًا.",
+    "context": "M1 教程哥哥通信：瞄准任意士兵"
+  },
+  {
+    "key": "tutorial.m1.adjust_reticle",
+    "zhHans": "很好。上下滑动屏幕右侧，调整准星。",
+    "en": "Good. Swipe up and down on the right side of the screen to adjust the reticle.",
+    "ar": "جيد. مرر إلى أعلى وأسفل على الجانب الأيمن من الشاشة لضبط علامة التصويب.",
+    "context": "M1 教程开场纵向调整准星通信"
+  },
+  {
+    "key": "tutorial.m1.aim_dummies",
+    "zhHans": "拖动屏幕右侧，准星靠近敌人时将自动射击",
+    "en": "Swipe on the right side of the screen. Your weapon will fire automatically when the reticle moves close to an enemy.",
+    "ar": "اسحب على الجانب الأيمن من الشاشة. سيطلق سلاحك النار تلقائيًا عندما تقترب علامة التصويب من العدو.",
+    "context": "M1 tutorial Ivan Koval [Leader] communication: aim at a training dummy"
+  },
+  {
+    "key": "tutorial.m1.destroy_dummies",
+    "zhHans": "锁定后武器会自动开火。击破两个训练假人。",
+    "en": "The weapon fires automatically once locked on. Destroy both training dummies.",
+    "ar": "سيطلق السلاح النار تلقائيا بعد التثبيت. دمر دميتي التدريب.",
+    "context": "M1 tutorial Ivan Koval [Leader] communication: destroy one training dummy"
+  },
+  {
+    "key": "item.3012.name",
+    "zhHans": "军用电台",
+    "en": "Military Radio",
+    "ar": "راديو عسكري",
+    "context": "TbItem 3012 display name"
+  },
+  {
+    "key": "item.3012.description",
+    "zhHans": "坚固耐用的军用野战电台，通讯部件完整，具有很高的回收价值。",
+    "en": "A rugged military field radio with intact communications components and high salvage value.",
+    "ar": "راديو ميداني عسكري متين بمكونات اتصال سليمة وقيمة استرداد عالية.",
+    "context": "TbItem 3012 description"
+  },
+  {
+    "key": "lootbox.4006.name",
+    "zhHans": "军用电台物资箱",
+    "en": "Military Radio Crate",
+    "ar": "صندوق راديو عسكري",
+    "context": "TbLootBox 4006 display name"
+  },
+  {
+    "key": "tutorial.m1.collect_high_value",
+    "zhHans": "前面有个军用箱，过去看看。",
+    "en": "There's a military crate ahead. Go check it out.",
+    "ar": "هناك صندوق عسكري أمامك. اذهب وتفقده.",
+    "context": "M1 教程哥哥通信：前往军用箱"
+  },
+  {
+    "key": "item.3559.description",
+    "zhHans": "传说是某位蓝莓大亨的产品",
+    "en": "Rumor has it this was made by a blueberry tycoon.",
+    "ar": "يقال إن هذا من منتجات أحد أباطرة التوت الأزرق.",
+    "context": "TbItem 3559 description"
+  },
+  {
+    "key": "item.3559.name",
+    "zhHans": "蓝莓汁",
+    "en": "Blueberry Juice",
+    "ar": "عصير التوت الأزرق",
+    "context": "TbItem 3559 display name"
+  },
+  {
+    "key": "item.3115.description",
+    "zhHans": "暂无说明",
+    "en": "No description available.",
+    "ar": "لا يوجد وصف متاح.",
+    "context": "TbItem 3115 description"
+  },
+  {
+    "key": "item.3115.name",
+    "zhHans": "VX-39 Meridian",
+    "en": "VX-39 Meridian",
+    "ar": "VX-39 Meridian",
+    "context": "TbItem 3115 display name"
+  },
+  {
+    "key": "item.3501.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3501 description"
+  },
+  {
+    "key": "item.3501.name",
+    "zhHans": "金狮雕像",
+    "en": "Golden Lion Statue",
+    "ar": "تمثال أسد ذهبي",
+    "context": "TbItem 3501 display name"
+  },
+  {
+    "key": "item.3502.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3502 description"
+  },
+  {
+    "key": "item.3502.name",
+    "zhHans": "红纹玛瑙戒指",
+    "en": "Red-Banded Agate Ring",
+    "ar": "خاتم عقيق مخطط بالأحمر",
+    "context": "TbItem 3502 display name"
+  },
+  {
+    "key": "item.3503.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3503 description"
+  },
+  {
+    "key": "item.3503.name",
+    "zhHans": "蓝宝石项链",
+    "en": "Sapphire Necklace",
+    "ar": "قلادة ياقوت أزرق",
+    "context": "TbItem 3503 display name"
+  },
+  {
+    "key": "item.3504.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3504 description"
+  },
+  {
+    "key": "item.3504.name",
+    "zhHans": "礼仪银匕首",
+    "en": "Ceremonial Silver Dagger",
+    "ar": "خنجر فضي احتفالي",
+    "context": "TbItem 3504 display name"
+  },
+  {
+    "key": "item.3505.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3505 description"
+  },
+  {
+    "key": "item.3505.name",
+    "zhHans": "宝石胸针",
+    "en": "Gemstone Brooch",
+    "ar": "بروش مرصع بالأحجار الكريمة",
+    "context": "TbItem 3505 display name"
+  },
+  {
+    "key": "item.3506.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3506 description"
+  },
+  {
+    "key": "item.3506.name",
+    "zhHans": "王室猎鹰头罩",
+    "en": "Royal Falcon Hood",
+    "ar": "غطاء صقر ملكي",
+    "context": "TbItem 3506 display name"
+  },
+  {
+    "key": "item.3507.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3507 description"
+  },
+  {
+    "key": "item.3507.name",
+    "zhHans": "纯金机械表",
+    "en": "Solid Gold Mechanical Watch",
+    "ar": "ساعة ميكانيكية من الذهب الخالص",
+    "context": "TbItem 3507 display name"
+  },
+  {
+    "key": "item.3508.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3508 description"
+  },
+  {
+    "key": "item.3508.name",
+    "zhHans": "蓝色宝石",
+    "en": "Blue Gemstone",
+    "ar": "حجر كريم أزرق",
+    "context": "TbItem 3508 display name"
+  },
+  {
+    "key": "item.3509.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3509 description"
+  },
+  {
+    "key": "item.3509.name",
+    "zhHans": "吉他",
+    "en": "Guitar",
+    "ar": "غيتار",
+    "context": "TbItem 3509 display name"
+  },
+  {
+    "key": "item.3510.description",
+    "zhHans": "珍贵的翡翠",
+    "en": "Precious jade.",
+    "ar": "قطعة يشم ثمينة.",
+    "context": "TbItem 3510 description"
+  },
+  {
+    "key": "item.3510.name",
+    "zhHans": "翡翠",
+    "en": "Jade",
+    "ar": "يشم",
+    "context": "TbItem 3510 display name"
+  },
+  {
+    "key": "item.3511.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3511 description"
+  },
+  {
+    "key": "item.3511.name",
+    "zhHans": "高级香薰",
+    "en": "Premium Incense",
+    "ar": "بخور فاخر",
+    "context": "TbItem 3511 display name"
+  },
+  {
+    "key": "item.3512.description",
+    "zhHans": "昂贵的限定显卡",
+    "en": "An expensive limited-edition graphics card.",
+    "ar": "بطاقة رسومات محدودة الإصدار وباهظة الثمن.",
+    "context": "TbItem 3512 description"
+  },
+  {
+    "key": "item.3512.name",
+    "zhHans": "XPH显卡",
+    "en": "XPH Graphics Card",
+    "ar": "بطاقة رسومات XPH",
+    "context": "TbItem 3512 display name"
+  },
+  {
+    "key": "item.3513.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3513 description"
+  },
+  {
+    "key": "item.3513.name",
+    "zhHans": "香水",
+    "en": "Perfume",
+    "ar": "عطر",
+    "context": "TbItem 3513 display name"
+  },
+  {
+    "key": "item.3514.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3514 description"
+  },
+  {
+    "key": "item.3514.name",
+    "zhHans": "高级香料",
+    "en": "Premium Spices",
+    "ar": "توابل فاخرة",
+    "context": "TbItem 3514 display name"
+  },
+  {
+    "key": "item.3515.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3515 description"
+  },
+  {
+    "key": "item.3515.name",
+    "zhHans": "高级丝绸",
+    "en": "Premium Silk",
+    "ar": "حرير فاخر",
+    "context": "TbItem 3515 display name"
+  },
+  {
+    "key": "item.3516.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3516 description"
+  },
+  {
+    "key": "item.3516.name",
+    "zhHans": "高级单反相机",
+    "en": "Premium DSLR Camera",
+    "ar": "كاميرا DSLR فاخرة",
+    "context": "TbItem 3516 display name"
+  },
+  {
+    "key": "item.3517.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3517 description"
+  },
+  {
+    "key": "item.3517.name",
+    "zhHans": "固态硬盘",
+    "en": "Solid-State Drive",
+    "ar": "محرك أقراص ذو حالة صلبة",
+    "context": "TbItem 3517 display name"
+  },
+  {
+    "key": "item.3518.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3518 description"
+  },
+  {
+    "key": "item.3518.name",
+    "zhHans": "座钟",
+    "en": "Mantel Clock",
+    "ar": "ساعة رف",
+    "context": "TbItem 3518 display name"
+  },
+  {
+    "key": "item.3519.description",
+    "zhHans": "精致的首饰品",
+    "en": "A fine piece of jewelry.",
+    "ar": "قطعة مجوهرات أنيقة.",
+    "context": "TbItem 3519 description"
+  },
+  {
+    "key": "item.3519.name",
+    "zhHans": "银手镯",
+    "en": "Silver Bracelet",
+    "ar": "سوار فضي",
+    "context": "TbItem 3519 display name"
+  },
+  {
+    "key": "item.3520.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3520 description"
+  },
+  {
+    "key": "item.3520.name",
+    "zhHans": "液晶显示屏",
+    "en": "LCD Monitor",
+    "ar": "شاشة LCD",
+    "context": "TbItem 3520 display name"
+  },
+  {
+    "key": "item.3521.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3521 description"
+  },
+  {
+    "key": "item.3521.name",
+    "zhHans": "键盘",
+    "en": "Keyboard",
+    "ar": "لوحة مفاتيح",
+    "context": "TbItem 3521 display name"
+  },
+  {
+    "key": "item.3522.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3522 description"
+  },
+  {
+    "key": "item.3522.name",
+    "zhHans": "智能手机",
+    "en": "Smartphone",
+    "ar": "هاتف ذكي",
+    "context": "TbItem 3522 display name"
+  },
+  {
+    "key": "item.3523.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3523 description"
+  },
+  {
+    "key": "item.3523.name",
+    "zhHans": "蓝牙耳机",
+    "en": "Bluetooth Earbuds",
+    "ar": "سماعات أذن بلوتوث",
+    "context": "TbItem 3523 display name"
+  },
+  {
+    "key": "item.3524.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3524 description"
+  },
+  {
+    "key": "item.3524.name",
+    "zhHans": "精雕打火机",
+    "en": "Engraved Lighter",
+    "ar": "ولاعة منقوشة",
+    "context": "TbItem 3524 display name"
+  },
+  {
+    "key": "item.3525.description",
+    "zhHans": "英勇战士的证明",
+    "en": "Proof of a valiant warrior.",
+    "ar": "دليل على شجاعة محارب باسل.",
+    "context": "TbItem 3525 description"
+  },
+  {
+    "key": "item.3525.name",
+    "zhHans": "英勇勋章",
+    "en": "Medal of Valor",
+    "ar": "وسام الشجاعة",
+    "context": "TbItem 3525 display name"
+  },
+  {
+    "key": "item.3526.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3526 description"
+  },
+  {
+    "key": "item.3526.name",
+    "zhHans": "咖啡机",
+    "en": "Coffee Machine",
+    "ar": "آلة قهوة",
+    "context": "TbItem 3526 display name"
+  },
+  {
+    "key": "item.3527.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3527 description"
+  },
+  {
+    "key": "item.3527.name",
+    "zhHans": "手提电脑",
+    "en": "Laptop",
+    "ar": "حاسوب محمول",
+    "context": "TbItem 3527 display name"
+  },
+  {
+    "key": "item.3528.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3528 description"
+  },
+  {
+    "key": "item.3528.name",
+    "zhHans": "银杯子",
+    "en": "Silver Cup",
+    "ar": "كوب فضي",
+    "context": "TbItem 3528 display name"
+  },
+  {
+    "key": "item.3529.description",
+    "zhHans": "稀有的硬件",
+    "en": "Rare hardware.",
+    "ar": "قطعة عتاد نادرة.",
+    "context": "TbItem 3529 description"
+  },
+  {
+    "key": "item.3529.name",
+    "zhHans": "移动硬盘",
+    "en": "Portable Hard Drive",
+    "ar": "قرص صلب محمول",
+    "context": "TbItem 3529 display name"
+  },
+  {
+    "key": "item.3530.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3530 description"
+  },
+  {
+    "key": "item.3530.name",
+    "zhHans": "扳手",
+    "en": "Wrench",
+    "ar": "مفتاح ربط",
+    "context": "TbItem 3530 display name"
+  },
+  {
+    "key": "item.3531.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3531 description"
+  },
+  {
+    "key": "item.3531.name",
+    "zhHans": "螺丝刀",
+    "en": "Screwdriver",
+    "ar": "مفك براغي",
+    "context": "TbItem 3531 display name"
+  },
+  {
+    "key": "item.3532.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3532 description"
+  },
+  {
+    "key": "item.3532.name",
+    "zhHans": "木板",
+    "en": "Wooden Plank",
+    "ar": "لوح خشبي",
+    "context": "TbItem 3532 display name"
+  },
+  {
+    "key": "item.3533.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3533 description"
+  },
+  {
+    "key": "item.3533.name",
+    "zhHans": "手术刀",
+    "en": "Scalpel",
+    "ar": "مشرط",
+    "context": "TbItem 3533 display name"
+  },
+  {
+    "key": "item.3534.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3534 description"
+  },
+  {
+    "key": "item.3534.name",
+    "zhHans": "垃圾袋",
+    "en": "Trash Bag",
+    "ar": "كيس قمامة",
+    "context": "TbItem 3534 display name"
+  },
+  {
+    "key": "item.3535.description",
+    "zhHans": "可爱的骆驼玩偶",
+    "en": "An adorable camel plush toy.",
+    "ar": "دمية جمل محشوة لطيفة.",
+    "context": "TbItem 3535 description"
+  },
+  {
+    "key": "item.3535.name",
+    "zhHans": "骆驼玩偶",
+    "en": "Camel Plush Toy",
+    "ar": "دمية جمل محشوة",
+    "context": "TbItem 3535 display name"
+  },
+  {
+    "key": "item.3536.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3536 description"
+  },
+  {
+    "key": "item.3536.name",
+    "zhHans": "电缆",
+    "en": "Electrical Cable",
+    "ar": "كابل كهربائي",
+    "context": "TbItem 3536 display name"
+  },
+  {
+    "key": "item.3537.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3537 description"
+  },
+  {
+    "key": "item.3537.name",
+    "zhHans": "咖啡豆",
+    "en": "Coffee Beans",
+    "ar": "حبوب قهوة",
+    "context": "TbItem 3537 display name"
+  },
+  {
+    "key": "item.3538.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3538 description"
+  },
+  {
+    "key": "item.3538.name",
+    "zhHans": "马克杯",
+    "en": "Mug",
+    "ar": "كوب",
+    "context": "TbItem 3538 display name"
+  },
+  {
+    "key": "item.3539.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3539 description"
+  },
+  {
+    "key": "item.3539.name",
+    "zhHans": "牙刷",
+    "en": "Toothbrush",
+    "ar": "فرشاة أسنان",
+    "context": "TbItem 3539 display name"
+  },
+  {
+    "key": "item.3540.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3540 description"
+  },
+  {
+    "key": "item.3540.name",
+    "zhHans": "牙膏",
+    "en": "Toothpaste",
+    "ar": "معجون أسنان",
+    "context": "TbItem 3540 display name"
+  },
+  {
+    "key": "item.3541.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3541 description"
+  },
+  {
+    "key": "item.3541.name",
+    "zhHans": "雨伞",
+    "en": "Umbrella",
+    "ar": "مظلة",
+    "context": "TbItem 3541 display name"
+  },
+  {
+    "key": "item.3542.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3542 description"
+  },
+  {
+    "key": "item.3542.name",
+    "zhHans": "精品写真",
+    "en": "Premium Photo Album",
+    "ar": "ألبوم صور فاخر",
+    "context": "TbItem 3542 display name"
+  },
+  {
+    "key": "item.3543.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3543 description"
+  },
+  {
+    "key": "item.3543.name",
+    "zhHans": "漫画书",
+    "en": "Comic Book",
+    "ar": "كتاب مصور",
+    "context": "TbItem 3543 display name"
+  },
+  {
+    "key": "item.3544.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3544 description"
+  },
+  {
+    "key": "item.3544.name",
+    "zhHans": "音乐光碟",
+    "en": "Music CD",
+    "ar": "قرص موسيقي",
+    "context": "TbItem 3544 display name"
+  },
+  {
+    "key": "item.3545.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3545 description"
+  },
+  {
+    "key": "item.3545.name",
+    "zhHans": "蛋白粉",
+    "en": "Protein Powder",
+    "ar": "مسحوق بروتين",
+    "context": "TbItem 3545 display name"
+  },
+  {
+    "key": "item.3546.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3546 description"
+  },
+  {
+    "key": "item.3546.name",
+    "zhHans": "望远镜",
+    "en": "Binoculars",
+    "ar": "منظار",
+    "context": "TbItem 3546 display name"
+  },
+  {
+    "key": "item.3547.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3547 description"
+  },
+  {
+    "key": "item.3547.name",
+    "zhHans": "玩具模型",
+    "en": "Toy Model",
+    "ar": "نموذج لعبة",
+    "context": "TbItem 3547 display name"
+  },
+  {
+    "key": "item.3548.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3548 description"
+  },
+  {
+    "key": "item.3548.name",
+    "zhHans": "指南针",
+    "en": "Compass",
+    "ar": "بوصلة",
+    "context": "TbItem 3548 display name"
+  },
+  {
+    "key": "item.3549.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3549 description"
+  },
+  {
+    "key": "item.3549.name",
+    "zhHans": "美工刀",
+    "en": "Utility Knife",
+    "ar": "سكين متعدد الاستخدام",
+    "context": "TbItem 3549 display name"
+  },
+  {
+    "key": "item.3550.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3550 description"
+  },
+  {
+    "key": "item.3550.name",
+    "zhHans": "螺丝钉",
+    "en": "Screw",
+    "ar": "برغي",
+    "context": "TbItem 3550 display name"
+  },
+  {
+    "key": "item.3551.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3551 description"
+  },
+  {
+    "key": "item.3551.name",
+    "zhHans": "螺母",
+    "en": "Hex Nut",
+    "ar": "صامولة سداسية",
+    "context": "TbItem 3551 display name"
+  },
+  {
+    "key": "item.3552.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3552 description"
+  },
+  {
+    "key": "item.3552.name",
+    "zhHans": "胶带",
+    "en": "Duct Tape",
+    "ar": "شريط لاصق",
+    "context": "TbItem 3552 display name"
+  },
+  {
+    "key": "item.3553.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3553 description"
+  },
+  {
+    "key": "item.3553.name",
+    "zhHans": "喷胶",
+    "en": "Spray Adhesive",
+    "ar": "بخاخ لاصق",
+    "context": "TbItem 3553 display name"
+  },
+  {
+    "key": "item.3554.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3554 description"
+  },
+  {
+    "key": "item.3554.name",
+    "zhHans": "油漆",
+    "en": "Paint",
+    "ar": "طلاء",
+    "context": "TbItem 3554 display name"
+  },
+  {
+    "key": "item.3555.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3555 description"
+  },
+  {
+    "key": "item.3555.name",
+    "zhHans": "残缺笔记",
+    "en": "Incomplete Notes",
+    "ar": "ملاحظات ناقصة",
+    "context": "TbItem 3555 display name"
+  },
+  {
+    "key": "item.3556.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3556 description"
+  },
+  {
+    "key": "item.3556.name",
+    "zhHans": "老虎钳",
+    "en": "Pliers",
+    "ar": "كماشة",
+    "context": "TbItem 3556 display name"
+  },
+  {
+    "key": "item.3557.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3557 description"
+  },
+  {
+    "key": "item.3557.name",
+    "zhHans": "清洁剂",
+    "en": "Cleaning Agent",
+    "ar": "منظف",
+    "context": "TbItem 3557 display name"
+  },
+  {
+    "key": "item.3558.description",
+    "zhHans": "香香的肥皂",
+    "en": "Fragrant soap.",
+    "ar": "صابون عطري.",
+    "context": "TbItem 3558 description"
+  },
+  {
+    "key": "item.3558.name",
+    "zhHans": "肥皂",
+    "en": "Soap",
+    "ar": "صابون",
+    "context": "TbItem 3558 display name"
+  },
+  {
+    "key": "ui.settings.category_general",
+    "zhHans": "通用",
+    "en": "General",
+    "ar": "عام",
+    "context": "General settings tab"
+  },
+  {
+    "key": "ui.settings.category_audio",
+    "zhHans": "音频",
+    "en": "Audio",
+    "ar": "الصوت",
+    "context": "Audio settings tab"
+  },
+  {
+    "key": "ui.settings.master_volume",
+    "zhHans": "总音量",
+    "en": "Master Volume",
+    "ar": "مستوى الصوت الرئيسي",
+    "context": "Master volume setting label"
+  },
+  {
+    "key": "ui.settings.music_volume",
+    "zhHans": "音乐音量",
+    "en": "Music Volume",
+    "ar": "مستوى صوت الموسيقى",
+    "context": "Music volume setting label"
+  },
+  {
+    "key": "ui.settings.sfx_volume",
+    "zhHans": "音效音量",
+    "en": "SFX Volume",
+    "ar": "مستوى صوت المؤثرات",
+    "context": "Sound effects volume setting label"
+  },
+  {
+    "key": "ui.settings.ambience_volume",
+    "zhHans": "环境音量",
+    "en": "Ambience Volume",
+    "ar": "مستوى صوت البيئة",
+    "context": "Ambience volume setting label"
+  },
+  {
+    "key": "ui.settings.look_save_failed",
+    "zhHans": "灵敏度设置保存失败，请重试。",
+    "en": "Failed to save sensitivity settings. Please try again.",
+    "ar": "تعذر حفظ إعدادات الحساسية. يرجى المحاولة مرة أخرى.",
+    "context": "Player-visible sensitivity save failure"
+  },
+  {
+    "key": "ui.settings.audio_save_failed",
+    "zhHans": "音频设置保存失败，请重试。",
+    "en": "Failed to save audio settings. Please try again.",
+    "ar": "تعذر حفظ إعدادات الصوت. يرجى المحاولة مرة أخرى.",
+    "context": "Player-visible audio save failure"
+  },
+  {
+    "key": "tutorial.speaker.brother",
+    "zhHans": "哥哥:",
+    "en": "Brother:",
+    "ar": "الأخ الأكبر:",
+    "context": "5001 哥哥通信姓名标签"
+  },
+  {
+    "key": "tutorial.m1.move_to_pursuit",
+    "zhHans": "收好物资，继续沿标记前往撤离点。",
+    "en": "Secure the supplies and keep following the marker to the extraction point.",
+    "ar": "أمّن الإمدادات وواصل اتباع العلامة إلى نقطة الإخلاء.",
+    "context": "M1 tutorial Ivan Koval [Leader] communication: move to pursuit trigger"
+  },
+  {
+    "key": "ui.raid_map.legend.player",
+    "zhHans": "玩家",
+    "en": "Player",
+    "ar": "اللاعب",
+    "context": "局内地图图例：玩家当前位置。"
+  },
+  {
+    "key": "ui.raid_map.legend.spawn",
+    "zhHans": "基地入口",
+    "en": "Base Entrance",
+    "ar": "مدخل القاعدة",
+    "context": "局内地图图例：基地入口。"
+  },
+  {
+    "key": "ui.raid_map.legend.extraction",
+    "zhHans": "撤离点",
+    "en": "Extraction Point",
+    "ar": "نقطة الإخلاء",
+    "context": "局内地图图例：正式撤离点。"
+  },
+  {
+    "key": "enemy.2003.name",
+    "zhHans": "狼",
+    "en": "Wolf",
+    "ar": "ذئب",
+    "context": "Enemy overhead nameplate, TbEnemy 2003"
+  },
+  {
+    "key": "enemy.2004.name",
+    "zhHans": "熊",
+    "en": "Bear",
+    "ar": "دب",
+    "context": "Enemy overhead nameplate, TbEnemy 2004"
+  },
+  {
+    "key": "enemy.2008.name",
+    "zhHans": "哨兵",
+    "en": "Sentry",
+    "ar": "حارس",
+    "context": "Enemy overhead nameplate, TbEnemy 2008"
+  },
+  {
+    "key": "enemy.2009.name",
+    "zhHans": "幸存者首领",
+    "en": "Survivor Boss",
+    "ar": "زعيم الناجين",
+    "context": "Enemy overhead nameplate, TbEnemy 2009"
+  },
+  {
+    "key": "enemy.2010.name",
+    "zhHans": "哨兵",
+    "en": "Sentry",
+    "ar": "حارس",
+    "context": "Enemy overhead nameplate, TbEnemy 2010"
+  },
+  {
+    "key": "enemy.2011.name",
+    "zhHans": "哨兵",
+    "en": "Sentry",
+    "ar": "حارس",
+    "context": "Enemy overhead nameplate, TbEnemy 2011"
+  },
+  {
+    "key": "enemy.2012.name",
+    "zhHans": "突击兵",
+    "en": "Assault Trooper",
+    "ar": "جندي اقتحام",
+    "context": "Enemy overhead nameplate, TbEnemy 2012"
+  },
+  {
+    "key": "enemy.2013.name",
+    "zhHans": "突击兵",
+    "en": "Assault Trooper",
+    "ar": "جندي اقتحام",
+    "context": "Enemy overhead nameplate, TbEnemy 2013"
+  },
+  {
+    "key": "enemy.2014.name",
+    "zhHans": "突击兵",
+    "en": "Assault Trooper",
+    "ar": "جندي اقتحام",
+    "context": "Enemy overhead nameplate, TbEnemy 2014"
+  },
+  {
+    "key": "enemy.2015.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2015"
+  },
+  {
+    "key": "enemy.2016.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2016"
+  },
+  {
+    "key": "enemy.2017.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2017"
+  },
+  {
+    "key": "enemy.2018.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2018"
+  },
+  {
+    "key": "enemy.2019.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2019"
+  },
+  {
+    "key": "enemy.2020.name",
+    "zhHans": "幸存者",
+    "en": "Survivor",
+    "ar": "ناجٍ",
+    "context": "Enemy overhead nameplate, TbEnemy 2020"
+  },
+  {
+    "key": "enemy.2021.name",
+    "zhHans": "士兵首领",
+    "en": "Soldier Boss",
+    "ar": "زعيم الجنود",
+    "context": "Enemy overhead nameplate, TbEnemy 2021"
+  },
+  {
+    "key": "enemy.2022.name",
+    "zhHans": "训练假人",
+    "en": "Training Dummy",
+    "ar": "دمية تدريب",
+    "context": "Enemy overhead nameplate, TbEnemy 2022"
+  },
+  {
+    "key": "ui.enemy_loot.title_format",
+    "zhHans": "{0}遗留物",
+    "en": "{0} Remains",
+    "ar": "مقتنيات {0}",
+    "context": "Enemy death loot window title format; {0} is the localized enemy name"
+  },
+  {
+    "key": "ui.stash.deposit_all",
+    "zhHans": "一键存入",
+    "en": "Deposit All",
+    "ar": "إيداع الكل",
+    "context": "Stash deposit-all backpack action"
+  },
+  {
+    "key": "ui.stash.deposit_all_succeeded",
+    "zhHans": "已将背包物品存入仓库。",
+    "en": "Backpack items deposited into the stash.",
+    "ar": "تم إيداع عناصر الحقيبة في المخزن.",
+    "context": "Stash deposit-all success toast"
+  },
+  {
+    "key": "ui.stash.capacity_insufficient",
+    "zhHans": "仓库容量不足",
+    "en": "Stash capacity is insufficient",
+    "ar": "سعة المخزن غير كافية",
+    "context": "Stash deposit-all capacity toast"
+  },
+  {
+    "key": "ui.stash.deposit",
+    "zhHans": "放入",
+    "en": "Deposit",
+    "ar": "إيداع",
+    "context": "Stash transfer action from backpack"
+  },
+  {
+    "key": "ui.stash.withdraw",
+    "zhHans": "带出",
+    "en": "Withdraw",
+    "ar": "إخراج",
+    "context": "Stash transfer action from stash"
+  },
+  {
+    "key": "ui.stash.split_deposit_title",
+    "zhHans": "拆分存入",
+    "en": "Split Deposit",
+    "ar": "تقسيم الإيداع",
+    "context": "Stash split transfer title from backpack"
+  },
+  {
+    "key": "ui.stash.split_withdraw_title",
+    "zhHans": "拆分带出",
+    "en": "Split Withdraw",
+    "ar": "تقسيم الإخراج",
+    "context": "Stash split transfer title from stash"
+  },
+  {
+    "key": "ui.stash.sort_succeeded",
+    "zhHans": "仓库整理完成。",
+    "en": "Stash sorted.",
+    "ar": "تم ترتيب المخزن.",
+    "context": "Stash sort success toast"
+  },
+  {
+    "key": "ui.stash.button",
+    "zhHans": "仓库",
+    "en": "Stash",
+    "ar": "المخزن",
+    "context": "Safe-house stash button"
+  },
+  {
+    "key": "tutorial.m1.extraction_guide.label",
+    "zhHans": "撤离点",
+    "en": "Extraction Point",
+    "ar": "نقطة الإخلاء",
+    "context": "M1 新手关卡 ExtractionGuide 世界文字"
+  },
+  {
+    "key": "ui.trade.button",
+    "zhHans": "交易",
+    "en": "Trade",
+    "ar": "التجارة",
+    "context": "右上角交易入口"
+  },
+  {
+    "key": "ui.trade.title",
+    "zhHans": "交易",
+    "en": "Trade",
+    "ar": "التجارة",
+    "context": "交易窗口标题"
+  },
+  {
+    "key": "ui.trade.target_backpack",
+    "zhHans": "背包",
+    "en": "Backpack",
+    "ar": "حقيبة الظهر",
+    "context": "购买目标与资产页签"
+  },
+  {
+    "key": "ui.trade.target_stash",
+    "zhHans": "仓库",
+    "en": "Stash",
+    "ar": "المخزن",
+    "context": "购买目标与资产页签"
+  },
+  {
+    "key": "ui.trade.assets_header",
+    "zhHans": "{0}  货币 {1:N0}",
+    "en": "{0}  Currency {1:N0}",
+    "ar": "{0}  العملة {1:N0}",
+    "context": "资产栏标题，0容器，1货币"
+  },
+  {
+    "key": "ui.trade.no_products",
+    "zhHans": "暂无商品",
+    "en": "No products",
+    "ar": "لا توجد منتجات",
+    "context": "联络人无商品"
+  },
+  {
+    "key": "ui.trade.buy",
+    "zhHans": "购买",
+    "en": "Buy",
+    "ar": "شراء",
+    "context": "交易商品与详情购买按钮"
+  },
+  {
+    "key": "ui.trade.sell",
+    "zhHans": "出售",
+    "en": "Sell",
+    "ar": "بيع",
+    "context": "交易详情出售按钮"
+  },
+  {
+    "key": "ui.trade.contact_trust_level",
+    "zhHans": "信任等级：{0}级",
+    "en": "Trust Level: {0}",
+    "ar": "مستوى الثقة: {0}",
+    "context": "交易窗口当前联络人信任等级，0为等级"
+  },
+  {
+    "key": "ui.trade.trust_unlock",
+    "zhHans": "信任等级{0}解锁",
+    "en": "Unlocks at Trust Level {0}",
+    "ar": "يفتح عند مستوى الثقة {0}",
+    "context": "商品信任锁定提示，0为要求等级"
+  },
+  {
+    "key": "ui.trade.mission_unlock",
+    "zhHans": "完成制定任务{0}解锁",
+    "en": "Complete mission {0} to unlock",
+    "ar": "أكمل المهمة {0} لفتحها",
+    "context": "商品任务锁定提示，0为任务名称"
+  },
+  {
+    "key": "ui.trade.buy_for",
+    "zhHans": "购买  {0:N0}",
+    "en": "Buy  {0:N0}",
+    "ar": "شراء  {0:N0}",
+    "context": "购买按钮与总价"
+  },
+  {
+    "key": "ui.trade.sell_for",
+    "zhHans": "出售  +{0:N0}",
+    "en": "Sell  +{0:N0}",
+    "ar": "بيع  +{0:N0}",
+    "context": "出售按钮与所得"
+  },
+  {
+    "key": "ui.trade.cannot_sell",
+    "zhHans": "不可出售",
+    "en": "Cannot sell",
+    "ar": "لا يمكن البيع",
+    "context": "不可出售按钮"
+  },
+  {
+    "key": "ui.trade.sell_quantity_title",
+    "zhHans": "选择售卖的物品数量",
+    "en": "Select quantity to sell",
+    "ar": "اختر كمية العناصر للبيع",
+    "context": "拆分售卖数量窗标题"
+  },
+  {
+    "key": "ui.trade.last_sale",
+    "zhHans": "上一次售卖的物品\n{0}",
+    "en": "Last sold item\n{0}",
+    "ar": "آخر عنصر تم بيعه\n{0}",
+    "context": "上次售卖区标题，0物品名"
+  },
+  {
+    "key": "ui.trade.undo",
+    "zhHans": "撤回",
+    "en": "Undo",
+    "ar": "تراجع",
+    "context": "撤回按钮"
+  },
+  {
+    "key": "ui.trade.purchase_succeeded",
+    "zhHans": "已购买 {0} x{1} 至{2}",
+    "en": "Purchased {0} x{1}. Destination: {2}.",
+    "ar": "اكتملت عملية شراء {0} x{1}. الوجهة: {2}.",
+    "context": "购买结果，0名称1数量2目标"
+  },
+  {
+    "key": "ui.trade.sale_succeeded",
+    "zhHans": "已出售 {0} x{1}，获得 {2:N0}",
+    "en": "Sold {0} x{1} for {2:N0}",
+    "ar": "تم بيع {0} x{1} مقابل {2:N0}",
+    "context": "出售结果"
+  },
+  {
+    "key": "ui.trade.undo_succeeded",
+    "zhHans": "已撤回上一次售卖",
+    "en": "Last sale undone",
+    "ar": "تم التراجع عن آخر عملية بيع",
+    "context": "撤回成功"
+  },
+  {
+    "key": "ui.trade.insufficient_funds",
+    "zhHans": "现金不足！",
+    "en": "Insufficient funds",
+    "ar": "الأموال غير كافية",
+    "context": "购买余额不足"
+  },
+  {
+    "key": "ui.trade.no_space",
+    "zhHans": "目标容器空间不足",
+    "en": "Not enough space in the target container",
+    "ar": "لا توجد مساحة كافية في الحاوية المستهدفة",
+    "context": "购买或出售空间不足"
+  },
+  {
+    "key": "ui.trade.purchase_failed",
+    "zhHans": "购买失败",
+    "en": "Purchase failed",
+    "ar": "فشل الشراء",
+    "context": "购买通用失败"
+  },
+  {
+    "key": "ui.trade.sell_failed",
+    "zhHans": "出售失败",
+    "en": "Sale failed",
+    "ar": "فشل البيع",
+    "context": "出售通用失败"
+  },
+  {
+    "key": "ui.trade.undo_insufficient_funds",
+    "zhHans": "货币不足，无法撤回",
+    "en": "Insufficient funds to undo the sale",
+    "ar": "الأموال غير كافية للتراجع عن البيع",
+    "context": "撤回余额不足"
+  },
+  {
+    "key": "ui.trade.undo_no_space",
+    "zhHans": "原容器空间不足，无法撤回",
+    "en": "Not enough space in the original container to undo the sale",
+    "ar": "لا توجد مساحة كافية في الحاوية الأصلية للتراجع عن البيع",
+    "context": "撤回空间不足"
+  },
+  {
+    "key": "ui.trade.undo_failed",
+    "zhHans": "撤回失败",
+    "en": "Undo failed",
+    "ar": "فشل التراجع",
+    "context": "撤回通用失败"
+  },
+  {
+    "key": "ui.trade.save_failed",
+    "zhHans": "保存玩家资产失败",
+    "en": "Failed to save player inventory",
+    "ar": "فشل حفظ مخزون اللاعب",
+    "context": "交易前快照失败"
+  },
+  {
+    "key": "ui.pickup.backpack_full",
+    "zhHans": "背包已满",
+    "en": "Backpack Full",
+    "ar": "الحقيبة ممتلئة",
+    "context": "World pickup rejected because backpack space is full"
+  },
+  {
+    "key": "ui.pickup.carry_weight_full",
+    "zhHans": "负载已满",
+    "en": "Load Limit Reached",
+    "ar": "تم بلوغ حد الحمولة",
+    "context": "World pickup rejected because carry weight is full"
+  },
+  {
+    "key": "ui.raid_map.legend.title",
+    "zhHans": "图例",
+    "en": "Legend",
+    "ar": "مفتاح الخريطة",
+    "context": "局内地图图例标题。"
+  },
+  {
+    "key": "ui.out_game.depart_warning.weapon_missing",
+    "zhHans": "缺少武器",
+    "en": "Missing weapon",
+    "ar": "لا يوجد سلاح",
+    "context": "Out-game departure warning: no firearm equipped"
+  },
+  {
+    "key": "ui.out_game.depart_warning.ammo_low",
+    "zhHans": "子弹不足",
+    "en": "Insufficient ammo",
+    "ar": "الذخيرة غير كافية",
+    "context": "Out-game departure warning: backpack ammo below 60"
+  },
+  {
+    "key": "ui.out_game.depart_warning.question",
+    "zhHans": "是否开始行动",
+    "en": "Start the raid?",
+    "ar": "هل تريد بدء العملية؟",
+    "context": "Out-game departure warning question"
+  },
+  {
+    "key": "ui.raid_map.delete_marker",
+    "zhHans": "删除标记",
+    "en": "Delete Marker",
+    "ar": "حذف العلامة",
+    "context": "局内地图删除标记按钮。"
+  },
+  {
+    "key": "ui.inventory.attachment.auto_equipped",
+    "zhHans": "已将{0}装备至{1}",
+    "en": "Equipped {0} to {1}",
+    "ar": "تم تجهيز {0} على {1}",
+    "context": "自动将拾取或购买的枪械部件装备到兼容的空槽"
+  },
+  {
+    "key": "ui.raid.continue_exploring",
+    "zhHans": "继续探索",
+    "en": "Continue Exploring",
+    "ar": "متابعة الاستكشاف",
+    "context": "Manual return confirmation cancel action"
+  },
+  {
+    "key": "ui.raid.return_confirm",
+    "zhHans": "是否停止探索，返回基地？",
+    "en": "Stop exploring and return to base?",
+    "ar": "هل تريد إيقاف الاستكشاف والعودة إلى القاعدة؟",
+    "context": "Manual return confirmation question"
+  },
+  {
+    "key": "ui.trade.contact_mission_unlock",
+    "zhHans": "完成[{0}]解锁该联络人",
+    "en": "Complete mission {0} to unlock this contact.",
+    "ar": "أكمل المهمة {0} لفتح جهة الاتصال هذه.",
+    "context": "未解锁联络人交易页解锁提示，0为任务名称"
+  },
+  {
+    "key": "contact.3.name",
+    "zhHans": "乔伊纳",
+    "en": "Joyner",
+    "ar": "جوينر",
+    "context": "Contact name"
+  },
+  {
+    "key": "contact.3.role",
+    "zhHans": "防护装备",
+    "en": "Protective Gear",
+    "ar": "معدات الحماية",
+    "context": "Contact role"
+  },
+  {
+    "key": "contact.4.name",
+    "zhHans": "高扬斯卡娅",
+    "en": "Koyanskaya",
+    "ar": "كويانسكايا",
+    "context": "Contact name"
+  },
+  {
+    "key": "contact.4.role",
+    "zhHans": "医疗用品",
+    "en": "Medical Supplies",
+    "ar": "المستلزمات الطبية",
+    "context": "Contact role"
+  },
+  {
+    "key": "item.3560.name",
+    "zhHans": "狼肉",
+    "en": "Wolf Meat",
+    "ar": "لحم الذئب",
+    "context": "TbItem 3560 display name"
+  },
+  {
+    "key": "item.3560.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3560 description"
+  },
+  {
+    "key": "ui.interaction.talk",
+    "zhHans": "交谈",
+    "en": "Talk",
+    "ar": "تحدث",
+    "context": "Raid contact interaction action"
+  },
+  {
+    "key": "contact.5.name",
+    "zhHans": "门捷列夫",
+    "en": "Mendeleev",
+    "ar": "مندليف",
+    "context": "TbContact 5 display name"
+  },
+  {
+    "key": "contact.5.role",
+    "zhHans": "护甲与装备",
+    "en": "Armor and equipment",
+    "ar": "الدروع والمعدات",
+    "context": "TbContact 5 role"
+  },
+  {
+    "key": "contact.6.name",
+    "zhHans": "卡辛德勒",
+    "en": "Kassindler",
+    "ar": "كاسيندلر",
+    "context": "TbContact 6 display name"
+  },
+  {
+    "key": "contact.6.role",
+    "zhHans": "武器配件",
+    "en": "Weapon attachments",
+    "ar": "ملحقات الأسلحة",
+    "context": "TbContact 6 role"
+  },
+  {
+    "key": "ui.mission_center.title",
+    "zhHans": "任务中心",
+    "en": "Mission Center",
+    "ar": "مركز المهام",
+    "context": "Mission center window title"
+  },
+  {
+    "key": "ui.mission_center.incomplete",
+    "zhHans": "未完成",
+    "en": "Incomplete",
+    "ar": "غير مكتملة",
+    "context": "Mission center incomplete section"
+  },
+  {
+    "key": "ui.mission_center.completed",
+    "zhHans": "已完成",
+    "en": "Completed",
+    "ar": "مكتملة",
+    "context": "Mission center completed section"
+  },
+  {
+    "key": "ui.mission_center.objectives",
+    "zhHans": "任务目标",
+    "en": "Mission Objectives",
+    "ar": "أهداف المهمة",
+    "context": "Mission center objectives heading"
+  },
+  {
+    "key": "ui.mission_center.rewards",
+    "zhHans": "奖励",
+    "en": "Rewards",
+    "ar": "المكافآت",
+    "context": "Mission center rewards heading"
+  },
+  {
+    "key": "ui.mission_center.contact_locked",
+    "zhHans": "尚未解锁此联络人",
+    "en": "This contact has not been unlocked yet.",
+    "ar": "لم يتم فتح جهة الاتصال هذه بعد.",
+    "context": "Toast shown when a locked contact is pressed"
+  },
+  {
+    "key": "ui.mission_center.contact_locked_label",
+    "zhHans": "尚未解锁",
+    "en": "Locked",
+    "ar": "مقفل",
+    "context": "Locked contact row label"
+  },
+  {
+    "key": "ui.mission_center.empty",
+    "zhHans": "暂无任务",
+    "en": "No missions",
+    "ar": "لا توجد مهام",
+    "context": "Mission center empty state"
+  },
+  {
+    "key": "ui.mission_center.prerequisite",
+    "zhHans": "完成前置任务[{0}]解锁",
+    "en": "Complete prerequisite mission [{0}] to unlock",
+    "ar": "أكمل المهمة المطلوبة [{0}] لفتحها",
+    "context": "Locked mission prerequisite message"
+  },
+  {
+    "key": "ui.mission_center.view",
+    "zhHans": "查看",
+    "en": "View",
+    "ar": "عرض",
+    "context": "Mission center item submission row button"
+  },
+  {
+    "key": "ui.mission_center.submitted",
+    "zhHans": "已提交",
+    "en": "Submitted",
+    "ar": "تم التسليم",
+    "context": "Mission center completed submission label"
+  },
+  {
+    "key": "ui.mission_center.no_submission_item_selected",
+    "zhHans": "未选中道具。",
+    "en": "No item selected.",
+    "ar": "لم يتم تحديد أي عنصر.",
+    "context": "Toast shown when submission is confirmed without an item selection"
+  },
+  {
+    "key": "ui.mission_center.no_submission_items",
+    "zhHans": "背包或仓库中没有可提交物品。",
+    "en": "No eligible submission items are in the backpack or stash.",
+    "ar": "لا توجد عناصر مطابقة لشروط التسليم في حقيبة الظهر أو المخزن.",
+    "context": "Toast shown when no eligible submission item is in the backpack or stash"
+  },
+  {
+    "key": "ui.stash.filter_all",
+    "zhHans": "ALL",
+    "en": "ALL",
+    "ar": "الكل",
+    "context": "Stash filter showing all items"
+  },
+  {
+    "key": "ui.stash.backpack_space_insufficient",
+    "zhHans": "背包空间不足！",
+    "en": "Backpack space is insufficient!",
+    "ar": "مساحة الحقيبة غير كافية!",
+    "context": "Toast shown when stash withdrawal cannot fit in backpack"
+  },
+  {
+    "key": "ui.stash.stash_space_insufficient",
+    "zhHans": "仓库空间不足！",
+    "en": "Stash space is insufficient!",
+    "ar": "مساحة المخزن غير كافية!",
+    "context": "Toast shown when backpack deposit cannot fit in stash"
+  },
+  {
+    "key": "ui.raid.extraction_failed",
+    "zhHans": "撤离失败",
+    "en": "Extraction Failed",
+    "ar": "فشل الإخلاء",
+    "context": "Failed extraction outcome"
+  },
+  {
+    "key": "ui.raid.extracted_total_value",
+    "zhHans": "获得总价值  {0:N0}",
+    "en": "Total Value Gained  {0:N0}",
+    "ar": "إجمالي القيمة المكتسبة  {0:N0}",
+    "context": "Successful settlement gained value"
+  },
+  {
+    "key": "ui.raid.lost_total_value",
+    "zhHans": "失去总价值  {0:N0}",
+    "en": "Lost Total Value  {0:N0}",
+    "ar": "إجمالي القيمة المفقودة  {0:N0}",
+    "context": "Failed settlement lost value"
+  },
+  {
+    "key": "ui.raid.enemy_kills",
+    "zhHans": "淘汰敌人数  {0:N0}",
+    "en": "Enemies Eliminated  {0:N0}",
+    "ar": "عدد الأعداء المقضى عليهم  {0:N0}",
+    "context": "Settlement enemy elimination count"
+  },
+  {
+    "key": "map.5002.poi.01.name",
+    "zhHans": "山中小屋",
+    "en": "Mountain Cabin",
+    "ar": "كوخ جبلي",
+    "context": "Map 5002 POI 01 display name"
+  },
+  {
+    "key": "map.5002.poi.02.name",
+    "zhHans": "发电塔",
+    "en": "Power Pylon",
+    "ar": "برج كهرباء",
+    "context": "Map 5002 POI 02 display name"
+  },
+  {
+    "key": "map.5002.poi.03.name",
+    "zhHans": "公路北部",
+    "en": "North Highway",
+    "ar": "شمال الطريق السريع",
+    "context": "Map 5002 POI 03 display name"
+  },
+  {
+    "key": "map.5002.poi.04.name",
+    "zhHans": "破旧小屋",
+    "en": "Rundown Shack",
+    "ar": "كوخ متهالك",
+    "context": "Map 5002 POI 04 display name"
+  },
+  {
+    "key": "map.5002.poi.05.name",
+    "zhHans": "加油站",
+    "en": "Gas Station",
+    "ar": "محطة وقود",
+    "context": "Map 5002 POI 05 display name"
+  },
+  {
+    "key": "map.5002.poi.06.name",
+    "zhHans": "山地侧路",
+    "en": "Mountain Side Road",
+    "ar": "طريق جانبي جبلي",
+    "context": "Map 5002 POI 06 display name"
+  },
+  {
+    "key": "map.5002.poi.07.name",
+    "zhHans": "仓库前哨",
+    "en": "Warehouse Outpost",
+    "ar": "موقع أمامي للمستودع",
+    "context": "Map 5002 POI 07 display name"
+  },
+  {
+    "key": "map.5002.poi.08.name",
+    "zhHans": "训练营地",
+    "en": "Training Camp",
+    "ar": "معسكر تدريب",
+    "context": "Map 5002 POI 08 display name"
+  },
+  {
+    "key": "map.5002.poi.09.name",
+    "zhHans": "被占领的农场",
+    "en": "Occupied Farm",
+    "ar": "مزرعة محتلة",
+    "context": "Map 5002 POI 09 display name"
+  },
+  {
+    "key": "map.5002.poi.10.name",
+    "zhHans": "山脚下",
+    "en": "Foothills",
+    "ar": "سفح الجبل",
+    "context": "Map 5002 POI 10 display name"
+  },
+  {
+    "key": "map.5002.poi.11.name",
+    "zhHans": "高山营地",
+    "en": "Mountain Camp",
+    "ar": "مخيم جبلي",
+    "context": "Map 5002 POI 11 display name"
+  },
+  {
+    "key": "map.5002.poi.12.name",
+    "zhHans": "武装仓库",
+    "en": "Armory",
+    "ar": "مستودع أسلحة",
+    "context": "Map 5002 POI 12 display name"
+  },
+  {
+    "key": "guidance.post_tutorial.sell_military_radio",
+    "zhHans": "先卖掉军用电台，换些钱准备装备。",
+    "en": "Sell the military radio first. Use the money to gear up.",
+    "ar": "بع جهاز الاتصال العسكري أولًا، واستخدم المال لتجهيز معداتك.",
+    "context": "Post-tutorial Ivan Koval guidance: sell military radio"
+  },
+  {
+    "key": "tutorial.m1.equip_backpack.use",
+    "zhHans": "点击【使用】，装备小学背包。",
+    "en": "Tap Use to equip the school backpack.",
+    "ar": "اضغط على استخدام لتجهيز الحقيبة المدرسية.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.equip_backpack.close",
+    "zhHans": "装备好了。点击空白处关闭背包。",
+    "en": "The backpack is ready. Click an empty area to close it.",
+    "ar": "الحقيبة جاهزة. اضغط على مساحة فارغة لإغلاقها.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.move_to_sentry_area",
+    "zhHans": "继续往前走，别怕，有我掩护。",
+    "en": "Keep going. Don't worry, I'm covering you.",
+    "ar": "واصل التقدم. لا تخف، أنا أغطيك.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.defeat_ambush_sentries",
+    "zhHans": "当心，有埋伏！干掉他们！",
+    "en": "Watch out, an ambush! Take them out!",
+    "ar": "احذر، إنه كمين! اقض عليهم!",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.play_cg2_after_radio",
+    "zhHans": "东西到手了，我们尽快撤离。",
+    "en": "We've got it. Let's get out of here.",
+    "ar": "حصلنا عليه. لننسحب بأسرع ما يمكن.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.reach_extraction_after_cg2",
+    "zhHans": "得继续往前，找到撤离点。",
+    "en": "Keep moving. Find the extraction point.",
+    "ar": "عليّ مواصلة التقدم والعثور على نقطة الإخلاء.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "tutorial.m1.monologue_loss",
+    "zhHans": "哥……我们明明说好，要一起回去的……",
+    "en": "Brother... we promised we'd go home together...",
+    "ar": "أخي... لقد وعدنا بعضنا أن نعود معًا...",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "tutorial.m1.monologue_vow",
+    "zhHans": "哥，我会活下去，替你报仇。",
+    "en": "Brother, I'll survive. And I'll avenge you.",
+    "ar": "أخي، سأبقى حيًا وأثأر لك.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "tutorial.m1.monologue_escape",
+    "zhHans": "现在还不能停下。得尽快找到撤离点，先活着离开这里。",
+    "en": "I can't stop now. I need to find the extraction point and get out alive.",
+    "ar": "لا يمكنني التوقف الآن. عليّ العثور على نقطة الإخلاء بسرعة والخروج من هنا حيًا.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "tutorial.speaker.player",
+    "zhHans": "我:",
+    "en": "Me:",
+    "ar": "أنا:",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "guidance.post_tutorial.intro_rescue",
+    "zhHans": "你醒了。是我把你救回来的，这里暂时安全，先缓口气。",
+    "en": "You're awake. I brought you back. You're safe here for now. Take a breath.",
+    "ar": "لقد استيقظت. أنا من أنقذك وأعادك إلى هنا. أنت آمن حاليًا، فالتقط أنفاسك.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "guidance.post_tutorial.intro_leader",
+    "zhHans": "我叫伊万·科瓦尔，是这个幸存者营地的领袖。这里的人，都在想办法活下去。",
+    "en": "I'm Ivan Koval, the leader of this survivor camp. Everyone here is trying to stay alive.",
+    "ar": "اسمي إيفان كوفال، وأنا قائد مخيم الناجين هذا. الجميع هنا يحاولون البقاء على قيد الحياة.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "guidance.post_tutorial.intro_condolence",
+    "zhHans": "你哥哥的事，我很遗憾。我知道，几句安慰抵不了你失去的。",
+    "en": "I'm sorry about your brother. I know a few words can't make up for what you've lost.",
+    "ar": "يؤسفني ما حدث لأخيك. أعرف أن بضع كلمات لن تعوضك عما فقدته.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "guidance.post_tutorial.intro_revenge",
+    "zhHans": "如果你决心替他报仇，我会帮你。但先把伤养好，备齐装备。你得活着，才有机会让他们付出代价。",
+    "en": "If you're set on avenging him, I'll help. First, heal up and get equipped. You need to stay alive to make them pay.",
+    "ar": "إن كنت عازمًا على الثأر له، فسأساعدك. لكن تعافَ أولًا وجهّز معداتك. عليك البقاء حيًا لتتمكن من جعلهم يدفعون الثمن.",
+    "context": "新手引导复仇主线通信"
+  },
+  {
+    "key": "tutorial.m1.wolf_ambush_warning",
+    "zhHans": "等等……有东西在靠近！",
+    "en": "Wait... something is getting closer!",
+    "ar": "等等……有什么东西正在靠近！",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "guidance.post_tutorial.sell_valuable",
+    "zhHans": "对了，先卖掉这块金表，积累一些资金",
+    "en": "By the way, sell this gold watch first and build up some funds.",
+    "ar": "بالمناسبة، بع هذه الساعة الذهبية أولًا واجمع بعض المال.",
+    "context": "Post-tutorial Ivan Koval guidance: sell valuable"
+  },
+  {
+    "key": "guidance.post_tutorial.accept_first_mission",
+    "zhHans": "想报仇，先攒够本钱。看看营地有什么任务。",
+    "en": "Revenge takes resources. See what jobs the camp has for you.",
+    "ar": "الثأر يحتاج إلى موارد. تفقد المهام المتاحة في المخيم.",
+    "context": "Post-tutorial Ivan Koval guidance: accept first mission"
+  },
+  {
+    "key": "guidance.post_tutorial.buy_tier1_ammo",
+    "zhHans": "买些1级子弹，备足弹药。",
+    "en": "Buy some Tier 1 rounds. Stock up on ammo.",
+    "ar": "اشتر بعض طلقات المستوى 1، وتزود بما يكفي من الذخيرة.",
+    "context": "Post-tutorial Ivan Koval guidance: buy tier 1 ammo"
+  },
+  {
+    "key": "guidance.post_tutorial.start_first_raid",
+    "zhHans": "出发吧，我会继续指引你。活着回来，才有机会报仇。",
+    "en": "Head out. I'll keep guiding you. Come back alive, and you'll have your chance at revenge.",
+    "ar": "انطلق، سأواصل إرشادك. عد حيًا لتتاح لك فرصة الثأر.",
+    "context": "Post-tutorial Ivan Koval guidance: start first raid"
+  },
+  {
+    "key": "guidance.raid.countdown_120",
+    "zhHans": "还剩120秒。开始向撤离点靠拢，别把时间耗尽。",
+    "en": "120 seconds remain. Start moving toward extraction before time runs out.",
+    "ar": "تبقت 120 ثانية. ابدأ التحرك نحو نقطة الإخلاء قبل نفاد الوقت.",
+    "context": "First formal raid Ivan Koval guidance: 120 seconds remaining"
+  },
+  {
+    "key": "guidance.raid.countdown_60",
+    "zhHans": "只剩60秒。立刻撤离，别拿命去赌。",
+    "en": "Only 60 seconds remain. Extract now; do not gamble with your life.",
+    "ar": "لم يتبق سوى 60 ثانية. انسحب الآن، ولا تغامر بحياتك.",
+    "context": "First formal raid Ivan Koval guidance: 60 seconds remaining"
+  },
+  {
+    "key": "guidance.raid.first_enemy",
+    "zhHans": "发现敌人。先看清局势，抓住机会再出手。",
+    "en": "Enemy spotted. Read the situation first, then strike when you have an opening.",
+    "ar": "تم رصد عدو. قيّم الموقف أولا، ثم اضرب عندما تسنح الفرصة.",
+    "context": "First formal raid Ivan Koval guidance: normal enemy"
+  },
+  {
+    "key": "guidance.raid.first_boss",
+    "zhHans": "那是强敌。检查装备和补给，没把握就绕开。",
+    "en": "That is a dangerous enemy. Check your gear and supplies; avoid it if you are not ready.",
+    "ar": "ذلك عدو خطير. افحص معداتك وإمداداتك، وتجنبه إن لم تكن مستعدا.",
+    "context": "First formal raid Ivan Koval guidance: boss enemy"
+  },
+  {
+    "key": "guidance.raid.failure_loss",
+    "zhHans": "撤离失败会丢失背包物品。整理装备，我们再来一次。",
+    "en": "Failed extraction costs the items in your backpack. Sort out your gear and we will try again.",
+    "ar": "فشل الإخلاء يعني فقدان العناصر الموجودة في حقيبتك. رتّب معداتك وسنحاول مرة أخرى.",
+    "context": "First formal raid Ivan Koval guidance: failed extraction loss"
+  },
+  {
+    "key": "tutorial.m1.opening_complex",
+    "zhHans": "兄弟，我们要找的军用电台就在这座基地里。",
+    "en": "Brother, the military radio we're after is inside this base.",
+    "ar": "يا أخي، جهاز الاتصال العسكري الذي نبحث عنه داخل هذه القاعدة.",
+    "context": "M1 教程哥哥开场通信：情况复杂"
+  },
+  {
+    "key": "tutorial.m1.opening_split",
+    "zhHans": "我们分头行动。你潜进去，我在远处掩护你。",
+    "en": "Let's split up. You sneak in; I'll cover you from a distance.",
+    "ar": "لنفترق. تسلل إلى الداخل، وسأغطيك من بعيد.",
+    "context": "M1 教程哥哥开场通信：分头行动"
+  },
+  {
+    "key": "tutorial.m1.opening_shelter_crisis",
+    "zhHans": "朋友！我们的藏身处面临着前所未有的物资紧缺",
+    "en": "Hey, my friend! Our hideout is facing an unprecedented supply shortage.",
+    "ar": "مرحبًا يا صديقي! يواجه مخبؤنا نقصًا غير مسبوق في الإمدادات.",
+    "context": "M1 教程开场伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.opening_growth",
+    "zhHans": "我们需要你尽快成为顶梁柱，一起建设藏身处",
+    "en": "We need you to become someone we can count on as soon as possible and help us build the hideout.",
+    "ar": "نحتاج إليك لتصبح سندًا نعتمد عليه في أقرب وقت، وتساعدنا في بناء المخبأ.",
+    "context": "M1 教程开场伊万 科瓦尔[领袖]通信"
+  },
+  {
+    "key": "tutorial.m1.collect_high_value.searching",
+    "zhHans": "搜刮物资需要一点时间，稍等一下。",
+    "en": "Searching for supplies takes a moment. Hang on.",
+    "ar": "يستغرق البحث عن الإمدادات بعض الوقت. انتظر قليلًا.",
+    "context": "M1 教程哥哥通信：等待搜寻"
+  },
+  {
+    "key": "tutorial.m1.collect_high_value.revealed",
+    "zhHans": "找到了！这就是我们要找的军用电台。",
+    "en": "Found it! That's the military radio we're after.",
+    "ar": "وجدناه! هذا هو جهاز الاتصال العسكري الذي نبحث عنه.",
+    "context": "M1 教程哥哥通信：拾取军用电台"
+  },
+  {
+    "key": "ui.raid.mission_tracker.title",
+    "zhHans": "任务",
+    "en": "Missions",
+    "ar": "المهام",
+    "context": "In-raid mission tracker button"
+  },
+  {
+    "key": "ui.raid.mission_tracker.completed_title",
+    "zhHans": "{0}【已完成】",
+    "en": "{0} [Completed]",
+    "ar": "{0} [مكتملة]",
+    "context": "Current-raid completed mission title format"
+  },
+  {
+    "key": "ui.raid.mission_tracker.completed_toast",
+    "zhHans": "已完成[{0}]任务",
+    "en": "Mission [{0}] completed",
+    "ar": "اكتملت المهمة [{0}]",
+    "context": "Current-raid mission completion toast"
+  },
+  {
+    "key": "ui.common.operation_failed",
+    "zhHans": "操作失败，请重试。",
+    "en": "Operation failed. Please try again.",
+    "ar": "فشلت العملية. يُرجى المحاولة مرة أخرى.",
+    "context": "Generic safe-house profile commit failure"
+  },
+  {
+    "key": "ui.inventory.repair",
+    "zhHans": "修理",
+    "en": "Repair",
+    "ar": "إصلاح",
+    "context": "Out-of-raid item detail repair button"
+  },
+  {
+    "key": "ui.inventory.repair_confirmation",
+    "zhHans": "修理该道具需要花费 {0:N0} 现金，是否修理？",
+    "en": "Repairing this item costs {0:N0} cash. Repair it?",
+    "ar": "يتطلب إصلاح هذا العنصر {0:N0} نقدًا. هل تريد إصلاحه؟",
+    "context": "Out-of-raid item repair confirmation"
+  },
+  {
+    "key": "ui.inventory.repair_insufficient_funds",
+    "zhHans": "现金不足",
+    "en": "Insufficient cash",
+    "ar": "النقد غير كافٍ",
+    "context": "Out-of-raid item repair insufficient-funds toast"
+  },
+  {
+    "key": "ui.stash.attachment_capacity_exceeded",
+    "zhHans": "当前弹匣余弹超过卸下后的容量，请先减少弹量。",
+    "en": "Reduce the magazine's remaining ammunition before removing it.",
+    "ar": "قلل الذخيرة المتبقية في المخزن قبل إزالته.",
+    "context": "Toast shown when removing a magazine attachment would reduce capacity below current ammunition"
+  },
+  {
+    "key": "ui.main.mission.reward.trust.2",
+    "zhHans": "保尔 柯察金信任值 {0}",
+    "en": "Pavel Korchagin Trust {0}",
+    "ar": "ثقة بافيل كورتشاغين {0}",
+    "context": "Contact-specific trust mission reward"
+  },
+  {
+    "key": "ui.main.mission.reward.trust.3",
+    "zhHans": "乔伊纳信任值 {0}",
+    "en": "Joyner Trust {0}",
+    "ar": "ثقة جوينر {0}",
+    "context": "Contact-specific trust mission reward"
+  },
+  {
+    "key": "ui.main.mission.reward.trust.4",
+    "zhHans": "高扬斯卡娅信任值 {0}",
+    "en": "Koyanskaya Trust {0}",
+    "ar": "ثقة كويانسكايا {0}",
+    "context": "Contact-specific trust mission reward"
+  },
+  {
+    "key": "ui.inventory.backpack_unequip_no_space",
+    "zhHans": "背包格子已满，无法卸下[{0}]",
+    "en": "Backpack slots are full. Cannot unequip [{0}].",
+    "ar": "خانات حقيبة الظهر ممتلئة، لا يمكن نزع [{0}].",
+    "context": "Toast shown when an equipped backpack cannot be moved into the backpack inventory because capacity would be insufficient"
+  },
+  {
+    "key": "guidance.post_tutorial.buy_pm_pistol",
+    "zhHans": "再买把 PM 手枪，用它防身。",
+    "en": "Get a PM pistol too, for protection.",
+    "ar": "اشتر أيضًا مسدس PM للدفاع عن نفسك.",
+    "context": "Post-tutorial Ivan Koval guidance: buy PM pistol"
+  },
+  {
+    "key": "guidance.post_tutorial.claim_first_mission_reward",
+    "zhHans": "任务完成了，去领报酬吧。",
+    "en": "Job done. Go collect your pay.",
+    "ar": "أُنجزت المهمة. اذهب لتحصيل أجرك.",
+    "context": "Post-tutorial Ivan Koval guidance: claim first mission reward"
+  },
+  {
+    "key": "guidance.post_tutorial.accept_next_mission",
+    "zhHans": "接下那份郊区任务，先摸清外面的情况。",
+    "en": "Take that outskirts job. Get a feel for what's out there.",
+    "ar": "اقبل مهمة الضواحي، وتعرف على الوضع في الخارج أولًا.",
+    "context": "Post-tutorial Ivan Koval guidance: accept next mission"
+  },
+  {
+    "key": "ui.settings.aim_magnetism",
+    "zhHans": "开火模式",
+    "en": "Fire Mode",
+    "ar": "وضع إطلاق النار",
+    "context": "Player fire control mode"
+  },
+  {
+    "key": "ui.settings.on",
+    "zhHans": "旧模式",
+    "en": "Legacy Mode",
+    "ar": "الوضع القديم",
+    "context": "Legacy automatic fire mode"
+  },
+  {
+    "key": "ui.settings.off",
+    "zhHans": "新模式",
+    "en": "New Mode",
+    "ar": "الوضع الجديد",
+    "context": "Modern automatic fire mode"
+  },
+  {
+    "key": "ui.settings.aim_magnetism_save_failed",
+    "zhHans": "开火模式设置保存失败，请重试。",
+    "en": "Failed to save the auto-aim fire setting. Please try again.",
+    "ar": "تعذر حفظ إعداد الإطلاق التلقائي بمساعدة التصويب. يرجى المحاولة مرة أخرى.",
+    "context": "Player-visible error shown when aim_assist_settings.json cannot be saved"
+  },
+  {
+    "key": "ui.raid.poi.arrival_format",
+    "zhHans": "{0}  危险等级: {1}",
+    "en": "{0}  Risk Level: {1}",
+    "ar": "{0}  مستوى الخطر: {1}",
+    "context": "Raid POI arrival notice format; {0}=POI name, {1}=risk text"
+  },
+  {
+    "key": "ui.raid.poi.risk.1",
+    "zhHans": "无害",
+    "en": "Harmless",
+    "ar": "غير ضار",
+    "context": "Raid POI base risk level 1"
+  },
+  {
+    "key": "ui.raid.poi.risk.2",
+    "zhHans": "低",
+    "en": "Low",
+    "ar": "منخفض",
+    "context": "Raid POI base risk level 2"
+  },
+  {
+    "key": "ui.raid.poi.risk.3",
+    "zhHans": "中",
+    "en": "Medium",
+    "ar": "متوسط",
+    "context": "Raid POI base risk level 3"
+  },
+  {
+    "key": "ui.raid.poi.risk.4",
+    "zhHans": "高",
+    "en": "High",
+    "ar": "مرتفع",
+    "context": "Raid POI base risk level 4"
+  },
+  {
+    "key": "world.one_way_door.name",
+    "zhHans": "单向门",
+    "en": "One-way door",
+    "ar": "باب أحادي الاتجاه",
+    "context": "One-way door interaction name"
+  },
+  {
+    "key": "world.one_way_door.wrong_side",
+    "zhHans": "无法从这一侧打开",
+    "en": "Cannot open from this side.",
+    "ar": "لا يمكن فتحه من هذا الجانب.",
+    "context": "Shown when the player interacts from the blocked side of a one-way door"
+  },
+  {
+    "key": "world.one_way_door.save_failed",
+    "zhHans": "无法保存门锁状态",
+    "en": "Failed to save door unlock state.",
+    "ar": "تعذر حفظ حالة فتح الباب.",
+    "context": "Shown when permanent one-way door unlock progress cannot be saved"
+  },
+  {
+    "key": "item.3561.name",
+    "zhHans": "熊皮",
+    "en": "Bear Pelt",
+    "ar": "جلد دب",
+    "context": "TbItem 3561 display name"
+  },
+  {
+    "key": "item.3561.description",
+    "zhHans": "可出售的价值物品。",
+    "en": "A valuable item that can be sold for funds.",
+    "ar": "غرض ثمين يمكن بيعه مقابل المال.",
+    "context": "TbItem 3561 description"
+  },
+  {
+    "key": "item.3562.name",
+    "zhHans": "钥匙",
+    "en": "Key",
+    "ar": "مفتاح",
+    "context": "TbItem 3562 display name"
+  },
+  {
+    "key": "item.3562.description",
+    "zhHans": "一把造型古朴、工艺精美的钥匙。",
+    "en": "An antique key with intricate craftsmanship.",
+    "ar": "مفتاح عتيق متقن الصنع.",
+    "context": "TbItem 3562 description"
+  },
+  {
+    "key": "world.card_door.name",
+    "zhHans": "刷卡门",
+    "en": "Card door",
+    "ar": "باب يعمل بالبطاقة",
+    "context": "CardDoor interaction name"
+  },
+  {
+    "key": "ui.interaction.swipe_card",
+    "zhHans": "刷卡",
+    "en": "Swipe card",
+    "ar": "مرر البطاقة",
+    "context": "CardDoor interaction action"
+  },
+  {
+    "key": "world.card_door.missing_card",
+    "zhHans": "缺少指定门卡。",
+    "en": "Required key card missing.",
+    "ar": "بطاقة الدخول المطلوبة غير متوفرة.",
+    "context": "Shown when the player lacks the card required by CardDoor"
+  },
+  {
+    "key": "ui.inventory.remaining_uses",
+    "zhHans": "剩余 {0}/{1} 次",
+    "en": "{0}/{1} uses remaining",
+    "ar": "الاستخدامات المتبقية: {0}/{1}",
+    "context": "Remaining and maximum use count shown in item details"
+  },
+  {
+    "key": "world.card_door.key_use_consumed",
+    "zhHans": "使用了 1 次钥匙。",
+    "en": "Used the key once.",
+    "ar": "تم استخدام المفتاح مرة واحدة.",
+    "context": "Shown after CardDoor consumes one key use"
+  },
+  {
+    "key": "ui.inventory.sort_all",
+    "zhHans": "整理背包",
+    "en": "Sort All",
+    "ar": "ترتيب الكل",
+    "context": "Inventory one-click sort action"
+  },
+  {
+    "key": "ui.inventory.safe_box",
+    "zhHans": "安全箱",
+    "en": "Safe Box",
+    "ar": "الخزنة",
+    "context": "Inventory safe box visual section"
+  },
+  {
+    "key": "ui.inventory.quick_consumables",
+    "zhHans": "快捷消耗品",
+    "en": "Quick Consumables",
+    "ar": "المستهلكات السريعة",
+    "context": "Inventory quick consumables visual section"
+  },
+  {
+    "key": "ui.inventory.close_hint",
+    "zhHans": "点击空白处关闭",
+    "en": "Click blank area to close",
+    "ar": "اضغط على المساحة الفارغة للإغلاق",
+    "context": "Inventory blank-area close hint"
+  },
+  {
+    "key": "ui.inventory.slot.firearm",
+    "zhHans": "枪械",
+    "en": "Firearm",
+    "ar": "سلاح ناري",
+    "context": "Empty firearm equipment slot label"
+  },
+  {
+    "key": "ui.inventory.slot.melee_weapon",
+    "zhHans": "近战武器",
+    "en": "Melee Weapon",
+    "ar": "سلاح اشتباك",
+    "context": "Empty melee equipment slot label"
+  },
+  {
+    "key": "ui.trade.inventory_sell_hint",
+    "zhHans": "点击背包/仓库中的道具可以进行贩卖",
+    "en": "Select an item in your backpack or stash to sell it.",
+    "ar": "حدد عنصرًا في حقيبة الظهر أو المخزن لبيعه.",
+    "context": "局外交易库存出售操作提示"
+  },
+  {
+    "key": "ui.inventory.attachment.no_available",
+    "zhHans": "当前背包中没有可用部件",
+    "en": "No compatible attachments in the current backpack.",
+    "ar": "لا توجد ملحقات متوافقة في الحقيبة الحالية.",
+    "context": "Toast shown when an available weapon attachment slot has no compatible backpack candidates"
+  },
+  {
+    "key": "item.3418.description",
+    "zhHans": "头部伤害降低 20%，与头盔效果叠加，面罩不消耗耐久。",
+    "en": "Reduces head damage by 20%, stacks with helmet protection, and does not consume durability.",
+    "ar": "يقلل ضرر الرأس بنسبة 20%، ويتراكم مع حماية الخوذة، ولا يستهلك متانة.",
+    "context": "TbItem 3418 description"
+  },
+  {
+    "key": "item.3418.name",
+    "zhHans": "防弹面罩",
+    "en": "Ballistic Face Mask",
+    "ar": "قناع وجه مضاد للرصاص",
+    "context": "TbItem 3418 display name"
+  },
+  {
+    "key": "item.3419.description",
+    "zhHans": "周期扫描附近被迷雾遮挡的敌人，显示 1 秒红色残影。扫描半径 20 米，间隔 3 秒。",
+    "en": "Periodically scans nearby enemies hidden by fog and reveals a red afterimage for 1 second. Scan radius: 20 m; interval: 3 s.",
+    "ar": "تمسح الأعداء القريبين المحجوبين بالضباب دوريًا وتُظهر أثرًا أحمر لمدة ثانية واحدة. نطاق المسح: 20 م؛ الفاصل: 3 ثوانٍ.",
+    "context": "TbItem 3419 description"
+  },
+  {
+    "key": "item.3419.name",
+    "zhHans": "红外线透视仪",
+    "en": "Infrared Vision Device",
+    "ar": "جهاز الرؤية بالأشعة تحت الحمراء",
+    "context": "TbItem 3419 display name"
+  },
+  {
+    "key": "ui.stash.sort",
+    "zhHans": "整理仓库",
+    "en": "Sort Stash",
+    "ar": "ترتيب المخزن",
+    "context": "仓库整理按钮"
+  },
+  {
+    "key": "ui.trade.auto_equipped",
+    "zhHans": "已装备 {0}",
+    "en": "Equipped {0}",
+    "ar": "تم تجهيز {0}",
+    "context": "购买枪械或可穿戴装备时自动补入空装备槽"
+  },
+  {
+    "key": "mission.1006.objective.1",
+    "zhHans": "从公路南撤离点成功撤离 1 次",
+    "en": "Extract from the South Highway extraction point",
+    "ar": "أكمل الإخلاء من نقطة إخلاء الطريق السريع الجنوبي",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1006.objective.2",
+    "zhHans": "提交 2000 现金",
+    "en": "Submit 2000 cash",
+    "ar": "سلّم 2000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "mission.1008.objective.2",
+    "zhHans": "提交 5000 现金",
+    "en": "Submit 5000 cash",
+    "ar": "سلّم 5000 نقدًا",
+    "context": "Mission objective"
+  },
+  {
+    "key": "ui.main.mission.trust.current_level",
+    "zhHans": "当前信任等级",
+    "en": "Current Trust Level",
+    "ar": "مستوى الثقة الحالي",
+    "context": "Mission center trust info current level label"
+  },
+  {
+    "key": "ui.main.mission.trust.unlock_contact",
+    "zhHans": "解锁联络人",
+    "en": "Unlock Contact",
+    "ar": "فتح جهة اتصال",
+    "context": "Mission center trust reward contact unlock label"
+  },
+  {
+    "key": "ui.main.mission.trust.unlock_shop",
+    "zhHans": "解锁商店内容",
+    "en": "Unlock Shop Content",
+    "ar": "فتح محتوى المتجر",
+    "context": "Mission center trust reward shop unlock label"
+  },
+  {
+    "key": "ui.main.mission.story_title",
+    "zhHans": "主线故事：复仇之路",
+    "en": "Main Story: Road of Revenge",
+    "ar": "القصة الرئيسية: طريق الانتقام",
+    "context": "Mission center level-one story title"
+  },
+  {
+    "key": "ui.main.mission.node.state.available",
+    "zhHans": "点击接取",
+    "en": "Click to Accept",
+    "ar": "اضغط للقبول",
+    "context": "Mission center level-one available mission node state"
+  },
+  {
+    "key": "ui.main.mission.node.state.active",
+    "zhHans": "进行中",
+    "en": "In Progress",
+    "ar": "قيد التنفيذ",
+    "context": "Mission center level-one active mission node state"
+  },
+  {
+    "key": "ui.main.mission.node.state.reward_ready",
+    "zhHans": "点击领取",
+    "en": "Click to Claim",
+    "ar": "اضغط للمطالبة",
+    "context": "Mission center level-one reward-ready mission node state"
+  },
+  {
+    "key": "ui.main.mission.locked",
+    "zhHans": "任务未解锁",
+    "en": "Mission Locked",
+    "ar": "المهمة مقفلة",
+    "context": "Mission center level-two locked status"
+  },
+  {
+    "key": "ui.main.mission.task_rewards",
+    "zhHans": "任务奖励",
+    "en": "Mission Rewards",
+    "ar": "مكافآت المهمة",
+    "context": "Mission center level-two rewards heading"
+  },
+  {
+    "key": "ui.main.mission.trust.unlock_safe_box",
+    "zhHans": "安全箱格子 +{0}",
+    "en": "Safe Box Slots +{0}",
+    "ar": "خانات الخزنة +{0}",
+    "context": "Mission center trust reward safe box capacity"
+  },
+  {
+    "key": "tutorial.m1.move_to_staging",
+    "zhHans": "走右边的侧门，那边守备薄弱。",
+    "en": "Take the side entrance on the right. It's lightly guarded.",
+    "ar": "اسلك المدخل الجانبي على اليمين. الحراسة هناك ضعيفة.",
+    "context": "M1 新手流程"
+  },
+  {
+    "key": "ui.combat.reloading",
+    "zhHans": "换弹中……",
+    "en": "Reloading...",
+    "ar": "جارٍ إعادة التلقيم...",
+    "context": "Combat world-space player health bar reload status"
+  },
+  {
+    "key": "ui.settings.manual_fire",
+    "zhHans": "手动开火",
+    "en": "Manual Fire",
+    "ar": "إطلاق يدوي",
+    "context": "Manual fire control mode"
+  },
+  {
+    "key": "tutorial.m1.aim_soldiers.manual",
+    "zhHans": "拖动屏幕右侧，将敌人转入淡蓝色范围，再按住射击按钮瞄准。",
+    "en": "Drag on the right side to bring an enemy into the light blue area, then hold the fire button to aim.",
+    "ar": "اسحب على الجانب الأيمن لإدخال عدو في المنطقة الزرقاء الفاتحة، ثم اضغط مطولًا على زر إطلاق النار للتصويب.",
+    "context": "M1 手动模式瞄准教学；此步骤只瞄准，暂不发射子弹。"
+  },
+  {
+    "key": "tutorial.m1.defeat_soldier_pair.manual",
+    "zhHans": "按住射击按钮持续开火，松手停止。拖动按钮可转动视角。",
+    "en": "Hold the fire button to keep shooting and release to stop. Drag the button to turn the view.",
+    "ar": "اضغط مطولًا على زر إطلاق النار لمواصلة الرمي، وارفع إصبعك للتوقف. اسحب الزر لتدوير الكاميرا.",
+    "context": "M1 手动模式击杀教学；复用现有士兵击杀流程。"
+  }
+]

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExcelCompare — 3-Way Merge</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>ExcelCompare</h1>
+        <div id="status-bar">
+            <span id="conflict-info">Loading...</span>
+            <div class="actions">
+                <button id="btn-undo" class="btn btn-outline" disabled title="没有可撤销的操作" style="color:white;border-color:#f39c12">撤销</button>
+                <button id="btn-all-ours" class="btn btn-green" title="Accept all ours">全部选择 Ours</button>
+                <button id="btn-all-theirs" class="btn btn-blue" title="Accept all theirs">全部选择 Theirs</button>
+                <button id="btn-branch-diff" class="btn btn-outline" onclick="showBranchDiff()" style="color:white;border-color:#95a5a6">查看增量</button>
+                <button id="btn-save" class="btn btn-primary" title="Save merged result">保存合并结果</button>
+                <button id="btn-cancel" class="btn btn-danger" title="Cancel merge">取消</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="main">
+        <nav id="sheet-tabs"></nav>
+
+        <div id="grid-toolbar">
+            <span id="alignment-info"></span>
+            <label for="key-col-select">对齐列:</label>
+            <select id="key-col-select">
+                <option value="">-- 按位置 --</option>
+            </select>
+            <button id="btn-apply-keycol" class="btn btn-outline" onclick="applyKeyCol()">应用</button>
+        </div>
+
+        <div id="grid-container">
+            <table id="grid">
+                <thead id="grid-head"></thead>
+                <tbody id="grid-body"></tbody>
+            </table>
+        </div>
+
+        <aside id="cell-detail" class="hidden">
+            <h3 id="detail-title">Cell Detail</h3>
+            <div id="detail-content">
+                <div class="detail-col">
+                    <h4>Base</h4>
+                    <div id="detail-base" class="detail-value"></div>
+                </div>
+                <div class="detail-col">
+                    <h4>Ours</h4>
+                    <div id="detail-ours" class="detail-value"></div>
+                </div>
+                <div class="detail-col">
+                    <h4>Theirs</h4>
+                    <div id="detail-theirs" class="detail-value"></div>
+                </div>
+            </div>
+            <div id="detail-actions">
+                <button class="btn btn-green" onclick="resolveSelected('ours')">Accept Ours</button>
+                <button class="btn btn-blue" onclick="resolveSelected('theirs')">Accept Theirs</button>
+                <button class="btn btn-purple" onclick="resolveSelected('keep_both')">保留双方</button>
+                <button class="btn btn-outline" onclick="showManualEdit()">手动编辑</button>
+            </div>
+            <div id="detail-row-col-actions">
+                <button class="btn btn-green btn-sm" onclick="resolveRow('ours')">整行选 Ours</button>
+                <button class="btn btn-blue btn-sm" onclick="resolveRow('theirs')">整行选 Theirs</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteRow()">删除此行</button>
+                <span class="action-sep">|</span>
+                <button class="btn btn-green btn-sm" onclick="resolveCol('ours')">整列选 Ours</button>
+                <button class="btn btn-blue btn-sm" onclick="resolveCol('theirs')">整列选 Theirs</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCol()">删除此列</button>
+            </div>
+            <div id="manual-edit" class="hidden">
+                <input type="text" id="manual-input" placeholder="输入值或公式 (如 =SUM(A1:A5))">
+                <button class="btn btn-primary" onclick="resolveManual()">确认</button>
+            </div>
+        </aside>
+    </div>
+
+    <div id="branch-diff-modal" class="hidden">
+        <div class="modal-header">
+            <h2>增量对比 — <span id="branch-diff-sheet"></span></h2>
+            <button class="btn btn-outline" style="color:white;border-color:#95a5a6" onclick="closeBranchDiff()">关闭</button>
+        </div>
+        <div class="modal-body">
+            <div class="branch-diff-pane">
+                <h3 class="pane-ours">Ours vs Base</h3>
+                <div class="diff-table-wrap"><table><thead id="ours-diff-head"></thead><tbody id="ours-diff-body"></tbody></table></div>
+            </div>
+            <div class="branch-diff-pane">
+                <h3 class="pane-theirs">Theirs vs Base</h3>
+                <div class="diff-table-wrap"><table><thead id="theirs-diff-head"></thead><tbody id="theirs-diff-body"></tbody></table></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="hidden"></div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

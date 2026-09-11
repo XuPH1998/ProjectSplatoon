@@ -1,0 +1,594 @@
+[
+  {
+    "id": 23001,
+    "name": "手枪消音器",
+    "slotType": 1,
+    "isSuppressor": true,
+    "compatibleWeaponIds": [
+      1005,
+      1006,
+      1009
+    ],
+    "modifiers": [
+      {
+        "stat": 12,
+        "mode": 1,
+        "value": -0.5
+      },
+      {
+        "stat": 13,
+        "mode": 1,
+        "value": -0.15
+      }
+    ]
+  },
+  {
+    "id": 23002,
+    "name": "步枪消音器",
+    "slotType": 1,
+    "isSuppressor": true,
+    "compatibleWeaponIds": [
+      1001,
+      1002,
+      1010,
+      1011,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 12,
+        "mode": 1,
+        "value": -0.3
+      },
+      {
+        "stat": 13,
+        "mode": 1,
+        "value": -0.1
+      }
+    ]
+  },
+  {
+    "id": 23003,
+    "name": "冲锋枪消音器",
+    "slotType": 1,
+    "isSuppressor": true,
+    "compatibleWeaponIds": [
+      1003,
+      1004,
+      1014
+    ],
+    "modifiers": [
+      {
+        "stat": 12,
+        "mode": 1,
+        "value": -0.4
+      },
+      {
+        "stat": 13,
+        "mode": 1,
+        "value": -0.08
+      }
+    ]
+  },
+  {
+    "id": 23004,
+    "name": "步枪制退器",
+    "slotType": 1,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1001,
+      1002,
+      1010,
+      1011,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.15
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": -0.15
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.25
+      }
+    ]
+  },
+  {
+    "id": 23005,
+    "name": "冲锋枪制退器",
+    "slotType": 1,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1003,
+      1004,
+      1014
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.25
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": -0.25
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.25
+      }
+    ]
+  },
+  {
+    "id": 23006,
+    "name": "手枪增伤枪口",
+    "slotType": 1,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1005,
+      1006,
+      1009
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 12,
+        "mode": 1,
+        "value": 0.2
+      },
+      {
+        "stat": 13,
+        "mode": 1,
+        "value": 0.2
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.3
+      }
+    ]
+  },
+  {
+    "id": 23007,
+    "name": "冲锋枪增伤枪口",
+    "slotType": 1,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1003,
+      1004,
+      1014
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": 0.18
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.18
+      },
+      {
+        "stat": 12,
+        "mode": 1,
+        "value": 0.2
+      },
+      {
+        "stat": 13,
+        "mode": 1,
+        "value": 0.2
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.3
+      }
+    ]
+  },
+  {
+    "id": 23008,
+    "name": "腰射握把",
+    "slotType": 0,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.35
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "id": 23009,
+    "name": "垂直握把",
+    "slotType": 0,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": -0.35
+      }
+    ]
+  },
+  {
+    "id": 23010,
+    "name": "平衡枪托",
+    "slotType": 2,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.15
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": -0.15
+      }
+    ]
+  },
+  {
+    "id": 23011,
+    "name": "腰射枪托",
+    "slotType": 2,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.25
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.1
+      }
+    ]
+  },
+  {
+    "id": 23012,
+    "name": "手枪快速弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1005,
+      1006,
+      1009
+    ],
+    "modifiers": [
+      {
+        "stat": 2,
+        "mode": 1,
+        "value": -0.3
+      }
+    ]
+  },
+  {
+    "id": 23013,
+    "name": "步枪快速弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1001,
+      1002,
+      1010,
+      1011,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 2,
+        "mode": 1,
+        "value": -0.25
+      }
+    ]
+  },
+  {
+    "id": 23014,
+    "name": "冲锋枪快速弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1003,
+      1004,
+      1014
+    ],
+    "modifiers": [
+      {
+        "stat": 2,
+        "mode": 1,
+        "value": -0.2
+      }
+    ]
+  },
+  {
+    "id": 23015,
+    "name": "霰弹枪快速弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1013
+    ],
+    "modifiers": [
+      {
+        "stat": 2,
+        "mode": 1,
+        "value": -0.4
+      }
+    ]
+  },
+  {
+    "id": 23016,
+    "name": "手枪扩容弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1005,
+      1006,
+      1009
+    ],
+    "modifiers": [
+      {
+        "stat": 1,
+        "mode": 0,
+        "value": 3
+      }
+    ]
+  },
+  {
+    "id": 23017,
+    "name": "步枪扩容弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1001,
+      1002,
+      1010,
+      1011,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 1,
+        "mode": 0,
+        "value": 5
+      }
+    ]
+  },
+  {
+    "id": 23018,
+    "name": "冲锋枪扩容弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1003,
+      1004,
+      1014
+    ],
+    "modifiers": [
+      {
+        "stat": 1,
+        "mode": 0,
+        "value": 6
+      }
+    ]
+  },
+  {
+    "id": 23019,
+    "name": "霰弹枪扩容弹匣",
+    "slotType": 3,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1013
+    ],
+    "modifiers": [
+      {
+        "stat": 1,
+        "mode": 0,
+        "value": 3
+      }
+    ]
+  },
+  {
+    "id": 23020,
+    "name": "红点瞄具",
+    "slotType": 4,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1003,
+      1010,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 15,
+        "mode": 1,
+        "value": 0.1
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "id": 23021,
+    "name": "2倍镜",
+    "slotType": 4,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1010,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 15,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 16,
+        "mode": 0,
+        "value": 2
+      },
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.15
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "id": 23022,
+    "name": "4倍镜",
+    "slotType": 4,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1010,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 15,
+        "mode": 1,
+        "value": 0.25
+      },
+      {
+        "stat": 16,
+        "mode": 0,
+        "value": 4
+      },
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": 0.3
+      },
+      {
+        "stat": 10,
+        "mode": 1,
+        "value": 0.3
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "id": 23023,
+    "name": "激光",
+    "slotType": 5,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1002,
+      1003,
+      1014,
+      1015
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.2
+      },
+      {
+        "stat": 14,
+        "mode": 1,
+        "value": 0.1
+      }
+    ]
+  },
+  {
+    "id": 23024,
+    "name": "战术手电",
+    "slotType": 5,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [],
+    "modifiers": []
+  },
+  {
+    "id": 23025,
+    "name": "霰弹枪收束器",
+    "slotType": 1,
+    "isSuppressor": false,
+    "compatibleWeaponIds": [
+      1007,
+      1008,
+      1013
+    ],
+    "modifiers": [
+      {
+        "stat": 8,
+        "mode": 1,
+        "value": -0.4
+      }
+    ]
+  }
+]

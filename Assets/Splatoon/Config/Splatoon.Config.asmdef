@@ -1,0 +1,5 @@
+{
+  "name": "Splatoon.Config",
+  "rootNamespace": "Splatoon.Config",
+  "references": ["Unity.Addressables", "Unity.ResourceManager", "UniTask", "Luban"]
+}

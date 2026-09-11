@@ -1,0 +1,112 @@
+[
+  {
+    "id": 20001,
+    "name": "医疗包",
+    "medicineType": 0,
+    "buffId": 10002,
+    "useDuration": 3,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": false,
+    "requireDebuff": false
+  },
+  {
+    "id": 20002,
+    "name": "绷带",
+    "medicineType": 2,
+    "buffId": 10005,
+    "useDuration": 2,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": true
+  },
+  {
+    "id": 20003,
+    "name": "夹板",
+    "medicineType": 2,
+    "buffId": 10007,
+    "useDuration": 4,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": true
+  },
+  {
+    "id": 20004,
+    "name": "小型医疗包",
+    "medicineType": 0,
+    "buffId": 10008,
+    "useDuration": 2,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": false,
+    "requireDebuff": false
+  },
+  {
+    "id": 20005,
+    "name": "急救包",
+    "medicineType": 0,
+    "buffId": 10009,
+    "useDuration": 8,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": false,
+    "requireDebuff": true
+  },
+  {
+    "id": 20006,
+    "name": "肾上腺素注射器",
+    "medicineType": 1,
+    "buffId": 10010,
+    "useDuration": 1.5,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": false
+  },
+  {
+    "id": 20007,
+    "name": "负重强化注射器",
+    "medicineType": 1,
+    "buffId": 10011,
+    "useDuration": 1.5,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": false
+  },
+  {
+    "id": 20008,
+    "name": "耐力注射器",
+    "medicineType": 1,
+    "buffId": 10012,
+    "useDuration": 1.5,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": false
+  },
+  {
+    "id": 20009,
+    "name": "强效注射器",
+    "medicineType": 1,
+    "buffId": 10013,
+    "useDuration": 1.5,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": true,
+    "requireDebuff": false
+  },
+  {
+    "id": 20010,
+    "name": "恢复注射器",
+    "medicineType": 0,
+    "buffId": 10014,
+    "useDuration": 2,
+    "useActionConfig": "default_medicine_use",
+    "useMoveSpeedMul": 0.35,
+    "allowWhenFullHealth": false,
+    "requireDebuff": false
+  }
+]

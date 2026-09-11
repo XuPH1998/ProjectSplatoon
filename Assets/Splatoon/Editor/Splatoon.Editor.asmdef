@@ -1,0 +1,6 @@
+{
+  "name": "Splatoon.Editor",
+  "rootNamespace": "Splatoon.Editor",
+  "references": ["Splatoon", "Splatoon.Config", "Splatoon.Skills.Data", "Splatoon.Skills.Support", "Unity.Addressables.Editor"],
+  "includePlatforms": ["Editor"]
+}

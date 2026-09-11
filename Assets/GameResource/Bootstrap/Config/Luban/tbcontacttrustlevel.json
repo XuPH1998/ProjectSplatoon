@@ -1,0 +1,398 @@
+[
+  {
+    "id": 100,
+    "contactId": 1,
+    "level": 0,
+    "requiredTrust": 0,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 101,
+    "contactId": 1,
+    "level": 1,
+    "requiredTrust": 1000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 102,
+    "contactId": 1,
+    "level": 2,
+    "requiredTrust": 2000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 103,
+    "contactId": 1,
+    "level": 3,
+    "requiredTrust": 3000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 104,
+    "contactId": 1,
+    "level": 4,
+    "requiredTrust": 4000,
+    "rewardType": "SafeBoxCapacity",
+    "rewardTargetId": 0,
+    "rewardAmount": 1
+  },
+  {
+    "id": 105,
+    "contactId": 1,
+    "level": 5,
+    "requiredTrust": 5000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 106,
+    "contactId": 1,
+    "level": 6,
+    "requiredTrust": 6000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 107,
+    "contactId": 1,
+    "level": 7,
+    "requiredTrust": 7000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 108,
+    "contactId": 1,
+    "level": 8,
+    "requiredTrust": 8000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 109,
+    "contactId": 1,
+    "level": 9,
+    "requiredTrust": 9000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 1000
+  },
+  {
+    "id": 110,
+    "contactId": 1,
+    "level": 10,
+    "requiredTrust": 10000,
+    "rewardType": "SafeBoxCapacity",
+    "rewardTargetId": 0,
+    "rewardAmount": 1
+  },
+  {
+    "id": 200,
+    "contactId": 2,
+    "level": 0,
+    "requiredTrust": 0,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 201,
+    "contactId": 2,
+    "level": 1,
+    "requiredTrust": 1000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 202,
+    "contactId": 2,
+    "level": 2,
+    "requiredTrust": 2000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 203,
+    "contactId": 2,
+    "level": 3,
+    "requiredTrust": 3000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 204,
+    "contactId": 2,
+    "level": 4,
+    "requiredTrust": 4000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 205,
+    "contactId": 2,
+    "level": 5,
+    "requiredTrust": 5000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 206,
+    "contactId": 2,
+    "level": 6,
+    "requiredTrust": 6000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 207,
+    "contactId": 2,
+    "level": 7,
+    "requiredTrust": 7000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 208,
+    "contactId": 2,
+    "level": 8,
+    "requiredTrust": 8000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 209,
+    "contactId": 2,
+    "level": 9,
+    "requiredTrust": 9000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 210,
+    "contactId": 2,
+    "level": 10,
+    "requiredTrust": 10000,
+    "rewardType": "SafeBoxCapacity",
+    "rewardTargetId": 0,
+    "rewardAmount": 1
+  },
+  {
+    "id": 300,
+    "contactId": 3,
+    "level": 0,
+    "requiredTrust": 0,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 301,
+    "contactId": 3,
+    "level": 1,
+    "requiredTrust": 1000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 302,
+    "contactId": 3,
+    "level": 2,
+    "requiredTrust": 2000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 303,
+    "contactId": 3,
+    "level": 3,
+    "requiredTrust": 3000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 304,
+    "contactId": 3,
+    "level": 4,
+    "requiredTrust": 4000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 305,
+    "contactId": 3,
+    "level": 5,
+    "requiredTrust": 5000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 306,
+    "contactId": 3,
+    "level": 6,
+    "requiredTrust": 6000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 307,
+    "contactId": 3,
+    "level": 7,
+    "requiredTrust": 7000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 308,
+    "contactId": 3,
+    "level": 8,
+    "requiredTrust": 8000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 309,
+    "contactId": 3,
+    "level": 9,
+    "requiredTrust": 9000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 310,
+    "contactId": 3,
+    "level": 10,
+    "requiredTrust": 10000,
+    "rewardType": "SafeBoxCapacity",
+    "rewardTargetId": 0,
+    "rewardAmount": 1
+  },
+  {
+    "id": 400,
+    "contactId": 4,
+    "level": 0,
+    "requiredTrust": 0,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 401,
+    "contactId": 4,
+    "level": 1,
+    "requiredTrust": 1000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 402,
+    "contactId": 4,
+    "level": 2,
+    "requiredTrust": 2000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 403,
+    "contactId": 4,
+    "level": 3,
+    "requiredTrust": 3000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 404,
+    "contactId": 4,
+    "level": 4,
+    "requiredTrust": 4000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 405,
+    "contactId": 4,
+    "level": 5,
+    "requiredTrust": 5000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 406,
+    "contactId": 4,
+    "level": 6,
+    "requiredTrust": 6000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 407,
+    "contactId": 4,
+    "level": 7,
+    "requiredTrust": 7000,
+    "rewardType": "ShopUnlock",
+    "rewardTargetId": 13104,
+    "rewardAmount": 0
+  },
+  {
+    "id": 408,
+    "contactId": 4,
+    "level": 8,
+    "requiredTrust": 8000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 409,
+    "contactId": 4,
+    "level": 9,
+    "requiredTrust": 9000,
+    "rewardType": "",
+    "rewardTargetId": 0,
+    "rewardAmount": 0
+  },
+  {
+    "id": 410,
+    "contactId": 4,
+    "level": 10,
+    "requiredTrust": 10000,
+    "rewardType": "Item",
+    "rewardTargetId": 3001,
+    "rewardAmount": 20000
+  }
+]

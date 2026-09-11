@@ -1,0 +1,66 @@
+[
+  {
+    "enemyId": 2003,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Wolf.asset"
+  },
+  {
+    "enemyId": 2004,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Bear.asset"
+  },
+  {
+    "enemyId": 2015,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor1.asset"
+  },
+  {
+    "enemyId": 2016,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor2.asset"
+  },
+  {
+    "enemyId": 2017,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor3.asset"
+  },
+  {
+    "enemyId": 2018,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor4.asset"
+  },
+  {
+    "enemyId": 2019,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor5.asset"
+  },
+  {
+    "enemyId": 2020,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Survivor6.asset"
+  },
+  {
+    "enemyId": 2008,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Sentry1.asset"
+  },
+  {
+    "enemyId": 2010,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Sentry3.asset"
+  },
+  {
+    "enemyId": 2011,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Sentry4.asset"
+  },
+  {
+    "enemyId": 2012,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Assault1.asset"
+  },
+  {
+    "enemyId": 2013,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Assault2.asset"
+  },
+  {
+    "enemyId": 2014,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Assault3.asset"
+  },
+  {
+    "enemyId": 2023,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_Sentry1_Tutorial.asset"
+  },
+  {
+    "enemyId": 2021,
+    "configAssetPath": "Assets/GameResource/Gameplay/Actors/Enemies/Config/Definitions/EnemyConfig_SoldierBoss.asset"
+  }
+]

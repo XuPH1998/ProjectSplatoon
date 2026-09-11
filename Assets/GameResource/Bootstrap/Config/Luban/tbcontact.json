@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "nameKey": "contact.1.name",
+    "nameNote": "伊万 科瓦尔",
+    "roleKey": "contact.1.role",
+    "roleNote": "求生者向导",
+    "portraitAddress": "Assets/GameResource/UI/Sprites/MissionCenter/UI_MissionCenter_Contact_C01.png",
+    "initiallyUnlocked": true,
+    "unlockMissionId": 0,
+    "sortOrder": 10,
+    "contactPrefabPath": "Assets/GameResource/Prefabs/Contactor/NPC_3.prefab",
+    "contactPointId": 500001,
+    "contactAnimationConfigPath": "Assets/GameResource/Gameplay/Actors/Contacts/Config/Animation/ContactAnimationConfig_Contact01.asset"
+  },
+  {
+    "id": 2,
+    "nameKey": "contact.2.name",
+    "nameNote": "保尔 柯察金",
+    "roleKey": "contact.2.role",
+    "roleNote": "武器和部件",
+    "portraitAddress": "Assets/GameResource/UI/Sprites/MissionCenter/UI_MissionCenter_Contact_C02.png",
+    "initiallyUnlocked": false,
+    "unlockMissionId": 1003,
+    "sortOrder": 20,
+    "contactPrefabPath": "Assets/GameResource/Prefabs/Contactor/NPC_1.prefab",
+    "contactPointId": 500002,
+    "contactAnimationConfigPath": "Assets/GameResource/Gameplay/Actors/Contacts/Config/Animation/ContactAnimationConfig_Contact02.asset"
+  },
+  {
+    "id": 3,
+    "nameKey": "contact.3.name",
+    "nameNote": "乔伊纳",
+    "roleKey": "contact.3.role",
+    "roleNote": "防护装备",
+    "portraitAddress": "Assets/GameResource/UI/Sprites/MissionCenter/UI_MissionCenter_Contact_C03.png",
+    "initiallyUnlocked": false,
+    "unlockMissionId": 1006,
+    "sortOrder": 30,
+    "contactPrefabPath": "Assets/GameResource/Prefabs/Contactor/NPC_4.prefab",
+    "contactPointId": 500003,
+    "contactAnimationConfigPath": "Assets/GameResource/Gameplay/Actors/Contacts/Config/Animation/ContactAnimationConfig_Contact03.asset"
+  },
+  {
+    "id": 4,
+    "nameKey": "contact.4.name",
+    "nameNote": "高扬斯卡娅",
+    "roleKey": "contact.4.role",
+    "roleNote": "医疗用品",
+    "portraitAddress": "Assets/GameResource/UI/Sprites/MissionCenter/UI_MissionCenter_IvanKoval.png",
+    "initiallyUnlocked": false,
+    "unlockMissionId": 1008,
+    "sortOrder": 40,
+    "contactPrefabPath": "Assets/GameResource/Prefabs/Contactor/NPC_2.prefab",
+    "contactPointId": 500004,
+    "contactAnimationConfigPath": "Assets/GameResource/Gameplay/Actors/Contacts/Config/Animation/ContactAnimationConfig_Contact04.asset"
+  }
+]

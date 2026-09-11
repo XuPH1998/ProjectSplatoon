@@ -1,0 +1,5 @@
+{
+  "name": "Splatoon.Skills.Data",
+  "rootNamespace": "Splatoon.Skills",
+  "references": ["Splatoon.Skills.Support"]
+}
