@@ -1,10 +1,18 @@
 # 喷墨对战 Luban 配置
 
-`source/TbPrototype.xlsx` 保存当前灰盒玩法的 20 项数值。第三行是中文列标题，`description` 列为每个参数提供中文说明、单位和约束。参数键保留英文以兼容运行时代码，数值可直接编辑。`source/Defines/prototype.xml` 定义按键索引的表及字段，含中文注释。Vanguard 遗留表、注册表及生成产物已清除。
+源数据按职责拆成五张强类型表。第 1 行为字段名，第 2 行为类型，第 3 行为中文说明及单位，第 4 行开始为数据。默认记录 ID 均为 1；字段名和资源地址保持英文稳定标识。
 
-修改工作簿后运行 `cmd /c Config\Luban\gen_luban.bat`。运行时通过 Addressables 的 `Luban` 标签加载 JSON，再访问 `cfg.Tables.TbPrototype`。执行 **喷墨对战/原型/搭建灰盒场景** 注册原型资源，或执行 **喷墨对战/原型/构建 Windows 版本** 同时构建本地内容与程序。
+| 表 | 职责 |
+| --- | --- |
+| TbCharacter | 角色资源、生命、墨量、移动、跳跃和回墨 |
+| TbWeapon | 武器资源、射速、伤害、耗墨、下落弹道和涂色笔刷 |
+| TbRoomMode | 默认角色/武器/场地、人数、时长、重生及计分规则 |
+| TbArena | 场景地址、尺寸、归属网格、布局版本 |
+| TbGlobal | 唯一全局记录 ID=1，默认模式、网络及子步频率、超时、同步与内存预算 |
 
-生成的 C#/JSON 禁止手工编辑。固定拓扑参数 `ArenaSize`（场地边长 32 米）、`CellSize`（网格边长 0.5 米）、`MaxPlayers`（最多 4 人）改动时必须同步修改场地构建器及网格实现。
+修改工作簿后运行 `cmd /c Config\Luban\gen_luban.bat`。运行时通过 Addressables 的 `Luban` 标签加载 JSON，再通过 `GameplayConfig` 访问五张表。字段定义位于 `source/Defines/gameplay.xml`。构建入口为 **喷墨对战/构建/Windows 正式资源版本**。全部生成表参与联机内容签名。
+
+生成的 C#/JSON 禁止手工编辑。当前场地 32 米，归属网格默认 0.125 米，最多 4 人。修改场地布局时必须同步正式场景、SurfaceId 和场地布局版本。人物重力 22 与墨弹重力 19.62 分别配置，不能混用。旧 Range 已由初速、重力和寿命替代；旧固定 PaintRadius 改为半径范围。
 
 ## luban.conf 字段说明
 

@@ -1,0 +1,75 @@
+<module name="">
+  <bean name="CharacterConfig" comment="Character 强类型配置">
+    <var name="id" type="int" comment="角色 ID"/>
+    <var name="name" type="string" comment="角色名称"/>
+    <var name="visualAddress" type="string" comment="正式角色外观地址"/>
+    <var name="maxHealth" type="float" comment="生命上限"/>
+    <var name="maxInk" type="float" comment="墨水上限"/>
+    <var name="recoverInk" type="float" comment="普通回墨（点/秒）"/>
+    <var name="swimRecoverInk" type="float" comment="潜墨回墨（点/秒）"/>
+    <var name="moveSpeed" type="float" comment="移动速度（米/秒）"/>
+    <var name="swimSpeed" type="float" comment="潜墨速度（米/秒）"/>
+    <var name="enemyInkMultiplier" type="float" comment="敌方墨水速度倍率"/>
+    <var name="jumpSpeed" type="float" comment="起跳速度（米/秒）"/>
+    <var name="gravity" type="float" comment="角色重力（米/秒²）"/>
+  </bean>
+  <table name="TbCharacter" value="CharacterConfig" input="TbCharacter.xlsx" mode="map" index="id"/>
+  <bean name="WeaponConfig" comment="Weapon 强类型配置">
+    <var name="id" type="int" comment="武器 ID"/>
+    <var name="name" type="string" comment="武器名称"/>
+    <var name="prefabAddress" type="string" comment="正式武器地址"/>
+    <var name="fireRate" type="float" comment="权威射速（发/秒）"/>
+    <var name="damage" type="float" comment="每颗伤害"/>
+    <var name="shotInk" type="float" comment="每颗耗墨"/>
+    <var name="speedMin" type="float" comment="最低初速（米/秒）"/>
+    <var name="speedMax" type="float" comment="最高初速（米/秒）"/>
+    <var name="gravity" type="float" comment="墨弹重力（米/秒²）"/>
+    <var name="lifetime" type="float" comment="有效寿命（秒）"/>
+    <var name="collisionRadius" type="float" comment="扫掠半径（米）"/>
+    <var name="spreadDegrees" type="float" comment="散布半角（度）"/>
+    <var name="paintRadiusMin" type="float" comment="最小涂色半径（米）"/>
+    <var name="paintRadiusMax" type="float" comment="最大涂色半径（米）"/>
+    <var name="paintHardness" type="float" comment="笔刷硬度（0 到 1）"/>
+    <var name="paintStrength" type="float" comment="笔刷强度（0 到 1）"/>
+  </bean>
+  <table name="TbWeapon" value="WeaponConfig" input="TbWeapon.xlsx" mode="map" index="id"/>
+  <bean name="RoomModeConfig" comment="RoomMode 强类型配置">
+    <var name="id" type="int" comment="房间模式 ID"/>
+    <var name="name" type="string" comment="房间模式名称"/>
+    <var name="characterId" type="int" comment="默认角色 ID"/>
+    <var name="weaponId" type="int" comment="默认武器 ID"/>
+    <var name="arenaId" type="int" comment="场地 ID"/>
+    <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 4）"/>
+    <var name="minPlayers" type="int" comment="最低开局人数"/>
+    <var name="matchSeconds" type="float" comment="比赛时长（秒）"/>
+    <var name="respawnSeconds" type="float" comment="重生等待（秒）"/>
+    <var name="protectionSeconds" type="float" comment="重生保护（秒）"/>
+    <var name="friendlyFire" type="bool" comment="是否友伤"/>
+    <var name="groundOnlyScore" type="bool" comment="仅竞技场地面计分"/>
+  </bean>
+  <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id"/>
+  <bean name="ArenaConfig" comment="Arena 强类型配置">
+    <var name="id" type="int" comment="场地 ID"/>
+    <var name="name" type="string" comment="场地名称"/>
+    <var name="sceneAddress" type="string" comment="场景地址"/>
+    <var name="size" type="float" comment="场地边长（米）"/>
+    <var name="cellSize" type="float" comment="归属网格边长（米）"/>
+    <var name="layoutVersion" type="int" comment="场地布局协议版本"/>
+  </bean>
+  <table name="TbArena" value="ArenaConfig" input="TbArena.xlsx" mode="map" index="id"/>
+  <bean name="GlobalConfig" comment="Global 强类型配置">
+    <var name="id" type="int" comment="唯一全局记录 ID，固定 1"/>
+    <var name="defaultModeId" type="int" comment="默认房间模式 ID"/>
+    <var name="networkTickRate" type="int" comment="网络频率（Hz）"/>
+    <var name="projectileStepRate" type="int" comment="弹道子步频率（Hz）"/>
+    <var name="defaultPort" type="int" comment="默认 UDP 端口"/>
+    <var name="connectionTimeout" type="float" comment="连接超时（秒）"/>
+    <var name="inputTimeout" type="float" comment="输入失联停止（秒）"/>
+    <var name="snapshotChunkBytes" type="int" comment="每个快照分块的最大字节数"/>
+    <var name="chunksPerFrame" type="int" comment="每帧最多发送的快照块数"/>
+    <var name="checkpointStamps" type="int" comment="触发滚动检查点的涂色事件数"/>
+    <var name="paintThreshold" type="float" comment="地面归属阈值（0 到 1）"/>
+    <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）"/>
+  </bean>
+  <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id"/>
+</module>

@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Jammo",
+    "visualAddress": "Character/Jammo",
+    "maxHealth": 100,
+    "maxInk": 100,
+    "recoverInk": 10,
+    "swimRecoverInk": 35,
+    "moveSpeed": 5,
+    "swimSpeed": 8,
+    "enemyInkMultiplier": 0.55,
+    "jumpSpeed": 7,
+    "gravity": 22
+  }
+]

@@ -35,6 +35,7 @@ namespace Splatoon.Prototype
         private bool _loaded, _captured, _leaving;
         private CancellationTokenSource _operation;
         private AsyncOperationHandle<GameObject> _playerPrefab, _matchPrefab;
+        private AsyncOperationHandle<GameObject> _characterContent, _weaponContent;
         private byte[] _signature;
         private readonly HashSet<ulong> _admitted = new();
         private float _progress;
@@ -69,13 +70,14 @@ namespace Splatoon.Prototype
             {
                 await Addressables.InitializeAsync().Task;
                 await LubanConfigService.Current.InitializeAsync(_operation.Token);
-                PrototypeSettings.Validate();
-                _signature = Encoding.UTF8.GetBytes("ink-lan-v1|" + string.Join("|", LubanConfigService.Current.Tables.TbPrototype.DataList.OrderBy(x => x.Key).Select(x => x.Key + "=" + x.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))));
+                GameplayConfig.Validate();
+                _port = GameplayConfig.Global.DefaultPort.ToString();
+                _signature = LubanConfigService.Current.ContentSignature;
                 var go = new GameObject("NetworkManager"); DontDestroyOnLoad(go);
                 Manager = go.AddComponent<NetworkManager>(); var transport = go.AddComponent<UnityTransport>();
                 Manager.NetworkConfig = new NetworkConfig();
                 Manager.NetworkConfig.NetworkTransport = transport; Manager.NetworkConfig.EnableSceneManagement = false;
-                Manager.NetworkConfig.TickRate = 30; Manager.NetworkConfig.ConnectionApproval = true;
+                Manager.NetworkConfig.TickRate = (uint)GameplayConfig.Global.NetworkTickRate; Manager.NetworkConfig.ConnectionApproval = true;
                 Manager.NetworkConfig.ConnectionData = _signature;
                 Manager.ConnectionApprovalCallback = Approve;
                 Manager.OnClientConnectedCallback += ClientConnected;
@@ -94,7 +96,7 @@ namespace Splatoon.Prototype
         }
         private void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
-            response.Approved = request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)PrototypeSettings.Value("MaxPlayers");
+            response.Approved = request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
             response.CreatePlayerObject = false; response.Pending = false;
             if(response.Approved) _admitted.Add(request.ClientNetworkId);
             if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? "游戏内容不一致，请双方使用同一构建包。" : "房间已满（最多 4 人）。";
@@ -114,11 +116,17 @@ namespace Splatoon.Prototype
                 var bootScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Main/Boot.unity");
                 _bootRoots = bootScene.IsValid() ? bootScene.GetRootGameObjects().Where(x => x.activeSelf).ToArray() : Array.Empty<GameObject>();
                 foreach (var root in _bootRoots) root.SetActive(false);
-                _scene = await _loader.LoadAsync(ArenaAddress, new Progress<float>(p => _progress = p), _operation.Token); _loaded = true;
+                _scene = await _loader.LoadAsync(GameplayConfig.Arena.SceneAddress, new Progress<float>(p => _progress = p), _operation.Token); _loaded = true;
                 if (_bootCamera != null) _bootCamera.gameObject.SetActive(false);
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);
                 _matchPrefab = Addressables.LoadAssetAsync<GameObject>(MatchAddress);
                 await WaitForPrefab(_playerPrefab, _operation.Token); await WaitForPrefab(_matchPrefab, _operation.Token);
+                _characterContent = Addressables.LoadAssetAsync<GameObject>(GameplayConfig.Character.VisualAddress);
+                _weaponContent = Addressables.LoadAssetAsync<GameObject>(GameplayConfig.Weapon.PrefabAddress);
+                await WaitForPrefab(_characterContent, _operation.Token); await WaitForPrefab(_weaponContent, _operation.Token);
+                var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
+                if (bindings.BoundVisualPrefab != _characterContent.Result || bindings.CharacterView.BoundWeaponPrefab != _weaponContent.Result)
+                    throw new InvalidOperationException("角色或武器配置地址与正式网络预制体绑定不一致，请同步资源绑定后重新构建。");
                 Manager.AddNetworkPrefab(_playerPrefab.Result); Manager.AddNetworkPrefab(_matchPrefab.Result);
                 Status = host ? "正在创建房间…" : "正在连接房主…";
                 if (host)
@@ -134,8 +142,8 @@ namespace Splatoon.Prototype
                     var result = await Session.JoinAsync(new LanJoinOptions(address, port), _operation.Token);
                     if (!result.Success) throw new InvalidOperationException(result.Error);
                     using var readyTimeout = CancellationTokenSource.CreateLinkedTokenSource(_operation.Token);
-                    using var readyTimer = readyTimeout.CancelAfterSlim(TimeSpan.FromSeconds(10));
-                    await UniTask.WaitUntil(() => PrototypeMatch.Current != null && PrototypePlayer.Local != null, cancellationToken: readyTimeout.Token);
+                    using var readyTimer = readyTimeout.CancelAfterSlim(TimeSpan.FromSeconds(GameplayConfig.Global.ConnectionTimeout));
+                    await UniTask.WaitUntil(() => PrototypeMatch.Current != null && PrototypeMatch.Current.InitialSyncComplete && PrototypePlayer.Local != null, cancellationToken: readyTimeout.Token);
                 }
                 _activePort = port;
                 if (host) { int index = Array.IndexOf(_localAddresses, address); if (index >= 0) _hostAddressIndex = index; }
@@ -172,6 +180,8 @@ namespace Splatoon.Prototype
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
+            if (_characterContent.IsValid()) Addressables.Release(_characterContent); _characterContent = default;
+            if (_weaponContent.IsValid()) Addressables.Release(_weaponContent); _weaponContent = default;
             if (_loaded) { await _loader.UnloadAsync(_scene); _loaded = false; }
             if (_bootRoots != null) foreach (var root in _bootRoots) if (root != null) root.SetActive(true);
             _bootRoots = null;
@@ -224,7 +234,7 @@ namespace Splatoon.Prototype
                 Panel(new Rect(0,0,1280,720),new Color(.055f,.075f,.10f));
                 Panel(new Rect(60,90,8,520),PrototypeArena.Orange);
                 GUI.Label(new Rect(92,104,540,74),"喷墨对战 / 局域网",_title);
-                GUI.Label(new Rect(96,190,500,90),"灰盒涂地赛 · 最多四人\n橙蓝两队，三分钟决胜负",_label);
+                GUI.Label(new Rect(96,190,500,90),"墨流涂地赛 · 最多四人\n橙蓝两队，三分钟决胜负",_label);
                 GUI.Label(new Rect(96,330,500,150),"WASD 移动　鼠标转动视角\n空格跳跃　鼠标左键持续射击\n按住 Shift 在己方墨水中潜行、回墨\nEsc 菜单　回车开始比赛（房主）",_small);
                 GUI.Label(new Rect(96,515,500,95),"同一局域网内，房主创建房间后按 Esc，\n复制房间码发给伙伴；伙伴粘贴即可加入。\n房间码包含地址和端口，无需互联网。",_small);
                 Panel(new Rect(660,55,560,605),new Color(.10f,.135f,.18f));
@@ -276,8 +286,8 @@ namespace Splatoon.Prototype
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"橙队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
-            Panel(new Rect(42,635,285*player.Ink/PrototypeSettings.Value("MaxInk"),15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,285,26),player.Swimming?"潜墨中 / 快速回墨":$"墨水 {player.Ink:0} / {PrototypeSettings.Value("MaxInk"):0}",_small);
+            Panel(new Rect(42,635,285*player.Ink/GameplayConfig.Character.MaxInk,15),PrototypeArena.TeamColor(player.Team));
+            GUI.Label(new Rect(42,662,285,26),player.Swimming?"潜墨中 / 快速回墨":$"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
             GUI.Label(new Rect(850,641,410,60),"左键射击　Shift 潜墨 / 回墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
             if (_captured && player.Health>0) { Panel(new Rect(638,350,4,20),Color.white); Panel(new Rect(630,358,20,4),Color.white); }
             if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"热身中，等待另一名玩家加入。":"房主按回车开始三分钟涂地赛。",_small);
@@ -288,7 +298,7 @@ namespace Splatoon.Prototype
                 string winner=PrototypeRules.Winner(state.OrangeCells,state.BlueCells) switch {1=>"橙队获胜",2=>"蓝队获胜",_=>"平局"};
                 GUI.Label(new Rect(463,242,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
                 if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,303,350,48),"继续游戏",_button)) CaptureMouse(true);
-                GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase);
+                GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase,GameplayConfig.Mode.MinPlayers);
                 if(GUI.Button(new Rect(465,367,350,48),state.Phase==MatchPhase.Finished?"再来一局":"开始比赛",_button)) {match.StartRound();CaptureMouse(true);}
                 GUI.enabled=!Busy;
                 if(GUI.Button(new Rect(465,432,350,48),"退出房间",_button)) Leave().Forget();

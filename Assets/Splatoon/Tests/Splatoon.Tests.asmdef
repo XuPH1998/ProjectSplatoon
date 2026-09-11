@@ -1,7 +1,18 @@
 {
   "name": "Splatoon.Tests",
   "rootNamespace": "Splatoon.Tests",
-  "references": ["Splatoon", "Splatoon.Skills.Data", "Splatoon.Skills.Support"],
-  "includePlatforms": ["Editor"],
-  "optionalUnityReferences": ["TestAssemblies"]
+  "references": [
+    "Splatoon",
+    "Splatoon.Skills.Data",
+    "Splatoon.Skills.Support",
+    "Splatoon.Config",
+    "Unity.Netcode.Runtime",
+    "Luban"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
 }

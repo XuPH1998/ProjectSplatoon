@@ -1,8 +1,0 @@
-<module name="">
-    <bean name="PrototypeSetting" comment="喷墨对战原型参数：稳定键、数值与中文说明">
-        <var name="key" type="string" comment="参数稳定键，供代码查表，不要翻译或随意修改"/>
-        <var name="value" type="float" comment="参数数值，单位与约束见中文说明"/>
-        <var name="description" type="string" comment="参数中文说明，包含单位或调参限制"/>
-    </bean>
-    <table name="TbPrototype" value="PrototypeSetting" input="TbPrototype.xlsx" mode="map" index="key" comment="灰盒玩法参数表，按参数稳定键索引"/>
-</module>

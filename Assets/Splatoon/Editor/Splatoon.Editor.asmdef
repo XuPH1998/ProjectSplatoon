@@ -1,6 +1,21 @@
 {
   "name": "Splatoon.Editor",
   "rootNamespace": "Splatoon.Editor",
-  "references": ["Splatoon", "Splatoon.Config", "Splatoon.Skills.Data", "Splatoon.Skills.Support", "Unity.Addressables.Editor", "Unity.Addressables", "Unity.ResourceManager", "Unity.Netcode.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
-  "includePlatforms": ["Editor"]
+  "references": [
+    "Splatoon",
+    "Splatoon.Config",
+    "Luban",
+    "Splatoon.Skills.Data",
+    "Splatoon.Skills.Support",
+    "Unity.Addressables.Editor",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "Unity.Netcode.Runtime",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "Unity.Animation.Rigging",
+    "Unity.RenderPipelines.Core.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
 }

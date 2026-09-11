@@ -5,26 +5,15 @@ using Splatoon.Networking;
 
 namespace Splatoon.Prototype
 {
-    public static class PrototypeSettings
-    {
-        public static float Value(string key) => LubanConfigService.Current.Tables.TbPrototype.Get(key).Value;
-        public static void Validate()
-        {
-            foreach (var row in LubanConfigService.Current.Tables.TbPrototype.DataList)
-                if (!float.IsFinite(row.Value) || row.Value <= 0) throw new InvalidOperationException($"原型配置值无效：{row.Key}");
-            if (Value("MaxPlayers") != 4 || Value("ArenaSize") != 32 || Value("CellSize") != 0.5f)
-                throw new InvalidOperationException("当前场地要求最大人数 MaxPlayers=4、场地边长 ArenaSize=32、网格边长 CellSize=0.5。修改这些值需要同步调整场地构建器。");
-        }
-    }
     public static class PrototypeRules
     {
         public static byte ChooseTeam(int orange, int blue) => (byte)(orange <= blue ? 1 : 2);
-        public static bool CanStart(int players, MatchPhase phase) => players >= 2 && phase != MatchPhase.Playing;
+        public static bool CanStart(int players, MatchPhase phase, int minimumPlayers = 2) => players >= minimumPlayers && phase != MatchPhase.Playing;
         public static bool HasEnded(MatchPhase phase, double now, double end) => phase == MatchPhase.Playing && now >= end;
         public static int Winner(int orange, int blue) => orange == blue ? 0 : orange > blue ? 1 : 2;
         public static float Recover(float ink, float maximum, float rate, float dt) => Mathf.Min(maximum, ink + rate * dt);
         public static bool Spend(ref float ink, float amount)
-        { if (ink < amount) return false; ink -= amount; return true; }
+        { if (ink + .00001f < amount) return false; ink = Mathf.Max(0, ink - amount); return true; }
         public static float Damage(float health, float amount, bool friendly, double protectedUntil, double now) => friendly || now < protectedUntil ? health : Mathf.Max(0, health - amount);
         public static bool CanRespawn(float health, double now, double due) => health <= 0 && now >= due;
     }

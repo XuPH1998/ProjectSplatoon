@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Splattershot",
+    "prefabAddress": "Weapon/Splattershot",
+    "fireRate": 40,
+    "damage": 3.75,
+    "shotInk": 0.3,
+    "speedMin": 20,
+    "speedMax": 25,
+    "gravity": 19.62,
+    "lifetime": 0.5,
+    "collisionRadius": 0.025,
+    "spreadDegrees": 1.82,
+    "paintRadiusMin": 0.2,
+    "paintRadiusMax": 1.5,
+    "paintHardness": 0.01,
+    "paintStrength": 1
+  }
+]

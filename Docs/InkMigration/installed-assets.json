@@ -1,0 +1,709 @@
+{
+  "assets": [
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/AnimatorController_Jamo.controller",
+      "guid": "535d24752e3d6444da644e79e90ec2ca",
+      "sha256": "e22a62130e0bb03e5fae3f1ab156045de85bb1a0f5624ce7f30a65e7dcbe6f5a"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle.anim",
+      "guid": "6b64f85c5ee58984a8e4d87ffdce9b5d",
+      "sha256": "5d3eaf8150f6fe7cc32ae90c9c827ad1d486614a513575806ea66d6bf1c54834"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Battle.anim",
+      "guid": "6bd646364b2a3db42bcd783601e3d363",
+      "sha256": "ce2ca34a2e0316a20415a7e4740e60915cf39afdb09ffbef082cdcc2316d915b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Happy.anim",
+      "guid": "9045b628a2e38a246a988d3abea05c36",
+      "sha256": "9f32bd17fdd3c7322fa1f483849ff140d325238c2fa1a3364be4b50aa1c85a72"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Relaxed.anim",
+      "guid": "b2cad9ba00286364bad6feeb3b9d5b8c",
+      "sha256": "7b41d51253695a437ed3ef655d09c6c87406dd11481668da2c341e3e42478950"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Scared.anim",
+      "guid": "23c0d86c9ee13b14e989e8dbcb08489a",
+      "sha256": "722c357cee8d88c937e0c9a365ed6c1b21c68f75356ca97425fe4856c53dc808"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Running.anim",
+      "guid": "2e5cbd52f3af8384fafcc9a73ad2f1e0",
+      "sha256": "da31fde6892fdefc85462cd649410ea01a3d5a8bbf62df00baa4f284aa7f69e3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Walking.anim",
+      "guid": "6fd7082454b5e8f4eaef795e9a384dfa",
+      "sha256": "8e5fab20d9a351a183b0c48667c2ff0f4856de6a1f33c76662bb7c17a1ca9f78"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Idle.fbx",
+      "guid": "00b24869f517dc24396da8583751fccf",
+      "sha256": "6572393904cc4eb76b0cb7e86c0a084a8b86f8477e38514aa7d2181e95a46709"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Running.fbx",
+      "guid": "f0c83a65bca6f58488978e065a82d0e5",
+      "sha256": "0085d7be3d09719abdbebcf5f1f6e176a2c1130c309e3c76a3bea4833dd85335"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Falling To Landing.anim",
+      "guid": "aa2bb98b035ff55448dc2b05f2e04251",
+      "sha256": "26e5239a07b020f01cf6ace7c40a42579a5274b95a9f1cc5ea71f9a21a370350"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Fist Pump.anim",
+      "guid": "9320442ecbaf905429dac366ee003323",
+      "sha256": "e52d16da8eba0b2f73264c17b20a7a2c62982962dc7d005b137a30e54c0dc921"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoCombat.controller",
+      "guid": "674000df06d273e4790df2652b111789",
+      "sha256": "a18f54fbb8ed9a42825c0ab6b749cbc6e08f470a6b40509a59214e8d42ec2059"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoJump.anim",
+      "guid": "1c3c3a80fd8c1b64188dd0b3a690d321",
+      "sha256": "52486d5267c777fb551df6a27eaa9f4b308b477defb7378b57a560a16797f36d"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoLand.anim",
+      "guid": "9deabb6dc381e4443aaf668bd5bce0b1",
+      "sha256": "9e6b3a5c3c122f22949fc9855a8c3a382b77ace6b04ccc2d1d338525ff032046"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Jump.anim",
+      "guid": "e7fa3aa78b48c584fbee583a7c532655",
+      "sha256": "2dc82ec9361d18a2b8fcd41cdd7318f6fc63f671a8918f39106ededc6c865616"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Aim Idle.anim",
+      "guid": "8086bf483fcb5224191109120cd0dc03",
+      "sha256": "0c9137b147bdbe13c916e4aa4e6c2738d1d0cb75359275ccaf4a9c78809f9a97"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Idle.anim",
+      "guid": "d5fee5ac347826e4798c8eb83aed2291",
+      "sha256": "13780b21baa01f7445afb5567f0eba63d4b2d4e986a1f9e9630f3e2d1e741117"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Backwards.anim",
+      "guid": "c4cc47503f3d29242b6272c114ba822e",
+      "sha256": "e715fac6be91166f4e6b0bdfca130b76659ee23fe5766582c359cda51c40137f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Forward.anim",
+      "guid": "6bb3f56b719796048bfe0af7dda91336",
+      "sha256": "a412c5946c310f43efa6b458870298a1b41883163bfc5d9e02f3d186bc6e3dc1"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Left.anim",
+      "guid": "60eb7c85d36416943b8138849b6f2d84",
+      "sha256": "4b83eb71397e8a18bce89d691eef079bfcb70738d0fcea57c983c5a31c4551a0"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Right.anim",
+      "guid": "bd66bd1e564e11b4a8c6fed735b5aa10",
+      "sha256": "7b7758320a00429c6d052d62cbcc228135fc4fc31640a32fad7567b2f41f93cc"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Walk Forward.anim",
+      "guid": "d19e758bb93175945a76f03c6e803137",
+      "sha256": "625ded44ee4469d285dfe4607294d581c376cd221358368329ed1e18dbf96276"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Standing.anim",
+      "guid": "d85664db4b473f64fb198bcc5a3c7099",
+      "sha256": "1099fe688befe705d1aff0712c632e7b0716c4fcb891d362bfc2d25f12e6f5ca"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Victory Idle.anim",
+      "guid": "13a6028bbfeabbe4a91cb3339acabfa4",
+      "sha256": "3a6353f61c94ac9c1367d9af31efeeb96057bb6223bab8e3f6ed59a4c72f77f3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_ground.mat",
+      "guid": "ac02e0546055b854f8600e1708139ff8",
+      "sha256": "d5257d4af9712c15a5a2302b82f497fb85f575961cf42786bade41f04872e5d0"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_eyes.mat",
+      "guid": "d5c0dc78f40c06c4e9356a3218da955b",
+      "sha256": "98423364426ecc6b1992d27dacb421f537350e39bc0975e34fa9d21e32e5d960"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_metal.mat",
+      "guid": "60c2f0e0aaa8f8d4e9d23d7e3768653b",
+      "sha256": "ac8053c21b03c0566c4547ddb7d4654c334c222f5766516d86ff6407d1d5cda9"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/Skybox.mat",
+      "guid": "d69071256986a1c4bb4872d222c6ae6e",
+      "sha256": "a71cd4c3b4df165c427e8bafaf25aba683eebe0795df5d150f85e56e55bc1eee"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/Jammo_LowPoly.fbx",
+      "guid": "82a2914d8f86c62488456950c8330e38",
+      "sha256": "92a1f6ed5835b8f1ca3305e9bc5f72d366b7be0f1879dc929032bea8dfa5899b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/JammoAvatar.asset",
+      "guid": "9382319d17d4353478986eec64682830",
+      "sha256": "fa0f31c8b889a91424e4326960502476b3ba3c24038932246a36f3f3e800565f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab",
+      "guid": "3b4759869974d6646bb3982804fb7eea",
+      "sha256": "c0659b260aa7d92e60533e0592abf89205987667d2645cfde7dca3c32ffd6c8f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_black.psd",
+      "guid": "c9fd4ccfc3404b04eae3cd87e40a8e2e",
+      "sha256": "6d865fbff058187f59a9758db2877e076693445a3429c89c5a6ea2c409572258"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_blue.psd",
+      "guid": "10c532508a2453a48aa766e69193d105",
+      "sha256": "e7a03641d642c7bf03c72e989d52c238bcc728beb273cdb46727f9601a7899a9"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_yellow.psd",
+      "guid": "f61e83171850a834788a4664dbb54eae",
+      "sha256": "d136388000ffde5ee745b5777ab3ee1c9c6829297d4d4d7f50a7ecdd622e69d4"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/jammo_eyes.png",
+      "guid": "09beef63c41c25b458d2f95fdfd9e0e5",
+      "sha256": "62069ee075780c1152d64b7f3abe492a0216a935a0a185a56e6dc1c504d49373"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot1.json",
+      "guid": "c3a8ef644c409ed4697012135caec542",
+      "sha256": "1e15bf1083de4d590bc0876ef1417cbc1106235ad949ac3ec9814b4fd043db64"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AlbedoTransparency.png",
+      "guid": "fb6e06c953f0d8045bc58e0f5a640f07",
+      "sha256": "0bf4ff46f7a168acbc915fc503c01ba1b13b4993a1cac9c2bdf2db4716582ee7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AO.png",
+      "guid": "6a0fb4aa4de843c45a776e5a4ac9dd69",
+      "sha256": "c63aba48b321dc487b7a2795cb2bcb5e71145c1bac0a3f8300208994f56945a4"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_MetallicSmoothness.png",
+      "guid": "3a5a871d579c2da4094f823d674595eb",
+      "sha256": "67717922390cc5e6d1802f4eb6c9b5e36b45fd203f46ee7b34b680cb2e26edf7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_Normal.png",
+      "guid": "f6c18262b3c0eba4bb830f3d91682a4f",
+      "sha256": "2754edf42b7041f6b6efb4a726cd8e1a9e401406be48a6a0077c71d637df74b6"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/base.mat",
+      "guid": "2c4716a8ce690bc4d8cfc9547b01bd9b",
+      "sha256": "61b38795deeae2ee499f5579486e441615cb43dfb18070fefb5f96bb4f6d1990"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/handle.mat",
+      "guid": "a632a98bf15d54f4dbf0ae5733cd9df2",
+      "sha256": "8c3cd4aeb2023b601a9cd6bf2c089d64717ad7ab7c91075eba6a34f2ea3b2cb4"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/model.dae",
+      "guid": "6ecf4ed5e905303488757bf045c01010",
+      "sha256": "241df1537a61ccce9fc31739d9522ce0153a55d136e8d389fc8875ee2114778d"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/nozzle.mat",
+      "guid": "3f147ecca71633d4a82c4caad97cb905",
+      "sha256": "1418c052921a52e9d1d818211da34a35cd615b6766c8ef7169e84a6fd2c5ea83"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/pump.mat",
+      "guid": "5fc26080382b5bc44a6b4a21db209be2",
+      "sha256": "d27136c4b4916be749d39b3c0a9c5aa1a9b48e4997bd1c4df1a4589185ec0c8a"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/tank.mat",
+      "guid": "4d55ac861bef7b447bb029a4da2cb51a",
+      "sha256": "d34bdc7920585130076b97f370a47b78423fc10c51bfe30791ab69511d82e5b7"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Body_albedo.jpg",
+      "guid": "d23b99799ea4b1340b4bdb4e1303a3be",
+      "sha256": "80094e6f2df1195a0e56ca9f9fa03fd20ae126c790e17693c7c10ca00f920f9a"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Body_AO.jpg",
+      "guid": "bbbc6f57cb2b0f14dbca7e3cbb4b1213",
+      "sha256": "0187f6bd816835c483e4d5d98433d6ce2f1b954b0cfd91cb7f35e4ebfd788bcf"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Body_metallic.jpg",
+      "guid": "2de120c1db4b8e04f9a6a2d4c8a143ac",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Body_normal.png",
+      "guid": "a216015e5c81e5a4ea59c6943789f9aa",
+      "sha256": "5cf66e88da64ae6bc5cf35717e5c21cd7bfa2fa95dae9839170d368092eba396"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Body_roughness.jpg",
+      "guid": "69f643206d1e3d64fa563c54c9bc5c91",
+      "sha256": "83543d034b36595c41ea8e4ae2832f0e4deae0c62003aed6b5be784ca78cd907"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Handle_albedo.jpg",
+      "guid": "d5ec62e2269fb4b489f03c4f0b9034e2",
+      "sha256": "9c428546b5ef8781b52c8308c633cedeebe6f60ccfbb68b9db7ba7fdf11d666c"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Handle_AO.jpg",
+      "guid": "5caf3e1772e56bd4393c0d6e49fe34f3",
+      "sha256": "2112f1dce58d418b1c05ad75849e22a61860177d831d3551792f987cbcb9a50d"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Handle_metallic.jpg",
+      "guid": "0fd3fafe2496beb4daa5e058338a29a9",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Handle_normal.png",
+      "guid": "e1a5c22d931ad884db093b61613c2c51",
+      "sha256": "6b78b452fd6ccddcd91b8742bd40bad28fe5f151392dd0864a032b48fcdf23d4"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Handle_roughness.jpg",
+      "guid": "52e6ed1c3c8c2cb4786fe2170977a1ea",
+      "sha256": "83543d034b36595c41ea8e4ae2832f0e4deae0c62003aed6b5be784ca78cd907"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Nozzle_albedo.jpg",
+      "guid": "0a7f92328b17539488101015fbd273e8",
+      "sha256": "8a38c92da193bd166b6c9f13a1b19e8a3b8ccc3daf02b7e39e78dacb4bf459b9"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Nozzle_AO.jpg",
+      "guid": "c3527419edc68824d9bf2b783d55324c",
+      "sha256": "25c58ced849ae2aee233c8d0f9fa2f78e2710348c9c567922f5497d905bdc5d0"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Nozzle_metallic.jpg",
+      "guid": "fab246434076a134c8a87308ef824b0b",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Nozzle_normal.png",
+      "guid": "9addcee3a1884c64f83f875b6d337eb2",
+      "sha256": "aad4af92891fb7f571892a5df688c250d39d2de76d70b409e31b4f40a61b1225"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Nozzle_roughness.jpg",
+      "guid": "03b48bac8a8aa1244aeaa1592466f3fe",
+      "sha256": "83543d034b36595c41ea8e4ae2832f0e4deae0c62003aed6b5be784ca78cd907"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Pump_albedo.jpg",
+      "guid": "9934e9a58cfc9a04fa8aa249cbc61a0d",
+      "sha256": "ec46df0fa432e42dcf58631cb63444970bf4ea4693bb78d5a200d8c121ed7f11"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Pump_AO.jpg",
+      "guid": "2412d872ca0858d4b96f269ee7f53d2c",
+      "sha256": "5a4e8ae8356a069b899c3f20718c41549eecd8b2a70335d8f636f8b5e8ddf055"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Pump_metallic.jpg",
+      "guid": "00b5f5748b0419748b45a078b5bed34e",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Pump_normal.png",
+      "guid": "a8b0cae7a0ead174a91c85a6e710ec5e",
+      "sha256": "e853fbff2be770711241988c9a2f80f8aa5e2eb60fb3e88f06eec4ff07f42e0c"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Pump_roughness.jpg",
+      "guid": "c82fd0facb7d0bb42be1d91f6e17079c",
+      "sha256": "83543d034b36595c41ea8e4ae2832f0e4deae0c62003aed6b5be784ca78cd907"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tank_albedo.jpg",
+      "guid": "41c26e20634de9142baf0e04d2674630",
+      "sha256": "f2da1d0bd28f4638acd9b7fb955630e417e4b13a985eb98b41961bdce65dc03a"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tank_AO.jpg",
+      "guid": "c89ecf4819ffd9c47bf5f2a1d1d272af",
+      "sha256": "9450f2ffd05f5c0f38f544f7586b6d8a5c213b5672620c8efdd64d95f0d08032"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tank_metallic.jpg",
+      "guid": "20cb27add6f6da44db34713331a03f28",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tank_normal.png",
+      "guid": "0db8becb4b5fb5345b4d8ff44cc56ce4",
+      "sha256": "feb8e9bb268de51cbcdfe0e9051686ea076e04825780a20d39769bd2452cc0bb"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tank_roughness.jpg",
+      "guid": "f43b98f68ead9034098a58e4e865a82a",
+      "sha256": "d984b6170dfdb3489b57de8d05b3bec936da983ddb29a485e89f1a8430b6851f"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tube_albedo.jpg",
+      "guid": "d4acfea22b78cac4a82d961a2795efbd",
+      "sha256": "58320ab309a6015001acaade699abfc745380b68e992cf88e0e35d2790b36b85"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tube_AO.jpg",
+      "guid": "08f6ea59e26e7294dbef1a6941db70a7",
+      "sha256": "ad5e0ed219362af90a12b901cd52f6860533051eeeb11f54fc772e5030d6658e"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tube_metallic.jpg",
+      "guid": "c788da332c487834591b090285f85cb3",
+      "sha256": "a23e17776a02a154eb554053dee6590c8bd691b9832f6d477e93c0db267023a3"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tube_normal.png",
+      "guid": "354e2b38a2afa4e448272987367b2458",
+      "sha256": "5872a0ecc21f65268747d987614ff21892d300535372d38ed9e4ef4bc46e8720"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/textures/Tube_roughness.jpg",
+      "guid": "05fff105f86dbe84aa08f36c305a93f3",
+      "sha256": "9f8608485b5692d27912402928ea661296a768c7522edbb845049278a9821204"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Art/tube.mat",
+      "guid": "e84b818e2f8296a42bb635fb015c58ff",
+      "sha256": "02182f9d2dd8c7bb90c7255ee18e819dbdfb85e610ace2631b67d587cde5bdcc"
+    },
+    {
+      "path": "Assets/GameResource/Weapons/Splattershot/Prefabs/Splattershot.prefab",
+      "guid": "ba9857d2828655c48aa4a94d77a6a88a",
+      "sha256": "a2b78c56347b94d63f01614cf6dde78ccff56968ee40b557cdbed70fa12a5067"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Materials/InkParticle.mat",
+      "guid": "4bdfd49a249c4834c9d6a7a591023bb2",
+      "sha256": "646616155b97569fe339651f9017c8bd3fd5b4c073eb1fa0365b3d2f71f76661"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Materials/RenderMetaballRT.mat",
+      "guid": "ba62d2f9845041e498edc0cfd32a8813",
+      "sha256": "98f07ea4281b16987f84410b830b06fe963cb3d8eaa6bc4ba103f1245c0418ee"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Materials/SphereTraceMetaball.mat",
+      "guid": "e7b8326262253394caa8c9c39653fc4f",
+      "sha256": "198cbb39ca2ab219405984f5a4556809ebe23469c56125c8f5d79e3a5863ae87"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab",
+      "guid": "6099aec9a79bca34298597ce157343bd",
+      "sha256": "952596547b1703759accdfb3137427217d299874d24693d0aecd2083c0040e0d"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab",
+      "guid": "44d8719a2225d96458480952313d3ed4",
+      "sha256": "fe7d5374d32856fdfd38eeca7d1fc836154b8e7e30650c3ee2957d1f8a74c748"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/CopyDepth.shader",
+      "guid": "a18dc30dbe78448ba10bdc97765a4866",
+      "sha256": "c0d20c54310df2fdef3806405644706ac5ca7b2851bdb2b7cdd8a9cdd0e188af"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/Includes/DepthNode.hlsl",
+      "guid": "b392595f3c6f4846bc173bff0fb18106",
+      "sha256": "0ced7ac317236a173f48fe551a594892e30f507c6536705361dc08b2781540a3"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/Includes/Metaball.hlsl",
+      "guid": "caf3c88af57121045bf42c51439afbe9",
+      "sha256": "a72d1d08ee4f6ef15be865b18dafa63acf0802dd1906ef647c924fcd536ddebc"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/KawaseBlur.shader",
+      "guid": "c2cce5cab35b66c4482bc5a1d6f4ad99",
+      "sha256": "4e9fb07a6c68d190153a1573c898071cff88d085d8a64783617bc529dce6def8"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/Metaball.shadergraph",
+      "guid": "f0ab7c2228d751f4ca364672fe5fb923",
+      "sha256": "fe1a4d20ff252c9c9a2bd0330e0640e2d88104d27f487b6b02a2cc5a823a1b7e"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/Shader Graphs_StepAndClip.mat",
+      "guid": "95391282e3f31ef4dada9756b388d99d",
+      "sha256": "7db3b21192c8f8cc9a54934554b015f178caebd52584c1c089451826e18b49d4"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/Shader Graphs_WriteToDepth.mat",
+      "guid": "3abad26229f1dfe418d9152127d1e435",
+      "sha256": "3de46d55c6dec9399bb6e0cb1e6dda2ee3a272cd95612d4a48030fcf87a6ffaf"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/SphereTraceMetaballs.shadersubgraph",
+      "guid": "3e0425aecc67598429823555b3a9d936",
+      "sha256": "bb418e0d2d0e0e81979a3c44f2aabf5d37f75305af0346a4460067b6e5c292a8"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/SphereTraceSphere.shadersubgraph",
+      "guid": "0405b877a6048b544bef763a89fc664b",
+      "sha256": "1761954d64001781bad2a7591c17b39a90f36ceb38c5ed30cb1106b203cd365b"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/StepAndClip.shadergraph",
+      "guid": "f68ffba8030502749b8eb867430ed4a1",
+      "sha256": "68955f9d28d59c01fee1ed37310fcc8802d6b35fd2f9d5fb80f0cff5d005bfb5"
+    },
+    {
+      "path": "Assets/GameResource/Effects/Ink/Shaders/WriteToDepth.shadergraph",
+      "guid": "513807bc2f5309843ae2ca6907d35342",
+      "sha256": "19ae1514cf1a01f1974115ef017449d1f8b42e1f3f0947a195856d2ba465f111"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/PaintableWall.mat",
+      "guid": "cb668e822fd59824eacf79ab811891a1",
+      "sha256": "55a338caf8bd906eabae8e17dc22e8c795cb6e5d1110fe700bf0ea7057bbfd83"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_1.mat",
+      "guid": "b36ed34d4279e5b40adf5da51a3ed77c",
+      "sha256": "2b45593374f7d9c0de261f718b87b21803b0f8455c43ce53135a655be8e572cd"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_10.mat",
+      "guid": "3f2666874692b0d4ab626027c765fcf2",
+      "sha256": "c806186179b0349444da17a5598c012f4673cde0b7a75bb26271c3ab1d478484"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_11.mat",
+      "guid": "42a2654b9482a444dbee088ee3cb425a",
+      "sha256": "a0708b0c5e039a695173de68445cfad7b43b6dce2d6c9387381616964a6c43a0"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_12.mat",
+      "guid": "7e11fe3af8fb3704a873b942045e568a",
+      "sha256": "389b4c32b134c22d00953de1e4c261a72bfdfa1d3908f1951bc34dc591e3e66f"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_13.mat",
+      "guid": "b88155b4adbfbe545b8ea55cdd523bbb",
+      "sha256": "0fd8dd64e676c0b1cbb60ab89198a24c7f27ca2ffffa4ed3ab0f98ea3a39cccc"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_2.mat",
+      "guid": "46229a9e989cbb441ad0a7c79100c66b",
+      "sha256": "0267cd38afd962fedbfce173adbf40099cd76363dd7b4261779eb7ce6609548d"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_3.mat",
+      "guid": "885800135585bc2479403a0061272a0e",
+      "sha256": "f314554fa920bbc9ed3e9f7328df76199c25babaf0e9f3da0cc54acc02599ad2"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_4.mat",
+      "guid": "9353d275ad4ca264f87283799399e69d",
+      "sha256": "1c51bf5c6880c30c108b27bf0ac56d5757e6ba126f0e1ae243ced3eb998c9fc3"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_5.mat",
+      "guid": "f844b037556347e42b12f20a55642bbf",
+      "sha256": "e6ff1bd4466b1993d97c726ffbe94d675fcbb5974dbc2b57ed44030fdf80297d"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_6.mat",
+      "guid": "6153f21595fbc7b4a8ddac02b3836566",
+      "sha256": "1f7ad1f7c2fc42eac661baed01640e8e8856e9fee92000ed7493125418010f07"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_7.mat",
+      "guid": "923bd7c734acd5b48abe0686601a454f",
+      "sha256": "74a2f6810366f110110cb81008744322a8959d86f8d6dfb1c18f8e26d12221fd"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_8.mat",
+      "guid": "2e5fe39b48d248b43810ecc1b38ab931",
+      "sha256": "6bebbaa69786fe612d888b739888aead3a0c7eec460cd17301faecfbb17617d6"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Materials/Surface_9.mat",
+      "guid": "0b8413ece1938c14982eb17a39e29a66",
+      "sha256": "dc34e14153ce73177ebcf2d11d82740df486dd0f36f764336be0d44b7b2ee9f2"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_1.asset",
+      "guid": "23a6ad8d5bdf8db46a08f4cb65c0fd9d",
+      "sha256": "8047ddae03299bb80dd7e939368877452ff6a6ce004e469e540c41cad2a5953a"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_10.asset",
+      "guid": "5ac18f8524c410440965ff7a85401d6a",
+      "sha256": "1012e0e10ad70ede0f4cb2faaa0edd28f15f2602db9fd0099ebd37ac12693db0"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_11.asset",
+      "guid": "82787774a0a7d2040850943dfd190dfb",
+      "sha256": "6e11292072be80737c31dfeff398e099523ba1b0248e26d4fd2246f54e660214"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_12.asset",
+      "guid": "996323c9b370ed04c9e0c03643e8ce10",
+      "sha256": "6933a0704ef334061798fa8a309895f499c8121272a3824196a5c27a17fa4470"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_13.asset",
+      "guid": "1c7fd2bea3b8f3647affdf5210381bf5",
+      "sha256": "89730aaaaaf0d119f4678319653b9f566b4b051808a0ecf4da2d5a9f1c7d6a42"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_2.asset",
+      "guid": "6efa03ed9a3bace4da9977bd96bc2b41",
+      "sha256": "ff1d5403ae6caad44eb1cef075d791bbaec72dc1cec8a498f4bdc2b312238743"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_3.asset",
+      "guid": "35c8ab34546ddeb4d809f963039c90af",
+      "sha256": "21a2f232c77e8032863a3b1a505f8a5d755ceb4928e2b50548369eea1984c76e"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_4.asset",
+      "guid": "48288f3e5e0c03b4da9f00b2d1b69beb",
+      "sha256": "d7b665a22c63fd0d6e28c96089c692ee63724547f18144be30602b337f77b50e"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_5.asset",
+      "guid": "8a8f1d65cc4d17f4b911fe41aafe2421",
+      "sha256": "76c5fc3563997425b7c3ad8505253d831f1ebfd5a6829cd5e90a55b8cd571abf"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_6.asset",
+      "guid": "f2fc37bc95925c944a191376e702c7ae",
+      "sha256": "c91b3399c2d0a81c08315151ea3db8fc815efb385b18cecfd4c7e9efbb256213"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_7.asset",
+      "guid": "e5a709e88bc1a7149ae3f2884cae3ac8",
+      "sha256": "b9dfee7145f3507e5b0f658b8ec970bfd72baedf171e43bfafa5864802ae23b5"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_8.asset",
+      "guid": "a7d45d08d065ca044b2a5c55398b2aa1",
+      "sha256": "992a4a96df4e8d6309584fa7cf12c87b2ef7927d02e219b2855826249927dfd6"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Meshes/PaintAtlas_9.asset",
+      "guid": "1772216b10cca184bbc77e29021ce1e9",
+      "sha256": "f650ba44df540c12ec36757e72a975fdeac7c1b58a6315fedb61677134fbc918"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Shaders/ExtendIslands.shader",
+      "guid": "30512f6167fa0784ab310b688406279d",
+      "sha256": "cd22b511e71e7bb6f87e36f76e74cd9128531cfefdcbb8547e70f5ff7a04f398"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Shaders/Paintable.shadergraph",
+      "guid": "d720082e5b71004498653db605c207b2",
+      "sha256": "8cb1106078533f98f5ef9465af10b77d818ab1b5dcbc9bc1580fb63a748cc680"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/concrete_Wall_Albedo.jpg",
+      "guid": "a3e168dcdf5f56f44aad44b52c87e64b",
+      "sha256": "74923ddd52a6ecd9cbf88beac03d55fea1f0de9cb086a6de06d0560f9921b99f"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/concrete_Wall_Normal.jpg",
+      "guid": "915fce885e7a6a541b08b09e903e8a15",
+      "sha256": "14e5fd95b2ca874ff70dab41b801b060a3feb3c3ea9a6dbe4b8858ddbc818b46"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/GridBox_Default.png",
+      "guid": "7f7b302eddb0edd49afe4248035a7b56",
+      "sha256": "e407b608613e129ec82439bb8b5d9850c8d20e60b2c73d5e238e959d7f13266a"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/GridBox_Default.psd",
+      "guid": "7cf1055f41270dc40a64af16ab1186aa",
+      "sha256": "1b2eae3eeab1faa07695eb307742be4d6ad9c29de2ddb4c58b1b8410c878e101"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/noise_texture_0002.png",
+      "guid": "90fa52e833fedfb4b8b3dbe10e96a30e",
+      "sha256": "b6a5cf0418ab28c22b059dec003ddf370d2d790abf34a0a4beb134121f81940e"
+    },
+    {
+      "path": "Assets/GameResource/Environment/Ink/Textures/splatNormal.jpg",
+      "guid": "35add2fc28f438c4da2c9a3a720ac55e",
+      "sha256": "ad75eead97f28b268b21163183b3a332e7f2bd9c5e56ffe2022b651c68ab53f3"
+    },
+    {
+      "path": "Assets/GameResource/ThirdPartyNotices/MixAndJam-LICENSE.txt",
+      "guid": "d1dfa468691202c4d9b26a1556670c86",
+      "sha256": "9e0d93e3c7fd11d5f6ee5d06b3cf54daeb138ee89e8c60f20bc0be9dead48aa6"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Blue.mat",
+      "guid": "542249ce567428846a8428835507541a",
+      "sha256": "2c1158502af1bfd9a90e165bc6d9f8cd85bc6f93b6d1a1f3309b2fb911fe3781"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Orange.mat",
+      "guid": "bd8f5ce241e43d84c91342201350c952",
+      "sha256": "378beb88a36c510df876bd83f7fa85a6f16a712d0ea9f5a7033e79c488624258"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Paint.mat",
+      "guid": "b752eb7ccbf678a4f95c76fe9b1356a8",
+      "sha256": "b88602e366de391e489dd869e4e5180637ea5bb12856bb7d95134c30005bc684"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Pale.mat",
+      "guid": "6d1270f85a801254a8a0b457725b6dcb",
+      "sha256": "9bb5f8ddd30018a3f49063a0745244b7fe01afc9c6bb352d09e92ddd68e0f01b"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Stone.mat",
+      "guid": "6a5a694976bc7b1459b7c45234a62c91",
+      "sha256": "c9aa88ef825efaf287885e4de492c88c74efb9f58f423123b29fa671d51fe25c"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Tracer.mat",
+      "guid": "8bbb49cc5924c9f408cc1fb3d1ab9cc2",
+      "sha256": "1fa8e483db7f82dad6208a153fae8fa396bcea1d1ffb39e76a553bb533704676"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Materials/Weapon.mat",
+      "guid": "03ca50ec099bc974d93fc70d07d22c01",
+      "sha256": "bb6568ee2d2ba36435905417c66f351e100cf0f54f182481fdc163f03e556a0c"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypeMatch.prefab",
+      "guid": "cb40c19915243c44cac8eebfcf3bc7dd",
+      "sha256": "e7aaef5c47bdb61e2b4ecdd27a1e508d96b4e14bef4ae1d2fd5949a4e7a003d2"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab",
+      "guid": "0040e805963344e4eac928fe89a30d73",
+      "sha256": "6ab80f2be0efc5e92777b6c58ebf9deadf3bf5b2775a3193eec073b534524388"
+    },
+    {
+      "path": "Assets/GameResource/Gameplay/Prototype/PrototypeArena.unity",
+      "guid": "7a7ac244454f41c4190ec80984f701e6",
+      "sha256": "caeb9f95ead6756c51de66b91f4a9d4373945db0f57436b9ecc1f2bccc0461af"
+    }
+  ]
+}

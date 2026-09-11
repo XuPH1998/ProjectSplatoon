@@ -14,20 +14,29 @@ namespace cfg
 {
 public partial class Tables
 {
-    /// <summary>
-    /// 灰盒玩法参数表，按参数稳定键索引
-    /// </summary>
-    public TbPrototype TbPrototype {get; }
+    public TbCharacter TbCharacter {get; }
+    public TbWeapon TbWeapon {get; }
+    public TbRoomMode TbRoomMode {get; }
+    public TbArena TbArena {get; }
+    public TbGlobal TbGlobal {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
-        TbPrototype = new TbPrototype(loader("tbprototype"));
+        TbCharacter = new TbCharacter(loader("tbcharacter"));
+        TbWeapon = new TbWeapon(loader("tbweapon"));
+        TbRoomMode = new TbRoomMode(loader("tbroommode"));
+        TbArena = new TbArena(loader("tbarena"));
+        TbGlobal = new TbGlobal(loader("tbglobal"));
         ResolveRef();
     }
     
     private void ResolveRef()
     {
-        TbPrototype.ResolveRef(this);
+        TbCharacter.ResolveRef(this);
+        TbWeapon.ResolveRef(this);
+        TbRoomMode.ResolveRef(this);
+        TbArena.ResolveRef(this);
+        TbGlobal.ResolveRef(this);
     }
 }
 

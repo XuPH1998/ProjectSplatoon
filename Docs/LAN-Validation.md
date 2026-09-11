@@ -1,5 +1,7 @@
 # 验证记录
 
+这是正式资源移植前的灰盒与房间码历史记录。当前墨弹、表面纹理、五表配置及正式模型的验证结果见 [InkMigration/Validation.md](InkMigration/Validation.md)，下文的 TbPrototype 与旧构建结果不代表当前版本。
+
 验证日期：2026-09-11。Unity 6000.3.9f1，Windows x64，NGO 2.7.0 / Unity Transport 2.6.0。
 
 为保留用户已打开的编辑器会话，编译和打包在 `Temp/PrototypeValidation` 验证副本执行。源码来自当前工作区，生成场景、Prefab、Addressables 配置及 Windows 程序回传到当前项目。没有提交 Git。

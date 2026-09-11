@@ -16,14 +16,14 @@
 | `EnableSceneManagement` | 关闭 NGO 自动场景管理，使用现有异步加载器 |
 | `ConnectionApproval` | 启用连接审批，校验配置签名和最多 4 人的容量 |
 | `UnityTransport.SetConnectionData` | 房主监听所有网卡 0.0.0.0，默认 UDP 7777 |
-| 连接超时 | 10 秒，支持取消与失败重试 |
+| 连接超时 | 20 秒，支持取消与失败重试 |
 | `Splatoon Local` 资源组 | 本地内容打包组，使用 LocalBuildPath / LocalLoadPath |
 | `Luban` 标签 | 运行时批量加载配置 JSON 的标签 |
 | `Prototype/Arena / Player / Match` | 场地、玩家与比赛状态的稳定资源地址 |
 | `Packages/manifest.json` | 包依赖清单；保留包的正式名称与版本标识 |
 | `*.asmdef` | 程序集依赖清单，标识需与代码引用一致 |
 
-原型角色 Inspector 中 `Visual` 是外观根节点、`Body` 是胶囊渲染器、`TracerMaterial` 是弹道材质。场地 `Unpaintable` 是不可涂色碰撞盒列表、`PaintMaterial` 是涂色材质；这些字段均有中文悬停说明。技能定义字段同样添加中文说明，技能事件下拉项显示中文。
+角色 Inspector 中 `Visual` 是外观根节点、`CharacterView` 绑定动画和 IK、`SimulationMuzzle` 是不受表现后坐力影响的逻辑枪口。场地 `Unpaintable` 为不计分地面投影，`SpawnPoints` 为正式出生点；各模型上的 `PaintSurface` 管理稳定表面 ID、是否计分和绘制纹理尺寸。技能定义字段同样添加中文说明，技能事件下拉项显示中文。
 
 ## 输入与渲染资产
 
@@ -40,3 +40,5 @@ Windows 运行时优先使用系统自带 Microsoft YaHei（微软雅黑），�
 房间码采用 13 位易读字母数字，显示为 4-4-5 分组。内部编码版本、IPv4、UDP 端口及 CRC-8 校验；支持小写、空白、去除横线的粘贴，兼容 O/0、I/L/1。无须发现广播或互联网服务。同一地址和端口生成相同码；它是地址快捷方式，不是密码，也不保证房主当前在线。
 
 多网卡时优先展示有默认网关的活动地址，房主可点击切换；选择虚拟网卡或不通的地址时，请改为实际有线/无线网卡。127.0.0.1 仅供同机测试。退出房间立即清除显示的房间码。建立房间后切换分享地址只改变编码，不更改监听所有网卡的网络服务。
+
+玩法参数已改为五张强类型 Luban 表，详见 Config/Luban/README.md。墨流使用独立 InkVisual 层与 RenderGraph 深度/模糊合成；默认桌面渲染器采用 Forward 路径。

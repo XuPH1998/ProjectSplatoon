@@ -2,42 +2,42 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using Splatoon.Networking;
+using Splatoon.Config;
+using Splatoon.Combat;
+using Splatoon.Painting;
 
 namespace Splatoon.Prototype
 {
-    public sealed class PrototypeMatch : NetworkBehaviour
+    public sealed partial class PrototypeMatch : NetworkBehaviour
     {
         public static PrototypeMatch Current { get; private set; }
         public readonly NetworkVariable<MatchStateSnapshot> State = new();
-        public NetworkList<byte> Cells;
         public readonly List<PrototypePlayer> Players = new();
         public PaintGrid Grid => PrototypeArena.Current.Grid;
-        private void Awake() => Cells = new NetworkList<byte>();
+        public readonly InkProjectileService Projectiles = new();
+        public uint PaintSequence { get; private set; }
+        public uint AppliedPaintSequence => IsServer ? PaintSequence : _appliedSequence;
+        public bool InitialSyncComplete { get; private set; }
+        private uint _appliedSequence, _paintRound;
+        private readonly List<PaintStamp> _pending = new(64);
+        private readonly List<PaintStamp> _journal = new(1024);
+        private readonly SortedDictionary<uint, PaintStamp> _buffered = new();
         public override void OnNetworkSpawn()
         {
-            Current = this;
+            Current = this; _paintRound = State.Value.Round;
             if (IsServer)
             {
-                for (int i = 0; i < Grid.Cells.Length; i++) Cells.Add(Grid.Cells[i]);
                 State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalCells = Grid.Total };
-                NetworkManager.NetworkTickSystem.Tick += ServerTick;
+                InitialSyncComplete = true; NetworkManager.NetworkTickSystem.Tick += ServerTick;
             }
-            else for (int i = 0; i < Cells.Count; i++) ApplyCell(i, Cells[i]);
-            Cells.OnListChanged += OnCellsChanged;
-            Debug.Log($"[LAN] Match spawned server={IsServer} cells={Cells.Count} hash={Grid.Hash()}");
+            else RequestSnapshotRpc();
+            Debug.Log($"[LAN] Match spawned server={IsServer} cells={Grid.Cells.Length} hash={Grid.Hash()}");
         }
-        private void OnCellsChanged(NetworkListEvent<byte> change)
-        {
-            if (change.Type == NetworkListEvent<byte>.EventType.Value) ApplyCell(change.Index, change.Value);
-            else if (change.Type == NetworkListEvent<byte>.EventType.Full)
-                for (int i = 0; i < Cells.Count; i++) ApplyCell(i, Cells[i]);
-        }
-        private void ApplyCell(int index, byte team)
-        { Grid.Set(index, team); PrototypeArena.Current.RefreshCell(index); }
-        public void Paint(Vector3 position, byte team)
+        public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength)
         {
             if (!IsServer || State.Value.Phase == MatchPhase.Finished) return;
-            Grid.Paint(position, PrototypeSettings.Value("PaintRadius"), team, (i, t) => Cells[i] = t);
+            var stamp = new PaintStamp { Sequence = ++PaintSequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength };
+            PrototypeArena.Current.Apply(stamp, true); _pending.Add(stamp); _journal.Add(stamp);
         }
         public void AddPlayer(ulong clientId, GameObject prefab)
         {
@@ -46,41 +46,60 @@ namespace Splatoon.Prototype
             byte team = PrototypeRules.ChooseTeam(orange, Players.Count - orange);
             int slot = Players.Exists(p => p.Snapshot.Value.Team == team && p.Snapshot.Value.Slot == 0) ? 1 : 0;
             var go = Instantiate(prefab, PrototypeArena.Spawn(team, slot), Quaternion.identity);
-            var p = go.GetComponent<PrototypePlayer>();
-            p.Initialize(team, (byte)slot);
-            go.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-            Players.Add(p);
+            var p = go.GetComponent<PrototypePlayer>(); p.Initialize(team, (byte)slot);
+            go.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true); Players.Add(p);
             Debug.Log($"[LAN] Player joined id={clientId} team={team} slot={slot}");
         }
-        public void RemovePlayer(ulong id) => Players.RemoveAll(p => p == null || p.OwnerClientId == id);
+        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || p.OwnerClientId == id); _transfers.Remove(id); _waiting.Remove(id); }
         public void StartRound()
         {
-            if (!IsServer || !PrototypeRules.CanStart(Players.Count, State.Value.Phase)) return;
-            Grid.Clear((i, t) => Cells[i] = t);
-            foreach (var p in Players) p.Respawn();
-            var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing;
-            s.EndsAt = NetworkManager.ServerTime.Time + PrototypeSettings.Value("MatchSeconds");
+            if (!IsServer || Players.Count < GameplayConfig.Mode.MinPlayers || State.Value.Phase == MatchPhase.Playing) return;
+            var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing; s.EndsAt = NetworkManager.ServerTime.Time + GameplayConfig.Mode.MatchSeconds;
             s.OrangeCells = s.BlueCells = 0; State.Value = s;
+            ResetPaint(s.Round); ResetRoundClientRpc(s.Round);
+            foreach (var p in Players) p.Respawn();
             Debug.Log($"[LAN] Round started round={s.Round} ends={s.EndsAt:F2}");
         }
+        private void ResetPaint(uint round)
+        {
+            _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
+            _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
+            _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
+            PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear(); InitialSyncComplete = true;
+        }
+        [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer) ResetPaint(round); }
         private void ServerTick()
         {
-            double now = NetworkManager.ServerTime.Time;
-            var s = State.Value;
+            double now = NetworkManager.ServerTime.Time; var s = State.Value;
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Debug.Log($"[LAN] Round finished orange={Grid.Orange} blue={Grid.Blue} hash={Grid.Hash()}"); }
-            // Set the phase first so no last-tick shot can occur after the deadline.
-            State.Value = s;
-            Players.RemoveAll(p => p == null || !p.IsSpawned);
+            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished orange={Grid.Orange} blue={Grid.Blue} hash={Grid.Hash()}"); }
+            State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             foreach (var p in Players) p.Simulate(1f / NetworkManager.NetworkConfig.TickRate, now, s.Phase);
-            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count;
-            s.OrangeCells = Grid.Orange; s.BlueCells = Grid.Blue; State.Value = s;
+            if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
+            if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(Projectiles.Spawned.ToArray()); Projectiles.Spawned.Clear(); }
+            if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(Projectiles.Impacts.ToArray()); Projectiles.Impacts.Clear(); }
+            if (_pending.Count > 0) { PaintClientRpc(_pending.ToArray()); _pending.Clear(); }
+            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.OrangeCells = Grid.Orange; s.BlueCells = Grid.Blue; State.Value = s;
+        }
+        [ClientRpc] private void ShotsClientRpc(InkShot[] shots) { if (State.Value.Phase != MatchPhase.Finished) foreach (var shot in shots) if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); }
+        [ClientRpc] private void ImpactsClientRpc(InkImpact[] impacts) { foreach (var impact in impacts) if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); }
+        [ClientRpc] private void ClearShotsClientRpc() => InkPresentation.Current?.Clear();
+        [ClientRpc] private void PaintClientRpc(PaintStamp[] stamps, ClientRpcParams targets = default)
+        {
+            if (IsServer) return;
+            foreach (var stamp in stamps) if (stamp.Round == _paintRound && stamp.Sequence > _appliedSequence) _buffered[stamp.Sequence] = stamp;
+            DrainPaint();
+        }
+        private void DrainPaint()
+        {
+            if (!InitialSyncComplete) return;
+            while (_buffered.TryGetValue(_appliedSequence + 1, out var stamp))
+            { PrototypeArena.Current.Apply(stamp, true); _buffered.Remove(++_appliedSequence); }
         }
         public override void OnNetworkDespawn()
         {
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
-            Cells.OnListChanged -= OnCellsChanged;
-            Players.Clear();
+            _captureGeneration++; Projectiles.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
             if (Current == this) Current = null;
         }
     }

@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "对称竞技场",
+    "sceneAddress": "Prototype/Arena",
+    "size": 32,
+    "cellSize": 0.125,
+    "layoutVersion": 2
+  }
+]

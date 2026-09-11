@@ -1,4 +1,5 @@
 using System;
+using Splatoon.Config;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -54,7 +55,7 @@ namespace Splatoon.Networking
                 ((UnityTransport)_manager.NetworkConfig.NetworkTransport).SetConnectionData(options.Address, options.Port);
                 if (!_manager.StartClient()) throw new InvalidOperationException("无法启动网络客户端，请重试。");
                 using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
-                using var timeoutTimer = timeout.CancelAfterSlim(TimeSpan.FromSeconds(10));
+                using var timeoutTimer = timeout.CancelAfterSlim(TimeSpan.FromSeconds(GameplayConfig.Global.ConnectionTimeout));
                 await UniTask.WaitUntil(() => State != NetworkSessionState.Joining, cancellationToken: timeout.Token);
                 if (State != NetworkSessionState.Connected) throw new InvalidOperationException(LastError ?? "连接失败，请检查房主是否在线。");
                 return new JoinResult(true);

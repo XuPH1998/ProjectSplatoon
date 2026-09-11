@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Splatoon.Networking;
+using Splatoon.Config;
 
 namespace Splatoon.Prototype
 {
@@ -12,9 +13,12 @@ namespace Splatoon.Prototype
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         public static bool Active { get; private set; }
         private static bool _host;
+        private static string _inkCase;
         private static float _connectedAt;
         private float _lastLog;
-        private bool _started, _captured, _restarted;
+        private bool _started, _captured, _restarted, _dumped;
+        private float _captureAfter;
+        private string _label;
         private float _finishedAt;
         private float _leaveAfter;
         private int _cycles;
@@ -25,6 +29,9 @@ namespace Splatoon.Prototype
         {
             var args = Environment.GetCommandLineArgs();
             _host = args.Contains("-lanSmokeHost"); Active = _host || args.Contains("-lanSmokeClient");
+            _inkCase = Arg(args, "-inkSmokeCase", "combat");
+            _captureAfter = float.Parse(Arg(args, "-inkCaptureAfter", _inkCase == "combat" ? "43" : "6.5"), System.Globalization.CultureInfo.InvariantCulture);
+            _label = Arg(args, "-inkLabel", _host ? "host" : "client");
             if (!Active) return;
             var app = PrototypeApp.Current;
             await UniTask.WaitUntil(() => app.Ready || (!app.Busy && !string.IsNullOrEmpty(app.Error)));
@@ -49,6 +56,14 @@ namespace Splatoon.Prototype
         {
             if (!Active) return;
             float t=Time.realtimeSinceStartup-_connectedAt;
+            if (_inkCase == "observer") { frame.Move = Vector2.zero; frame.Look = new Vector2(0, 45); frame.Fire = frame.Swim = false; return; }
+            if (_inkCase == "surfaces")
+            {
+                frame.Move = t < 5 && p.Snapshot.Value.Position.x < 13.8f ? new Vector2(.7f, 0) : Vector2.zero;
+                frame.Look = t < 5 ? new Vector2(0, 55) : new Vector2(90, 0);
+                frame.Fire = t < 20; frame.Swim = false;
+                return;
+            }
             frame.Move=Vector2.zero; frame.Look=new Vector2(p.Snapshot.Value.Team==1?0:180,55);frame.Fire=false;frame.Swim=false;
             if (t<5) {frame.Fire=true;frame.Move=new Vector2(0,.5f);}
             else if(t<10) {frame.Swim=true;frame.Move=new Vector2(0,.5f);}
@@ -57,7 +72,7 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current;
             if(match!=null && match.State.Value.Phase==MatchPhase.Playing && match.State.Value.Round==1)
             {
-                double elapsed=PrototypeSettings.Value("MatchSeconds")-(match.State.Value.EndsAt-p.NetworkManager.ServerTime.Time);
+                double elapsed=GameplayConfig.Mode.MatchSeconds-(match.State.Value.EndsAt-p.NetworkManager.ServerTime.Time);
                 var state=p.Snapshot.Value;
                 frame.Fire=false;frame.Swim=false;frame.Move=Vector2.zero;
                 if(elapsed<3)
@@ -69,13 +84,15 @@ namespace Splatoon.Prototype
                     var target=UnityEngine.Object.FindObjectsByType<PrototypePlayer>(FindObjectsSortMode.None).FirstOrDefault(x=>x.OwnerClientId!=p.OwnerClientId);
                     if(target!=null)
                     {
-                        var aim=target.Snapshot.Value.Position+Vector3.up*.9f;
+                        float distance = Vector3.Distance(state.Position, target.Snapshot.Value.Position);
+                        var aim=target.Snapshot.Value.Position+Vector3.up*(.9f + .5f * GameplayConfig.Weapon.Gravity * Mathf.Pow(distance / 22.5f, 2));
                         for(int n=0;n<3;n++)
                         {
                             var origin=PrototypePlayer.CameraPosition(state.Position+Vector3.up*1.5f,Quaternion.Euler(frame.Look.y,frame.Look.x,0));
                             var d=aim-origin;frame.Look=new Vector2(Mathf.Atan2(d.x,d.z)*Mathf.Rad2Deg,-Mathf.Atan2(d.y,new Vector2(d.x,d.z).magnitude)*Mathf.Rad2Deg);
                         }
                         frame.Fire=true;
+                        if (distance > 6) frame.Move.y = 1;
                     }
                 }
             }
@@ -85,16 +102,33 @@ namespace Splatoon.Prototype
             if (!Active || !PrototypeApp.Current.InRoom || PrototypeMatch.Current==null) return;
             var match=PrototypeMatch.Current;var s=match.State.Value;float t=Time.realtimeSinceStartup-_connectedAt;
             if(_leaveAfter>0&&t>_leaveAfter&&!_cycling){Cycle().Forget();return;}
-            if (_host&&!_started&&s.PlayerCount>=2&&t>25) {match.StartRound();_started=true;}
+            if (_inkCase == "combat" && _host&&!_started&&s.PlayerCount>=2&&t>25) {match.StartRound();_started=true;}
             if (Time.realtimeSinceStartup-_lastLog>2)
             {
                 _lastLog=Time.realtimeSinceStartup;var p=PrototypePlayer.Local.Snapshot.Value;
-                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} orange={s.OrangeCells} blue={s.BlueCells} hash={match.Grid.Hash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Cells.Count}");
+                int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
+                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} orange={s.OrangeCells} blue={s.BlueCells} hash={match.Grid.Hash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Grid.Cells.Length} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
             }
-            if(!_captured&&t>43&&!Application.isBatchMode)
+            if (!_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                _dumped = true;
+                foreach (var surface in PrototypeArena.Current.Surfaces.Values)
+                {
+                    if (!surface.HasPaint || surface.Mask == null) continue;
+                    int surfaceId = surface.SurfaceId;
+                    UnityEngine.Rendering.AsyncGPUReadback.Request(surface.Mask, 0, TextureFormat.RGBA32, readback =>
+                    {
+                        if (readback.hasError) { Debug.LogError("[SMOKE] Paint readback failed"); return; }
+                        uint hash = 2166136261;
+                        foreach (byte value in readback.GetData<byte>()) hash = unchecked((hash ^ value) * 16777619);
+                        Debug.Log($"[SMOKE-RT] surface={surfaceId} hash={hash}");
+                    });
+                }
+            }
+            if(!_captured&&t>_captureAfter&&!Application.isBatchMode)
             {
                 _captured=true;
-                var path=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..","smoke-"+(_host?"host":"client")+".png"));
+                var path=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..","smoke-"+_label+".png"));
                 CaptureWorld(path);Debug.Log("[SMOKE] Screenshot: "+path);
             }
             if(_host&&s.Phase==MatchPhase.Finished&&!_restarted)

@@ -1,4 +1,6 @@
 using Unity.Netcode;
+using Splatoon.Config;
+using Splatoon.Combat;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Splatoon.Networking;
@@ -7,27 +9,31 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public Vector3 Position;
+        public Vector3 Position, Velocity;
         public float Yaw, Pitch, Health, Ink;
         public double RespawnsAt, ProtectedUntil;
         public uint Revision;
         public byte Team, Slot;
-        public bool Swimming;
+        public bool Swimming, Grounded, Firing;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Position); s.SerializeValue(ref Yaw); s.SerializeValue(ref Pitch);
             s.SerializeValue(ref Health); s.SerializeValue(ref Ink); s.SerializeValue(ref RespawnsAt);
             s.SerializeValue(ref ProtectedUntil); s.SerializeValue(ref Revision); s.SerializeValue(ref Team);
-            s.SerializeValue(ref Slot); s.SerializeValue(ref Swimming);
+            s.SerializeValue(ref Slot); s.SerializeValue(ref Swimming); s.SerializeValue(ref Velocity); s.SerializeValue(ref Grounded); s.SerializeValue(ref Firing);
         }
     }
     [RequireComponent(typeof(CharacterController))]
     public sealed class PrototypePlayer : NetworkBehaviour
     {
+        public static readonly System.Collections.Generic.Dictionary<ulong, PrototypePlayer> ByOwner = new();
         public readonly NetworkVariable<PlayerSnapshot> Snapshot = new();
         [Tooltip("角色外观根节点，仅用于客户端表现")] public Transform Visual;
-        [Tooltip("胶囊角色渲染器，用队伍颜色显示")] public Renderer Body;
-        [Tooltip("短暂弹道线使用的材质")] public Material TracerMaterial;
+        [Tooltip("人物模型、方向动画和持枪约束")] public InkCharacterView CharacterView;
+        [Tooltip("独立于美术后坐力的逻辑枪口")] public Transform SimulationMuzzle;
+        public Vector3 SimulationAimPivot;
+        public GameObject BoundVisualPrefab;
+        public Vector3 MuzzleOffset(float pitch) => SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
         private CharacterController _controller;
         private PlayerInputFrame _input;
         private uint _sequence, _jumpSequence, _consumedJump, _revision;
@@ -36,11 +42,11 @@ namespace Splatoon.Prototype
         private Vector2 _look;
         private Camera _camera;
         private byte _initialTeam, _initialSlot;
-        private readonly RaycastHit[] _hits = new RaycastHit[24];
-        private MaterialPropertyBlock _properties;
+
+
         public static PrototypePlayer Local { get; private set; }
         public Vector2 Look => _look;
-        private void Awake() { _controller = GetComponent<CharacterController>(); _properties = new MaterialPropertyBlock(); }
+        private void Awake() { _controller = GetComponent<CharacterController>(); }
         public void Initialize(byte team, byte slot)
         {
             _initialTeam = team; _initialSlot = slot;
@@ -53,14 +59,15 @@ namespace Splatoon.Prototype
             _controller.height = 1.8f; _controller.center = Vector3.up * .9f;
             _controller.enabled = true;
             _vertical = 0; _input.Fire = _input.Swim = false; _input.Move = Vector2.zero; _consumedJump = _input.JumpSequence;
-            s.Position = transform.position; s.Health = PrototypeSettings.Value("MaxHealth"); s.Ink = PrototypeSettings.Value("MaxInk");
+            s.Position = transform.position; s.Health = GameplayConfig.Character.MaxHealth; s.Ink = GameplayConfig.Character.MaxInk;
             s.Yaw = s.Team == 1 ? 0 : 180; s.Pitch = 12; s.Swimming = false; s.RespawnsAt = 0;
-            s.ProtectedUntil = Unity.Netcode.NetworkManager.Singleton.ServerTime.Time + PrototypeSettings.Value("ProtectionSeconds");
-            s.Revision++; Snapshot.Value = s; _nextShot = 0;
+            s.ProtectedUntil = Unity.Netcode.NetworkManager.Singleton.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds;
+            s.Velocity = Vector3.zero; s.Firing = false; s.Grounded = true; s.Revision++; Snapshot.Value = s; _nextShot = 0;
             _input.Look = new Vector2(s.Yaw, s.Pitch);
         }
         public override void OnNetworkSpawn()
         {
+            ByOwner[OwnerClientId] = this;
             if (IsServer)
             {
                 Snapshot.Value = new PlayerSnapshot { Team = _initialTeam, Slot = _initialSlot, Yaw = _initialTeam == 1 ? 0 : 180 };
@@ -87,11 +94,7 @@ namespace Splatoon.Prototype
             }
             if (!IsServer) transform.position = Vector3.Lerp(transform.position, s.Position, 1 - Mathf.Exp(-18 * Time.deltaTime));
             Visual.localRotation = Quaternion.Slerp(Visual.localRotation, Quaternion.Euler(0, s.Yaw, 0), 1 - Mathf.Exp(-20 * Time.deltaTime));
-            Visual.localScale = new Vector3(1, s.Swimming ? .35f : 1, 1);
-            Visual.gameObject.SetActive(s.Health > 0);
-            Color color = PrototypeArena.TeamColor(s.Team);
-            if (NetworkManager.ServerTime.Time < s.ProtectedUntil) color = Color.Lerp(color, Color.white, .35f + .2f * Mathf.Sin(Time.time * 12));
-            _properties.SetColor("_BaseColor", color); Body.SetPropertyBlock(_properties);
+            CharacterView.Present(s, Time.deltaTime, NetworkManager.ServerTime.Time);
             if (!IsOwner || !PrototypeApp.Current.HasControl) return;
             if (Mouse.current != null)
             {
@@ -137,80 +140,50 @@ namespace Splatoon.Prototype
             if (s.Health <= 0)
             { if (PrototypeRules.CanRespawn(s.Health, now, s.RespawnsAt)) Respawn(); return; }
             var input = _input;
-            if (now - _lastInput > .3) { input.Move = Vector2.zero; input.Fire = input.Swim = false; }
+            if (now - _lastInput > GameplayConfig.Global.InputTimeout) { input.Move = Vector2.zero; input.Fire = input.Swim = false; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
             byte floor = PrototypeMatch.Current.Grid.At(transform.position);
             s.Swimming = input.Swim && floor == s.Team && _controller.isGrounded;
             _controller.height = s.Swimming ? .7f : 1.8f; _controller.center = Vector3.up * (_controller.height * .5f);
-            float speed = PrototypeSettings.Value(s.Swimming ? "SwimSpeed" : "MoveSpeed");
-            if (floor != 0 && floor != 255 && floor != s.Team && _controller.isGrounded) speed *= PrototypeSettings.Value("EnemyInkMultiplier");
+            float speed = (s.Swimming ? GameplayConfig.Character.SwimSpeed : GameplayConfig.Character.MoveSpeed);
+            if (floor != 0 && floor != 255 && floor != s.Team && _controller.isGrounded) speed *= GameplayConfig.Character.EnemyInkMultiplier;
             if (_controller.isGrounded && _vertical < 0) _vertical = -2;
             if (input.JumpSequence != _consumedJump)
-            { _consumedJump = input.JumpSequence; if (_controller.isGrounded) _vertical = PrototypeSettings.Value("JumpSpeed"); }
-            _vertical -= PrototypeSettings.Value("Gravity") * dt;
+            { _consumedJump = input.JumpSequence; if (_controller.isGrounded) _vertical = GameplayConfig.Character.JumpSpeed; }
+            _vertical -= GameplayConfig.Character.Gravity * dt;
             var move = Quaternion.Euler(0, s.Yaw, 0) * new Vector3(input.Move.x, 0, input.Move.y) * speed;
+            Vector3 beforeMove = transform.position;
             _controller.Move((move + Vector3.up * _vertical) * dt);
+            s.Velocity = (transform.position - beforeMove) / dt; s.Grounded = _controller.isGrounded;
             if (transform.position.y < -5) { Respawn(); return; }
             s.Position = transform.position;
             bool fired = false;
-            if (input.Fire && !s.Swimming && now >= _nextShot && PrototypeRules.Spend(ref s.Ink, PrototypeSettings.Value("ShotInk")))
+            var weapon = GameplayConfig.Weapon;
+            s.Firing = input.Fire && !s.Swimming && s.Ink + .00001f >= weapon.ShotInk;
+            if (s.Firing)
             {
-                fired = true; _nextShot = now + 1.0 / PrototypeSettings.Value("FireRate"); s.ProtectedUntil = 0;
-                Fire(s);
+                _nextShot = System.Math.Max(_nextShot, now - dt);
+                while (_nextShot < now - 1e-8 && PrototypeRules.Spend(ref s.Ink, weapon.ShotInk))
+                {
+                    fired = true; s.ProtectedUntil = 0;
+                    PrototypeMatch.Current.Projectiles.Spawn(this, s, _nextShot, PrototypeMatch.Current.State.Value.Round);
+                    _nextShot += 1.0 / weapon.FireRate;
+                }
             }
+            else _nextShot = now;
             // Holding the trigger must actually empty the tank, including intervals between shots.
-            if (!fired && (!input.Fire || s.Swimming)) s.Ink = PrototypeRules.Recover(s.Ink, PrototypeSettings.Value("MaxInk"), PrototypeSettings.Value(s.Swimming ? "SwimRecoverInk" : "RecoverInk"), dt);
+            if (!fired && (!input.Fire || s.Swimming)) s.Ink = PrototypeRules.Recover(s.Ink, GameplayConfig.Character.MaxInk, (s.Swimming ? GameplayConfig.Character.SwimRecoverInk : GameplayConfig.Character.RecoverInk), dt);
             Snapshot.Value = s;
         }
-        private void Fire(PlayerSnapshot s)
-        {
-            Quaternion aim = Quaternion.Euler(s.Pitch, s.Yaw, 0);
-            Vector3 pivot = transform.position + Vector3.up * 1.5f;
-            Vector3 cameraPosition = CameraPosition(pivot, aim);
-            Vector3 direction = aim * Vector3.forward;
-            float range = PrototypeSettings.Value("Range");
-            Vector3 target = cameraPosition + direction * range;
-            if (Raycast(cameraPosition, direction, range, out var cameraHit)) target = cameraHit.point;
-            Vector3 muzzle = transform.position + Vector3.up * 1.25f + Quaternion.Euler(0, s.Yaw, 0) * new Vector3(.4f, 0, .6f);
-            // Ray from body to muzzle prevents the barrel from clipping through cover.
-            if (Raycast(pivot, (muzzle-pivot).normalized, Vector3.Distance(pivot,muzzle), out var blocked))
-            { ShotRpc(pivot, blocked.point, s.Team); return; }
-            Vector3 end = target;
-            if (Raycast(muzzle, (target - muzzle).normalized, Mathf.Min(range, Vector3.Distance(muzzle, target) + .05f), out var hit))
-            {
-                end = hit.point;
-                var victim = hit.collider.GetComponent<PrototypePlayer>();
-                if (victim != null) victim.ReceiveDamage(s.Team);
-                else if (hit.normal.y > .9f && Mathf.Abs(hit.point.y) < .1f) PrototypeMatch.Current.Paint(hit.point, s.Team);
-            }
-            ShotRpc(muzzle, end, s.Team);
-        }
-        private bool Raycast(Vector3 origin, Vector3 direction, float distance, out RaycastHit closest)
-        {
-            int n = Physics.RaycastNonAlloc(origin, direction, _hits, distance, ~0, QueryTriggerInteraction.Ignore);
-            closest = default; float nearest = float.MaxValue;
-            for (int i = 0; i < n; i++)
-            { if (_hits[i].collider.gameObject == gameObject || _hits[i].distance >= nearest) continue; closest = _hits[i]; nearest = closest.distance; }
-            return nearest < float.MaxValue;
-        }
-        public void ReceiveDamage(byte attackerTeam)
+        public void ReceiveDamage(byte attackerTeam, float damage)
         {
             if (!IsServer) return;
             var s = Snapshot.Value; double now = NetworkManager.ServerTime.Time;
             float before=s.Health;
-            s.Health = PrototypeRules.Damage(s.Health, PrototypeSettings.Value("Damage"), attackerTeam == s.Team, s.ProtectedUntil, now);
+            s.Health = PrototypeRules.Damage(s.Health, damage, attackerTeam == s.Team && !GameplayConfig.Mode.FriendlyFire, s.ProtectedUntil, now);
             if(before!=s.Health) Debug.Log($"[LAN] Damage player={OwnerClientId} hp={s.Health:F0}");
-            if (s.Health <= 0) { s.RespawnsAt = now + PrototypeSettings.Value("RespawnSeconds"); s.Swimming = false; _controller.enabled = false; }
+            if (s.Health <= 0) { s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.Swimming = false; _controller.enabled = false; }
             Snapshot.Value = s;
-        }
-        [Rpc(SendTo.Everyone)]
-        private void ShotRpc(Vector3 from, Vector3 to, byte team)
-        {
-            var go = new GameObject("墨水弹道"); var line = go.AddComponent<LineRenderer>();
-            line.sharedMaterial = TracerMaterial; line.positionCount = 2; line.SetPosition(0, from); line.SetPosition(1, to);
-            line.startWidth = .065f; line.endWidth = .025f;
-            line.startColor = line.endColor = PrototypeArena.TeamColor(team);
-            Destroy(go, .075f);
         }
         public static Vector3 CameraPosition(Vector3 pivot, Quaternion rotation)
         {
@@ -223,10 +196,12 @@ namespace Splatoon.Prototype
         {
             if (!IsSpawned || !IsOwner || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0);
-            _camera.transform.SetPositionAndRotation(CameraPosition(transform.position + Vector3.up * 1.5f, rotation), rotation);
+            Vector2 kick = CharacterView.CameraKick;
+            _camera.transform.SetPositionAndRotation(CameraPosition(transform.position + Vector3.up * 1.5f, rotation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
         }
         public override void OnNetworkDespawn()
         {
+            ByOwner.Remove(OwnerClientId);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= SendInput;
             if (Local == this) Local = null;
         }

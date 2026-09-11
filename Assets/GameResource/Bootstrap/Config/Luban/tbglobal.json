@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "defaultModeId": 1,
+    "networkTickRate": 30,
+    "projectileStepRate": 120,
+    "defaultPort": 7777,
+    "connectionTimeout": 20,
+    "inputTimeout": 0.3,
+    "snapshotChunkBytes": 4096,
+    "chunksPerFrame": 8,
+    "checkpointStamps": 512,
+    "paintThreshold": 0.5,
+    "maxPaintMemoryMiB": 128
+  }
+]
