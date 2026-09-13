@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "compiler": "Unity 6000.3.9f1 bundled Roslyn, project Bee response files",
+  "assemblies": [
+    "Splatoon.Config",
+    "Splatoon",
+    "Splatoon.Editor",
+    "Splatoon.Tests"
+  ],
+  "exitCodes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "sourceTreeSha256": "94e46c34eb65b29b5457916fe77d24f5cdced1fd98698b78d8ba4107f41cd0a8",
+  "limits": "C# compilation only; no replacement for Unity IL postprocessing or final Play Mode rerun. Engine startup blocked final focused rerun.",
+  "recordedAt": "2026-09-13T22:56:30.344521+08:00"
+}

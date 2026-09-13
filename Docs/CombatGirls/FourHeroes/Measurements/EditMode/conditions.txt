@@ -1,0 +1,9 @@
+Project simulation measurement, NOT original-game acceptance.
+Unity=6000.3.9f1; playing=False
+Formal hero camera/muzzle profiles; real Spawn path with seeded configured spread, alternating muzzles and all pellets; grid=0.125m.
+Trace includes collision contact at termination; stamp coordinates are actual paint requests.
+Continuous=20 accepted trigger actions (maximum cadence); charged releases include full-charge startup.
+driverHz=external Simulate(now) call frequency in a synchronous loop; NOT actual render FPS. Normal network simulation uses configured fixed ticks.
+Width/depth/area are sampled surface ownership, including wall regions; forward range and continuous centerline refer to the horizontal floor.
+A blank centerline segment terminates continuity. Targets remain unvalidated: no qualified 11.3.0 original capture.
+CSV simulationMilliseconds is synchronous local physics/ownership cost, not gameplay P95 or network performance.

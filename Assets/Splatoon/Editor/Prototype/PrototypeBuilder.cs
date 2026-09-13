@@ -46,6 +46,12 @@ namespace Splatoon.Editor
             foreach (var obsolete in group.entries.Where(e => e.address == "Character/Jammo" || e.address == "Weapon/Splattershot").ToArray()) settings.RemoveAssetEntry(obsolete.guid);
             AddAddress(settings,group,CombatGirlsBuilder.CharacterPath,"Character/RifleGirl");
             AddAddress(settings,group,CombatGirlsBuilder.WeaponPath,"Weapon/RifleGirlRifle");
+            foreach (var pack in CombatGirlsHeroBuilder.Definitions)
+            {
+                if (!File.Exists(pack.CharacterPath) || !File.Exists(pack.WeaponPath)) continue;
+                AddAddress(settings,group,pack.CharacterPath,"Character/"+pack.name);
+                AddAddress(settings,group,pack.WeaponPath,"Weapon/"+pack.weapon);
+            }
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab","Effects/InkStream");
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab","Effects/InkImpact");
             settings.BuildAddressablesWithPlayerBuild=AddressableAssetSettings.PlayerBuildOption.DoNotBuildWithPlayer;

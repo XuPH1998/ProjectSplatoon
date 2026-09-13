@@ -31,6 +31,11 @@ namespace Splatoon.Networking
                     w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.Config.WeaponPrefabAddress);
                     var profile = hero.Profile;
                     Write(w, profile.AimPivot); Write(w, profile.MuzzlePosition);
+                    Write(w, profile.LeftMuzzlePosition); w.Write(profile.DualWield); w.Write(profile.SingleShot); w.Write(profile.ShotPlaybackSeconds);
+                    w.Write(profile.BlendSeconds); w.Write(profile.AnimationReferenceSpeed);
+                    w.Write(profile.WalkPlayback.x); w.Write(profile.WalkPlayback.y); w.Write(profile.WalkPlayback.z); w.Write(profile.WalkPlayback.w);
+                    w.Write(profile.ShootDuration); w.Write(profile.DieForwardDuration); w.Write(profile.DieBackwardDuration);
+                    w.Write(profile.SpineAimWeight); w.Write(profile.RecoilRecovery); w.Write(profile.CameraShake);
                     Write(w, profile.CameraPivot); Write(w, profile.CameraOffset);
                     w.Write(profile.CameraCollisionRadius); w.Write(profile.CameraCollisionPadding);
                     w.Write(profile.StationarySpeed); w.Write(profile.TurnThreshold); w.Write(profile.MovingTurnSpeed);
@@ -40,7 +45,11 @@ namespace Splatoon.Networking
                     Write(w, hero.WeaponPrefab.transform.localPosition); Write(w, hero.WeaponPrefab.transform.localEulerAngles);
                     Write(w, hero.WeaponPrefab.transform.localScale);
                     Write(w, hero.WeaponPrefab.transform.InverseTransformPoint(binding.Nozzle.position));
-                    Write(w, hero.WeaponPrefab.transform.InverseTransformPoint(binding.LeftGrip.position));
+                    w.Write(binding.SupportLeftHand);
+                    if (binding.SupportLeftHand) Write(w, hero.WeaponPrefab.transform.InverseTransformPoint(binding.LeftGrip.position));
+                    w.Write(binding.LeftPart != null);
+                    if (binding.LeftPart != null)
+                    { Write(w, binding.LeftPart.localPosition); Write(w, binding.LeftPart.localEulerAngles); Write(w, binding.LeftPart.localScale); Write(w, binding.LeftPart.InverseTransformPoint(binding.LeftNozzle.position)); }
                 }
             }
             using var sha = SHA256.Create(); return sha.ComputeHash(stream.ToArray());

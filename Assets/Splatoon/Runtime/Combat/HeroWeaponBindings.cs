@@ -7,5 +7,7 @@ namespace Splatoon.Combat
     {
         public Transform Nozzle;
         public Transform LeftGrip;
+        public Transform LeftPart, LeftNozzle;
+        public bool SupportLeftHand = true;
     }
 }

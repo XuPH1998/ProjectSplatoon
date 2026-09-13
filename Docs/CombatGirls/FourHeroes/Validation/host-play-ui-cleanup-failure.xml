@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="25.0665012">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="171" result="Failed" site="Child" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="25.066501" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1211" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Temp/FourHeroesUnity/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="170" result="Failed" site="Child" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="24.968012" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="45492" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[[LAN] Ready. Config loaded from Luban.
+]]></output>
+      <test-suite type="TestSuite" id="1212" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="170" result="Failed" site="Child" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="24.917148" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1213" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="170" result="Failed" site="Child" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="24.914929" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1041" name="HeroMigrationPlayTests" fullname="Splatoon.Tests.HeroMigrationPlayTests" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2026-09-13 14:21:04Z" end-time="2026-09-13 14:21:29Z" duration="24.907542" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1042" name="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" fullname="Splatoon.Tests.HeroMigrationPlayTests.RealAppLoadsSelectsRespawnsAndReleasesHeroModels" methodname="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" seed="1987096781" result="Failed" start-time="2026-09-13 14:20:59Z" end-time="2026-09-13 14:21:29Z" duration="30.267230" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[Unhandled log message: '[Error] Invalid index 2 7 3'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                <stack-trace><![CDATA[System.Reflection.MethodBase:Invoke (object,object[])
+Splatoon.Prototype.HeroUiSmoke:RestoreView () (at Assets/Splatoon/Runtime/Prototype/HeroUiSmoke.cs:61)
+Splatoon.Prototype.HeroUiSmoke/<Run>d__24:MoveNext () (at Assets/Splatoon/Runtime/Prototype/HeroUiSmoke.cs:158)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`2<Splatoon.Prototype.HeroUiSmoke/<Run>d__24, string>:Run () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:313)
+Cysharp.Threading.Tasks.AwaiterActions:Continuation (object) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTask.cs:25)
+Cysharp.Threading.Tasks.UniTaskCompletionSourceCore`1<Cysharp.Threading.Tasks.AsyncUnit>:TrySetResult (Cysharp.Threading.Tasks.AsyncUnit) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTaskCompletionSource.cs:139)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Prototype.PrototypeApp/<Leave>d__81>:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:204)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/AsyncUniTaskMethodBuilder.cs:70)
+Splatoon.Prototype.PrototypeApp/<Leave>d__81:MoveNext () (at Assets/Splatoon/Runtime/Prototype/PrototypeApp.cs:185)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Prototype.PrototypeApp/<Leave>d__81>:Run () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:189)
+Cysharp.Threading.Tasks.AwaiterActions:Continuation (object) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTask.cs:25)
+Cysharp.Threading.Tasks.UniTaskCompletionSourceCore`1<Cysharp.Threading.Tasks.AsyncUnit>:TrySetResult (Cysharp.Threading.Tasks.AsyncUnit) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTaskCompletionSource.cs:139)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Prototype.PrototypeApp/<Cleanup>d__82>:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:204)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/AsyncUniTaskMethodBuilder.cs:70)
+Splatoon.Prototype.PrototypeApp/<Cleanup>d__82:MoveNext () (at Assets/Splatoon/Runtime/Prototype/PrototypeApp.cs:200)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Prototype.PrototypeApp/<Cleanup>d__82>:Run () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:189)
+Cysharp.Threading.Tasks.AwaiterActions:Continuation (object) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTask.cs:25)
+Cysharp.Threading.Tasks.UniTaskCompletionSourceCore`1<Cysharp.Threading.Tasks.AsyncUnit>:TrySetResult (Cysharp.Threading.Tasks.AsyncUnit) (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/UniTaskCompletionSource.cs:139)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Loading.AddressableSceneLoader/<UnloadAsync>d__1>:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:204)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder:SetResult () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/AsyncUniTaskMethodBuilder.cs:70)
+Splatoon.Loading.AddressableSceneLoader/<UnloadAsync>d__1:MoveNext () (at Assets/Splatoon/Runtime/Loading/AddressableSceneLoader.cs:39)
+Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1<Splatoon.Loading.AddressableSceneLoader/<UnloadAsync>d__1>:Run () (at Assets/Plugins/com.cysharp.unitask@dc216dc4183d/Runtime/CompilerServices/StateMachineRunner.cs:189)
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-ZGEF4
+[LAN] Connected role=host address=127.0.0.1 port=63545
+[LAN] Returned to menu. 
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-ZGEF4
+[LAN] Connected role=host address=127.0.0.1 port=63545
+[LAN] Returned to menu. 
+[中文字体] Microsoft YaHei，房间涂墨字形=True
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-ZGEF4
+[LAN] Connected role=host address=127.0.0.1 port=63545
+[LAN] Returned to menu. 
+Invalid index 2 7 3
+Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -6,14 +6,16 @@ using Splatoon.Prototype;
 
 namespace Splatoon.Combat
 {
-    public enum WeaponFireMode { Automatic, Burst, Charge }
+    public enum WeaponFireMode { Automatic, Burst, Charge, SemiAutomatic }
     public readonly struct WeaponFireResult
     {
         public readonly int HeroId;
         public readonly float Charge;
         public readonly ulong ActionId;
-        public WeaponFireResult(int heroId, float charge, ulong actionId)
-        { HeroId = heroId; Charge = charge; ActionId = actionId; }
+        public readonly byte MuzzleIndex;
+        public readonly int PelletCount;
+        public WeaponFireResult(int heroId, float charge, ulong actionId, byte muzzleIndex = 0, int pelletCount = 1)
+        { HeroId = heroId; Charge = charge; ActionId = actionId; MuzzleIndex = muzzleIndex; PelletCount = pelletCount; }
     }
 
     public static class WeaponSimulation
@@ -21,6 +23,13 @@ namespace Splatoon.Combat
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
         public static bool IsCharge(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.Charge;
+        public static bool IsSemi(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.SemiAutomatic;
+        public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now)
+            => !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
+                (s.WeaponPhase == WeaponPhase.Starting || (input.FireSequence != s.ConsumedFire &&
+                now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt && s.Ink + .00001f >= w.ShotInk));
+        public static void ResetPresentation(ref PlayerSnapshot s)
+        { s.NextMuzzle = s.LastShotMuzzle = 0; s.RightShotAt = s.LeftShotAt = 0; s.RightShotAction = s.LeftShotAction = 0; }
         public static float Damage(cfg.HeroConfig w, double age, float charge = 1) => IsCharge(w)
             ? charge >= 1 ? w.Damage : Mathf.Lerp(w.ChargeMinDamage, w.ChargePartialMaxDamage, charge)
             : Mathf.Lerp(w.Damage, w.DamageMin, Mathf.InverseLerp((float)Seconds(w.DamageReduceStartFrames), (float)Seconds(w.DamageReduceEndFrames), (float)age));
@@ -60,6 +69,7 @@ namespace Splatoon.Combat
             bool edge = input.FireSequence != s.ConsumedFire;
             bool release = input.ReleaseSequence != s.ConsumedRelease;
             s.ConsumedRelease = input.ReleaseSequence;
+            if (IsSemi(w)) return StepSemi(ref s, input, w, now, emerged, canShoot, edge, out result);
             if (!canShoot) return false; // Preserve the press until human clearance is safe.
             bool chargeWeapon = IsCharge(w), burst = w.FireMode == (int)WeaponFireMode.Burst;
             if (s.WeaponPhase == WeaponPhase.Ending) s.WeaponPhase = WeaponPhase.Idle;
@@ -108,6 +118,23 @@ namespace Splatoon.Combat
             }
             return true;
         }
+        static bool StepSemi(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now,
+            bool emerged, bool canShoot, bool edge, out WeaponFireResult result)
+        {
+            result = default;
+            if (!canShoot || s.Ink + .00001f < w.ShotInk) { Cancel(ref s, input); return false; }
+            // A committed click survives button release, but there is never a queue behind it.
+            if (edge)
+            {
+                s.ConsumedFire = input.FireSequence;
+                if (s.WeaponPhase != WeaponPhase.Starting && now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt)
+                    Begin(ref s, input, w, now, emerged ? w.EmergeStartFrames : w.StartFrames);
+            }
+            if (s.WeaponPhase != WeaponPhase.Starting || now + 1e-8 < s.WeaponReadyAt) return false;
+            bool emitted = Emit(ref s, w, now, 0, out result);
+            s.WeaponPhase = WeaponPhase.Idle; s.BurstRemaining = 0;
+            return emitted;
+        }
         static void Begin(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now, int startup)
         {
             s.WeaponPhase = WeaponPhase.Starting; s.ConsumedFire = input.FireSequence;
@@ -120,12 +147,16 @@ namespace Splatoon.Combat
             result = default;
             if (!PrototypeRules.Spend(ref s.Ink, InkCost(w, charge)))
             { s.WeaponPhase = WeaponPhase.Idle; s.BurstRemaining = s.ChargeTicks = 0; return false; }
-            if (!s.Firing) s.FireStartedAt = now;
+            if (!s.Firing || IsSemi(w) || IsCharge(w)) s.FireStartedAt = now;
             s.Firing = true; s.FireVisualUntil = now + Seconds(Math.Max(6, w.FireIntervalFrames));
             s.ShotSequence++; s.BurstShotIndex++; s.LastShotCharge = charge;
+            s.LastShotMuzzle = w.MuzzleMode == 1 ? s.NextMuzzle : (byte)0;
+            if (s.LastShotMuzzle == 0) { s.RightShotAt = now; s.RightShotAction = s.ShotActionId; }
+            else { s.LeftShotAt = now; s.LeftShotAction = s.ShotActionId; }
+            if (w.MuzzleMode == 1) s.NextMuzzle = (byte)(1 - s.LastShotMuzzle);
             s.NextShotAt = now + Seconds(w.FireIntervalFrames);
             s.InkRecoverAt = now + Seconds(w.InkRecoverLockFrames); s.ProtectedUntil = 0;
-            result = new WeaponFireResult(w.Id, charge, s.ShotActionId);
+            result = new WeaponFireResult(w.Id, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);
             return true;
         }
     }

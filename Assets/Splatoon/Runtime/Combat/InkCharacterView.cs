@@ -9,6 +9,8 @@ namespace Splatoon.Combat
         public Animator Animator;
         public CharacterPresentationProfile Profile;
         public Transform Weapon, WeaponSocket, LeftGrip;
+        public Transform LeftWeapon, LeftWeaponSocket, LeftNozzle, AimReference;
+        public bool UseSupportGrip = true;
         public Renderer TeamMarker;
         public GameObject BoundWeaponPrefab;
         public Transform Nozzle;
@@ -16,6 +18,7 @@ namespace Splatoon.Combat
         public Vector2 CameraKick { get; private set; }
         private float _kick;
         private ParticleSystem _muzzleEffect;
+        private ParticleSystem _leftMuzzleEffect;
         private MaterialPropertyBlock _block;
         private Renderer[] _renderers;
         private bool[] _rendererEnabled;
@@ -27,6 +30,10 @@ namespace Splatoon.Combat
         private Transform _spine, _chest, _leftUpper, _leftLower, _leftHand;
         private Vector3 _weaponPosition;
         private Quaternion _weaponRotation;
+        private Vector3 _leftWeaponPosition;
+        private Quaternion _leftWeaponRotation;
+        private readonly ulong[] _shotActions = new ulong[2];
+        private readonly ulong[] _hiddenShotActions = new ulong[2];
         private static readonly int MoveX = UnityEngine.Animator.StringToHash("MoveX"), MoveY = UnityEngine.Animator.StringToHash("MoveY");
         private static readonly int Locomotion = UnityEngine.Animator.StringToHash("Base Layer.Locomotion"), Air = UnityEngine.Animator.StringToHash("Base Layer.Air");
         private static readonly int TurnLeft = UnityEngine.Animator.StringToHash("Base Layer.TurnLeft"), TurnRight = UnityEngine.Animator.StringToHash("Base Layer.TurnRight");
@@ -36,8 +43,12 @@ namespace Splatoon.Combat
         public void BindWeapon(HeroWeaponBindings bindings, GameObject prefab)
         {
             if (_muzzleEffect != null) HeroViewBinder.Destroy(_muzzleEffect.gameObject);
+            if (_leftMuzzleEffect != null) HeroViewBinder.Destroy(_leftMuzzleEffect.gameObject);
             _muzzleEffect = null;
+            _leftMuzzleEffect = null;
             Weapon = bindings.transform; Nozzle = bindings.Nozzle; LeftGrip = bindings.LeftGrip; BoundWeaponPrefab = prefab;
+            LeftWeapon = bindings.LeftPart; LeftNozzle = bindings.LeftNozzle; UseSupportGrip = bindings.SupportLeftHand;
+            if (LeftWeapon != null) LeftWeapon.SetParent(LeftWeaponSocket, false);
             _renderers = null; _rendererEnabled = null; _presented = false;
             InitializeBindings();
         }
@@ -61,23 +72,27 @@ namespace Splatoon.Combat
                 _leftLower = Animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
                 _leftHand = Animator.GetBoneTransform(HumanBodyBones.LeftHand);
                 if (Weapon != null) { _weaponPosition = Weapon.localPosition; _weaponRotation = Weapon.localRotation; }
+                if (LeftWeapon != null) { _leftWeaponPosition = LeftWeapon.localPosition; _leftWeaponRotation = LeftWeapon.localRotation; }
             }
         }
-        public void Shot()
+        public void Shot(byte muzzleIndex = 0)
         {
             _kick = 1;
-            if (Nozzle == null || SwimEffect == null) return;
-            if (_muzzleEffect == null)
+            var nozzle = muzzleIndex == 1 ? LeftNozzle : Nozzle;
+            if (nozzle == null || SwimEffect == null) return;
+            var effect = muzzleIndex == 1 ? _leftMuzzleEffect : _muzzleEffect;
+            if (effect == null)
             {
-                var go = new GameObject("LocalMuzzleFeedback"); go.transform.SetParent(Nozzle, false);
-                _muzzleEffect = go.AddComponent<ParticleSystem>(); _muzzleEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                var main = _muzzleEffect.main; main.playOnAwake = false; main.loop = false; main.startLifetime = .07f; main.startSpeed = 2; main.startSize = .07f; main.maxParticles = 24; main.simulationSpace = ParticleSystemSimulationSpace.World;
-                var emission = _muzzleEffect.emission; emission.enabled = false;
-                var shape = _muzzleEffect.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.angle = 8; shape.radius = .01f;
+                var go = new GameObject("LocalMuzzleFeedback"); go.transform.SetParent(nozzle, false);
+                effect = go.AddComponent<ParticleSystem>(); effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                var main = effect.main; main.playOnAwake = false; main.loop = false; main.startLifetime = .07f; main.startSpeed = 2; main.startSize = .07f; main.maxParticles = 24; main.simulationSpace = ParticleSystemSimulationSpace.World;
+                var emission = effect.emission; emission.enabled = false;
+                var shape = effect.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.angle = 8; shape.radius = .01f;
                 go.GetComponent<ParticleSystemRenderer>().sharedMaterial = SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial;
-                SetInkMesh(_muzzleEffect, SwimEffect.GetComponent<ParticleSystemRenderer>().mesh);
+                SetInkMesh(effect, SwimEffect.GetComponent<ParticleSystemRenderer>().mesh);
+                if (muzzleIndex == 1) _leftMuzzleEffect = effect; else _muzzleEffect = effect;
             }
-            var settings = _muzzleEffect.main; settings.startColor = PrototypeArena.TeamColor(_state.Team); _muzzleEffect.Emit(3);
+            var settings = effect.main; settings.startColor = PrototypeArena.TeamColor(_state.Team); effect.Emit(3);
         }
         public void Present(PlayerSnapshot state, float dt, double now)
         {
@@ -94,9 +109,13 @@ namespace Splatoon.Combat
             {
                 _baseState = 0; _turnStarted = _fireStarted = _diedAt = double.NaN; _kick = 0;
                 _supportGrip = true;
+                _shotActions[0] = _shotActions[1] = 0;
+                _hiddenShotActions[0] = _hiddenShotActions[1] = 0;
                 if (Weapon != null && WeaponSocket != null)
                 { Weapon.SetParent(WeaponSocket, false); Weapon.localPosition = _weaponPosition; Weapon.localRotation = _weaponRotation; }
-                Animator.Rebind(); Animator.SetLayerWeight(1, 0);
+                if (LeftWeapon != null && LeftWeaponSocket != null)
+                { LeftWeapon.SetParent(LeftWeaponSocket, false); LeftWeapon.localPosition = _leftWeaponPosition; LeftWeapon.localRotation = _leftWeaponRotation; }
+                Animator.Rebind(); ClearShootingLayers();
             }
             _revision = state.Revision; _alive = alive; _presented = true;
             if (visible)
@@ -122,6 +141,13 @@ namespace Splatoon.Combat
                     _baseState = desired; _turnStarted = state.TurnStartedAt; _diedAt = state.DiedAt;
                 }
                 bool firing = alive && !state.Swimming && state.Firing;
+                if (Profile.SingleShot)
+                {
+                    PresentShot(0, state.RightShotAction, state.RightShotAt, reset || restored, now, dt, alive && !state.Swimming);
+                    if (Profile.DualWield) PresentShot(1, state.LeftShotAction, state.LeftShotAt, reset || restored, now, dt, alive && !state.Swimming);
+                }
+                else
+                {
                 if (firing && (_fireStarted != state.FireStartedAt || reset || restored))
                 {
                     float phase = Mathf.Repeat((float)(now - state.FireStartedAt), Profile.ShootDuration);
@@ -129,8 +155,13 @@ namespace Splatoon.Combat
                 }
                 float weight = !alive ? 0 : Mathf.MoveTowards(Animator.GetLayerWeight(1), firing ? 1 : 0, dt / Profile.BlendSeconds);
                 Animator.SetLayerWeight(1, weight);
+                }
             }
-            if (!visible || !alive) { _kick = 0; Animator.SetLayerWeight(1, 0); }
+            if (!visible || !alive)
+            {
+                _kick = 0; ClearShootingLayers();
+                _hiddenShotActions[0]=state.RightShotAction;_hiddenShotActions[1]=state.LeftShotAction;
+            }
             _kick *= Mathf.Exp(-Profile.RecoilRecovery * dt);
             CameraKick = new Vector2(-_kick * Profile.CameraShake, Mathf.Sin(Time.time * 71) * _kick * Profile.CameraShake * .3f);
             var color = PrototypeArena.TeamColor(state.Team);
@@ -149,6 +180,22 @@ namespace Splatoon.Combat
                 if (state.Swimming && alive) { if (!SwimEffect.isPlaying) SwimEffect.Play(); }
                 else if (SwimEffect.isPlaying) SwimEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
+        }
+
+        void ClearShootingLayers() { for (int i = 1; i < Animator.layerCount; i++) Animator.SetLayerWeight(i, 0); }
+        void PresentShot(int hand, ulong action, double started, bool restore, double now, float dt, bool allowed)
+        {
+            int layer = hand + 1;
+            float duration = Mathf.Max(.01f, Profile.ShotPlaybackSeconds);
+            float elapsed = Mathf.Max(0, (float)(now - started));
+            bool active = allowed && action != 0 && action != _hiddenShotActions[hand] && elapsed < duration;
+            if (active && (_shotActions[hand] != action || restore))
+            {
+                Animator.Play(hand == 0 ? "Shooting.Shot" : "ShootingLeft.Shot", layer, elapsed / duration);
+                _shotActions[hand] = action;
+            }
+            float fade = Mathf.Min(Profile.BlendSeconds, duration * .1f);
+            Animator.SetLayerWeight(layer, !allowed ? 0 : Mathf.MoveTowards(Animator.GetLayerWeight(layer), active ? 1 : 0, dt / Mathf.Max(.001f, fade)));
         }
 
         public static void ConfigureSwimEffect(ParticleSystem effect)
@@ -181,11 +228,12 @@ namespace Splatoon.Combat
             Vector3 direction = Quaternion.Euler(_state.Pitch, aimYaw, 0) * Vector3.forward;
             if (_spine != null && _chest != null)
             {
-                Quaternion correction = Quaternion.FromToRotation(Nozzle.forward, direction);
+                var reference = AimReference != null ? AimReference : Nozzle;
+                Quaternion correction = Quaternion.FromToRotation(reference.forward, direction);
                 _spine.rotation = Quaternion.Slerp(Quaternion.identity, correction, Profile.SpineAimWeight) * _spine.rotation;
-                _chest.rotation = Quaternion.FromToRotation(Nozzle.forward, direction) * _chest.rotation;
+                _chest.rotation = Quaternion.FromToRotation(reference.forward, direction) * _chest.rotation;
             }
-            if (_supportGrip && LeftGrip != null && _leftHand != null)
+            if (UseSupportGrip && _supportGrip && LeftGrip != null && _leftHand != null)
                 SolveArm(_leftUpper, _leftLower, _leftHand, LeftGrip.position, LeftGrip.rotation);
         }
 

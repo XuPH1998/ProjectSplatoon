@@ -34,6 +34,7 @@ namespace Splatoon.Editor
             public List<Sample> results = new();
         }
         static readonly Report Output = new();
+        static readonly string[] HeroNames = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl" };
         static readonly List<double> Frames = new(), Submission = new();
         static readonly List<int> Draws = new(), Batches = new();
         static GameObject[] _characters;
@@ -63,7 +64,8 @@ namespace Splatoon.Editor
         }
         static void Begin()
         {
-            string path = _pass == 0 ? "Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab" : CombatGirlsBuilder.CharacterPath;
+            string name = HeroNames[_pass];
+            string path = $"Assets/GameResource/Characters/{name}/Prefabs/{name}Visual.prefab";
             var prefab = CombatGirlsBuilder.Load<GameObject>(path);
             _placements = new GameObject("FourVisualPlacements");
             _characters = Enumerable.Range(0, 4).Select(i =>
@@ -77,7 +79,6 @@ namespace Splatoon.Editor
                 foreach (var animator in go.GetComponentsInChildren<Animator>())
                 {
                     animator.cullingMode = AnimatorCullingMode.AlwaysAnimate; animator.applyRootMotion = false;
-                    if (_pass == 0) { animator.SetFloat("X", 1); animator.SetFloat("Y", 0); animator.SetFloat("Blend", 1); animator.SetBool("Grounded", true); animator.SetBool("shooting", true); }
                 }
                 var view = go.GetComponent<InkCharacterView>(); if (view != null) view.InitializeBindings();
             }
@@ -85,7 +86,7 @@ namespace Splatoon.Editor
             var meshes = renderers.Select(r => r is SkinnedMeshRenderer s ? s.sharedMesh : r.GetComponent<MeshFilter>()?.sharedMesh).Where(m => m != null).ToArray();
             var textures = renderers.SelectMany(r => r.sharedMaterials).Where(m => m != null).Distinct()
                 .SelectMany(m => m.GetTexturePropertyNames().Select(m.GetTexture)).Where(t => t != null).Distinct().ToArray();
-            _sample = new Sample { character = _pass == 0 ? "Jammo" : "RifleGirl", device = SystemInfo.graphicsDeviceName,
+            _sample = new Sample { character = HeroNames[_pass], device = SystemInfo.graphicsDeviceName,
                 quality = QualitySettings.names[QualitySettings.GetQualityLevel()], renderers = renderers.Length,
                 materialSlots = renderers.Sum(r => r.sharedMaterials.Length), vertices = meshes.Sum(m => m.vertexCount),
                 triangles = meshes.Sum(m => Enumerable.Range(0, m.subMeshCount).Sum(i => (int)m.GetIndexCount(i) / 3)),
@@ -100,9 +101,9 @@ namespace Splatoon.Editor
                 foreach (var go in _characters)
                 {
                     var view = go.GetComponent<InkCharacterView>();
-                    if (_pass == 1) view.Present(new PlayerSnapshot { Health = 100, Ink = 100, Grounded = true, Team = 1, Velocity = Vector3.right * 5, Firing = true }, 1f / 60, _frame / 60.0);
+                    view.Present(new PlayerSnapshot { Health = 100, Ink = 100, Grounded = true, Team = 1, Velocity = Vector3.right * 5, Firing = true, RightShotAction = (ulong)(_frame/12+1), LeftShotAction = (ulong)(_frame/12+1), RightShotAt = (_frame/12)*.2, LeftShotAt = (_frame/12)*.2 }, 1f / 60, _frame / 60.0);
                     foreach (var animator in go.GetComponentsInChildren<Animator>()) animator.Update(1f / 60);
-                    if (_pass == 1) view.ApplyAim();
+                    view.ApplyAim();
                 }
                 double begin = Clock.Elapsed.TotalMilliseconds;
                 RenderPipeline.SubmitRenderRequest(_camera, new UniversalRenderPipeline.SingleCameraRequest { destination = _target });
@@ -114,11 +115,11 @@ namespace Splatoon.Editor
                 _sample.editorDrawCallsP95 = (int)Percentile(Draws.Select(v => (double)v)); _sample.editorBatchesP95 = (int)Percentile(Batches.Select(v => (double)v));
                 _sample.editorDrawCountersAvailable = _sample.editorDrawCallsP95 > 0;
                 Output.results.Add(_sample);
-                Capture(_pass == 0 ? "four-visual-jammo" : "four-visual-riflegirl");
+                Capture("four-visual-" + HeroNames[_pass]);
                 UnityEngine.Object.DestroyImmediate(_placements);
-                if (++_pass < 2) { Begin(); return; }
+                if (++_pass < HeroNames.Length) { Begin(); return; }
                 EditorApplication.update -= Tick; _target.Release(); UnityEngine.Object.DestroyImmediate(_target);
-                File.WriteAllText("Docs/CombatGirls/four-visual-editor-comparison.json", JsonUtility.ToJson(Output, true));
+                File.WriteAllText("Docs/CombatGirls/FourHeroes/four-visual-editor-comparison.json", JsonUtility.ToJson(Output, true));
                 UnityEngine.Debug.Log("[CombatGirls-PERF] Matched four-visual Editor comparison complete"); EditorApplication.Exit(0);
             }
             catch (Exception ex) { EditorApplication.update -= Tick; UnityEngine.Debug.LogException(ex); EditorApplication.Exit(1); }
@@ -159,7 +160,7 @@ namespace Splatoon.Editor
             var old = RenderTexture.active; RenderTexture.active = _target;
             var texture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); texture.Apply();
-            File.WriteAllBytes("Docs/CombatGirls/Screenshots/" + name + ".png", texture.EncodeToPNG());
+            File.WriteAllBytes("Docs/CombatGirls/FourHeroes/Screenshots/" + name + ".png", texture.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(texture); RenderTexture.active = old;
             foreach (var mesh in meshes) UnityEngine.Object.DestroyImmediate(mesh);
         }

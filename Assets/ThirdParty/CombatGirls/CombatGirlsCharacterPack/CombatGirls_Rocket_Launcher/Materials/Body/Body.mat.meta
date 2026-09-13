@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6f9e8c06b80e90b408b41d71cf9ba1c3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 329559
+  packageName: CombatGirls_DualKatanaCharacterPack
+  packageVersion: 1.1
+  assetPath: Assets/CombatGirlsCharacterPack/CombatGirls_DualKatana/Materials/Body/Body.mat
+  uploadId: 838880

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 58f5b6e7f5dc90541b828057ae5299a4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 329559
+  packageName: CombatGirls_DualKatanaCharacterPack
+  packageVersion: 1.1
+  assetPath: Assets/CombatGirlsCharacterPack/CombatGirls_DualKatana/Materials/Cloth/Dual_Katana_Cloth_01.mat
+  uploadId: 838880

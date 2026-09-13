@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import shutil
+import uuid
 
 CLIPS = ["R_AimWalk_F", "R_AimWalk_B", "R_AimWalk_FL", "R_AimWalk_BR",
          "R_AimTurn_L90", "R_AimTurn_R90", "R_AimIdle", "R_AimIdle_AutoShoot",
@@ -14,6 +15,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", default="D:/XPHUNITY/CombatGirls/Assets")
     parser.add_argument("--project", default=str(Path(__file__).resolve().parents[2]))
+    parser.add_argument("--heroes", action="store_true", help="Import the four approved additional heroes without touching RifleGirl")
+    parser.add_argument("--manifest-only", action="store_true", help="Refresh provenance without resetting Unity importer settings")
     args = parser.parse_args()
     source, project = Path(args.source), Path(args.project)
     pack = source / "CombatGirlsCharacterPack"
@@ -30,17 +33,18 @@ def main():
         match = re.search(r"(?m)^guid: ([a-f0-9]{32})", meta.read_text(encoding="utf-8-sig"))
         if match:
             existing[match[1]] = meta
+    definitions = json.loads(Path(__file__).with_name('hero-packs.json').read_text()) if args.heroes else [dict(pack='RifleGirl', clips=CLIPS, avatar='Humanoid_F')]
+    allowed = {d['pack']: set(d['clips']) for d in definitions}
+    def approved(path):
+        return 'Animations' not in path.parts or any((pack / p) in path.parents and path.stem in names for p, names in allowed.items())
     selected = set()
-    for path in (pack / "RifleGirl").rglob("*"):
-        if not path.is_file() or path.suffix == ".meta":
-            continue
-        if path.suffix.lower() in (".unity", ".controller"):
-            continue
-        if "Animations" in path.parts and path.stem not in CLIPS:
-            continue
-        selected.add(path)
-    selected.add(pack / "Humanoid_Bot/Models/Humanoid_F.fbx")
-    selected.add(pack / "Biperworks_Tools/CombatGirls_Weapon_Control/Character_Weapon_Controller.cs")
+    for definition in definitions:
+        for path in (pack / definition['pack']).rglob('*'):
+            if path.is_file() and path.suffix.lower() not in ('.meta', '.unity', '.controller', '.cs') and approved(path):
+                selected.add(path)
+        selected.add(pack / ('Humanoid_Bot/Models/' + definition['avatar'] + '.fbx'))
+    if not args.heroes:
+        selected.add(pack / "Biperworks_Tools/CombatGirls_Weapon_Control/Character_Weapon_Controller.cs")
     # Follow art dependencies only. Demo controllers, scenes and editor repair hooks
     # must not drag unapproved animations or global material conversion into gameplay.
     pending = list(selected)
@@ -59,10 +63,19 @@ def main():
                     continue
                 if dep.suffix.lower() in (".controller", ".unity", ".cs"):
                     continue
-                if "Animations" in dep.parts and dep.stem not in CLIPS:
+                if not approved(dep):
                     continue
                 selected.add(dep)
                 pending.append(dep)
+    # A newer source pack can reuse a GUID for changed shared art. Fork that
+    # dependency instead of silently altering the already shipped RifleGirl.
+    forks = {}
+    if args.heroes:
+        for path in selected:
+            dst = target / path.relative_to(pack)
+            if dst.exists() and not any((pack / d['pack']) in path.parents for d in definitions) and dst.read_bytes() != path.read_bytes():
+                original_guid = re.search(r'(?m)^guid: ([a-f0-9]{32})', Path(str(path)+'.meta').read_text('utf-8-sig'))[1]
+                forks[original_guid] = uuid.uuid5(uuid.NAMESPACE_URL, 'CombatGirls/FourHeroes/' + str(path.relative_to(pack))).hex
     records = []
     for path in sorted(selected):
         if pack not in path.parents:
@@ -70,6 +83,9 @@ def main():
         dst = target / path.relative_to(pack)
         meta = Path(str(path) + ".meta")
         guid = re.search(r"(?m)^guid: ([a-f0-9]{32})", meta.read_text(encoding="utf-8-sig"))[1]
+        shared = args.heroes and not any((pack / d['pack']) in path.parents for d in definitions)
+        if guid in forks:
+            dst = target / 'SharedFourHeroes' / path.relative_to(pack)
         if guid in existing:
             raise RuntimeError(f"GUID collision: {path} and {existing[guid]}")
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -77,6 +93,11 @@ def main():
             data = src_file.read_bytes()
             original_hash = hashlib.sha256(data).hexdigest()
             changes = []
+            if args.heroes and (src_file.suffix == '.meta' or path.suffix in ('.prefab','.mat','.asset')):
+                content = data.decode('utf-8-sig')
+                for previous, replacement in forks.items(): content = content.replace(previous, replacement)
+                if content.encode('utf-8') != data:
+                    data = content.encode('utf-8'); changes.append('Isolate changed shared dependencies from RifleGirl')
             if src_file.suffix == ".meta" and path.suffix.lower() == ".fbx":
                 text = data.decode("utf-8-sig")
                 corrected = text.replace("c0426d61788399a4aa9702989176ee68", "b02f7765ace5dff4a866b767512e4a05")
@@ -85,19 +106,21 @@ def main():
                     data = corrected.encode("utf-8")
             if path.suffix == ".prefab" and src_file == path:
                 text = data.decode("utf-8-sig")
-                corrected = re.sub(r"m_Controller: \{fileID: 9100000, guid: 2bdee23648d4f944183e9e1c4bfb915c, type: 2\}",
+                corrected = re.sub(r"m_Controller: \{fileID: 9100000, guid: [a-f0-9]{32}, type: 2\}",
                                    "m_Controller: {fileID: 0}", text)
                 if corrected != text:
                     changes.append("Remove demo animator controller dependency")
                     data = corrected.encode("utf-8")
-            if not dst_file.exists() or dst_file.read_bytes() != data:
+            if shared and guid not in forks and dst_file.exists():
+                data = dst_file.read_bytes(); changes.append('Reuse existing shared dependency without modifying it')
+            elif not args.manifest_only and (not dst_file.exists() or dst_file.read_bytes() != data):
                 dst_file.write_bytes(data)
             records.append({"source": str(src_file), "target": str(dst_file.relative_to(project)).replace("\\", "/"),
                             "sourceSha256": original_hash, "importSha256": hashlib.sha256(data).hexdigest(), "changes": changes})
-    manifest = project / "Docs/CombatGirls/source-assets.json"
+    manifest = project / ("Docs/CombatGirls/FourHeroes/source-assets.json" if args.heroes else "Docs/CombatGirls/source-assets.json")
     manifest.parent.mkdir(parents=True, exist_ok=True)
-    manifest.write_text(json.dumps({"clips": CLIPS, "files": records}, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps({"assets": len(selected), "files": len(records), "clips": CLIPS}))
+    manifest.write_text(json.dumps({"packs": definitions, "files": records}, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps({"assets": len(selected), "files": len(records), "clips": sum(len(d['clips']) for d in definitions)}))
 
 if __name__ == "__main__":
     main()

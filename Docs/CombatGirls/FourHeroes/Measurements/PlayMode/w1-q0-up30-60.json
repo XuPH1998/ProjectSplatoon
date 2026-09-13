@@ -1,0 +1,20 @@
+{
+    "weapon": 1,
+    "driverHz": 60,
+    "shotCount": 1,
+    "paintStamps": 2,
+    "impacts": 1,
+    "peakProjectiles": 1,
+    "scenario": "up30",
+    "gridHash": "0885b2f8bf59f326757569d5c0144f5c3e9f6a7210706577e073f9eaa32c8ffb",
+    "charge": 0.0,
+    "targetPaintRange": 13.600000381469727,
+    "lastPaintForward": 1.3275146484375,
+    "maxOwnedForward": 1.75,
+    "ownedWidth": 1.0,
+    "ownedDepth": 2.125,
+    "centerlineContinuous": 0.625,
+    "ownedArea": 1.375,
+    "simulationMilliseconds": 33.0538,
+    "targetValidated": false
+}

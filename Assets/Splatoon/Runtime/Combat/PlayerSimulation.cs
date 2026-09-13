@@ -66,7 +66,7 @@ namespace Splatoon.Combat
             contact = default; return false;
         }
         public static bool IsEnemy(byte owner, byte team) => owner != 0 && owner != 255 && owner != team;
-        public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1)
+        public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
             var c = GameplayConfig.GetHero(s.HeroId);
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
@@ -135,7 +135,7 @@ namespace Splatoon.Combat
                 s.Swimming = true; s.Grounded = false; s.VerticalSpeed = 0; s.PlanarVelocity = Vector3.zero; s.Velocity = Vector3.zero;
                 SetShape(true); return;
             }
-            float speed = useInk ? c.SwimSpeed : wantsFire ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
+            float speed = useInk ? c.SwimSpeed : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);

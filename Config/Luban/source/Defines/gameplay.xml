@@ -26,9 +26,9 @@
     <var name="swimHealthRecoverRate" type="float" comment="移动恢复：己方潜墨回血（HP/秒）" />
     <var name="enemyInkDamageRate" type="float" comment="移动恢复：敌墨伤害（HP/秒）" />
     <var name="enemyInkHealthFloor" type="float" comment="移动恢复：敌墨非致死生命下限（HP）" />
-    <var name="fireMode" type="int" comment="发射：机制：0全自动／1三连发／2蓄力松开发射" />
+    <var name="fireMode" type="int" comment="发射：0全自动／1三连发／2蓄力松开发射／3半自动" />
     <var name="fireRate" type="float" comment="发射：权威射速（发/秒）" />
-    <var name="shotInk" type="float" comment="发射：每颗耗墨" />
+    <var name="shotInk" type="float" comment="发射：每次有效发射总耗墨（霰弹整组）" />
     <var name="fireIntervalFrames" type="int" comment="发射：连发间隔（60Hz参考帧）" />
     <var name="startFrames" type="int" comment="发射：人形起手（60Hz参考帧）" />
     <var name="emergeStartFrames" type="int" comment="发射：出墨起手（60Hz参考帧）" />
@@ -69,6 +69,9 @@
     <var name="chargeMinSpread" type="float" comment="蓄力：点射地面散布半角（度）" />
     <var name="chargeMinJumpSpread" type="float" comment="蓄力：点射空中散布半角（度）" />
     <var name="chargeMinPaintRange" type="float" comment="蓄力：点射水平涂地射程目标（米）" />
+    <var name="pelletCount" type="int" comment="发射：每次有效发射的弹丸数量" />
+    <var name="muzzleMode" type="int" comment="发射：枪口模式（0单枪／1右左交替）" />
+    <var name="semiBufferFrames" type="int" comment="发射：半自动冷却末尾点击缓存（60Hz帧）" />
   </bean>
   <table name="TbHero" value="HeroConfig" input="TbHero.xlsx" mode="map" index="id" />
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">

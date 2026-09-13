@@ -26,6 +26,8 @@ namespace Splatoon.Combat
                 {
                     var old = view.Weapon.gameObject; old.SetActive(false); old.transform.SetParent(staging.transform, false); Destroy(old);
                 }
+                if (view.LeftWeapon != null)
+                { var old = view.LeftWeapon.gameObject; old.SetActive(false); old.transform.SetParent(staging.transform, false); Destroy(old); }
                 var weapon = UnityEngine.Object.Instantiate(content.WeaponPrefab, view.WeaponSocket, false);
                 weapon.SetActive(true);
                 foreach (var child in weapon.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = _root.gameObject.layer;

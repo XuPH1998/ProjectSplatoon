@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "sourceFilesChecked": 794,
+  "sourceUnchanged": true,
+  "newClipFiles": 41,
+  "heroes": 5,
+  "fieldsPerHero": 72,
+  "generatedValuesChecked": 360,
+  "guidCount": 1437,
+  "duplicateGuids": [],
+  "formalPrefabs": 8,
+  "oldResourceReferences": [],
+  "cleanup": "Previous ID2-5 shared RifleGirl; no separate retired character files. Keep RifleGirl and all requested appearance variants. Jammo was already removed.",
+  "errors": []
+}

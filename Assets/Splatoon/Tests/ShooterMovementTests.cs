@@ -235,6 +235,7 @@ namespace Splatoon.Tests
         }
         [Test] public void PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease()
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             var state=Alive();int shots=0;
             for(int tick=0;tick<30;tick++)
             {
@@ -245,6 +246,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst()
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             var original=Alive();var first=new PlayerInputFrame{Sequence=101,Fire=true,FireSequence=1};
             WeaponSimulation.Step(ref original,first,W,0,false,true);var checkpoint=original;
             Assert.That(WeaponSimulation.Step(ref original,first,W,2/60.0,false,true),Is.True);

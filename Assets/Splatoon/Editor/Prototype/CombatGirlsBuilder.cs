@@ -184,7 +184,7 @@ namespace Splatoon.Editor
             }
         }
 
-        static AnimationCurve ExtractTurnCurve(AnimationClip clip, GameObject source)
+        internal static AnimationCurve ExtractTurnCurve(AnimationClip clip, GameObject source)
         {
             var bindings = AnimationUtility.GetCurveBindings(clip);
             string root = new[] { "RootQ", "MotionQ" }.FirstOrDefault(prefix => bindings.Any(b => b.propertyName == prefix + ".w"));
@@ -213,7 +213,7 @@ namespace Splatoon.Editor
             return curve;
         }
 
-        static float MeasureStrideSpeed(AnimationClip clip, GameObject source, Vector3 axis)
+        internal static float MeasureStrideSpeed(AnimationClip clip, GameObject source, Vector3 axis)
         {
             var animator = source.GetComponent<Animator>();
             var foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
@@ -227,7 +227,7 @@ namespace Splatoon.Editor
             return 2 * (max - min) / clip.length;
         }
 
-        static Vector3 MeasureMuzzle(Transform weapon)
+        internal static Vector3 MeasureMuzzle(Transform weapon)
         {
             var vertices = weapon.GetComponentsInChildren<MeshFilter>(true).SelectMany(f => f.sharedMesh.vertices.Select(v => f.transform.TransformPoint(v))).ToArray();
             if (vertices.Length == 0) throw new InvalidOperationException("枪械 MeshFilter 缺失");

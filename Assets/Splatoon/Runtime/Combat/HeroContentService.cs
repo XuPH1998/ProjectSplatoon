@@ -50,9 +50,12 @@ namespace Splatoon.Combat
                 view.Animator.runtimeAnimatorController == null || view.WeaponSocket == null ||
                 view.TeamMarker == null || view.SwimEffect == null)
                 throw new InvalidOperationException($"英雄 {config.Id} 角色模型缺少人形动画、表现配置、武器挂点或墨水表现绑定：{config.CharacterPrefabAddress}");
-            if (bindings == null || bindings.Nozzle == null || bindings.LeftGrip == null ||
-                !bindings.Nozzle.IsChildOf(weapon.transform) || !bindings.LeftGrip.IsChildOf(weapon.transform))
+            if (bindings == null || bindings.Nozzle == null || !bindings.Nozzle.IsChildOf(weapon.transform) ||
+                (bindings.SupportLeftHand && (bindings.LeftGrip == null || !bindings.LeftGrip.IsChildOf(weapon.transform))))
                 throw new InvalidOperationException($"英雄 {config.Id} 武器模型缺少有效枪口或左手握点：{config.WeaponPrefabAddress}");
+            if (config.MuzzleMode == 1 && (view.LeftWeaponSocket == null || !view.Profile.DualWield || bindings.SupportLeftHand ||
+                bindings.LeftPart == null || bindings.LeftNozzle == null || !bindings.LeftPart.IsChildOf(weapon.transform) || !bindings.LeftNozzle.IsChildOf(bindings.LeftPart)))
+                throw new InvalidOperationException($"英雄 {config.Id} 双枪挂点、部件或枪口绑定无效");
             Profile = view.Profile;
         }
     }

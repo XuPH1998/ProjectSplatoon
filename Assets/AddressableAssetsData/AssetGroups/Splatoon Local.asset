@@ -20,11 +20,26 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0489c1ac10985ac4998160b542e789c4
+    m_Address: Weapon/DualPistols
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 05bdb51dccee54138eaa12f69b3dee7b
     m_Address: tbroommode
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39df9bcebf6341b419e63cf6d757120f
+    m_Address: Weapon/Shotgun
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40ec4346ee70f254e8649e65afddb96f
+    m_Address: Weapon/Pistol
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 44d8719a2225d96458480952313d3ed4
     m_Address: Effects/InkStream
@@ -42,6 +57,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7367cbac9455d3741a683759f7c1f3d6
+    m_Address: Character/PistolGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8fc6e6c01920f2349a9074deec382a79
     m_Address: Weapon/RifleGirlRifle
     m_ReadOnly: 0
@@ -53,8 +73,23 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad0ca03e324ec8344bdd0404ea7189f4
+    m_Address: Weapon/RocketLauncher
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b2e1d8961603e2d4d9c0bb3fef27bcc7
     m_Address: maps/TrainingGround
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b872948e68251f949b79738ac56744af
+    m_Address: Character/DualPistolGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c72a525c03a085a47b7d5323006b3241
+    m_Address: Character/RocketLauncherGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -65,6 +100,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dab96b2249b6abf4f8bc137a54dbc771
     m_Address: Character/RifleGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e70d12c018cb82d47b4fdc662ed1e5d2
+    m_Address: Character/ShotgunGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

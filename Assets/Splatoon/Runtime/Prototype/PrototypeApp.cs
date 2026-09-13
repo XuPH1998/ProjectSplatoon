@@ -275,8 +275,8 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(850,641,410,60),"左键射击　Shift 潜墨 / 回墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 等待回墨" : "墨量不足 / 松开射击回墨") : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(850,641,410,60),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点射（长按不连发）" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 潜墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
                 if (equipped.FireMode == 2)

@@ -25,7 +25,7 @@ namespace Splatoon.Prototype
         public PlayerSnapshot PresentedState => IsOwner && !IsServer ? _predicted : Snapshot.Value;
         public Vector2 Look => _look;
         public Vector3 CameraPivot => transform.position + _visualOffset + (Presentation != null ? Presentation.CameraPivot : Vector3.up * 1.5f);
-        public Vector3 MuzzleOffset(float pitch) => Presentation != null ? Presentation.MuzzleOffset(pitch) : SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
+        public Vector3 MuzzleOffset(float pitch, byte muzzle = 0) => Presentation != null ? Presentation.MuzzleOffset(pitch, muzzle) : SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
         public float LastCorrectionDistance { get; private set; }
         public uint CorrectionCount { get; private set; }
         public double HitConfirmedUntil { get; private set; }
@@ -39,8 +39,10 @@ namespace Splatoon.Prototype
         readonly SortedDictionary<uint, PlayerInputFrame> _serverInputs = new();
         readonly List<PlayerInputFrame> _history = new(128);
         uint _sequence, _jumpSequence, _fireSequence, _releaseSequence;
-        readonly HashSet<ulong> _playedShotActions = new();
-        readonly Queue<ulong> _playedShotOrder = new();
+        readonly HashSet<(uint life, uint hero, ulong action)> _playedShotActions = new();
+        readonly Queue<(uint life, uint hero, ulong action)> _playedShotOrder = new();
+        readonly Dictionary<(uint life, uint hero, ulong action), bool> _hitActions = new();
+        readonly Queue<(uint life, uint hero, ulong action)> _hitOrder = new();
         double _lastReceivedAt;
         Vector2 _look;
         Vector3 _visualRest, _visualOffset;
@@ -134,7 +136,7 @@ namespace Splatoon.Prototype
                 if (_waitingForPaint || _predictionPaused) return;
                 bool shot = Step(ref _predicted, frame, 1f / GameplayConfig.Global.SimulationRate,
                     _predicted.SimulatedAt + 1.0 / GameplayConfig.Global.SimulationRate, PrototypeMatch.Current.State.Value.Phase);
-                if (shot) PredictShotFeedback(_predicted.ShotActionId);
+                if (shot) PredictShotFeedback(_predicted);
             }
         }
         void SendInput()
@@ -186,7 +188,7 @@ namespace Splatoon.Prototype
             Snapshot.Value = s;
             if (shot)
             {
-                if (IsOwner) PredictShotFeedback(s.ShotActionId);
+                if (IsOwner) PredictShotFeedback(s);
                 PrototypeMatch.Current.Projectiles.Spawn(this, s, now, PrototypeMatch.Current.State.Value.Round);
             }
         }
@@ -199,8 +201,11 @@ namespace Splatoon.Prototype
             var w = GameplayConfig.GetHero(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
-            bool fire = WeaponSimulation.WantsFire(s, input);
-            _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed);
+            bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
+            if (WeaponSimulation.IsSemi(w) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input);
+            bool fire = WeaponSimulation.WantsFire(s, input, w, now);
+            _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed,
+                WeaponSimulation.IsSemi(w) && s.FireVisualUntil > now);
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
             if (s.Health <= 0) return false;
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
@@ -211,7 +216,7 @@ namespace Splatoon.Prototype
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             if (shot && WeaponSimulation.IsCharge(w)) s.CurrentSpread = WeaponSimulation.Spread(w, !s.Grounded, fireResult.Charge);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
-            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire, dt, now);
+            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w), dt, now);
             return shot;
         }
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
@@ -258,12 +263,27 @@ namespace Splatoon.Prototype
             }
             Snapshot.Value = s;
         }
-        public void PredictShotFeedback(ulong actionId)
+        public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision);
+        public void PredictShotFeedback(InkShot shot) => PlayShotFeedback(shot.ActionId, shot.MuzzleIndex, shot.HeroId, shot.Lifecycle, shot.HeroRevision);
+        void PlayShotFeedback(ulong actionId, byte muzzle, int heroId, uint lifecycle, uint heroRevision)
         {
-            if (!_playedShotActions.Add(actionId)) return;
-            _playedShotOrder.Enqueue(actionId);
+            var current = PresentedState;
+            if (heroId != current.HeroId || lifecycle != current.Revision || heroRevision != current.HeroRevision || current.Health <= 0 || current.Swimming) return;
+            var key = (lifecycle, heroRevision, actionId);
+            if (!_playedShotActions.Add(key)) return;
+            _playedShotOrder.Enqueue(key);
             while (_playedShotOrder.Count > 256) _playedShotActions.Remove(_playedShotOrder.Dequeue());
-            CharacterView?.Shot(); if (IsOwner && _audio != null) _audio.PlayOneShot(_shotAudio, .13f);
+            CharacterView?.Shot(muzzle); if (IsOwner && _audio != null) _audio.PlayOneShot(_shotAudio, .13f);
+        }
+        public void ConfirmHit(InkImpact impact)
+        {
+            if (!IsOwner) return;
+            var key = (impact.Lifecycle, impact.HeroRevision, impact.ActionId);
+            if (_hitActions.TryGetValue(key, out bool killed))
+            { if (impact.Killed && !killed) { _hitActions[key] = true; LastHitKilled = true; HitConfirmedUntil = Time.unscaledTimeAsDouble + .16; } return; }
+            _hitActions.Add(key, impact.Killed); _hitOrder.Enqueue(key);
+            while (_hitOrder.Count > 256) _hitActions.Remove(_hitOrder.Dequeue());
+            ConfirmHit(impact.Killed);
         }
         public void ConfirmHit(bool killed)
         { if (!IsOwner) return; HitConfirmedUntil = Time.unscaledTimeAsDouble + .16; LastHitKilled = killed; if (_audio != null) _audio.PlayOneShot(_hitAudio, .18f); }
@@ -309,7 +329,7 @@ namespace Splatoon.Prototype
             if (!IsOwner || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
-            var muzzle = transform.position + Quaternion.Euler(0, _look.x, 0) * MuzzleOffset(_look.y);
+            var muzzle = transform.position + Quaternion.Euler(0, _look.x, 0) * MuzzleOffset(_look.y, s.NextMuzzle);
             Vector3 pivot = transform.position + (Presentation != null ? Presentation.CameraPivot : Vector3.up * 1.5f);
             Vector3 delta = muzzle - pivot;
             MuzzleBlocked = Physics.Raycast(pivot, delta.normalized, delta.magnitude, PlayerMotorSimulation.WorldMask);

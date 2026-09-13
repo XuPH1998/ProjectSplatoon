@@ -123,7 +123,7 @@ namespace Splatoon.Prototype
                 HeroText(new Rect(398, y, 220, 30), previous[i].value);
             }
             GUI.EndScrollView();
-            GUI.Label(new Rect(498, 551, 630, 45), "蓝色表示与当前英雄不同。涂地距离为水平试射目标。\nF 按 60Hz 计时；打开列表不会暂停比赛。", _small);
+            GUI.Label(new Rect(498, 551, 630, 45), "蓝色表示与当前英雄不同。涂地距离为水平射击参考。\nF 按 60Hz 计时；打开列表不会暂停比赛。", _small);
             GUI.enabled = !player.HeroChangePending && player.Snapshot.Value.Health > 0 && selected.Id != current.Id;
             if (GUI.Button(new Rect(895, 604, 232, 40), player.HeroChangePending ? "切换中…" : selected.Id == current.Id ? "当前英雄" : "选择英雄", _button)) player.RequestHeroChange(selected.Id, _heroOrigin);
             GUI.enabled = true;

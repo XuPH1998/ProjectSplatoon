@@ -13,8 +13,7 @@ namespace Splatoon.Tests
     public sealed class WeaponReferenceTests
     {
         static readonly string[] Names = { "", "WeaponShooterNormal", "WeaponShooterBlaze", "WeaponShooterGravity", "WeaponShooterTripleQuick", "WeaponChargerNormal" };
-        [SetUp] public void Load() => typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current,
-            new cfg.Tables(n => JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json"))));
+        [SetUp] public void Load() => HeroMigrationTests.LoadHistoricalWeapons();
         [TearDown] public void Reset() => LubanConfigService.Current.Reset();
         static JSONNode Reference(int id) => JSONNode.Parse(File.ReadAllText("Docs/WeaponAudit/" + Names[id] + ".1130.json"))["GameParameters"];
         static PlayerSnapshot Player(int id) => new() { HeroId = id, Health = 100, Ink = 100, Team = 1 };

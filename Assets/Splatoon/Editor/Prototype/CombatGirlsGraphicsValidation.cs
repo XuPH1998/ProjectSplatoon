@@ -49,7 +49,7 @@ namespace Splatoon.Editor
             }
             catch (Exception ex) { Debug.LogException(ex); EditorApplication.Exit(1); }
         }
-        static Vector3 FindCaptureFloor(bool shadow)
+        internal static Vector3 FindCaptureFloor(bool shadow)
         {
             var sun = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None).First(l => l.type == LightType.Directional);
             for (int z = -20; z <= 20; z += 2)
@@ -179,7 +179,7 @@ namespace Splatoon.Editor
             Report.Add($"AutoShoot 300-frame arm/wrist seam: wraps={wraps}, maxSeam={seamMax:F4}deg, maxInterior={interiorMax:F4}deg");
             Require(wraps >= 4 && seamMax < Mathf.Max(5, interiorMax * 2), "AutoShoot arm/wrist seam discontinuity");
         }
-        static void Render(Camera camera, string name)
+        internal static void Render(Camera camera, string name, string output = Output)
         {
             // Multiple diagnostic poses are sampled within one editor frame. Bake
             // each mesh so GPU skinning cannot reuse a previous pose's frame cache.
@@ -201,7 +201,8 @@ namespace Splatoon.Editor
                 RenderTexture.active = target;
                 var image = new Texture2D(target.width, target.height, TextureFormat.RGBA32, false, false);
                 image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); image.Apply();
-                File.WriteAllBytes(Output + "/" + name + ".png", image.EncodeToPNG()); UnityEngine.Object.DestroyImmediate(image);
+                Directory.CreateDirectory(output);
+                File.WriteAllBytes(output + "/" + name + ".png", image.EncodeToPNG()); UnityEngine.Object.DestroyImmediate(image);
             }
             finally
             {

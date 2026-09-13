@@ -1,4 +1,4 @@
-"""Verify the committed pre-merge numeric baseline against authoritative Hero XLSX and generated JSON."""
+"""Verify retained pre-merge values and Hero XLSX/generated consistency; custom weapon balance is audited by Tools/CombatGirls/validate_four_heroes.py."""
 from pathlib import Path
 import argparse,csv,json,math,hashlib
 import openpyxl
@@ -12,8 +12,10 @@ def verify():
     heroes=load(path/'tbhero.json');weapons={r['id']:r for r in baseline['Weapon']}
     assert len(heroes)==5 and {h['id'] for h in heroes}==set(weapons)
     for h in heroes:
-        assert set(h)=={m['heroField'] for m in mapping}
+        assert set(h)=={m['heroField'] for m in mapping}|{'pelletCount','muzzleMode','semiBufferFrames'}
         for m in mapping:
+            if m['sourceTable']=='Weapon' and h['id'] in (2,3,4):continue # Explicitly retired balance lives in the historical fixture.
+            if h['id']!=1 and m['heroField'] in ('name','displayName','characterPrefabAddress','weaponPrefabAddress'):continue
             previous=weapons[h['id']] if m['sourceTable']=='Weapon' else baseline['Character'][0]
             assert equal(h[m['heroField']],previous[m['sourceField']]),(h['id'],m['heroField'],'baseline changed')
     mode=load(path/'tbroommode.json');expected=[{('heroId' if k=='weaponId' else k):v for k,v in r.items() if k!='characterId'} for r in baseline['RoomMode']]
@@ -32,7 +34,7 @@ def verify():
         assert not (ROOT/f'Assets/Splatoon/Config/Generated/{old}Config.cs').exists()
     group=(ROOT/'Assets/AddressableAssetsData/AssetGroups/Splatoon Local.asset').read_text('utf-8-sig')
     assert 'm_Address: tbhero\n' in group and 'm_Address: tbweapon\n' not in group and 'm_Address: tbcharacter\n' not in group
-    return {'heroes':len(heroes),'fieldsPerHero':len(mapping),'verifiedValues':len(heroes)*len(mapping),'baselineCommit':baseline['commit']}
+    return {'heroes':len(heroes),'fieldsPerHero':len(heroes[0]),'sourceGeneratedValues':len(heroes)*len(heroes[0]),'baselineCommit':baseline['commit']}
 def verify_measurements(directory):
     records=list(csv.DictReader((ROOT/'Docs/HeroMigration/Measurement-Comparison.csv').open(encoding='utf-8-sig')))
     assert len(records)==87

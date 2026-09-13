@@ -1,0 +1,8 @@
+Four-instance nographics Editor attempt aborted.
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@ae5f251e1ed4/Editor/Utils/BoneRendererUtils.cs:121)
+[./Library/PackageCache/com.unity.animation.rigging@ae5f251e1ed4/Editor/Utils/BoneRendererUtils.cs line 121]
+UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () (at ./Library/PackageCache/com.unity.animation.rigging@ae5f251e1ed4/Editor/Utils/BoneRendererUtils.cs:121)
+[./Library/PackageCache/com.unity.animation.rigging@ae5f251e1ed4/Editor/Utils/BoneRendererUtils.cs line 121]
+0x0000021768F28093 (Mono JIT Code) [.\Library\PackageCache\com.unity.animation.rigging@ae5f251e1ed4\Editor\Utils\BoneRendererUtils.cs:121] UnityEditor.Animations.Rigging.BoneRendererUtils:.cctor () 
+A crash has been intercepted by the crash handler. For call stack and other details, see the latest crash report generated in:
+Subsequent isolated GPU Editor launches stopped after licensing initialization and were terminated. No network/performance PASS result was produced.

@@ -1,0 +1,2 @@
+PASS: real Addressables + NGO host; 5 hero models; dual hand assembly; each new hero swim-death and 3s respawn; shotgun 8 independent Physics hits reduce 100HP to 20HP; warmup/DEBUG/invalid selection; selected-hero respawn; leave/reenter default; resource release.
+Remote client and physical LAN are separate acceptance items.

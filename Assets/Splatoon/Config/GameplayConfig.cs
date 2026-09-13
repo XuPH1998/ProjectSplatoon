@@ -31,7 +31,10 @@ namespace Splatoon.Config
             }
             foreach (var w in tables.TbHero.DataList)
             {
-                Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 2 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
+                Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 3 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
+                Require(w.PelletCount >= 1 && w.PelletCount <= 8 && w.MuzzleMode >= 0 && w.MuzzleMode <= 1 && w.SemiBufferFrames >= 0 && w.SemiBufferFrames <= w.FireIntervalFrames, "齐射、枪口或点击缓存配置无效");
+                Require(w.FireMode == 3 || (w.PelletCount == 1 && w.MuzzleMode == 0 && w.SemiBufferFrames == 0), "新增齐射和轮播仅用于半自动");
+                Require(w.MuzzleMode != 1 || w.PelletCount == 1, "双枪每次只发射一颗墨弹");
                 Require(w.FireMode == 1 || w.BurstCount == 1, "非三连发武器每次只发射一颗");
                 if (w.FireMode == 1) Require(w.BurstCount == 3 && w.BurstRecoveryFrames >= w.FireIntervalFrames, "三连发组间冷却无效");
                 if (w.FireMode == 2) Require(w.ChargeFrames > 0 && w.ChargeMinDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.ChargePartialMaxDamage >= w.ChargeMinDamage && w.ChargeMinInk > 0 && w.ChargeMinInk < w.ShotInk && w.ChargeMinRange > 0 && w.ChargeMinRange <= w.EffectiveRange && w.ChargeMinSpeed > 0 && w.ChargeMinSpeed <= w.SpeedMin && w.ChargeMinJumpSpread >= w.ChargeMinSpread && w.ChargeMinPaintRange >= w.ChargeMinRange, "蓄力端点配置无效");

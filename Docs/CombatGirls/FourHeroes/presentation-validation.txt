@@ -1,0 +1,5 @@
+DualPistolGirl: four directions, diagonal, air, turn interrupts, timed shot layers, aim -65/+75, grip, swim-death, both deaths and respawn PASS
+ShotgunGirl: four directions, diagonal, air, turn interrupts, timed shot layers, aim -65/+75, grip, swim-death, both deaths and respawn PASS
+PistolGirl: four directions, diagonal, air, turn interrupts, timed shot layers, aim -65/+75, grip, swim-death, both deaths and respawn PASS
+RocketLauncherGirl: four directions, diagonal, air, turn interrupts, timed shot layers, aim -65/+75, grip, swim-death, both deaths and respawn PASS
+GPU captures: real TrainingGround lights/ink renderer, 960x960; source comparison captures use matched white light separately. This is evaluated Editor animation, not remote-device visual acceptance.

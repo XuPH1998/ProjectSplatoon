@@ -89,6 +89,9 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["chargeMinSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinSpread = _buf["chargeMinSpread"]; }
         { if(!_buf["chargeMinJumpSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinJumpSpread = _buf["chargeMinJumpSpread"]; }
         { if(!_buf["chargeMinPaintRange"].IsNumber) { throw new SerializationException(); }  ChargeMinPaintRange = _buf["chargeMinPaintRange"]; }
+        { if(!_buf["pelletCount"].IsNumber) { throw new SerializationException(); }  PelletCount = _buf["pelletCount"]; }
+        { if(!_buf["muzzleMode"].IsNumber) { throw new SerializationException(); }  MuzzleMode = _buf["muzzleMode"]; }
+        { if(!_buf["semiBufferFrames"].IsNumber) { throw new SerializationException(); }  SemiBufferFrames = _buf["semiBufferFrames"]; }
     }
 
     public static HeroConfig DeserializeHeroConfig(JSONNode _buf)
@@ -201,7 +204,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float EnemyInkHealthFloor;
     /// <summary>
-    /// 发射：机制：0全自动／1三连发／2蓄力松开发射
+    /// 发射：0全自动／1三连发／2蓄力松开发射／3半自动
     /// </summary>
     public readonly int FireMode;
     /// <summary>
@@ -209,7 +212,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float FireRate;
     /// <summary>
-    /// 发射：每颗耗墨
+    /// 发射：每次有效发射总耗墨（霰弹整组）
     /// </summary>
     public readonly float ShotInk;
     /// <summary>
@@ -372,6 +375,18 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 蓄力：点射水平涂地射程目标（米）
     /// </summary>
     public readonly float ChargeMinPaintRange;
+    /// <summary>
+    /// 发射：每次有效发射的弹丸数量
+    /// </summary>
+    public readonly int PelletCount;
+    /// <summary>
+    /// 发射：枪口模式（0单枪／1右左交替）
+    /// </summary>
+    public readonly int MuzzleMode;
+    /// <summary>
+    /// 发射：半自动冷却末尾点击缓存（60Hz帧）
+    /// </summary>
+    public readonly int SemiBufferFrames;
    
     public const int __ID__ = -563759108;
     public override int GetTypeId() => __ID__;
@@ -452,6 +467,9 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "chargeMinSpread:" + ChargeMinSpread + ","
         + "chargeMinJumpSpread:" + ChargeMinJumpSpread + ","
         + "chargeMinPaintRange:" + ChargeMinPaintRange + ","
+        + "pelletCount:" + PelletCount + ","
+        + "muzzleMode:" + MuzzleMode + ","
+        + "semiBufferFrames:" + SemiBufferFrames + ","
         + "}";
     }
 }

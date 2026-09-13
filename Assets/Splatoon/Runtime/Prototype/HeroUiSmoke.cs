@@ -36,7 +36,6 @@ namespace Splatoon.Prototype
             var getGroup=sizesType.GetMethod("GetGroup",Flags);
             _sizeGroup=getGroup.Invoke(singleton,new[]{Enum.Parse(getGroup.GetParameters()[0].ParameterType,"Standalone")});
             int count=(int)_sizeGroup.GetType().GetMethod("GetTotalCount",Flags).Invoke(_sizeGroup,null);
-            int builtins=(int)_sizeGroup.GetType().GetMethod("GetBuiltinCount",Flags).Invoke(_sizeGroup,null);
             int width=int.Parse(HeroSelectionSmoke.Arg("-weaponUiWidth","1280")),height=int.Parse(HeroSelectionSmoke.Arg("-weaponUiHeight","720"));
             int selected=-1;
             for(int i=0;i<count;i++)
@@ -48,7 +47,7 @@ namespace Splatoon.Prototype
             {
                 var sizeType=assembly.GetType("UnityEditor.GameViewSize");var kind=assembly.GetType("UnityEditor.GameViewSizeType");
                 var size=Activator.CreateInstance(sizeType,Flags,null,new[]{Enum.Parse(kind,"FixedResolution"),(object)width,height,"Hero UI temporary"},null);
-                _sizeGroup.GetType().GetMethod("AddCustomSize",Flags).Invoke(_sizeGroup,new[]{size});selected=count;_temporarySize=count-builtins;
+                _sizeGroup.GetType().GetMethod("AddCustomSize",Flags).Invoke(_sizeGroup,new[]{size});selected=count;_temporarySize=count;
             }
             var selector=_view.GetType().GetProperty("selectedSizeIndex",Flags);_previousSize=(int)selector.GetValue(_view);selector.SetValue(_view,selected);
             UnityEditor.EditorApplication.update+=EditorTick;

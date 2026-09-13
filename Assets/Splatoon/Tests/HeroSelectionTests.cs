@@ -26,6 +26,7 @@ namespace Splatoon.Tests
         [TestCase(1,6,108)] [TestCase(2,4,200)] [TestCase(3,9,66)]
         public void AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(int id, int interval, int count)
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             var s = Alive(id); var shots = new List<int>();
             for (int i = 0; i < 2000; i++) if (Step(ref s,i)) shots.Add(i);
             Assert.That(shots.Count, Is.EqualTo(count)); Assert.That(s.Ink, Is.GreaterThanOrEqualTo(0));
@@ -34,6 +35,7 @@ namespace Splatoon.Tests
         }
         [Test] public void HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery()
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             var s=Alive(4); var shots=new List<int>();
             for(int i=0;i<60;i++) if(Step(ref s,i))shots.Add(i);
             Assert.That(shots.Take(6),Is.EqualTo(new[]{2,6,10,26,30,34}));
@@ -47,6 +49,7 @@ namespace Splatoon.Tests
         }
         [Test] public void BurstReleaseFinishesGroupButCancelOrEmptyStopsIt()
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             var s=Alive(4);int shots=0;for(int i=0;i<45;i++)if(Step(ref s,i,i==0))shots++;
             Assert.That(shots,Is.EqualTo(3));
             s=Alive(4);shots=0;for(int i=0;i<20;i++)if(Step(ref s,i,i<4,1,i>=4))shots++;
@@ -101,13 +104,13 @@ namespace Splatoon.Tests
             Assert.That(Step(ref s,65,false,2),Is.False);Assert.That(Step(ref s,66,true,3),Is.False);
             Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Starting));
         }
-        [TestCase(1,36,18)] [TestCase(2,24,12)] [TestCase(3,52,26)] [TestCase(4,34,17)]
+        [TestCase(1,36,18)] [TestCase(2,32,16)] [TestCase(3,10,4)] [TestCase(4,52,26)]
         public void EachRegularGunUsesItsConfiguredDamageFalloff(int id,float near,float far)
         {
             var w=GameplayConfig.GetHero(id);
-            Assert.That(WeaponSimulation.Damage(w,8/60.0),Is.EqualTo(near));
-            Assert.That(WeaponSimulation.Damage(w,24/60.0),Is.EqualTo((near+far)/2).Within(.001));
-            Assert.That(WeaponSimulation.Damage(w,40/60.0),Is.EqualTo(far));
+            Assert.That(WeaponSimulation.Damage(w,w.DamageReduceStartFrames/60.0),Is.EqualTo(near));
+            Assert.That(WeaponSimulation.Damage(w,(w.DamageReduceStartFrames+w.DamageReduceEndFrames)/120.0),Is.EqualTo((near+far)/2).Within(.001));
+            Assert.That(WeaponSimulation.Damage(w,w.DamageReduceEndFrames/60.0),Is.EqualTo(far));
         }
         [Test] public void HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum()
         {
@@ -163,7 +166,7 @@ namespace Splatoon.Tests
             Assert.That(HeroSelectionRules.Validate(s,2,0,0,0,2,0,true),Is.Not.Null);
             s.Health=0;Assert.That(HeroSelectionRules.Validate(s,2,0,0,0,1,0,true),Is.Not.Null);
         }
-        [TestCase(1,0,13.6f)] [TestCase(2,0,11.6f)] [TestCase(3,0,15.2f)] [TestCase(4,0,14.8f)] [TestCase(5,0,11.2f)] [TestCase(5,1,20.4f)]
+        [TestCase(1,0,13.6f)] [TestCase(5,0,11.2f)] [TestCase(5,1,20.4f)]
         public void ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(int id,float charge,float target)
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);

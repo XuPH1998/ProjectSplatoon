@@ -13,6 +13,8 @@ namespace Splatoon.Combat
         public uint Id, Round, Seed, ShotSequence;
         public ulong Shooter;
         public ulong ActionId;
+        public uint Lifecycle, HeroRevision;
+        public byte MuzzleIndex, PelletIndex;
         public int HeroId;
         public float Charge;
         public byte Team;
@@ -25,6 +27,8 @@ namespace Splatoon.Combat
             s.SerializeValue(ref Charge);
             s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref ActionId);
+            s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision);
+            s.SerializeValue(ref MuzzleIndex); s.SerializeValue(ref PelletIndex);
         }
     }
     public struct InkImpact : INetworkSerializable
@@ -36,9 +40,13 @@ namespace Splatoon.Combat
         public ulong Shooter, Victim;
         public float Damage;
         public bool Killed;
+        public ulong ActionId;
+        public uint Lifecycle, HeroRevision;
+        public byte PelletIndex;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         { s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Team); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Hit);
-          s.SerializeValue(ref Shooter); s.SerializeValue(ref Victim); s.SerializeValue(ref Damage); s.SerializeValue(ref Killed); }
+          s.SerializeValue(ref Shooter); s.SerializeValue(ref Victim); s.SerializeValue(ref Damage); s.SerializeValue(ref Killed);
+          s.SerializeValue(ref ActionId); s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref PelletIndex); }
     }
     public static class InkBallistics
     {
@@ -65,6 +73,13 @@ namespace Splatoon.Combat
             float angle = Random01(ref seed) * Mathf.PI * 2;
             Vector3 local = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 1).normalized;
             return Quaternion.LookRotation(direction) * local * Mathf.Lerp(w.SpeedMin, w.SpeedMax, Random01(ref seed));
+        }
+        public static Vector3 PelletVelocity(Vector3 direction, cfg.HeroConfig w, float spread, int index, uint groupSeed)
+        {
+            // Equal-area disk samples; rotate the complete pattern, never cluster eight independent random samples.
+            float angle = index * 2.39996323f + Random01(ref groupSeed) * Mathf.PI * 2;
+            float radius = Mathf.Sqrt((index + .5f) / w.PelletCount) * Mathf.Tan(spread * Mathf.Deg2Rad);
+            return Quaternion.LookRotation(direction) * new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 1).normalized * w.SpeedMin;
         }
     }
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
@@ -99,22 +114,31 @@ namespace Splatoon.Combat
             var forward = aim * Vector3.forward;
             Vector3 target = camera + forward * 100;
             if (ClosestRay(camera, forward, 100, player.OwnerClientId, out var aimHit)) target = aimHit.point;
-            Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch);
+            Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch, state.LastShotMuzzle);
             bool blocked = ClosestRay(pivot, (muzzle - pivot).normalized, (muzzle - pivot).magnitude, player.OwnerClientId, out var wall);
+            uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.OwnerClientId ^ state.HeroRevision);
+            if (groupSeed == 0) groupSeed = 1;
+            for (byte pellet = 0; pellet < w.PelletCount; pellet++)
+            {
             uint seed = unchecked(++_id * 747796405u + round * 2891336453u + (uint)player.OwnerClientId + 1u);
             if (seed == 0) seed = 1;
             var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, HeroId = w.Id, Team = state.Team, Born = born, Origin = blocked ? pivot : muzzle };
             shot.ActionId = state.ShotActionId;
+            shot.Lifecycle = state.Revision; shot.HeroRevision = state.HeroRevision;
+            shot.MuzzleIndex = state.LastShotMuzzle; shot.PelletIndex = pellet;
             shot.Charge = state.LastShotCharge;
-            shot.Velocity = InkBallistics.LaunchVelocity((target - muzzle).normalized, w, ref seed, state.CurrentSpread > 0 ? state.CurrentSpread : w.SpreadDegrees);
+            float spread = state.CurrentSpread > 0 ? state.CurrentSpread : w.SpreadDegrees;
+            shot.Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity((target - muzzle).normalized, w, spread, pellet, groupSeed)
+                : InkBallistics.LaunchVelocity((target - muzzle).normalized, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
             Spawned.Add(shot);
             if (blocked) Resolve(shot, wall.collider, wall.point, wall.normal, 0);
             else BeginFlight(shot, muzzle, forward);
+            }
         }
         private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
         {
-            PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId));
+            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId));
             _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle });
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, 0, muzzle);
@@ -218,6 +242,7 @@ namespace Splatoon.Combat
                 }
             }
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,
+                ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.OwnerClientId : 0, Damage = actualDamage, Killed = killed });
         }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();

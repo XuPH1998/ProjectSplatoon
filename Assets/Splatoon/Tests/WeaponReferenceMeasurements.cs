@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -59,9 +60,9 @@ namespace Splatoon.Tests
             File.WriteAllText(Path.Combine(directory, "conditions.txt"),
                 "Project simulation measurement, NOT original-game acceptance.\n" +
                 "Unity=" + Application.unityVersion + "; playing=" + Application.isPlaying + "\n" +
-                "Muzzle=1.5m (high-drop=5m); seeded shots; launch spread disabled to isolate ballistics; grid=0.125m.\n" +
+                "Formal hero camera/muzzle profiles; real Spawn path with seeded configured spread, alternating muzzles and all pellets; grid=0.125m.\n" +
                 "Trace includes collision contact at termination; stamp coordinates are actual paint requests.\n" +
-                "Continuous=20 automatic/burst shots or 20 fully charged releases using current action timing.\n" +
+                "Continuous=20 accepted trigger actions (maximum cadence); charged releases include full-charge startup.\n" +
                 "driverHz=external Simulate(now) call frequency in a synchronous loop; NOT actual render FPS. Normal network simulation uses configured fixed ticks.\n" +
                 "Width/depth/area are sampled surface ownership, including wall regions; forward range and continuous centerline refer to the horizontal floor.\n" +
                 "A blank centerline segment terminates continuity. Targets remain unvalidated: no qualified 11.3.0 original capture.\n" +
@@ -112,8 +113,14 @@ namespace Splatoon.Tests
                     stamps.AppendLine($"{stamp.SurfaceId},{V(stamp.Position - Offset)},{V(stamp.Normal)},{F(stamp.Radius)},{F(stamp.Hardness)},{F(stamp.Strength)}");
                 };
                 float angle = scenario == "up30" ? -30 : scenario == "down30" ? 30 : 0;
-                var origin = Offset + Vector3.up * (scenario == "high-drop" ? 5 : 1.5f);
-                var velocity = Quaternion.Euler(angle, 0, 0) * Vector3.forward * WeaponSimulation.Speed(w, charge);
+                var playerRoot = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
+                roots.Add(playerRoot); playerRoot.SetActive(false);
+                var player = playerRoot.GetComponent<PrototypePlayer>();
+                string characterName = w.CharacterPrefabAddress.Split('/').Last();
+                player.CharacterView = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{characterName}/Prefabs/{characterName}Visual.prefab").GetComponent<InkCharacterView>();
+                var state = new PlayerSnapshot { HeroId=weapon, Team=1, Health=100, Ink=100, Revision=1, Grounded=true,
+                    Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
+                    CurrentSpread=WeaponSimulation.Spread(w,false,charge), BurstShotIndex=1 };
                 int launched = 0; double nextShot = 0;
                 double fullDuration = shotCount * (w.StartFrames + w.ChargeFrames + w.FireIntervalFrames + w.BurstRecoveryFrames) / 60.0 + w.Lifetime + 1;
                 for (int frame = 0; frame <= (int)Math.Ceiling(fullDuration * rate); frame++)
@@ -122,8 +129,9 @@ namespace Splatoon.Tests
                     while (launched < shotCount && nextShot <= now + 1e-8)
                     {
                         launched++;
-                        service.SpawnForMeasurement(new InkShot { Id = (uint)launched, Seed = (uint)(12345 + launched), Round = 1,
-                            HeroId = weapon, Charge = charge, Born = nextShot, Origin = origin, Velocity = velocity, Team = 1, ShotSequence = (uint)launched });
+                        state.ShotSequence=(uint)launched; state.FireBurstSequence=(uint)launched;
+                        state.LastShotMuzzle=(byte)(w.MuzzleMode==1?(launched-1)%2:0);
+                        service.Spawn(player,state,nextShot,1);
                         int gap = WeaponSimulation.IsCharge(w) ? w.StartFrames + w.ChargeFrames + w.FireIntervalFrames :
                             w.FireMode == 1 && launched % w.BurstCount == 0 ? w.BurstRecoveryFrames : w.FireIntervalFrames;
                         nextShot += gap / 60.0;
@@ -177,10 +185,12 @@ namespace Splatoon.Tests
             Assert.That(results.Count, Is.EqualTo(87));
             foreach (var r in results)
             {
-                Assert.That(r.impacts, Is.EqualTo(r.shotCount), r.scenario);
+                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetHero(r.weapon).PelletCount), r.scenario);
                 Assert.That(double.IsFinite(r.ownedArea), Is.True); Assert.That(r.targetValidated, Is.False);
             }
             Assert.That(results.Where(r => r.scenario == "flat").All(r => r.paintStamps > 0), Is.True);
+            Directory.CreateDirectory("Docs/CombatGirls/FourHeroes");
+            File.WriteAllText("Docs/CombatGirls/FourHeroes/paint-measurements.json", "["+string.Join(",",results.Where(r=>r.weapon>=2&&r.weapon<=4&&r.scenario=="flat").Select(r=>$"{{\"id\":{r.weapon},\"range\":{r.maxOwnedForward.ToString("R",CultureInfo.InvariantCulture)},\"method\":\"Physics Spawn + 0.125m ownership grid, fixed seeded volley\"}}"))+"]");
         }
         [Test] public void RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage()
         {
@@ -202,13 +212,13 @@ namespace Splatoon.Tests
             Assert.That(PrototypeApp.Current, Is.Not.Null, "Real application bootstrap must run before manually loading measurement tables.");
             Assert.That(PrototypeApp.Current.Ready, Is.True, PrototypeApp.Current.Error);
             Assert.That(LubanConfigService.Current.ContentSignature, Has.Length.EqualTo(32));
-            Assert.That(GameplayConfig.GetHero(2).ShotInk, Is.EqualTo(.5f));
+            Assert.That(GameplayConfig.GetHero(2).ShotInk, Is.EqualTo(.7f));
             Assert.That(GameplayConfig.GetHero(2).InkRecoverLockFrames, Is.EqualTo(15));
-            Assert.That(GameplayConfig.GetHero(3).ShotInk, Is.EqualTo(1.5f));
-            Assert.That(GameplayConfig.GetHero(3).FireIntervalFrames, Is.EqualTo(9));
-            Assert.That(GameplayConfig.GetHero(3).FireRate, Is.EqualTo(60f / 9).Within(.00001));
-            Assert.That(GameplayConfig.GetHero(4).ShotInk, Is.EqualTo(1.1f));
-            Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(25));
+            Assert.That(GameplayConfig.GetHero(3).ShotInk, Is.EqualTo(4));
+            Assert.That(GameplayConfig.GetHero(3).FireIntervalFrames, Is.EqualTo(24));
+            Assert.That(GameplayConfig.GetHero(3).PelletCount, Is.EqualTo(8));
+            Assert.That(GameplayConfig.GetHero(4).ShotInk, Is.EqualTo(1.4f));
+            Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(22));
             Assert.That(GameplayConfig.GetHero(5).Damage, Is.EqualTo(160));
             Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
             Directory.CreateDirectory("Logs/WeaponReference/PlayMode");
@@ -221,7 +231,7 @@ namespace Splatoon.Tests
                 string file = $"Logs/WeaponReference/EditMode/w{r.weapon}-q{Mathf.RoundToInt(r.charge * 60)}-{r.scenario}-{r.driverHz}.json";
                 Assert.That(File.Exists(file), Is.True, "Run the EditMode measurement first: " + file);
                 Assert.That(r.gridHash, Is.EqualTo(JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText(file)).gridHash));
-                Assert.That(r.impacts, Is.EqualTo(r.shotCount));
+                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetHero(r.weapon).PelletCount));
             }
             yield return new ExitPlayMode();
         }

@@ -50,7 +50,7 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current;var p=PrototypePlayer.Local;if(!_ready||match==null||p==null)return;
             if(_host)foreach(var other in match.Players)if(_placed.Add(other.OwnerClientId))
             {var s=other.Snapshot.Value;other.DiagnosticPlace(PrototypeArena.Spawn(s.Team,s.Slot),s.Team==1?0:180);}
-            if(_start==0&&p.Snapshot.Value.Revision>=2&&PrototypePlayer.ByOwner.Count>=_expected){_start=p.NetworkManager.ServerTime.Time;_life=p.Snapshot.Value.Revision;}
+            if(_start==0&&p.Snapshot.Value.Revision>=2&&PrototypePlayer.ByOwner.Count>=Math.Min(_expected,2)){_start=p.NetworkManager.ServerTime.Time;_life=p.Snapshot.Value.Revision;}
             if(_start==0)return;double age=p.NetworkManager.ServerTime.Time-_start;var state=p.Snapshot.Value;
             _equipped.Add(state.HeroId);if(state.ShotSequence!=_shots){_shots=state.ShotSequence;_fired.Add(state.HeroId);_fullCharge|=state.HeroId==5&&state.LastShotCharge>=1;}
             _frames.Add(Time.unscaledDeltaTime*1000);_maxPlayers=Math.Max(_maxPlayers,PrototypePlayer.ByOwner.Count);
@@ -76,7 +76,8 @@ namespace Splatoon.Prototype
             double age=p.NetworkManager.ServerTime.Time-s._start;
             input.Move=Vector2.zero;input.Swim=false;input.JumpSequence=p.PresentedState.ConsumedJump;
             input.Look=new Vector2((p.PresentedState.Team==1?0:180)+(p.PresentedState.Slot==0?-25:25),5);
-            input.Fire=age%3<1.9 && !p.HeroChangePending;
+            var weapon=Splatoon.Config.GameplayConfig.GetHero(p.PresentedState.HeroId);
+            input.Fire=(WeaponSimulation.IsSemi(weapon) ? age%(.05+weapon.FireIntervalFrames/60.0)<.065 : age%3<1.9) && !p.HeroChangePending;
             if(age>40&&age<48)input.Move=new Vector2(Mathf.Sin((float)age)*.2f,0);
         }
         async UniTask Reconnect()

@@ -48,11 +48,11 @@ namespace Splatoon.Combat
             int added = Mathf.FloorToInt(extra);
             _blobCounts[shot.Id] = Mathf.Clamp(BlobsPerShot + added, 1, 32);
             _emitters[shot.Shooter] = (shot.Origin, shot.Born, extra - added);
-            if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.PredictShotFeedback(shot.ActionId);
+            if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.PredictShotFeedback(shot);
         }
         public void Impact(InkImpact impact)
         {
-            if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact.Killed);
+            if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact);
             _shots.Remove(impact.Id);
             _blobCounts.Remove(impact.Id);
             if (_streams == null || !impact.Hit || _pool.Count == 0) return;

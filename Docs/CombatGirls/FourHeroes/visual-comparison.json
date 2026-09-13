@@ -1,0 +1,117 @@
+{
+  "condition": "800x800, same sampled idle pose and white light. Source-foreground mask excludes background-only team ring pixels; ring/boots edge overlap can remain. Numeric similarity is not full visual acceptance.",
+  "views": [
+    {
+      "hero": "DualPistolGirl",
+      "view": "front",
+      "meanAbsoluteRgb": 0.8268893932268772,
+      "maxRgbDelta": 250.0,
+      "pixels": 48909
+    },
+    {
+      "hero": "DualPistolGirl",
+      "view": "side",
+      "meanAbsoluteRgb": 0.29193617150861806,
+      "maxRgbDelta": 238.0,
+      "pixels": 54730
+    },
+    {
+      "hero": "DualPistolGirl",
+      "view": "back",
+      "meanAbsoluteRgb": 0.039308580575087175,
+      "maxRgbDelta": 245.0,
+      "pixels": 46648
+    },
+    {
+      "hero": "DualPistolGirl",
+      "view": "face",
+      "meanAbsoluteRgb": 0.0,
+      "maxRgbDelta": 0.0,
+      "pixels": 86186
+    },
+    {
+      "hero": "ShotgunGirl",
+      "view": "front",
+      "meanAbsoluteRgb": 4.558092893933178e-05,
+      "maxRgbDelta": 1.0,
+      "pixels": 43878
+    },
+    {
+      "hero": "ShotgunGirl",
+      "view": "side",
+      "meanAbsoluteRgb": 0.00013589633827316522,
+      "maxRgbDelta": 1.0,
+      "pixels": 49057
+    },
+    {
+      "hero": "ShotgunGirl",
+      "view": "back",
+      "meanAbsoluteRgb": 3.924338748920807e-05,
+      "maxRgbDelta": 2.0,
+      "pixels": 42470
+    },
+    {
+      "hero": "ShotgunGirl",
+      "view": "face",
+      "meanAbsoluteRgb": 0.0,
+      "maxRgbDelta": 0.0,
+      "pixels": 146078
+    },
+    {
+      "hero": "PistolGirl",
+      "view": "front",
+      "meanAbsoluteRgb": 0.9719861571943345,
+      "maxRgbDelta": 250.0,
+      "pixels": 46715
+    },
+    {
+      "hero": "PistolGirl",
+      "view": "side",
+      "meanAbsoluteRgb": 0.3278752994172536,
+      "maxRgbDelta": 235.0,
+      "pixels": 55942
+    },
+    {
+      "hero": "PistolGirl",
+      "view": "back",
+      "meanAbsoluteRgb": 0.040093354807921734,
+      "maxRgbDelta": 245.0,
+      "pixels": 44704
+    },
+    {
+      "hero": "PistolGirl",
+      "view": "face",
+      "meanAbsoluteRgb": 0.0,
+      "maxRgbDelta": 0.0,
+      "pixels": 88511
+    },
+    {
+      "hero": "RocketLauncherGirl",
+      "view": "front",
+      "meanAbsoluteRgb": 0.34781163369128393,
+      "maxRgbDelta": 239.0,
+      "pixels": 56153
+    },
+    {
+      "hero": "RocketLauncherGirl",
+      "view": "side",
+      "meanAbsoluteRgb": 0.2940224484468807,
+      "maxRgbDelta": 241.0,
+      "pixels": 70235
+    },
+    {
+      "hero": "RocketLauncherGirl",
+      "view": "back",
+      "meanAbsoluteRgb": 0.07582963810613647,
+      "maxRgbDelta": 239.0,
+      "pixels": 55928
+    },
+    {
+      "hero": "RocketLauncherGirl",
+      "view": "face",
+      "meanAbsoluteRgb": 0.0025863956771089184,
+      "maxRgbDelta": 23.0,
+      "pixels": 168961
+    }
+  ]
+}

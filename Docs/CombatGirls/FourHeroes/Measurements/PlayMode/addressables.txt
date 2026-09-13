@@ -1,0 +1,2 @@
+Real PrototypeApp initialization reached Ready; all 9 changed scalar cells verified before measurement LoadTables().
+ContentSignature=b58f011dee7048e9e24e332f92645b0ed164d8625d72f1fe6989a26e1f6dea28

@@ -1,0 +1,73 @@
+DualPistolGirl AimWalk_F: speed=1.52317, playback=3.28263
+DualPistolGirl AimWalk_B: speed=1.45224, playback=3.44296
+DualPistolGirl AimWalk_L: speed=1.39681, playback=3.57958
+DualPistolGirl AimWalk_R: speed=1.39620, playback=3.58115
+DualPistolGirl: DieForward=Die1, DieBackward=Die2; signed torso offset=0.9165/-0.8567
+DualPistolGirl material Body: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material DualPistol_Hair 1: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Weapon_Pistol_Real 1: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Sunglass01: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Sunglass_LENS: Universal Render Pipeline/Lit; unchanged
+DualPistolGirl material Sunglass_gold01: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Sunglass_gold02: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Sunglass_White: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Sportswear: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Face: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material Eye: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material DualPistol_Cloth 1: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl material DualPistol_Cap 1: Toon/Toon; only _Is_Filter_LightColor=1
+DualPistolGirl weapon meshes: Desert_Eagle_02,Desert_Eagle_01
+DualPistolGirl: avatar=Humanoid_FeDual_pistol, camera=(0, 1.318465, 0), muzzleR=(0.172878429, 1.28766394, 0.622405469), muzzleL=(-0.102213815, 1.31237829, 0.7766106)
+ShotgunGirl AimWalk_F: speed=1.52317, playback=3.28263
+ShotgunGirl AimWalk_B: speed=1.45224, playback=3.44296
+ShotgunGirl AimWalk_L: speed=1.39681, playback=3.57958
+ShotgunGirl AimWalk_R: speed=1.39620, playback=3.58115
+ShotgunGirl: DieForward=Die1, DieBackward=Die2; signed torso offset=0.8762/-0.7885
+ShotgunGirl material Body2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Hair 1: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Weapon_Shotgun_Metal: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Cloth 1: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Face2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Eye2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Sportswear2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Glass: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl weapon meshes: Weapon_Shotgun
+ShotgunGirl: avatar=Humanoid_FePistol, camera=(0, 1.43533742, 0), muzzleR=(0.08747062, 1.21913886, 0.886024), muzzleL=(-0.25, 1.4, 0.7)
+PistolGirl AimWalk_F: speed=1.52317, playback=3.28263
+PistolGirl AimWalk_B: speed=1.45224, playback=3.44296
+PistolGirl AimWalk_L: speed=1.39681, playback=3.57958
+PistolGirl AimWalk_R: speed=1.39620, playback=3.58115
+PistolGirl: DieForward=Die1, DieBackward=Die2; signed torso offset=0.9165/-0.8567
+PistolGirl material Body1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Pistol_Hair 1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Waepon_DesertEagle_Real 2: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Waepon_DesertGlock 1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Sportswear1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Pistol_Tactical_Cloth1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Pistol_ETC_Acc: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Pistol_Glass_Alpha: Universal Render Pipeline/Lit; unchanged
+PistolGirl material Face1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl material Eye1: Toon/Toon; only _Is_Filter_LightColor=1
+PistolGirl weapon meshes: Desert_Eagle_01,Waepon_DesertGlock
+PistolGirl: avatar=Humanoid_F, camera=(0, 1.31519842, 0), muzzleR=(0.126170009, 1.30507553, 0.6480869), muzzleL=(-0.25, 1.4, 0.7)
+RocketLauncherGirl RL_AimWalk_F: speed=1.41533, playback=3.53274
+RocketLauncherGirl RL_AimWalk_B: speed=1.41533, playback=3.53274
+RocketLauncherGirl RL_AimWalk_FL: speed=1.39681, playback=3.57958
+RocketLauncherGirl RL_AimWalk_BR: speed=1.39681, playback=3.57958
+RocketLauncherGirl: DieForward=RL_Die_F, DieBackward=RL_Die_B; signed torso offset=0.9165/-0.8726
+RocketLauncherGirl material Body: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Rocktet_Hair_01: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Weapon_Rocket_Bullet: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Weapon_Rocket_Launcher_01: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Rocktet_Headset_01: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Face 12345: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Eye 1: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Face 6: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Sportswear: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl material Rocktet_Cloth_01: Toon/Toon; only _Is_Filter_LightColor=1
+RocketLauncherGirl weapon meshes: Weapon_Rocket_Launcher
+RocketLauncherGirl: avatar=Humanoid_F, camera=(0, 1.32870018, 0), muzzleR=(0.147649467, 1.37225175, 0.527224958), muzzleL=(-0.25, 1.4, 0.7)
+DualPistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+ShotgunGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+PistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+RocketLauncherGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
