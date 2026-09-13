@@ -20,7 +20,7 @@ namespace Splatoon.Editor
         const string Art = "Assets/GameResource/Environment/TrainingGround";
         static int _id;
         static Transform _walk, _cover, _decor;
-        static Material _ground, _wall, _dark, _orange, _blue, _white;
+        static Material _ground, _wall, _dark, _pink, _blue, _white;
         [MenuItem("喷墨对战/地图/打开立体训练场")]
         public static void Open()
         {
@@ -41,7 +41,7 @@ namespace Splatoon.Editor
             _ground = PaintMaterial("TrainingConcrete", new Color(1.35f,1.4f,1.4f));
             _wall = PaintMaterial("CoverConcrete", new Color(1.05f,1.15f,1.2f));
             _dark = SolidMaterial("Graphite", new Color(.10f,.16f,.20f));
-            _orange = SolidMaterial("Orange", PrototypeArena.Orange);
+            _pink = SolidMaterial("Pink", PrototypeArena.Pink);
             _blue = SolidMaterial("Blue", PrototypeArena.Blue);
             _white = SolidMaterial("White", new Color(.9f,.93f,.92f));
             // Eight ground tiles: equal texel density over the full 32 x 64 metre footprint.
@@ -68,7 +68,7 @@ namespace Splatoon.Editor
             Face("Bridge",new Vector3(0,3,0),Quaternion.identity,new Vector2(16,4),512);
             foreach(int end in new[]{-1,1})
             {
-                Material team = end<0 ? _orange : _blue;
+                Material team = end<0 ? _pink : _blue;
                 Box("EndBoundary_"+end,new Vector3(0,1.5f,end*32.25f),new Vector3(32.5f,3,.5f),_wall,_cover,true);
                 Box("TeamHeader_"+end,new Vector3(0,3.2f,end*32.1f),new Vector3(14,.5f,.3f),team,_decor,false);
                 Cover("SpawnShield_"+end,new Vector3(0,1.2f,end*24),new Vector3(8,2.4f,1),team);
@@ -86,7 +86,7 @@ namespace Splatoon.Editor
             var spawns = Group("04 出生点",root.transform); arena.SpawnPoints = new Transform[4];
             for(int i=0;i<4;i++)
             {
-                var point=Group((i<2?"Orange_":"Blue_")+(i%2+1),spawns);
+                var point=Group((i<2?"Pink_":"Blue_")+(i%2+1),spawns);
                 point.position=new Vector3(i%2==0?-3:3,.05f,i<2?-28:28); point.rotation=Quaternion.Euler(0,i<2?0:180,0);arena.SpawnPoints[i]=point;
             }
             var lighting = Group("05 灯光与相机",root.transform);
@@ -116,13 +116,13 @@ namespace Splatoon.Editor
         }
         static Mesh SaveMesh(string name,List<Vector3> vertices,List<int> triangles,List<Vector2> uv)
         {
-            var mesh=new Mesh{name=name};mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.SetUVs(0,uv);mesh.SetUVs(1,uv);mesh.RecalculateNormals();mesh.RecalculateBounds();
+            var mesh=new Mesh{name=name};mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.SetUVs(0,uv);mesh.SetUVs(1,uv);mesh.RecalculateNormals();mesh.RecalculateTangents();mesh.RecalculateBounds();
             AssetDatabase.CreateAsset(mesh,Art+"/Meshes/"+name+".asset");return mesh;
         }
         static PaintSurface Bind(GameObject go,bool scores,Vector2 size,int resolution)
         {
             var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=++_id;surface.Scores=scores;surface.WalkableSize=size;surface.Resolution=resolution;
-            surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");return surface;
+            surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");return surface;
         }
         static void Face(string name,Vector3 pos,Quaternion rotation,Vector2 size,int resolution)
         {
@@ -195,15 +195,15 @@ namespace Splatoon.Editor
             arena.RegisterSurfaces();
             if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=3)throw new InvalidOperationException("需要 32×64 米、版本 3 地图");
             if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=4||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("出生点未完整绑定");
-            long bytes=0;var sizes=new HashSet<int>();
+            long bytes=0;var sizes=new HashSet<Vector2Int>();
             foreach(var s in arena.Surfaces.Values)
             {
                 var mesh=s.GetComponent<MeshFilter>().sharedMesh;
-                if(mesh==null||mesh.uv2.Length!=mesh.vertexCount||s.GetComponent<Collider>()==null||s.PainterShader==null||s.ExtendShader==null)throw new InvalidOperationException("表面资源缺失："+s.name);
+                if(mesh==null||mesh.uv2.Length!=mesh.vertexCount||s.GetComponent<Collider>()==null||s.PainterShader==null||s.DisplayShader==null)throw new InvalidOperationException("表面资源缺失："+s.name);
                 if(s.Scores&&(Vector3.Distance(s.transform.lossyScale,Vector3.one)>.0001f||s.WalkableSize.x<=0||s.WalkableSize.y<=0))throw new InvalidOperationException("可行走面尺寸或缩放无效："+s.name);
-                s.InitializeOwnership(arena.OwnershipCellSize);bytes+=2L*s.Resolution*s.Resolution*4;sizes.Add(s.Resolution);
+                s.InitializeOwnership(arena.OwnershipCellSize);bytes+=4L*s.TextureBytes;sizes.Add(new Vector2Int(s.Resolution,s.Height));
             }
-            foreach(int size in sizes)bytes+=(long)size*size*4;
+            foreach(var size in sizes)bytes+=(long)size.x*size.y*4;
             if(bytes>128L*1048576)throw new InvalidOperationException("涂色 RT 超过 128 MiB");
             if(arena.TotalArea<=0||arena.BakedTopology!=arena.ComputeTopology())throw new InvalidOperationException("地图拓扑未烘焙或没有可计分区域");
             foreach(var p in arena.SpawnPoints)

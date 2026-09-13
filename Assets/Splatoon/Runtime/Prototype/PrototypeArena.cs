@@ -11,19 +11,19 @@ namespace Splatoon.Prototype
     public sealed class PrototypeArena : MonoBehaviour
     {
         public static PrototypeArena Current { get; private set; }
-        [Tooltip("两队各两个出生点，橙队在前、蓝队在后")] public Transform[] SpawnPoints;
+        [Tooltip("两队各两个出生点，粉队在前、蓝队在后")] public Transform[] SpawnPoints;
         public int LayoutVersion = 3;
         public Vector2 Dimensions = new(32, 64);
         public float OwnershipCellSize = .125f;
         public string BakedTopology;
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
-        public double OrangeArea => Surfaces.Values.Sum(s => s.Ownership?.OrangeArea ?? 0);
+        public double PinkArea => Surfaces.Values.Sum(s => s.Ownership?.PinkArea ?? 0);
         public double BlueArea => Surfaces.Values.Sum(s => s.Ownership?.BlueArea ?? 0);
         public double TotalArea => Surfaces.Values.Sum(s => s.Ownership?.TotalArea ?? 0);
         public int CellCount => Surfaces.Values.Sum(s => s.Ownership?.Cells.Length ?? 0);
-        public static readonly Color Orange = new(1f, .30f, .055f);
-        public static readonly Color Blue = new(.08f, .42f, 1f);
-        public static Color TeamColor(byte team) => team == 1 ? Orange : Blue;
+        public static readonly Color Pink = new(.9433962f, .27945885f, .47586557f);
+        public static readonly Color Blue = new(125f / 255, 227f / 255, 232f / 255);
+        public static Color TeamColor(byte team) => team == 1 ? Pink : Blue;
         private void Awake()
         {
             Current = this;
@@ -52,7 +52,7 @@ namespace Splatoon.Prototype
             writer.Write(LayoutVersion); writer.Write(Dimensions.x); writer.Write(Dimensions.y); writer.Write(OwnershipCellSize);
             foreach (var s in GetComponentsInChildren<PaintSurface>(true).OrderBy(s => s.SurfaceId))
             {
-                writer.Write(s.SurfaceId); writer.Write(s.Scores); writer.Write(s.Resolution);
+                writer.Write(s.SurfaceId); writer.Write(s.Scores); writer.Write(s.Resolution); writer.Write(s.Height);
                 writer.Write(s.WalkableSize.x); writer.Write(s.WalkableSize.y);
                 for (int i = 0; i < 16; i++) writer.Write(s.transform.localToWorldMatrix[i]);
                 var mesh = s.GetComponent<MeshFilter>().sharedMesh;
@@ -106,9 +106,9 @@ namespace Splatoon.Prototype
         {
             surface.Apply(stamp);
             if (updateOwnership && surface.Ownership != null && Vector3.Dot(surface.transform.up, stamp.Normal) >= .5f)
-                surface.Ownership.Paint(surface.transform.InverseTransformPoint(stamp.Position), InkBrush.OwnershipRadius(stamp.Radius, stamp.Hardness, stamp.Strength, GameplayConfig.Global.PaintThreshold), stamp.Team);
+                surface.Ownership.Apply(stamp, surface.transform.localToWorldMatrix, GameplayConfig.Global.PaintThreshold, GameplayConfig.Global.PaintWorldUvScale, GameplayConfig.Global.PaintShapeNoiseScale);
         }
-        public Dictionary<int, byte[]> CaptureOwnership() => Surfaces.Values.Where(s => s.Ownership != null).ToDictionary(s => s.SurfaceId, s => (byte[])s.Ownership.Cells.Clone());
+        public Dictionary<int, byte[]> CaptureOwnership() => Surfaces.Values.Where(s => s.Ownership != null).ToDictionary(s => s.SurfaceId, s => s.Ownership.Capture());
         public void RestoreOwnership(IReadOnlyDictionary<int, byte[]> grids)
         {
             var walkable = Surfaces.Values.Where(s => s.Ownership != null).ToArray();
@@ -120,7 +120,7 @@ namespace Splatoon.Prototype
         {
             uint hash = 2166136261;
             foreach (var s in Surfaces.Values) if (s.Ownership != null)
-            { hash = unchecked((hash ^ (uint)s.SurfaceId) * 16777619); foreach (byte b in s.Ownership.Cells) hash = unchecked((hash ^ b) * 16777619); }
+            { hash = unchecked((hash ^ (uint)s.SurfaceId) * 16777619); foreach (byte b in s.Ownership.Cells) hash = unchecked((hash ^ b) * 16777619); foreach (byte b in s.Ownership.State) hash = unchecked((hash ^ b) * 16777619); }
             return hash;
         }
         public void ClearPaint() { foreach (var surface in Surfaces.Values) surface.Clear(); }

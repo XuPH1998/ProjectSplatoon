@@ -36,7 +36,7 @@ namespace Splatoon.Prototype
                         match.Paint(surface,surface.transform.TransformPoint(local),surface.transform.up,1.5f,(byte)(side<0?1:2),.5f,1);
                     }
                 }
-                if(match.Arena.OrangeArea<=0||match.Arena.BlueArea<=0)throw new InvalidOperationException("多层涂地未增加面积");
+                if(match.Arena.PinkArea<=0||match.Arena.BlueArea<=0)throw new InvalidOperationException("多层涂地未增加面积");
                 Debug.Log("[MAP-SMOKE] Painted all walkable layers round="+_paintedRound);
             }
             if(match.State.Value.PlayerCount>=2 && match.State.Value.Phase==MatchPhase.Practice) match.StartRound();

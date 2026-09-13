@@ -10,7 +10,9 @@ Shader "Splatoon/InkTexturePainter"
             #pragma vertex vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "InkCoverage.hlsl"
             sampler2D _MainTex;
+            float _PainterTeam;
             float3 _PainterPosition, _PainterNormal;
             float4 _PainterColor;
             float _Radius, _Hardness, _Strength, _Threshold, _PrepareUV;
@@ -33,8 +35,7 @@ Shader "Splatoon/InkTexturePainter"
                 if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return old;
                 float d=distance(i.positionWS,_PainterPosition);
                 float f=(1-smoothstep(_Radius*_Hardness,max(_Radius*_Hardness+0.000001,_Radius),d))*_Strength;
-                if (f<_Threshold) return old;
-                return float4(_PainterColor.rgb,1);
+                return InkAccumulate(old, _PainterTeam, saturate(f));
             }
             ENDHLSL
         }

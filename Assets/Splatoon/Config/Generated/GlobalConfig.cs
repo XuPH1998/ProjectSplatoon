@@ -31,6 +31,8 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["chunksPerFrame"].IsNumber) { throw new SerializationException(); }  ChunksPerFrame = _buf["chunksPerFrame"]; }
         { if(!_buf["checkpointStamps"].IsNumber) { throw new SerializationException(); }  CheckpointStamps = _buf["checkpointStamps"]; }
         { if(!_buf["paintThreshold"].IsNumber) { throw new SerializationException(); }  PaintThreshold = _buf["paintThreshold"]; }
+        { if(!_buf["paintWorldUvScale"].IsNumber) { throw new SerializationException(); }  PaintWorldUvScale = _buf["paintWorldUvScale"]; }
+        { if(!_buf["paintShapeNoiseScale"].IsNumber) { throw new SerializationException(); }  PaintShapeNoiseScale = _buf["paintShapeNoiseScale"]; }
         { if(!_buf["maxPaintMemoryMiB"].IsNumber) { throw new SerializationException(); }  MaxPaintMemoryMiB = _buf["maxPaintMemoryMiB"]; }
     }
 
@@ -84,6 +86,14 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// </summary>
     public readonly float PaintThreshold;
     /// <summary>
+    /// 墨水细节坐标密度（UV/米），影响覆盖边缘
+    /// </summary>
+    public readonly float PaintWorldUvScale;
+    /// <summary>
+    /// 墨水轮廓噪声频率，CPU 与 GPU 共用
+    /// </summary>
+    public readonly float PaintShapeNoiseScale;
+    /// <summary>
     /// 涂色 RT 内存预算（MiB）
     /// </summary>
     public readonly int MaxPaintMemoryMiB;
@@ -109,6 +119,8 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "chunksPerFrame:" + ChunksPerFrame + ","
         + "checkpointStamps:" + CheckpointStamps + ","
         + "paintThreshold:" + PaintThreshold + ","
+        + "paintWorldUvScale:" + PaintWorldUvScale + ","
+        + "paintShapeNoiseScale:" + PaintShapeNoiseScale + ","
         + "maxPaintMemoryMiB:" + MaxPaintMemoryMiB + ","
         + "}";
     }

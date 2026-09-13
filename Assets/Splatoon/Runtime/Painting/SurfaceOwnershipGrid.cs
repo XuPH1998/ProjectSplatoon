@@ -6,10 +6,12 @@ namespace Splatoon.Painting
     public sealed class SurfaceOwnershipGrid
     {
         public readonly byte[] Cells;
+        public readonly byte[] State;
+        public int SnapshotBytes => Cells.Length * 5;
         public readonly Vector2 Size;
         public readonly float CellSize;
         public readonly int Columns, Rows;
-        public double OrangeArea { get; private set; }
+        public double PinkArea { get; private set; }
         public double BlueArea { get; private set; }
         public double TotalArea { get; private set; }
         public SurfaceOwnershipGrid(Vector2 size, float cellSize, int[] blocked)
@@ -18,6 +20,7 @@ namespace Splatoon.Painting
             Size = size; CellSize = cellSize;
             Columns = Mathf.CeilToInt(size.x / cellSize); Rows = Mathf.CeilToInt(size.y / cellSize);
             Cells = new byte[checked(Columns * Rows)];
+            State = new byte[Cells.Length * 4];
             foreach (int index in blocked ?? Array.Empty<int>())
             {
                 if (index < 0 || index >= Cells.Length) throw new ArgumentException("不可达网格索引无效");
@@ -37,14 +40,22 @@ namespace Splatoon.Painting
             int x = Mathf.FloorToInt((p.x + Size.x / 2) / CellSize), z = Mathf.FloorToInt((p.z + Size.y / 2) / CellSize);
             return x < 0 || z < 0 || x >= Columns || z >= Rows || p.x >= Size.x / 2 || p.z >= Size.y / 2 ? (byte)255 : Cells[z * Columns + x];
         }
-        public void Set(int index, byte team)
+        private void SetOwnership(int index, byte team)
         {
             if (team > 2) throw new ArgumentException("归属值无效");
             byte before = Cells[index]; if (before == 255 || before == team) return;
             double area = Area(index);
-            if (before == 1) OrangeArea -= area; else if (before == 2) BlueArea -= area;
+            if (before == 1) PinkArea -= area; else if (before == 2) BlueArea -= area;
             Cells[index] = team;
-            if (team == 1) OrangeArea += area; else if (team == 2) BlueArea += area;
+            if (team == 1) PinkArea += area; else if (team == 2) BlueArea += area;
+        }
+        // Explicit full-coverage assignment for diagnostics and authored state.
+        public void Set(int index, byte team)
+        {
+            if (Cells[index] == 255) return;
+            SetOwnership(index, team); int o = index * 4;
+            State[o] = team == 1 ? (byte)255 : (byte)0; State[o+1] = team == 2 ? (byte)255 : (byte)0;
+            State[o+2] = team; State[o+3] = team > 0 ? (byte)255 : (byte)0;
         }
         public void Paint(Vector3 p, float radius, byte team)
         {
@@ -59,18 +70,52 @@ namespace Splatoon.Painting
         public void Clear()
         {
             for (int i = 0; i < Cells.Length; i++) if (Cells[i] != 255) Cells[i] = 0;
-            OrangeArea = BlueArea = 0;
+            PinkArea = BlueArea = 0;
+            Array.Clear(State, 0, State.Length);
+        }
+        public void Apply(PaintStamp stamp, Matrix4x4 localToWorld, float threshold, float worldScale, float noiseScale)
+        {
+            Vector3 p = localToWorld.inverse.MultiplyPoint3x4(stamp.Position);
+            Vector3 normal = localToWorld.MultiplyVector(Vector3.up).normalized;
+            int minX = Mathf.Max(0, Mathf.FloorToInt((p.x - stamp.Radius + Size.x / 2) / CellSize));
+            int maxX = Mathf.Min(Columns - 1, Mathf.FloorToInt((p.x + stamp.Radius + Size.x / 2) / CellSize));
+            int minZ = Mathf.Max(0, Mathf.FloorToInt((p.z - stamp.Radius + Size.y / 2) / CellSize));
+            int maxZ = Mathf.Min(Rows - 1, Mathf.FloorToInt((p.z + stamp.Radius + Size.y / 2) / CellSize));
+            for (int z = minZ; z <= maxZ; z++) for (int x = minX; x <= maxX; x++)
+            {
+                int i = z * Columns + x; if (Cells[i] == 255) continue;
+                Vector3 point = localToWorld.MultiplyPoint3x4(Center(i));
+                float f = InkBrush.Coverage(Vector3.Distance(point, stamp.Position), stamp.Radius, stamp.Hardness, stamp.Strength);
+                if (f <= 0) continue;
+                int o = i * 4;
+                var value = InkCoverage.Accumulate(new Color32(State[o], State[o+1], State[o+2], State[o+3]), stamp.Team, f);
+                State[o] = value.r; State[o+1] = value.g; State[o+2] = value.b; State[o+3] = value.a;
+                SetOwnership(i, InkCoverage.Owner(value, point, normal, threshold, worldScale, noiseScale));
+            }
+        }
+        public byte[] Capture()
+        {
+            var data = new byte[SnapshotBytes];
+            Buffer.BlockCopy(Cells, 0, data, 0, Cells.Length);
+            Buffer.BlockCopy(State, 0, data, Cells.Length, State.Length);
+            return data;
         }
         public void ValidateSnapshot(byte[] data)
         {
-            if (data == null || data.Length != Cells.Length) throw new InvalidOperationException("表面归属尺寸不一致");
-            for (int i = 0; i < data.Length; i++)
+            if (data == null || data.Length != SnapshotBytes) throw new InvalidOperationException("表面归属尺寸不一致");
+            for (int i = 0; i < Cells.Length; i++)
+            {
                 if ((data[i] == 255) != (Cells[i] == 255) || (data[i] > 2 && data[i] != 255)) throw new InvalidOperationException("表面归属拓扑不一致");
+                int o = Cells.Length + i * 4;
+                if (data[o+2] > 2 || data[o+3] != Math.Min(255, data[o]+data[o+1])) throw new InvalidOperationException("累计墨量状态无效");
+                if (data[i] == 255 && (data[o] != 0 || data[o+1] != 0 || data[o+2] != 0 || data[o+3] != 0)) throw new InvalidOperationException("不可达格存在墨量");
+            }
         }
         public void Restore(byte[] data)
         {
             ValidateSnapshot(data); Clear();
-            for (int i = 0; i < data.Length; i++) if (data[i] != 255) Set(i, data[i]);
+            for (int i = 0; i < Cells.Length; i++) if (data[i] != 255) SetOwnership(i, data[i]);
+            Buffer.BlockCopy(data, Cells.Length, State, 0, State.Length);
         }
     }
 }

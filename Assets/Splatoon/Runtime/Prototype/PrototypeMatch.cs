@@ -18,6 +18,12 @@ namespace Splatoon.Prototype
         public uint PaintSequence { get; private set; }
         public uint AppliedPaintSequence => IsServer ? PaintSequence : _appliedSequence;
         public bool InitialSyncComplete { get; private set; }
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        public int DiagnosticPendingStamps => _pending.Count;
+        public int DiagnosticBufferedStamps => _buffered.Count;
+        public int DiagnosticJournalStamps => _journal.Count;
+        public int DiagnosticTransfers => _transfers.Count;
+#endif
         private uint _appliedSequence, _paintRound;
         private readonly List<PaintStamp> _pending = new(64);
         private readonly List<PaintStamp> _journal = new(1024);
@@ -42,8 +48,8 @@ namespace Splatoon.Prototype
         public void AddPlayer(ulong clientId, GameObject prefab)
         {
             if (!IsServer || Players.Exists(p => p.OwnerClientId == clientId)) return;
-            int orange = Players.FindAll(p => p.Snapshot.Value.Team == 1).Count;
-            byte team = PrototypeRules.ChooseTeam(orange, Players.Count - orange);
+            int pink = Players.FindAll(p => p.Snapshot.Value.Team == 1).Count;
+            byte team = PrototypeRules.ChooseTeam(pink, Players.Count - pink);
             int slot = Players.Exists(p => p.Snapshot.Value.Team == team && p.Snapshot.Value.Slot == 0) ? 1 : 0;
             var go = Instantiate(prefab, PrototypeArena.Spawn(team, slot), Quaternion.identity);
             var p = go.GetComponent<PrototypePlayer>(); p.Initialize(team, (byte)slot);
@@ -55,7 +61,7 @@ namespace Splatoon.Prototype
         {
             if (!IsServer || Players.Count < GameplayConfig.Mode.MinPlayers || State.Value.Phase == MatchPhase.Playing) return;
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing; s.EndsAt = NetworkManager.ServerTime.Time + GameplayConfig.Mode.MatchSeconds;
-            s.OrangeArea = s.BlueArea = 0; State.Value = s;
+            s.PinkArea = s.BlueArea = 0; State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round);
             foreach (var p in Players) p.Respawn();
             Debug.Log($"[LAN] Round started round={s.Round} ends={s.EndsAt:F2}");
@@ -72,14 +78,14 @@ namespace Splatoon.Prototype
         {
             double now = NetworkManager.ServerTime.Time; var s = State.Value;
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished orange={Arena.OrangeArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
+            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             foreach (var p in Players) p.Simulate(1f / NetworkManager.NetworkConfig.TickRate, now, s.Phase);
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(Projectiles.Spawned.ToArray()); Projectiles.Spawned.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(Projectiles.Impacts.ToArray()); Projectiles.Impacts.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(_pending.ToArray()); _pending.Clear(); }
-            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.OrangeArea = Arena.OrangeArea; s.BlueArea = Arena.BlueArea; State.Value = s;
+            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.PinkArea = Arena.PinkArea; s.BlueArea = Arena.BlueArea; State.Value = s;
         }
         [ClientRpc] private void ShotsClientRpc(InkShot[] shots) { if (State.Value.Phase != MatchPhase.Finished) foreach (var shot in shots) if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); }
         [ClientRpc] private void ImpactsClientRpc(InkImpact[] impacts) { foreach (var impact in impacts) if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); }

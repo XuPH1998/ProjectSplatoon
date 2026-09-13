@@ -51,7 +51,7 @@ namespace Splatoon.Tests
         [Test] public void ChineseUiFontContainsRepresentativeGlyphs()
         {
             var font = ChineseText.CreateFont();
-            try { foreach (char c in "喷墨对战房间码复制粘贴橙蓝队获胜潜墨生命网络连接失败") Assert.That(font.HasCharacter(c), Is.True, "缺字："+c); }
+            try { foreach (char c in "喷墨对战房间码复制粘贴粉蓝队获胜潜墨生命网络连接失败") Assert.That(font.HasCharacter(c), Is.True, "缺字："+c); }
             finally { Object.DestroyImmediate(font); }
         }
     }

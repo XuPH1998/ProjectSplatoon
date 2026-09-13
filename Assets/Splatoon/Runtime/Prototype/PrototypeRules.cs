@@ -7,10 +7,10 @@ namespace Splatoon.Prototype
 {
     public static class PrototypeRules
     {
-        public static byte ChooseTeam(int orange, int blue) => (byte)(orange <= blue ? 1 : 2);
+        public static byte ChooseTeam(int pink, int blue) => (byte)(pink <= blue ? 1 : 2);
         public static bool CanStart(int players, MatchPhase phase, int minimumPlayers = 2) => players >= minimumPlayers && phase != MatchPhase.Playing;
         public static bool HasEnded(MatchPhase phase, double now, double end) => phase == MatchPhase.Playing && now >= end;
-        public static int Winner(double orange, double blue) => Math.Abs(orange - blue) < .000001 ? 0 : orange > blue ? 1 : 2;
+        public static int Winner(double pink, double blue) => Math.Abs(pink - blue) < .000001 ? 0 : pink > blue ? 1 : 2;
         public static float Recover(float ink, float maximum, float rate, float dt) => Mathf.Min(maximum, ink + rate * dt);
         public static bool Spend(ref float ink, float amount)
         { if (ink + .00001f < amount) return false; ink = Mathf.Max(0, ink - amount); return true; }
@@ -23,7 +23,7 @@ namespace Splatoon.Prototype
         public readonly byte[] Cells;
         public readonly int Width;
         public readonly float CellSize;
-        public int Orange { get; private set; }
+        public int Pink { get; private set; }
         public int Blue { get; private set; }
         public int Total { get; private set; }
         public PaintGrid(int width, float cellSize, Func<Vector3, bool> blocked = null)
@@ -43,9 +43,9 @@ namespace Splatoon.Prototype
         {
             byte before = Cells[index];
             if (before == 255 || before == team || team > 2) return false;
-            if (before == 1) Orange--; if (before == 2) Blue--;
+            if (before == 1) Pink--; if (before == 2) Blue--;
             Cells[index] = team;
-            if (team == 1) Orange++; if (team == 2) Blue++;
+            if (team == 1) Pink++; if (team == 2) Blue++;
             return true;
         }
         public void Paint(Vector3 p, float radius, byte team, Action<int, byte> changed)

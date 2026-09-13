@@ -240,9 +240,9 @@ namespace Splatoon.Prototype
             if (!InRoom)
             {
                 Panel(new Rect(0,0,1280,720),new Color(.055f,.075f,.10f));
-                Panel(new Rect(60,90,8,520),PrototypeArena.Orange);
+                Panel(new Rect(60,90,8,520),PrototypeArena.Pink);
                 GUI.Label(new Rect(92,104,540,74),"喷墨对战 / 局域网",_title);
-                GUI.Label(new Rect(96,190,500,90),"墨流涂地赛 · 最多四人\n橙蓝两队，三分钟决胜负",_label);
+                GUI.Label(new Rect(96,190,500,90),"墨流涂地赛 · 最多四人\n粉蓝两队，三分钟决胜负",_label);
                 GUI.Label(new Rect(96,330,500,150),"WASD 移动　鼠标转动视角\n空格跳跃　鼠标左键持续射击\n按住 Shift 在己方墨水中潜行、回墨\nEsc 菜单　回车开始比赛（房主）",_small);
                 GUI.Label(new Rect(96,515,500,95),"同一局域网内，房主创建房间后按 Esc，\n复制房间码发给伙伴；伙伴粘贴即可加入。\n房间码包含地址和端口，无需互联网。",_small);
                 Panel(new Rect(660,55,560,605),new Color(.10f,.135f,.18f));
@@ -281,18 +281,18 @@ namespace Splatoon.Prototype
             var state=match.State.Value; var player=local.Snapshot.Value;
             double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
-            GUI.color=PrototypeArena.Orange; GUI.Label(new Rect(378,37,200,35),$"橙队  {state.OrangeArea/total:P1}",_label);
+            GUI.color=PrototypeArena.Pink; GUI.Label(new Rect(378,37,200,35),$"粉队  {state.PinkArea/total:P1}",_label);
             GUI.color=PrototypeArena.Blue; GUI.Label(new Rect(704,37,215,35),$"蓝队  {state.BlueArea/total:P1}",_label); GUI.color=Color.white;
             double remaining=state.Phase==MatchPhase.Playing?Math.Max(0,state.EndsAt-Manager.ServerTime.Time):0;
             string clock=state.Phase==MatchPhase.Practice?"热身":state.Phase==MatchPhase.Finished?"已结束":$"{(int)remaining/60:00}:{(int)remaining%60:00}";
             GUI.Label(new Rect(575,38,155,35),clock,_label);
             Panel(new Rect(378,86,524,8),new Color(.25f,.28f,.3f));
-            Panel(new Rect(378,86,(float)(524*state.OrangeArea/total),8),PrototypeArena.Orange);
+            Panel(new Rect(378,86,(float)(524*state.PinkArea/total),8),PrototypeArena.Pink);
             Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
             ulong ping=Manager.IsHost?0:((UnityTransport)Manager.NetworkConfig.NetworkTransport).GetCurrentRtt(0);
             GUI.Label(new Rect(24,25,310,55),$"{Status}  /  {state.PlayerCount}/4\n延迟 {ping} 毫秒",_small);
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
-            GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"橙队":"蓝队")}  /  生命 {player.Health:0}",_label);
+            GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/GameplayConfig.Character.MaxInk,15),PrototypeArena.TeamColor(player.Team));
             GUI.Label(new Rect(42,662,285,26),player.Swimming?"潜墨中 / 快速回墨":$"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
@@ -303,7 +303,7 @@ namespace Splatoon.Prototype
             if(!_captured || state.Phase==MatchPhase.Finished)
             {
                 Panel(new Rect(430,222,420,295),new Color(.055f,.075f,.1f,.97f));
-                string winner=PrototypeRules.Winner(state.OrangeArea,state.BlueArea) switch {1=>"橙队获胜",2=>"蓝队获胜",_=>"平局"};
+                string winner=PrototypeRules.Winner(state.PinkArea,state.BlueArea) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};
                 GUI.Label(new Rect(463,242,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
                 if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,303,350,48),"继续游戏",_button)) CaptureMouse(true);
                 GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase,GameplayConfig.Mode.MinPlayers);

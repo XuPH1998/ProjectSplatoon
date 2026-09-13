@@ -70,6 +70,8 @@
     <var name="chunksPerFrame" type="int" comment="每帧最多发送的快照块数"/>
     <var name="checkpointStamps" type="int" comment="触发滚动检查点的涂色事件数"/>
     <var name="paintThreshold" type="float" comment="地面归属阈值（0 到 1）"/>
+    <var name="paintWorldUvScale" type="float" comment="墨水细节坐标密度（UV/米），影响覆盖边缘"/>
+    <var name="paintShapeNoiseScale" type="float" comment="墨水轮廓噪声频率，CPU 与 GPU 共用"/>
     <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）"/>
   </bean>
   <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id"/>

@@ -8,7 +8,7 @@
 | TbWeapon | 武器资源、射速、伤害、耗墨、下落弹道和涂色笔刷 |
 | TbRoomMode | 默认角色/武器/场地、人数、时长、重生及计分规则 |
 | TbArena | 场景地址、尺寸、归属网格、布局版本 |
-| TbGlobal | 唯一全局记录 ID=1，默认模式、网络及子步频率、超时、同步与内存预算 |
+| TbGlobal | 唯一全局记录 ID=1，默认模式、网络及子步频率、超时、同步与内存预算、墨水轮廓阈值及按米噪声参数 |
 
 修改工作簿后运行 `cmd /c Config\Luban\gen_luban.bat`。运行时通过 Addressables 的 `Luban` 标签加载 JSON，再通过 `GameplayConfig` 访问五张表。字段定义位于 `source/Defines/gameplay.xml`。构建入口为 **喷墨对战/构建/Windows 正式资源版本**。全部生成表参与联机内容签名。
 

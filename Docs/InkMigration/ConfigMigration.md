@@ -30,3 +30,5 @@
 消费链路：工作簿 → `gen_luban.bat` → `Assets/Splatoon/Config/Generated` 与 `Assets/GameResource/Bootstrap/Config/Luban` → Addressables `Luban` 标签 → `LubanConfigService` → `GameplayConfig` → 玩家/弹道/房间/场地/同步服务。全部 JSON 按名称排序后，与协议标识 `ink-lan-v2` 一起计算 SHA-256；场地布局版本位于参与摘要的 TbArena 中。修改布局必须同步提升版本。
 
 `GameplayConfig.Validate` 检查跨表 ID、有限非负数、射速/寿命/网格/笔刷边界、频率整除及同步预算。角色和武器地址由实际加载句柄与网络角色 Prefab 的绑定校验；增加可选美术资源时需要同时建立对应正式 Prefab。动画、IK、材质、粒子、枪口与镜头反馈在正式美术资源中调整。
+
+当前墨水版本 4 已将 paintWorldUvScale / paintShapeNoiseScale 加入 TbGlobal，覆盖参数参与 ink-lan-v4 内容签名。双队累积、精度与恢复格式见 ../InkLook/Implementation.md。以上版本 2 记录保留为历史迁移依据。

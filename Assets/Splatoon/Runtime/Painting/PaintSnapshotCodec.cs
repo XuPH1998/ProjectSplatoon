@@ -21,7 +21,7 @@ namespace Splatoon.Painting
             using (var zip = new DeflateStream(output, CompressionLevel.Fastest, true))
             using (var writer = new BinaryWriter(zip))
             {
-                writer.Write(3); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
+                writer.Write(4); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
                 writer.Write(checkpoint.Topology);
                 WriteMaps(writer, checkpoint.Ownership); WriteMaps(writer, checkpoint.Surfaces);
             }
@@ -36,7 +36,7 @@ namespace Splatoon.Painting
         {
             using var input = new MemoryStream(compressed); using var zip = new DeflateStream(input, CompressionMode.Decompress);
             using var reader = new BinaryReader(zip);
-            if (reader.ReadInt32() != 3) throw new InvalidDataException("涂色快照版本不一致");
+            if (reader.ReadInt32() != 4) throw new InvalidDataException("涂色快照版本不一致");
             var result = new PaintCheckpoint { Round = reader.ReadUInt32(), Sequence = reader.ReadUInt32() };
             result.Topology = reader.ReadString();
             if (result.Topology != topology) throw new InvalidDataException("地图拓扑不一致");
@@ -54,7 +54,11 @@ namespace Splatoon.Painting
                 int id = reader.ReadInt32(), length = reader.ReadInt32();
                 if (!sizes.TryGetValue(id, out int expected) || length != expected || maps.ContainsKey(id)) throw new InvalidDataException("表面快照结构无效");
                 byte[] data = reader.ReadBytes(length); if (data.Length != length) throw new EndOfStreamException();
-                if (ownership) foreach (byte b in data) if (b > 2 && b != 255) throw new InvalidDataException("归属值无效");
+                if (ownership)
+                {
+                    if (length % 5 != 0) throw new InvalidDataException("累计归属尺寸无效");
+                    for (int n=0;n<length/5;n++) if (data[n]>2 && data[n]!=255) throw new InvalidDataException("归属值无效");
+                }
                 maps.Add(id, data);
             }
         }

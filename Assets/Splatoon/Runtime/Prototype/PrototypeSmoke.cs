@@ -56,6 +56,7 @@ namespace Splatoon.Prototype
         {
             if (!Active) return;
             float t=Time.realtimeSinceStartup-_connectedAt;
+            if (_inkCase == "inkperf") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 55); frame.Fire = true; frame.Swim = false; return; }
             if (_inkCase == "observer") { frame.Move = Vector2.zero; frame.Look = new Vector2(0, 45); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "map") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 12); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "surfaces")
@@ -102,6 +103,7 @@ namespace Splatoon.Prototype
         {
             if (!Active || !PrototypeApp.Current.InRoom || PrototypeMatch.Current==null) return;
             var match=PrototypeMatch.Current;var s=match.State.Value;float t=Time.realtimeSinceStartup-_connectedAt;
+            if (_inkCase == "inkperf") InkPerformanceSmoke.Tick(match);
             if (_inkCase == "map")
             {
                 try { TrainingGroundSmoke.Tick(match); }
@@ -113,9 +115,9 @@ namespace Splatoon.Prototype
             {
                 _lastLog=Time.realtimeSinceStartup;var p=PrototypePlayer.Local.Snapshot.Value;
                 int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
-                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} orange={s.OrangeArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
+                Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} pink={s.PinkArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
             }
-            if (!_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
+            if (_inkCase != "inkperf" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {
                 _dumped = true;
                 foreach (var surface in PrototypeArena.Current.Surfaces.Values)
@@ -163,13 +165,14 @@ namespace Splatoon.Prototype
         private async UniTask Cycle()
         {
             _cycling=true;var app=PrototypeApp.Current;
-            await app.Leave();Debug.Log("[SMOKE] Clean leave completed. spawned="+app.Manager.SpawnManager?.SpawnedObjects.Count);
+            await app.Leave();Debug.Log("[SMOKE] Clean leave completed. spawned="+app.Manager.SpawnManager?.SpawnedObjects.Count+" paintRtBytes="+Splatoon.Painting.PaintSurface.AllocatedBytes);
+            if(Splatoon.Painting.PaintSurface.AllocatedBytes!=0){Debug.LogError("[SMOKE] Paint RT leaked after scene unload");Application.Quit(6);return;}
             if(_cycles--<=0){Application.Quit(0);return;}
             await app.Connect(_host,_address,_port);
             if(!app.InRoom){Debug.LogError("[SMOKE] Reconnect failed: "+app.Error);Application.Quit(4);return;}
             Debug.Log("[SMOKE] Reconnected after cleanup");_connectedAt=Time.realtimeSinceStartup;_cycling=false;
         }
-        private void OnDestroy() => Active=false;
+        private void OnDestroy() { if (_inkCase == "inkperf") InkPerformanceSmoke.Reset(); Active=false; }
 #endif
     }
 }

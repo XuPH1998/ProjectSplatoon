@@ -29,7 +29,7 @@
 
 `InputSystem_Actions.inputactions` 是模板保留的动作资产。`Player`（玩家）下的 `Move / Look / Attack / Interact / Crouch / Jump / Previous / Next / Sprint` 分别为移动、视角、攻击、交互、蹲下、跳跃、上一项、下一项、冲刺；`UI`（界面）下的 `Navigate / Submit / Cancel / Point / Click / RightClick / MiddleClick / ScrollWheel / TrackedDevicePosition / TrackedDeviceOrientation` 分别为导航、确认、取消、指针、单击、右键、中键、滚轮、追踪设备位置与方向。控制方案 `Keyboard&Mouse / Gamepad / Touch / Joystick / XR` 分别为键鼠、手柄、触摸、摇杆、扩展现实设备。当前原型直接读取 Input System 的键鼠设备，操作以游戏中文提示为准，模板动作资产不控制潜墨按键。
 
-`Assets/Settings/PC_RPAsset / PC_Renderer` 是桌面渲染管线与渲染器，`Mobile_RPAsset / Mobile_Renderer` 为移动平台配置。`DefaultVolumeProfile / SampleSceneProfile` 是体积效果配置，`UniversalRenderPipelineGlobalSettings` 是管线全局设置。核心渲染参数：`RenderScale` 为渲染比例，`MSAA` 为多重采样抗锯齿，`SupportHDR` 为高动态范围，`RequireDepthTexture / RequireOpaqueTexture` 为深度/不透明纹理开关，`MainLightShadowsSupported` 为主光源阴影。材质标识 `Stone / Pale / Weapon / Orange / Blue / Paint / Tracer` 分别对应石色、浅灰、枪械、橙队、蓝队、涂色及弹道材质，名称保留以保证重复生成稳定。
+`Assets/Settings/PC_RPAsset / PC_Renderer` 是桌面渲染管线与渲染器，`Mobile_RPAsset / Mobile_Renderer` 为移动平台配置。`DefaultVolumeProfile / SampleSceneProfile` 是体积效果配置，`UniversalRenderPipelineGlobalSettings` 是管线全局设置。核心渲染参数：`RenderScale` 为渲染比例，`MSAA` 为多重采样抗锯齿，`SupportHDR` 为高动态范围，`RequireDepthTexture / RequireOpaqueTexture` 为深度/不透明纹理开关，`MainLightShadowsSupported` 为主光源阴影。材质标识 `Stone / Pale / Weapon / Pink / Blue / Paint / Tracer` 分别对应石色、浅灰、枪械、粉队、蓝队、涂色及弹道材质，名称保留以保证重复生成稳定。
 
 ## 中文字体与运行环境
 

@@ -1,0 +1,47 @@
+[
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Skies\\Sky_8.mat",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Sky_8.mat",
+    "sha256": "b7a7b142eb8b969a4d57f47ec16844ce054f889d869e96ff64d1b1d51fe4c984"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Back_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Back_Tex.png",
+    "sha256": "5f031b65b71c5c023da73734e00440d62c9db72a87147d4f6b00b3a763b183a8"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Down_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Down_Tex.png",
+    "sha256": "89363338348d988443dc2808e2ea46a5ec74fdad6eb6504b4b671e2559aa3053"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Front_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Front_Tex.png",
+    "sha256": "214b54ee100972776cc4cd328882c3f59f88dbb534f745ced33b854e0bd9ff20"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Left_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Left_Tex.png",
+    "sha256": "ff604b5432ac137d047028d4bdb6e0846b02a78c76d82f46fe578ee6b5cab18e"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Right_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Right_Tex.png",
+    "sha256": "d3fdd791160471b97c9614bddce34278b51a76a160e411d12fe0a1d158a4aa07"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\ColorSkies\\Textures\\Skybox_8\\Up_Tex.png",
+    "target": "Assets\\GameResource\\Environment\\Ink\\Sky\\Up_Tex.png",
+    "sha256": "90c83c32aaf48d84beadfd2b8abde0dd0b6afec97453836f75ab36ce400da248"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\Shaders\\Paintable.shadergraph",
+    "target": "Assets\\Splatoon\\Tests\\VisualReference\\ReferencePaintable.shadergraph",
+    "sha256": "d105b6faaefa84975e1c6e80306fac71ee487fdde9beab2e0f53b2052afdcb4a"
+  },
+  {
+    "source": "D:\\XPHUNITY\\Splatoon-Ink\\Assets\\Shaders\\TexturePainter.shader",
+    "target": "Assets\\Splatoon\\Tests\\VisualReference\\ReferenceTexturePainter.shader",
+    "sha256": "bfb5120227fca69e9ad91f9e1938f8d78e454fcc522572043b3984e7400203fb"
+  }
+]

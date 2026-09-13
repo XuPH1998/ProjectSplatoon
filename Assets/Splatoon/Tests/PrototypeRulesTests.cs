@@ -12,23 +12,23 @@ namespace Splatoon.Tests
         {
             var grid=new PaintGrid(8,.5f,p=>p.x>1);
             int total=grid.Total;Assert.That(total,Is.EqualTo(48));
-            grid.Paint(Vector3.zero,1,1,null);int orange=grid.Orange;Assert.That(orange,Is.GreaterThan(0));
-            grid.Paint(Vector3.zero,1,1,null);Assert.That(grid.Orange,Is.EqualTo(orange));
-            grid.Paint(Vector3.zero,1,2,null);Assert.That(grid.Orange,Is.Zero);Assert.That(grid.Blue,Is.EqualTo(orange));
-            grid.Clear(null);Assert.That(grid.Orange+grid.Blue,Is.Zero);Assert.That(grid.Total,Is.EqualTo(total));
+            grid.Paint(Vector3.zero,1,1,null);int pink=grid.Pink;Assert.That(pink,Is.GreaterThan(0));
+            grid.Paint(Vector3.zero,1,1,null);Assert.That(grid.Pink,Is.EqualTo(pink));
+            grid.Paint(Vector3.zero,1,2,null);Assert.That(grid.Pink,Is.Zero);Assert.That(grid.Blue,Is.EqualTo(pink));
+            grid.Clear(null);Assert.That(grid.Pink+grid.Blue,Is.Zero);Assert.That(grid.Total,Is.EqualTo(total));
         }
         [Test] public void LateJoinStateReconstructsIdenticalPaintAndScore()
         {
             var host=new PaintGrid(64,.5f);var client=new PaintGrid(64,.5f);
             host.Paint(new Vector3(3,0,2),1.2f,1,null);host.Paint(new Vector3(3.5f,0,2),1.2f,2,null);
             for(int i=0;i<host.Cells.Length;i++)client.Set(i,host.Cells[i]);
-            Assert.That(client.Hash(),Is.EqualTo(host.Hash()));Assert.That(client.Orange,Is.EqualTo(host.Orange));Assert.That(client.Blue,Is.EqualTo(host.Blue));
+            Assert.That(client.Hash(),Is.EqualTo(host.Hash()));Assert.That(client.Pink,Is.EqualTo(host.Pink));Assert.That(client.Blue,Is.EqualTo(host.Blue));
         }
         [Test] public void PaintBoundsAndBlockedCellsAreExcluded()
         {
             var grid=new PaintGrid(4,.5f,p=>p.x<0);
             Assert.That(grid.At(new Vector3(-10,0,0)),Is.EqualTo(255));
-            grid.Paint(Vector3.zero,10,1,null);Assert.That(grid.Orange,Is.EqualTo(8));Assert.That(grid.Total,Is.EqualTo(8));
+            grid.Paint(Vector3.zero,10,1,null);Assert.That(grid.Pink,Is.EqualTo(8));Assert.That(grid.Total,Is.EqualTo(8));
         }
         [Test] public void InkCannotGoNegativeAndRecoveryCapsAtCapacity()
         {

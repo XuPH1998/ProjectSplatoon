@@ -25,22 +25,22 @@ namespace Splatoon.Tests
             var grid=new SurfaceOwnershipGrid(new Vector2(6,Mathf.Sqrt(45)),.125f,null);
             Assert.That(grid.TotalArea,Is.EqualTo(6*Mathf.Sqrt(45)).Within(.0001));
             for(int i=0;i<grid.Cells.Length;i++)grid.Set(i,1);
-            Assert.That(grid.OrangeArea,Is.EqualTo(grid.TotalArea).Within(.000001));
+            Assert.That(grid.PinkArea,Is.EqualTo(grid.TotalArea).Within(.000001));
             grid.Paint(Vector3.zero,1,2);Assert.That(grid.BlueArea,Is.GreaterThan(0));
-            Assert.That(grid.OrangeArea+grid.BlueArea,Is.EqualTo(grid.TotalArea).Within(.000001));
-            grid.Clear();Assert.That(grid.OrangeArea+grid.BlueArea,Is.Zero);
+            Assert.That(grid.PinkArea+grid.BlueArea,Is.EqualTo(grid.TotalArea).Within(.000001));
+            grid.Clear();Assert.That(grid.PinkArea+grid.BlueArea,Is.Zero);
         }
         [Test] public void BlockedFootprintsCannotBePaintedOrRestoredAsWalkable()
         {
             var grid=new SurfaceOwnershipGrid(new Vector2(1,1),.5f,new[]{0});
-            grid.Paint(Vector3.zero,3,1);Assert.That(grid.TotalArea,Is.EqualTo(.75));Assert.That(grid.OrangeArea,Is.EqualTo(.75));
+            grid.Paint(Vector3.zero,3,1);Assert.That(grid.TotalArea,Is.EqualTo(.75));Assert.That(grid.PinkArea,Is.EqualTo(.75));
             Assert.Throws<InvalidOperationException>(()=>grid.Restore(new byte[]{0,1,1,1}));
             grid.Clear();Assert.That(grid.Cells[0],Is.EqualTo(255));
         }
         [Test] public void CheckpointSeparatesLayersAndRejectsTopologyOrInvalidOwners()
         {
-            var state=new PaintCheckpoint{Topology="map-a",Ownership=new Dictionary<int,byte[]>{{1,new byte[]{1,0}},{2,new byte[]{2,0}}}};
-            var sizes=new Dictionary<int,int>{{1,2},{2,2}};var masks=new Dictionary<int,int>();
+            var state=new PaintCheckpoint{Topology="map-a",Ownership=new Dictionary<int,byte[]>{{1,new byte[]{1,0,0,0,0,0,0,0,0,0}},{2,new byte[]{2,0,0,0,0,0,0,0,0,0}}}};
+            var sizes=new Dictionary<int,int>{{1,10},{2,10}};var masks=new Dictionary<int,int>();
             var data=PaintSnapshotCodec.Encode(state);var decoded=PaintSnapshotCodec.Decode(data,"map-a",sizes,masks);
             Assert.That(decoded.Ownership[1][0],Is.EqualTo(1));Assert.That(decoded.Ownership[2][0],Is.EqualTo(2));
             Assert.Throws<InvalidDataException>(()=>PaintSnapshotCodec.Decode(data,"map-b",sizes,masks));

@@ -1,0 +1,1038 @@
+[
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\InkSkyReflection.exr",
+    "sha256": "10043bc82e274efeb448351c84ca328a25f9b2c8608e5231236380309d1a047f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\InkSkyReflection.exr.meta",
+    "sha256": "4705d0b142159ca676383b7d108ff7a5bbeac3d41a652cc2f3e2240a5ffe48c5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\InkVolume.asset",
+    "sha256": "f5bd281b4980d5944e3234f0a6eca65469825fd22bfff002fcb773aebdc161ca"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\InkVolume.asset.meta",
+    "sha256": "b2fb50996e988e3e578bd85c1e626bde8bf18adf08d19916e319aac52d32d492"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials.meta",
+    "sha256": "bf4e4162efdb3c7ba0701b8b338b2b4dbf2718cb29778e8186b909ff8ca1ecef"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes.meta",
+    "sha256": "8d96dbd3df5498d3cc9d1342b661815ac028e614bee7b4311afea0c70a7bfd69"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Blue.mat",
+    "sha256": "5439cbe566a937836a5b7e0b9e713fcfd1b15a2f695187af145784958c7ca950"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Blue.mat.meta",
+    "sha256": "5f96ef55483042cda4d0488e33930df14ddc207788ebdcf22ec30543087e1185"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\CoverConcrete.mat",
+    "sha256": "07eef5bf759435ce280aeb1feb771fb84840c0841d420893e9d76ffee027d226"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\CoverConcrete.mat.meta",
+    "sha256": "a5bbc9dd0ec7466e30bc4aad4edf1c13085bb4557e917ad6127eaf12977afc40"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Graphite.mat",
+    "sha256": "ed1da644a2bb150d8d0025d55046c7738c4931a45c723fc555b6ed04bd28a4c4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Graphite.mat.meta",
+    "sha256": "4165a9694bf43aafcd56445ffdc0e07d3ba955a40e1562b4444b874b948f5ff3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Pink.mat",
+    "sha256": "a2d4f9aa0b111d424afe29e653ff9cd8ec257b6c599ef880ab778dbda8d543c7"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\Pink.mat.meta",
+    "sha256": "3b104bd4d2387ae7b9813f3d88aa4d5c4b24d0545669c8f08717b982278cb1b7"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\TrainingConcrete.mat",
+    "sha256": "6d74bdd8d0b26d56a478943555c5b90a08fdeb74fdae474303f7f80a2f3b2d4b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\TrainingConcrete.mat.meta",
+    "sha256": "cdd31aaedbb973cd6633ea079864ac8ac1b7cc0f4042232abf2667d61c505e42"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\White.mat",
+    "sha256": "0275d2c5db0d80444d415ceda13c139437e6de94f71b4ec8c07f9f55c88c9215"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Materials\\White.mat.meta",
+    "sha256": "3e40591201484c1fdc97e3ee84ed1098adff5a78643633f9e71be8c29d66f070"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-12.asset",
+    "sha256": "cde2f17b8399eebdb7c3f75893d33e4833a1316014e9137a7373033b8abf3812"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-12.asset.meta",
+    "sha256": "28e5c5ee13589c36cdddfcf798ff36387f6b64ea02e495c0ff2b7b4883a88c90"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-20.asset",
+    "sha256": "5a49d29b7b96187ef1e0e7699972f7c68c7c02247e848c5397a39be9eb821c4d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-20.asset.meta",
+    "sha256": "9f25f4acfef1faf55f2653bdea4f25d1a60c4290a1648cf7efcc3459efdea892"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-28.asset",
+    "sha256": "5c45e34545d29013c527171c5c06823007946aada31176e77d5d66a6dff7ad12"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-28.asset.meta",
+    "sha256": "0856b11474ca44d46a82f09e323564d351aaf51fee1781f15c4adcba7e3ba69f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-4.asset",
+    "sha256": "450ffa5c7fd35fde50d012ed3a4a9bc1aae8930e0b27d4da4aa5f81048c77fe1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_-4.asset.meta",
+    "sha256": "1ffb426c20771fd857f88fe083e0bd4e878afdee24600f7af243ec0b447010f5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_12.asset",
+    "sha256": "816f3557d4d64228e8de248458cbdb987d46319228a16f626bf2b2a8aa843731"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_12.asset.meta",
+    "sha256": "8e27c7a6716fc0c01d067d3789385590d73b6f055d386a5b01906502e5085dd5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_20.asset",
+    "sha256": "e1cbda40170203e61c034cd144d4fd7ad67d3e9d631c62fecef1344ff0587571"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_20.asset.meta",
+    "sha256": "2ff3a1a39de9b4879e9424d19685135b6c45f302094caf579d90e5d07a7377da"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_28.asset",
+    "sha256": "494105d961a794593779da402a2a44233a95b11140bd25fc47c815c421d1b5b1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_28.asset.meta",
+    "sha256": "ce8fa3a3a1a2583c1fe1be1840b1a9a48dc6fd1eee2e4155efce084c0ecd9f49"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_4.asset",
+    "sha256": "d9ecfe1dafa3c24e634882485b894c251d586ff689e193a141ca11b18368bcfd"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_-1_4.asset.meta",
+    "sha256": "63478e803791b77c6aa7804bb7f061858092171957582e04630abda1f0b7e944"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-12.asset",
+    "sha256": "a7c3556983bf756a92bd260637cfda494975f21604b964cf009dc50b004e2194"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-12.asset.meta",
+    "sha256": "2b5bb1161aac419307f7b69afd0a0f881ec6f2ac5cb0997d963de43dd0feb966"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-20.asset",
+    "sha256": "aac5c7aad569d79350c1dc00bfa4f17faf44b90d935e95ab375abe191ff0fa38"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-20.asset.meta",
+    "sha256": "dbbb578b170f5372ac0a21cbad5cd120b4ae330f50b43751deff1d243de16403"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-28.asset",
+    "sha256": "b72a35177648a9deb22b03611cef674c8f9a6926579520a6f21a7e62e2028d1d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-28.asset.meta",
+    "sha256": "052b336a10a6057d0f915511d611399246fe9f5f3a1f00cc6e0bbe4a4a2027ca"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-4.asset",
+    "sha256": "8be8265fff5e2fd118cb04a378c44f8c27e167d3167342944424ac18edc814cc"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_-4.asset.meta",
+    "sha256": "1d73a3502b75dd1e146a41df91bc01ee4a199e526c25418bb405accd6c0f4801"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_12.asset",
+    "sha256": "f1d8e93815c2f7a9922a1a18819c1da3c244ad3b8533f877aab2697e9997b475"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_12.asset.meta",
+    "sha256": "4d0352e80aaaaebeef72af4cfff096e050b2ddb11b58692f56f12404aad97e55"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_20.asset",
+    "sha256": "0bfbaebfb3497c47e3729381d2f4b70cc66d41fdecc7a61fd2ac9522b10fbb8d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_20.asset.meta",
+    "sha256": "1ff811a14515aafe6a994cccb619b2c6d0661e5cbf766fffaf66b5003e507395"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_28.asset",
+    "sha256": "83161ff73d4bdb127d7ad4f2553c518feaa10de0ad6a019f10fcb35c7a8a7c8c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_28.asset.meta",
+    "sha256": "17f08e5a9fc8ae8e336d926750375d3ef43f628728287f75d9625253621b4da2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_4.asset",
+    "sha256": "f6d2033e4d0875ca5e7c45670bda116bd23132207afbffceb7ed18d198165fee"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryCap_1_4.asset.meta",
+    "sha256": "ff2ef95648a82fc852652f1eba949cafdfa40d36e4abb194837979a71d97d673"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-12.asset",
+    "sha256": "8c392bf97c9c8880b31022f27bc2a905ce3515a07d21d082d5ce31030f70dfab"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-12.asset.meta",
+    "sha256": "9c2b0ace4011a40a8d5980fe25d2e948dc247696c5a1cebc1eae8143d9a78ec0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-20.asset",
+    "sha256": "addc8d47f7426b17f39fbb1f279ad43ec03e47c3ab5473216b35d3599ec54f4c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-20.asset.meta",
+    "sha256": "bc5ad8d423ad23f5c46f10a5ebe8c27762a491c06963af285c434fb9bf44c1c5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-28.asset",
+    "sha256": "207789691f0cc9ef239e765cfcc7c2f1d1be881003d58b80bd424dc51683cd00"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-28.asset.meta",
+    "sha256": "6a6a1dbf2a18cd780b8afa707b94952f262084101d7f8a09064993ae9e1a1f03"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-4.asset",
+    "sha256": "cdfff88ca412e5e1ebe73edcb6f935eb102765c6dd594915966ad34bee5f8f82"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_-4.asset.meta",
+    "sha256": "a07cfdf81878a4379d757a3ea149b69b1ec16f61d6e8a24e51bcf11a292141a8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_12.asset",
+    "sha256": "727ea3a9d129a2b0dbe89c195ab9cb882e00381ae62db607b56f91957d2576fd"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_12.asset.meta",
+    "sha256": "9d11a2a392f4e00f84da632bc28981e481d533a2025d714849970ba914dacd8e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_20.asset",
+    "sha256": "d1c179b45ba055f20407d82bad883400fbb8e6eba9e2e71fc857717a1857d99a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_20.asset.meta",
+    "sha256": "a8adb3b05b3cd620689a679b02f46af9cd444590be30230a52af359beb2cfe1f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_28.asset",
+    "sha256": "741ae00805b870ad03b80054a23489b3d72f53296f65060bff310840155d35b5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_28.asset.meta",
+    "sha256": "831840971f4d20e2d847e6c57aa9a26d421504ea879b62f36d7c8606d5aa8406"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_4.asset",
+    "sha256": "5c8af9ef9786d0c524a03669b14b9e0b3ddb98871e9e006bff751048dd2da37d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_-1_4.asset.meta",
+    "sha256": "fb0c5b3621e3e0bcb50633c450e8b342edf8d8c1b5df7ae7d00b0dee7d81ef80"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-12.asset",
+    "sha256": "772fa729f0e1baf9f792d7c665db3984e36e52ccd9e55bf7daea34a8715a7973"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-12.asset.meta",
+    "sha256": "1d71e4e6bc2eebe074a4efe65f108c37fccf31c02b6525592821acf878f4883c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-20.asset",
+    "sha256": "47a3b546435c100901f59f7ba942f172e51105875e7361b0c1a5ceec0ff2fc2b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-20.asset.meta",
+    "sha256": "900acf8e72759100ae2ff9fedc7c3fe5e5f8f704f67adac07c3ffb220cf618c9"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-28.asset",
+    "sha256": "bfd5f252069ae57c7a69c66549d059ee06a9325287b4da9693d8e50ea07b5ce6"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-28.asset.meta",
+    "sha256": "e49c779d753a33525aad675ea6bf59d803de8c77e423b9a59dd34605d97bebc2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-4.asset",
+    "sha256": "5519842a0f7124dbac8eaf36cf516a135e58159bbd0a453bc1301a25483745ea"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_-4.asset.meta",
+    "sha256": "1b4152d03cf56eca942cd17b29ac2c99ccdf8859eb4337cb6f9d84cb7cef1f16"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_12.asset",
+    "sha256": "fdddee5e5eeb1fdc259e7e7ff224e17b0910e8a21a334ba4c6cc02feee91506e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_12.asset.meta",
+    "sha256": "e5ab4b52259f6db256b84c4c1816a5092b85b502484d956af1d8e9406076843c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_20.asset",
+    "sha256": "f61b0f0a4bb51f9b6ec054df7a6cd88bd86c843cc4fb8e1b977dc854fabce08e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_20.asset.meta",
+    "sha256": "66664c9674b381750c787121161bcf95cd4c31be4bbf346dd22f21ee06564f2b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_28.asset",
+    "sha256": "c922fa45212d95ed10cd33f39c1f03dcb9dc4f246cfd5b9202e86286f6c078ab"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_28.asset.meta",
+    "sha256": "140d4023beabc7c5b235da3e9158b4a2d536e01758684abe1514eb48cdc07560"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_4.asset",
+    "sha256": "942475f2771b684fccb59d61ca0cb2e2df7251a918b0ae88d1c35a0f019eefa6"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BoundaryPost_1_4.asset.meta",
+    "sha256": "829d5cd95cba983fb9a58ec056771e403eaf5677fcbb2ff9a06b8b41c41392c7"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Bridge.asset",
+    "sha256": "7651ac8ea26c552b7f5ba2922d3d445ec2d7cd9a296f3aa22e2feb41852cc1ec"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Bridge.asset.meta",
+    "sha256": "854bbe0fe7eee3a6926ae559c5b3280ed779be9bb67f2b22c67a479329de777d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeBody.asset",
+    "sha256": "2a93a99eb9c49a79716f38ae1046e10dfa429243a15a2ef85b3a45dcdac0e3f3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeBody.asset.meta",
+    "sha256": "5cd89123d6cb8f8b1078ecb70318645a7df01b5699459cb8065ed6d830f4011c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_-1_-1.asset",
+    "sha256": "10a45e27405d8bcc05aa77d5548f42542077910358bef42abd24c667cf8a062c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_-1_-1.asset.meta",
+    "sha256": "d73e19c669429da0941415abd469a2d81aa01e06a36e26138cec85688f5be7f3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_-1_1.asset",
+    "sha256": "05fd83e181981256fe27b35277bbf8da9a0cfcbb745b976dff59bb0aa35747af"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_-1_1.asset.meta",
+    "sha256": "b1b4021ad6231a7f6a06a1c27676d522f4c2e6bc16ce1178e8b046a1574ff028"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_1_-1.asset",
+    "sha256": "aaadcde79c6e000aca3331e475c2e5929b636f29e6938cb4c5c765a4a695b86f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_1_-1.asset.meta",
+    "sha256": "831403b8b00305870838be4131bfd1374b9cf9a2efdf2ce902976aa820029cce"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_1_1.asset",
+    "sha256": "6fd33fca9d1c2ac977513bc09796ea441e44ec7d110b245e80a113ba8268fb59"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\BridgeGuard_1_1.asset.meta",
+    "sha256": "9ba7ef856fdf190f98a84da337f1f964fffbe64a11bd73b0ccba86ce9b6e728b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_-1.asset",
+    "sha256": "b259cda270cd640c805d7df7cc0b3bad1b8cc5be9c101516464fe1c2511a61f2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_-1.asset.meta",
+    "sha256": "33a77aa9ebca12cf0afe0a6a3039563109a89975847a4b70802e0db1aa7b25c0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_-1_Stripe.asset",
+    "sha256": "456f168e6e15f95f08ded9b3f1dfae35ea688f87d50d3d6996b36072a583688c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_-1_Stripe.asset.meta",
+    "sha256": "9719922b29ad912c4b6d2308c385d949f3bcea60c4c07bf6c2217fbe5099672d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_1.asset",
+    "sha256": "767ee4db90aecc2fa48bc67a42b42366da687b69d7b8e0059bf550f055de822a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_1.asset.meta",
+    "sha256": "79cd2c71dbaa56283d278333046d997d14a767393d4994470bb6782af0119886"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_1_Stripe.asset",
+    "sha256": "e36ed2fec29bc381b80961213b9ab94d818d5a60765942c32d87721b8977f627"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_-1_1_Stripe.asset.meta",
+    "sha256": "210a79bf784c4e79fd1a97e494dfc9cecebe291a197ee1441382e9e44fdd5445"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_-1.asset",
+    "sha256": "5bc7e8809869fb4be291e62673beb653495a64a8ad2bb36686ac979f777fb2ba"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_-1.asset.meta",
+    "sha256": "723670cc7a54085e1a582caf4495508b7acab0c1d5b71cdb1d5e0fb8cf820e51"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_-1_Stripe.asset",
+    "sha256": "68ad77d66e237ddaaae1c67c07b8eff7dd908839f73b23436843dce925632946"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_-1_Stripe.asset.meta",
+    "sha256": "907d7ac62cf59bcc6caba53224db7aadc2cd329cfe9e8f7a7134543c4c19746c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_1.asset",
+    "sha256": "a6891c0277b9ae69f56d742d419745d1b42e0ab5e3928c3adc681c5db9f6fafd"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_1.asset.meta",
+    "sha256": "ff4cf316e4dcbf802a06c0f8e402469c34584adcb86ee93186b035139fb98465"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_1_Stripe.asset",
+    "sha256": "a500c42854908e9243e927c8da5579eba8d942cccc1741566bd3630a69f67350"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\CenterCover_1_1_Stripe.asset.meta",
+    "sha256": "dea4903a7512352a43e821d3ddc502158cd3c598c4daeb54c1cabc50a73e4d64"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\EndBoundary_-1.asset",
+    "sha256": "7d8fe937470baef8c36caa525750b6f30c1bda835d031bfa4c3388e93308d1f6"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\EndBoundary_-1.asset.meta",
+    "sha256": "d4dfb743fd35dda38c370876ebd5f18597318b49fdfe13ef1173a55080981cb1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\EndBoundary_1.asset",
+    "sha256": "f7922800e46bbaaa11dd326c126c1dc2e60e327bded9730e1f7fe5c615203d15"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\EndBoundary_1.asset.meta",
+    "sha256": "0e2956f14bca10773d9c490ceab152e6349a1edd12a5485ee04d775f64a99839"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_-1_-1.asset",
+    "sha256": "ed176256f6fa362ca354a9d79e116e7f3d31b52b24e6eeace271ca55df782a29"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_-1_-1.asset.meta",
+    "sha256": "97b5a9898c87b45d8d826fbd546772344f4af125f484d590bfa5edcd732b6396"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_-1_1.asset",
+    "sha256": "64128e5cd51393fdd9ced12f07bd5d8dcf2fa35fc7739b1a5a2aaa33b0940b4d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_-1_1.asset.meta",
+    "sha256": "90ef5e2f259da66fa3a6ee8f234045298e7ed7d143b3325d12a5dd48a5bbe7b5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_1_-1.asset",
+    "sha256": "ae1a94669e4dbe72294daec52b538d93f39cb5fe498c4920c11b65dd17ac3a9b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_1_-1.asset.meta",
+    "sha256": "17265385721f97eef1707c72f6983e7b5632d79a8413f4f5a1378f8eb72d9e6c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_1_1.asset",
+    "sha256": "75406684b125d73ad90795bba697310e840aadcc21d4420709e84e5a662cc7c3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorAccent_1_1.asset.meta",
+    "sha256": "3b8bbd68044515fa1833d605f88fed981b0e9159e2996b724503805cff0f94e8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_-1_-1.asset",
+    "sha256": "3f9623f2ee5354f24646abca17523abd6d11969ce4e9ae394691851f95430b05"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_-1_-1.asset.meta",
+    "sha256": "25966e8d533b9b3b8b35af2fdf5d199feba297169204c1807c9ecea12407b9de"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_-1_1.asset",
+    "sha256": "64d05d0aa5fdd832e33144759473cc606e29e6ea432518fb77b0f4269375050a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_-1_1.asset.meta",
+    "sha256": "67cf2d369dce6786ff82289a6004928710312e75ce296a3079d116c1708dfbd2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_1_-1.asset",
+    "sha256": "699e21357a4f22878e49e7f4727ca2414bbcab130fdf33ba6aeadbcba3f5a718"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_1_-1.asset.meta",
+    "sha256": "b9de7b19bd85959ce55b6cb4e68f1bf280a2a07ba8e1c6835a02e0d3aea0c67b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_1_1.asset",
+    "sha256": "ead9f3c1157179bf9b67048f408c8fbf05b3322adc325dfdb0a3fbfe74ce317c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ExteriorBlock_1_1.asset.meta",
+    "sha256": "6bcb2e2aec162af7820b4a91eb01d60da1ccc51a88c0ed5bd890de192fd89b9a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_-1.asset",
+    "sha256": "135e86866ec9dc37d772bff834874c5340598bb6fcaaade892e0d3c086477a0a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_-1.asset.meta",
+    "sha256": "7e5b1f648dbdda0177ee7b76560a56a8a6deb9e6420fb075d6900ff6aa8b65f5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_-1_Stripe.asset",
+    "sha256": "e250a45c1a0cc94ddf5a017d952a9f9e6c04b3ad9aa519344058ad22011ef163"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_-1_Stripe.asset.meta",
+    "sha256": "6db915c0b608d9256dd4c102ac419fa1b97a7d1147f238b98d6e20169cd36060"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_1.asset",
+    "sha256": "eafb3c17823f5916464e904ff97f70c6d5c20ca6859c68d162a8ebfa5d4a062a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_1.asset.meta",
+    "sha256": "46be42463fa3941ef5816bc48c4b132ba701e889ea9077ac76b45b0a0a32eb8d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_1_Stripe.asset",
+    "sha256": "040c3c714d65956846c7d93044cce1fde8e0ef27b928c077f9d96d96076e6ca8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_-1_1_Stripe.asset.meta",
+    "sha256": "e92d5f8366f6d2887f59f495184acdf5f2f389db5bbe8e3a5e57c34e91b1961b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_-1.asset",
+    "sha256": "a06824c3b1a35a1685b288ee58f1b4d13d0fdd25e3c6cbc68428c4c8c2c7c5ee"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_-1.asset.meta",
+    "sha256": "0543c63aac1a5f6c00103336e23c526e31e0ebd34bc786e1431a3caa317dcaf5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_-1_Stripe.asset",
+    "sha256": "5eb1500477d889e9f346dceb5969d23919826064d550bb7fcfd04bf281685337"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_-1_Stripe.asset.meta",
+    "sha256": "adf03c953954360b12856d0b15627af76a0012b97777029568216f176f3cab74"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_1.asset",
+    "sha256": "54e6bbcd1829bd986c52dc104d45c0a9700f80a864aed154d0ae18c75713661b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_1.asset.meta",
+    "sha256": "e862d06985593d150bbc5f9acb7bfc0f3298b456559f7db6876b155670c6bc62"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_1_Stripe.asset",
+    "sha256": "b201debf7c5adf0ceb89b0bae3d8ffdad7eeebe53b042ede05e62ef1a7e0c59d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\ForwardCover_1_1_Stripe.asset.meta",
+    "sha256": "8018a66df02d0380bbbfa2228a3973796e2c49b972c339025fe168c68553e3d4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Foundation.asset",
+    "sha256": "b66ae227188aa556839a4f15f361e371fd9385dc8f176551cd27544c83a7838c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Foundation.asset.meta",
+    "sha256": "678e1a1d5589bba3f11e56a418a775696458097af73da8597c4167235d8a8d8e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_0.asset",
+    "sha256": "ba7ab67477196358fbe25882969cb7fd4f57904d5182af698e063857308c5bab"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_0.asset.meta",
+    "sha256": "53b183ae20c358d1d1deaa90e492386afab10779db9f2731932074f5bfd84c42"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_1.asset",
+    "sha256": "e6d8f3a3c21a6ea8baacd6b46bcb5a2bb6366d5cb21fd3eea43c024537963fda"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_1.asset.meta",
+    "sha256": "d84cfbe677c5824a933d87056555e3436f723119a91f208a7a90d522d44d1c5d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_2.asset",
+    "sha256": "e5d269879f2e27cc91432d31e6ad973c3b5b35c1c9d9813c9dfd8264d9b8dc5f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_2.asset.meta",
+    "sha256": "8557c7627797bb5e69cd47750f2551e846abb9ed5c564cce350dccfa434c268f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_3.asset",
+    "sha256": "769ca6abeeb02c95a5f42cc757d4489a0063b98566bc3a02f12286f99ad679e4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_0_3.asset.meta",
+    "sha256": "cf730a18cce422d608815c23eb3694d15925df80d8e990a0dfd102714d15cf54"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_0.asset",
+    "sha256": "6755105355067a14332ca571c26a5785819ec692f70bbfbaf59950f80af2c594"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_0.asset.meta",
+    "sha256": "fee0af46adaac0b5a214ab8f34257139cc72e7d5017b6bba9eafbff29bb4d0b7"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_1.asset",
+    "sha256": "33b02e290aed4f051c004c30a7260c2f71908024b788b574e5f64732e5d41ed0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_1.asset.meta",
+    "sha256": "bdbc52e05f6959f4d48cf4835424e59d0f42ebff031a89d3025cdc5623e60484"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_2.asset",
+    "sha256": "5aff1139dcead1682731b5e69b9b0d51829eaa77cb1d342cc3fc39f29395f8c0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_2.asset.meta",
+    "sha256": "41f0acdae34692fd5f36ea3c8aecf7eae8db237975134c1302fe603e74c8f737"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_3.asset",
+    "sha256": "338cb63293ab08c6df3526f19f9ec1c845b1b2e59453a06c75ba7fed6e5d3fb5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ground_1_3.asset.meta",
+    "sha256": "93c4bcf06f9e5436c2cd3135633ae3122724e0debb29d03dc144b00b4149d766"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformBody_-1.asset",
+    "sha256": "8096f57d1ab4faacdd993a8e40ed4ac14496fb23945593e7cdb946d8945582eb"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformBody_-1.asset.meta",
+    "sha256": "f068c29412c8b2e6afc5361a1176d26d4c7255b7498164b93ac79bc5dc89dfb8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformBody_1.asset",
+    "sha256": "75bc376a5f32ac245d863b25a25ba02b16061ba3c1546ffb4a34c3a1b5f78c84"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformBody_1.asset.meta",
+    "sha256": "3ea735ada8112ed2eec73022b509ce5bbf56cf7e712f00628ab274aad56da949"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_-1_-1.asset",
+    "sha256": "69e1c64c47b3d859a6144ee08d0883596f7a6c569c21f762cd0ba583eb2fc7d8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_-1_-1.asset.meta",
+    "sha256": "54718916d6d64e618ad669421690a4e6007d543dd215a4554b477f09974a128b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_-1_1.asset",
+    "sha256": "fe898873cda0f7c78641195b31e991dfdd05a6f9bb267f1a704bc0161796030d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_-1_1.asset.meta",
+    "sha256": "74d075dc592d41e86286b531ead1457a6e228699f6fa73c8170553858bc397d8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_1_-1.asset",
+    "sha256": "f0474422efbf8642f8d3b8e2cb01600f805719d76ad575df2daf11dcca0936a4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_1_-1.asset.meta",
+    "sha256": "4455746f0ba28cd88b592b67e7a2bbe766b9bd25b9cd0800c5b977f7b39b1649"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_1_1.asset",
+    "sha256": "9b71fe2846f00b166187e93a105d7770c66e25a01575a41767c4a0c081e46689"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\PlatformRail_1_1.asset.meta",
+    "sha256": "dc72d1d57df867b2410a389dcd0778bcf54835a6928a4092f0ab81926d855bed"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Platform_-1.asset",
+    "sha256": "cc9e24386812465eef8b1c46e65e8de37d2c7e0f6be861a6748d919af519f297"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Platform_-1.asset.meta",
+    "sha256": "2745b363a1d3114a93329e1a5184d130d4b7ee53349a408eb4259967a80c7e4c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Platform_1.asset",
+    "sha256": "8df23290253ced7e91d3f64f8ce1da7d7dedb105a52c1d57553064e47b9db4c5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Platform_1.asset.meta",
+    "sha256": "5b8bf3092290704c43f88c403f86a8e010a80d35bd8021efc54bf727ba3482e2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_-1.asset",
+    "sha256": "12b68d8b88ccb6e5de71eb828ef50fca9c3b1a42d506c1a79cadf3168fd56ce4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_-1.asset.meta",
+    "sha256": "351fea9d21bc42e73fce6e182d82c06ca2f4995fa80d732d23cb72304a2eeeb1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_-1_Body.asset",
+    "sha256": "f8c01dea04ab7238060be7d98ed8a9f1c4374ca39c625c97af2acf066f30ec31"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_-1_Body.asset.meta",
+    "sha256": "9b348bdfe6ab9ff58ff103696fb556a469a8da82f7c151319bd327cbc6bfda18"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_1.asset",
+    "sha256": "c265b62d5a24f7e50cf618fe53e668e6965fdbb884600bafab6d0afa2da7c0a4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_1.asset.meta",
+    "sha256": "42c99deeec5a145bf7bf43d05e8cb58f039507782349e4f38dc2b6dfdc78c257"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_1_Body.asset",
+    "sha256": "130817f6588158b7720e07309881527b4112c3a4d44116b517e06c50fb6343a9"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_-1_1_Body.asset.meta",
+    "sha256": "bd771a58164969a6134925159eac2c7f77f0ae8a8ae71fefa56ff4f18dda8f27"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_-1.asset",
+    "sha256": "f6b68b54b4d2cfb420be773442a19ffb4d58a267699c85f34351e5707535b951"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_-1.asset.meta",
+    "sha256": "258d6e66e96876b993e143c11f1151dce4b86329e7f285ec3fc4d2f0bc9e22da"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_-1_Body.asset",
+    "sha256": "ed2b019545177a2b83c0c2cbecf2e3bda22f609116da8ab81eca354b5469ec2b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_-1_Body.asset.meta",
+    "sha256": "710d3f4747210d9896d9ac44595f2c9a78fdaeade778222a14cc387df7d0a154"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_1.asset",
+    "sha256": "1adc9dd640b343825a7b7813f258dea1c7bfcecdc2de4ed8495ef93428f22cf2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_1.asset.meta",
+    "sha256": "669754eb55d08213a961fbf04e023bb227cf31e37cbe63eed7f473c76f1d9e64"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_1_Body.asset",
+    "sha256": "4457c1b376c697bea354e2cc659a9d0c6f058bc638122ceb199608b1932be145"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\Ramp_1_1_Body.asset.meta",
+    "sha256": "2ca4511310b3aab74127ac133d3b56f4d9d6e6961e1599491cd7e70c799e9141"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideBoundary_-1.asset",
+    "sha256": "b0626b4e11fc47ae39e5f369e1650820b9f3d7825cd05e735ddcbc67718eea7e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideBoundary_-1.asset.meta",
+    "sha256": "4db665bfe72b91ed928405bf73996e1e879bdf0c4de050d605ebcac52068486c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideBoundary_1.asset",
+    "sha256": "a3e8fffde32aaa3176df88419139830c628bbf3f824a157d17152361bfdc88c3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideBoundary_1.asset.meta",
+    "sha256": "e12d1e0d34a4347a5fbbf3720f6385fff96f6fef3c6efeb3cf1d4c90a9b1b41f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_-1_-1.asset",
+    "sha256": "f04023521b19d7689b10f8218877ee49cb32aaa0c93ae07fb02dd96b6cd049d0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_-1_-1.asset.meta",
+    "sha256": "53af2ecd8f2bcf2631f78ba699c05ab6245a6fb0b3db74f8730ece87e637d81f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_-1_1.asset",
+    "sha256": "c62929a180e31370668c617dce1cb317d7eef7a3cbd19763ff93fa14367172a0"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_-1_1.asset.meta",
+    "sha256": "d054ed4eef782af83db87488ea98f7fac9a1f659f0e17118f9b3f192e3370693"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_1_-1.asset",
+    "sha256": "f1602a82f247a3dc61643a2b8009e52a9ba5440bebb12d1d70239c5d86a6be58"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_1_-1.asset.meta",
+    "sha256": "7209f867f8990d8b50943dcde0633f3410b17d095ee10c1b0cca03b0b5b12089"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_1_1.asset",
+    "sha256": "727855f5341eae59e1194a06b23cea36745ad8aa654316147952e583f34d0e9a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SideLaneStripe_1_1.asset.meta",
+    "sha256": "c63ae03813e9604c1ef1b6dc26a89704659ea143ced8c25bcbef46009480ca4f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_-1_-1.asset",
+    "sha256": "822ca20bd27aeded7d338af60e596fb60cfee6b5ec647581dc6b9bbddb729e78"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_-1_-1.asset.meta",
+    "sha256": "0df1d2fef56c0d08cc07ef7469bb81f78322b2a25a91f0d0b79279f419e0a2f2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_-1_1.asset",
+    "sha256": "4664ef4c7cc5c6ea5e4fd3e225581c781a8f8fff2e26596582fa3e2d8e175f9a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_-1_1.asset.meta",
+    "sha256": "941c8323b6ef92bac37c98be65907865c8f64a952d6d53d1df55561edb3303d4"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_1_-1.asset",
+    "sha256": "af798fbe3993fb00b69c7da104660a72b888875cceb96fa0aacae19ba86ff3a2"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_1_-1.asset.meta",
+    "sha256": "b49ab43d51e2c0f5b9cd5f034cb959c6c9b0284e1de7701da3b6da84955436d5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_1_1.asset",
+    "sha256": "48b2de5e5d9b3fc677b6db7a2d633ecde229b2c00af8d5f2183f4a640bc392c3"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnMarker_1_1.asset.meta",
+    "sha256": "86115a9748987b95768cabbb2240559e1b0e1bcc32c36de37fd52fb7dfeb437d"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_-1.asset",
+    "sha256": "e2590494c31f5b5e6bcc421078b3d6b25ebc1ee6afa774c419d449dd2faf991a"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_-1.asset.meta",
+    "sha256": "c422a923534c7fb21e621893060fe64d732edb9e29675ef41c64e7b8e875b21c"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_-1_Stripe.asset",
+    "sha256": "c3ad810465e9a9108fce002a5b8da9b3682ed70471d5f83e7d76492c27f28b35"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_-1_Stripe.asset.meta",
+    "sha256": "2385b25738881e1af6bbbecfab598177f6925f8c876e108e65ebd93b583ab909"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_1.asset",
+    "sha256": "45579f68fd8c5e176b063d08374537b9a086f8d97987c71107c4f25c37a1bc2e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_1.asset.meta",
+    "sha256": "da4181277d1fe5db06abf6b2c82599201bac6a65aaf0163fb30c9821a1f4ebf1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_1_Stripe.asset",
+    "sha256": "aeb773b0929d8a74474a083bcf7bb319d4447680cf3e5d3b29a8b98aca3b7edf"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\SpawnShield_1_Stripe.asset.meta",
+    "sha256": "78a3b71d34674b0846e61fe7e4a7d139c937742c0ebfad8934e4fac0caab0e2e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\TeamHeader_-1.asset",
+    "sha256": "258ad20849dfa0772e1824787a69376727b290ad08fd569b3820d4d2808bb145"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\TeamHeader_-1.asset.meta",
+    "sha256": "1a6a8a4a4e7ef3cf5a919fb27783009a4604ee4effeacf9b0b92b3187d4d041b"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\TeamHeader_1.asset",
+    "sha256": "91e5374817bdb8ae49b12622643ab8e62668c924bf49aafe3c4d14b268ad5137"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\TrainingGround\\Meshes\\TeamHeader_1.asset.meta",
+    "sha256": "5ff419478ce80ef9c4345b1efa61311f9ac99ab6932eae296f98b3109999a23f"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Back_Tex.png",
+    "sha256": "5f031b65b71c5c023da73734e00440d62c9db72a87147d4f6b00b3a763b183a8"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Back_Tex.png.meta",
+    "sha256": "4a6fb1965eb276ef0f5a379ff277bfd7b767d507e4f92ad1a9f2f163f73c17d6"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Down_Tex.png",
+    "sha256": "89363338348d988443dc2808e2ea46a5ec74fdad6eb6504b4b671e2559aa3053"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Down_Tex.png.meta",
+    "sha256": "1bdb64fc26ad112fdb26a36704430654813b59c167cd6f97e2da0bb9355383e5"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Front_Tex.png",
+    "sha256": "214b54ee100972776cc4cd328882c3f59f88dbb534f745ced33b854e0bd9ff20"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Front_Tex.png.meta",
+    "sha256": "0a859e14d63cefedf46ac5ec8fce00de25dc7713abfbd6effff321f3505a9cd1"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Left_Tex.png",
+    "sha256": "ff604b5432ac137d047028d4bdb6e0846b02a78c76d82f46fe578ee6b5cab18e"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Left_Tex.png.meta",
+    "sha256": "fcce672e622ebd1cbb810797f328e13570e8c6711588606b1add8405e0eaabaf"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Right_Tex.png",
+    "sha256": "d3fdd791160471b97c9614bddce34278b51a76a160e411d12fe0a1d158a4aa07"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Right_Tex.png.meta",
+    "sha256": "d95822dae88171932639d9ff24bcfc478773c7754ca561afb169fdfa3b1a0b75"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Sky_8.mat",
+    "sha256": "b7a7b142eb8b969a4d57f47ec16844ce054f889d869e96ff64d1b1d51fe4c984"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Sky_8.mat.meta",
+    "sha256": "2c35ed57705658d9ef40c3204030a115dd8aca1792473a4b02a2bb08a6b7f3ca"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Up_Tex.png",
+    "sha256": "90c83c32aaf48d84beadfd2b8abde0dd0b6afec97453836f75ab36ce400da248"
+  },
+  {
+    "path": "Assets\\GameResource\\Environment\\Ink\\Sky\\Up_Tex.png.meta",
+    "sha256": "78d52538517179db4394f8858e395dd30cebb0a2b00fdc48484783705d22eebc"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkCoverage.cs",
+    "sha256": "73c20ba5f6b6145c151e9ef88898371fac7252ceee936be98ff8818bd374ea49"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkCoverage.cs.meta",
+    "sha256": "c139401a3dd01a6aca98d885ace91c37a8768213cad1f54647564ee85fb5b899"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkCoverage.hlsl",
+    "sha256": "40a5a41610a7123f834916e1aae8a9fe99fd8a3750e9eee78d3f8829dc309716"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkCoverage.hlsl.meta",
+    "sha256": "e8617daeb709a9ec26cbb9ddf0eefc0c9fe64c0b7b502335fa58b2d97ef9c2a2"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkDisplay.shader",
+    "sha256": "65fe28acecd0e15bc7f4347f10e93601aa41544882149fbacb42028c2e9708d3"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkDisplay.shader.meta",
+    "sha256": "a88b5b4e8daf078e2964c1fc625cfa4237e43e0f24c9ade8e6e390f9af06dd9f"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkSurface.shader",
+    "sha256": "8cc2dc6922c4777f206c5036a2df4fde39a050a2060c6689bc147945666deb8e"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkSurface.shader.meta",
+    "sha256": "52c17e2173cfdf3e4caf021bac48b4f79e0e19aecb8acc2fd3b036cdd38473b5"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkTexturePainter.shader",
+    "sha256": "654684ec338e730c27d97776073c35e9c8f697b85a544b939fdf6b2f3c3ca7ad"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\InkTexturePainter.shader.meta",
+    "sha256": "7124f093c89eb6bba972d3c172dc0b272b193515a34e3cf846359bfe81383fd7"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\PaintSnapshotCodec.cs",
+    "sha256": "c00dba868a7d6e40b8c0d566b74b0e456fa30194ace98aba8fad592b83a2e31c"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\PaintSnapshotCodec.cs.meta",
+    "sha256": "cebc6c7f7a1eee2811e6081afec04104a9fd88a74dd5c5b0a80be444ebd19979"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\PaintSurface.cs",
+    "sha256": "b4a127cfbe1fc07cf3af422f4e7f7f2067e2cffd626592785f658536cc92d26f"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\PaintSurface.cs.meta",
+    "sha256": "629966595f211a25859bcce02baf13e7f957b940b6e2a4c1d9660e5d891f8949"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\SurfaceOwnershipGrid.cs",
+    "sha256": "ab4d593f1ba41782c1a0e52700af2ba9b801584ab932d5662c440ed94985a1ce"
+  },
+  {
+    "path": "Assets\\Splatoon\\Runtime\\Painting\\SurfaceOwnershipGrid.cs.meta",
+    "sha256": "9930392f3677a0cf7310921a3ad98219db8258f2c4db986e89a6537b069a1ba1"
+  },
+  {
+    "path": "Assets\\GameResource\\Gameplay\\maps\\TrainingGround.unity",
+    "sha256": "fd7b08a4065ae79a2736da4e13483bd5c0e757779a509f0beb12ba2bf6d821a9"
+  }
+]
