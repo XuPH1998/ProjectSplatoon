@@ -12,7 +12,7 @@ namespace Splatoon.Prototype
     {
         public static PrototypeArena Current { get; private set; }
         [Tooltip("两队各两个出生点，粉队在前、蓝队在后")] public Transform[] SpawnPoints;
-        public int LayoutVersion = 3;
+        public int LayoutVersion = 4;
         public Vector2 Dimensions = new(32, 64);
         public float OwnershipCellSize = .125f;
         public string BakedTopology;
@@ -61,6 +61,15 @@ namespace Splatoon.Prototype
                 writer.Write(mesh.triangles.Length); foreach (int i in mesh.triangles) writer.Write(i);
                 foreach (var uv in mesh.uv2) { writer.Write(uv.x); writer.Write(uv.y); }
                 writer.Write(s.BlockedCells.Length); foreach (int i in s.BlockedCells) writer.Write(i);
+                writer.Write(s.WallRegions.Length);
+                foreach (var r in s.WallRegions)
+                {
+                    writer.Write(r.Id); writer.Write(r.Climbable);
+                    writer.Write(r.Origin.x); writer.Write(r.Origin.y); writer.Write(r.Origin.z);
+                    writer.Write(r.Rotation.x); writer.Write(r.Rotation.y); writer.Write(r.Rotation.z); writer.Write(r.Rotation.w);
+                    writer.Write(r.Size.x); writer.Write(r.Size.y);
+                    writer.Write(r.BlockedCells.Length); foreach (int cell in r.BlockedCells) writer.Write(cell);
+                }
             }
             foreach (var p in SpawnPoints) { writer.Write(p.position.x); writer.Write(p.position.y); writer.Write(p.position.z); }
             // Colliders without paint (rails, boundary posts) also change walkability and must invalidate the bake.
@@ -85,7 +94,7 @@ namespace Splatoon.Prototype
         {
             if (!Physics.Raycast(feet + Vector3.up * .2f, Vector3.down, out var hit, .55f, ~(1 << 8), QueryTriggerInteraction.Ignore)) return 255;
             var surface = hit.collider.GetComponent<PaintSurface>();
-            return surface?.Ownership == null ? (byte)255 : surface.Ownership.At(surface.transform.InverseTransformPoint(hit.point));
+            return surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)255;
         }
         public void Apply(PaintStamp stamp, bool updateOwnership)
         {
@@ -93,34 +102,38 @@ namespace Splatoon.Prototype
             ApplyToSurface(surface, stamp, updateOwnership);
             // A floor split into rendering tiles is still one continuous paintable plane.
             // Only coplanar neighbours participate, so a bridge never paints the ground below it.
-            if (!surface.Scores) return;
             foreach (var neighbour in Surfaces.Values)
             {
-                if (neighbour == surface || !neighbour.Scores || Vector3.Dot(neighbour.transform.up, surface.transform.up) < .9999f) continue;
-                var local = neighbour.transform.InverseTransformPoint(stamp.Position);
-                if (Mathf.Abs(local.y) > .005f || Mathf.Abs(local.x) > neighbour.WalkableSize.x / 2 + stamp.Radius || Mathf.Abs(local.z) > neighbour.WalkableSize.y / 2 + stamp.Radius) continue;
-                ApplyToSurface(neighbour, stamp, updateOwnership);
+                if (neighbour == surface) continue;
+                foreach (var region in neighbour.GameplayRegions)
+                {
+                    var matrix = region.Matrix(neighbour); var local = matrix.inverse.MultiplyPoint3x4(stamp.Position);
+                    if (Vector3.Dot(matrix.MultiplyVector(Vector3.up).normalized, stamp.Normal) < .9999f || Mathf.Abs(local.y) > .005f || Mathf.Abs(local.x) > region.Size.x / 2 + stamp.Radius || Mathf.Abs(local.z) > region.Size.y / 2 + stamp.Radius) continue;
+                    ApplyToSurface(neighbour, stamp, updateOwnership); break;
+                }
             }
         }
         private static void ApplyToSurface(PaintSurface surface, PaintStamp stamp, bool updateOwnership)
         {
             surface.Apply(stamp);
-            if (updateOwnership && surface.Ownership != null && Vector3.Dot(surface.transform.up, stamp.Normal) >= .5f)
-                surface.Ownership.Apply(stamp, surface.transform.localToWorldMatrix, GameplayConfig.Global.PaintThreshold, GameplayConfig.Global.PaintWorldUvScale, GameplayConfig.Global.PaintShapeNoiseScale);
+            if (updateOwnership) surface.ApplyRegions(stamp);
         }
-        public Dictionary<int, byte[]> CaptureOwnership() => Surfaces.Values.Where(s => s.Ownership != null).ToDictionary(s => s.SurfaceId, s => s.Ownership.Capture());
+        public Dictionary<int, SurfaceOwnershipGrid> RegionGrids() => Surfaces.Values
+            .SelectMany(s => s.GameplayRegions.Select(r => new { Key = r.Key(s), r.Grid })).ToDictionary(p => p.Key, p => p.Grid);
+        public Dictionary<int, int> OwnershipSizes() => RegionGrids().ToDictionary(p => p.Key, p => p.Value.SnapshotBytes);
+        public Dictionary<int, byte[]> CaptureOwnership() => RegionGrids().ToDictionary(p => p.Key, p => p.Value.Capture());
         public void RestoreOwnership(IReadOnlyDictionary<int, byte[]> grids)
         {
-            var walkable = Surfaces.Values.Where(s => s.Ownership != null).ToArray();
-            if (grids.Count != walkable.Length) throw new InvalidOperationException("归属表面数量不一致");
-            foreach (var s in walkable) { if (!grids.TryGetValue(s.SurfaceId, out var data)) throw new InvalidOperationException("缺少归属表面"); s.Ownership.ValidateSnapshot(data); }
-            foreach (var s in walkable) s.Ownership.Restore(grids[s.SurfaceId]);
+            var regions = RegionGrids();
+            if (grids.Count != regions.Count) throw new InvalidOperationException("归属区域数量不一致");
+            foreach (var pair in regions) { if (!grids.TryGetValue(pair.Key, out var data)) throw new InvalidOperationException("缺少归属区域"); pair.Value.ValidateSnapshot(data); }
+            foreach (var pair in regions) pair.Value.Restore(grids[pair.Key]);
         }
         public uint OwnershipHash()
         {
             uint hash = 2166136261;
-            foreach (var s in Surfaces.Values) if (s.Ownership != null)
-            { hash = unchecked((hash ^ (uint)s.SurfaceId) * 16777619); foreach (byte b in s.Ownership.Cells) hash = unchecked((hash ^ b) * 16777619); foreach (byte b in s.Ownership.State) hash = unchecked((hash ^ b) * 16777619); }
+            foreach (var pair in RegionGrids().OrderBy(p => p.Key))
+            { hash = unchecked((hash ^ (uint)pair.Key) * 16777619); foreach (byte b in pair.Value.Cells) hash = unchecked((hash ^ b) * 16777619); foreach (byte b in pair.Value.State) hash = unchecked((hash ^ b) * 16777619); }
             return hash;
         }
         public void ClearPaint() { foreach (var surface in Surfaces.Values) surface.Clear(); }

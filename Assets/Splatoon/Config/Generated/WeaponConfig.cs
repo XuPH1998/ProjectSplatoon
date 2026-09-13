@@ -36,6 +36,23 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         { if(!_buf["paintRadiusMax"].IsNumber) { throw new SerializationException(); }  PaintRadiusMax = _buf["paintRadiusMax"]; }
         { if(!_buf["paintHardness"].IsNumber) { throw new SerializationException(); }  PaintHardness = _buf["paintHardness"]; }
         { if(!_buf["paintStrength"].IsNumber) { throw new SerializationException(); }  PaintStrength = _buf["paintStrength"]; }
+        { if(!_buf["fireIntervalFrames"].IsNumber) { throw new SerializationException(); }  FireIntervalFrames = _buf["fireIntervalFrames"]; }
+        { if(!_buf["startFrames"].IsNumber) { throw new SerializationException(); }  StartFrames = _buf["startFrames"]; }
+        { if(!_buf["emergeStartFrames"].IsNumber) { throw new SerializationException(); }  EmergeStartFrames = _buf["emergeStartFrames"]; }
+        { if(!_buf["inkRecoverLockFrames"].IsNumber) { throw new SerializationException(); }  InkRecoverLockFrames = _buf["inkRecoverLockFrames"]; }
+        { if(!_buf["damageMin"].IsNumber) { throw new SerializationException(); }  DamageMin = _buf["damageMin"]; }
+        { if(!_buf["damageReduceStartFrames"].IsNumber) { throw new SerializationException(); }  DamageReduceStartFrames = _buf["damageReduceStartFrames"]; }
+        { if(!_buf["damageReduceEndFrames"].IsNumber) { throw new SerializationException(); }  DamageReduceEndFrames = _buf["damageReduceEndFrames"]; }
+        { if(!_buf["straightFrames"].IsNumber) { throw new SerializationException(); }  StraightFrames = _buf["straightFrames"]; }
+        { if(!_buf["brakeFrames"].IsNumber) { throw new SerializationException(); }  BrakeFrames = _buf["brakeFrames"]; }
+        { if(!_buf["brakeSpeedMultiplier"].IsNumber) { throw new SerializationException(); }  BrakeSpeedMultiplier = _buf["brakeSpeedMultiplier"]; }
+        { if(!_buf["jumpSpreadDegrees"].IsNumber) { throw new SerializationException(); }  JumpSpreadDegrees = _buf["jumpSpreadDegrees"]; }
+        { if(!_buf["spreadRecoverFrames"].IsNumber) { throw new SerializationException(); }  SpreadRecoverFrames = _buf["spreadRecoverFrames"]; }
+        { if(!_buf["trailSpacing"].IsNumber) { throw new SerializationException(); }  TrailSpacing = _buf["trailSpacing"]; }
+        { if(!_buf["trailRadius"].IsNumber) { throw new SerializationException(); }  TrailRadius = _buf["trailRadius"]; }
+        { if(!_buf["trailMaxDrop"].IsNumber) { throw new SerializationException(); }  TrailMaxDrop = _buf["trailMaxDrop"]; }
+        { if(!_buf["effectiveRange"].IsNumber) { throw new SerializationException(); }  EffectiveRange = _buf["effectiveRange"]; }
+        { if(!_buf["paintRange"].IsNumber) { throw new SerializationException(); }  PaintRange = _buf["paintRange"]; }
     }
 
     public static WeaponConfig DeserializeWeaponConfig(JSONNode _buf)
@@ -107,6 +124,74 @@ public sealed partial class WeaponConfig : Luban.BeanBase
     /// 笔刷强度（0 到 1）
     /// </summary>
     public readonly float PaintStrength;
+    /// <summary>
+    /// 连发间隔（60Hz参考帧）
+    /// </summary>
+    public readonly int FireIntervalFrames;
+    /// <summary>
+    /// 人形起手（60Hz参考帧）
+    /// </summary>
+    public readonly int StartFrames;
+    /// <summary>
+    /// 出墨起手（60Hz参考帧）
+    /// </summary>
+    public readonly int EmergeStartFrames;
+    /// <summary>
+    /// 最后一发后回墨锁定（60Hz参考帧）
+    /// </summary>
+    public readonly int InkRecoverLockFrames;
+    /// <summary>
+    /// 衰减后伤害（HP）
+    /// </summary>
+    public readonly float DamageMin;
+    /// <summary>
+    /// 伤害衰减开始（飞行60Hz参考帧）
+    /// </summary>
+    public readonly int DamageReduceStartFrames;
+    /// <summary>
+    /// 伤害衰减结束（飞行60Hz参考帧）
+    /// </summary>
+    public readonly int DamageReduceEndFrames;
+    /// <summary>
+    /// 直行阶段（60Hz参考帧）
+    /// </summary>
+    public readonly int StraightFrames;
+    /// <summary>
+    /// 减速过渡（60Hz参考帧）
+    /// </summary>
+    public readonly int BrakeFrames;
+    /// <summary>
+    /// 减速后的速度比例
+    /// </summary>
+    public readonly float BrakeSpeedMultiplier;
+    /// <summary>
+    /// 跳跃散布半角（度）
+    /// </summary>
+    public readonly float JumpSpreadDegrees;
+    /// <summary>
+    /// 落地散布恢复（60Hz参考帧）
+    /// </summary>
+    public readonly int SpreadRecoverFrames;
+    /// <summary>
+    /// 沿途落墨间隔（米）
+    /// </summary>
+    public readonly float TrailSpacing;
+    /// <summary>
+    /// 沿途落墨笔刷半径（米）
+    /// </summary>
+    public readonly float TrailRadius;
+    /// <summary>
+    /// 沿途落墨向下探测范围（米）
+    /// </summary>
+    public readonly float TrailMaxDrop;
+    /// <summary>
+    /// 伤害弹最大前向射程（本项目米）
+    /// </summary>
+    public readonly float EffectiveRange;
+    /// <summary>
+    /// 水平瞄准涂地射程目标（本项目米）
+    /// </summary>
+    public readonly float PaintRange;
    
     public const int __ID__ = 127041694;
     public override int GetTypeId() => __ID__;
@@ -134,6 +219,23 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         + "paintRadiusMax:" + PaintRadiusMax + ","
         + "paintHardness:" + PaintHardness + ","
         + "paintStrength:" + PaintStrength + ","
+        + "fireIntervalFrames:" + FireIntervalFrames + ","
+        + "startFrames:" + StartFrames + ","
+        + "emergeStartFrames:" + EmergeStartFrames + ","
+        + "inkRecoverLockFrames:" + InkRecoverLockFrames + ","
+        + "damageMin:" + DamageMin + ","
+        + "damageReduceStartFrames:" + DamageReduceStartFrames + ","
+        + "damageReduceEndFrames:" + DamageReduceEndFrames + ","
+        + "straightFrames:" + StraightFrames + ","
+        + "brakeFrames:" + BrakeFrames + ","
+        + "brakeSpeedMultiplier:" + BrakeSpeedMultiplier + ","
+        + "jumpSpreadDegrees:" + JumpSpreadDegrees + ","
+        + "spreadRecoverFrames:" + SpreadRecoverFrames + ","
+        + "trailSpacing:" + TrailSpacing + ","
+        + "trailRadius:" + TrailRadius + ","
+        + "trailMaxDrop:" + TrailMaxDrop + ","
+        + "effectiveRange:" + EffectiveRange + ","
+        + "paintRange:" + PaintRange + ","
         + "}";
     }
 }

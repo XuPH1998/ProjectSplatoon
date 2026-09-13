@@ -12,6 +12,19 @@
     <var name="enemyInkMultiplier" type="float" comment="敌方墨水速度倍率"/>
     <var name="jumpSpeed" type="float" comment="起跳速度（米/秒）"/>
     <var name="gravity" type="float" comment="角色重力（米/秒²）"/>
+    <var name="shootMoveSpeed" type="float" comment="射击移动速度（米/秒）"/>
+    <var name="moveAcceleration" type="float" comment="人形加减速度（米/秒²）"/>
+    <var name="swimAcceleration" type="float" comment="潜墨加减速度（米/秒²）"/>
+    <var name="wallSwimSpeed" type="float" comment="墙游速度（米/秒）"/>
+    <var name="wallGraceSeconds" type="float" comment="墙面接缝接触容错（秒）"/>
+    <var name="wallProbeDistance" type="float" comment="角色表面探测距离（米）"/>
+    <var name="wallJumpSpeed" type="float" comment="脱墙跳跃外推速度（米/秒）"/>
+    <var name="mantleSeconds" type="float" comment="墨水形态翻越时长（秒）"/>
+    <var name="healthRecoverDelay" type="float" comment="受伤后回血等待（秒）"/>
+    <var name="healthRecoverRate" type="float" comment="普通回血（HP/秒）"/>
+    <var name="swimHealthRecoverRate" type="float" comment="己方潜墨回血（HP/秒）"/>
+    <var name="enemyInkDamageRate" type="float" comment="敌墨伤害（HP/秒）"/>
+    <var name="enemyInkHealthFloor" type="float" comment="敌墨非致死生命下限（HP）"/>
   </bean>
   <table name="TbCharacter" value="CharacterConfig" input="TbCharacter.xlsx" mode="map" index="id"/>
   <bean name="WeaponConfig" comment="Weapon 强类型配置">
@@ -31,6 +44,23 @@
     <var name="paintRadiusMax" type="float" comment="最大涂色半径（米）"/>
     <var name="paintHardness" type="float" comment="笔刷硬度（0 到 1）"/>
     <var name="paintStrength" type="float" comment="笔刷强度（0 到 1）"/>
+    <var name="fireIntervalFrames" type="int" comment="连发间隔（60Hz参考帧）"/>
+    <var name="startFrames" type="int" comment="人形起手（60Hz参考帧）"/>
+    <var name="emergeStartFrames" type="int" comment="出墨起手（60Hz参考帧）"/>
+    <var name="inkRecoverLockFrames" type="int" comment="最后一发后回墨锁定（60Hz参考帧）"/>
+    <var name="damageMin" type="float" comment="衰减后伤害（HP）"/>
+    <var name="damageReduceStartFrames" type="int" comment="伤害衰减开始（飞行60Hz参考帧）"/>
+    <var name="damageReduceEndFrames" type="int" comment="伤害衰减结束（飞行60Hz参考帧）"/>
+    <var name="straightFrames" type="int" comment="直行阶段（60Hz参考帧）"/>
+    <var name="brakeFrames" type="int" comment="减速过渡（60Hz参考帧）"/>
+    <var name="brakeSpeedMultiplier" type="float" comment="减速后的速度比例"/>
+    <var name="jumpSpreadDegrees" type="float" comment="跳跃散布半角（度）"/>
+    <var name="spreadRecoverFrames" type="int" comment="落地散布恢复（60Hz参考帧）"/>
+    <var name="trailSpacing" type="float" comment="沿途落墨间隔（米）"/>
+    <var name="trailRadius" type="float" comment="沿途落墨笔刷半径（米）"/>
+    <var name="trailMaxDrop" type="float" comment="沿途落墨向下探测范围（米）"/>
+    <var name="effectiveRange" type="float" comment="伤害弹最大前向射程（本项目米）"/>
+    <var name="paintRange" type="float" comment="水平瞄准涂地射程目标（本项目米）"/>
   </bean>
   <table name="TbWeapon" value="WeaponConfig" input="TbWeapon.xlsx" mode="map" index="id"/>
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">
@@ -73,6 +103,7 @@
     <var name="paintWorldUvScale" type="float" comment="墨水细节坐标密度（UV/米），影响覆盖边缘"/>
     <var name="paintShapeNoiseScale" type="float" comment="墨水轮廓噪声频率，CPU 与 GPU 共用"/>
     <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）"/>
+    <var name="simulationRate" type="int" comment="玩法模拟和输入采样频率（Hz）"/>
   </bean>
   <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id"/>
 </module>

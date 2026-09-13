@@ -71,10 +71,13 @@ namespace Splatoon.Prototype
                 await Addressables.InitializeAsync().Task;
                 await LubanConfigService.Current.InitializeAsync(_operation.Token);
                 GameplayConfig.Validate();
+                Time.fixedDeltaTime = 1f / GameplayConfig.Global.SimulationRate;
                 _port = GameplayConfig.Global.DefaultPort.ToString();
                 _signature = LubanConfigService.Current.ContentSignature;
                 var go = new GameObject("NetworkManager"); DontDestroyOnLoad(go);
                 Manager = go.AddComponent<NetworkManager>(); var transport = go.AddComponent<UnityTransport>();
+                // A checkpoint sends several fragmented chunks together; keep room for a burst after a delayed editor frame.
+                transport.MaxPacketQueueSize = Math.Max(256, GameplayConfig.Global.ChunksPerFrame * ((GameplayConfig.Global.SnapshotChunkBytes + 1023) / 1024) * 32);
                 Manager.NetworkConfig = new NetworkConfig();
                 Manager.NetworkConfig.NetworkTransport = transport; Manager.NetworkConfig.EnableSceneManagement = false;
                 Manager.NetworkConfig.TickRate = (uint)GameplayConfig.Global.NetworkTickRate; Manager.NetworkConfig.ConnectionApproval = true;
@@ -99,7 +102,7 @@ namespace Splatoon.Prototype
             response.Approved = request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
             response.CreatePlayerObject = false; response.Pending = false;
             if(response.Approved) _admitted.Add(request.ClientNetworkId);
-            if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? "游戏内容不一致，请双方使用同一构建包。" : "房间已满（最多 4 人）。";
+            if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? "协议或游戏内容不一致（需要玩家协议 6、墨水协议 5），请使用相同地图、配置和角色资源。" : "房间已满（最多 4 人）。";
         }
         private void ClientConnected(ulong id)
         { if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.AddPlayer(id, _playerPrefab.Result); }
@@ -120,10 +123,6 @@ namespace Splatoon.Prototype
                 UnityEngine.SceneManagement.SceneManager.SetActiveScene(_scene.Scene.Scene);
                 if (PrototypeArena.Current == null) throw new InvalidOperationException("场景缺少地图组件");
                 PrototypeArena.Current.InitializeRuntime();
-                using (var sha = System.Security.Cryptography.SHA256.Create())
-                    _signature = sha.ComputeHash(LubanConfigService.Current.ContentSignature
-                        .Concat(Encoding.UTF8.GetBytes(PrototypeArena.Current.BakedTopology + "|character-state:" + PlayerSnapshot.ProtocolVersion)).ToArray());
-                Manager.NetworkConfig.ConnectionData = _signature;
                 if (_bootCamera != null) _bootCamera.gameObject.SetActive(false);
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);
                 _matchPrefab = Addressables.LoadAssetAsync<GameObject>(MatchAddress);
@@ -132,6 +131,8 @@ namespace Splatoon.Prototype
                 _weaponContent = Addressables.LoadAssetAsync<GameObject>(GameplayConfig.Weapon.PrefabAddress);
                 await WaitForPrefab(_characterContent, _operation.Token); await WaitForPrefab(_weaponContent, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
+                _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings);
+                Manager.NetworkConfig.ConnectionData = _signature;
                 if (bindings.BoundVisualPrefab != _characterContent.Result || bindings.CharacterView.BoundWeaponPrefab != _weaponContent.Result)
                     throw new InvalidOperationException("角色或武器配置地址与正式网络预制体绑定不一致，请同步资源绑定后重新构建。");
                 Manager.AddNetworkPrefab(_playerPrefab.Result); Manager.AddNetworkPrefab(_matchPrefab.Result);
@@ -279,7 +280,7 @@ namespace Splatoon.Prototype
             }
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
-            var state=match.State.Value; var player=local.Snapshot.Value;
+            var state=match.State.Value; var player=local.PresentedState;
             double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
             GUI.color=PrototypeArena.Pink; GUI.Label(new Rect(378,37,200,35),$"粉队  {state.PinkArea/total:P1}",_label);
@@ -296,9 +297,18 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/GameplayConfig.Character.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,285,26),player.Swimming?"潜墨中 / 快速回墨":$"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < GameplayConfig.Weapon.ShotInk ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
             GUI.Label(new Rect(850,641,410,60),"左键射击　Shift 潜墨 / 回墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
-            if (_captured && player.Health>0) { Panel(new Rect(638,350,4,20),Color.white); Panel(new Rect(630,358,20,4),Color.white); }
+            if (_captured && player.Health>0)
+            {
+                float gap = 5 + player.CurrentSpread;
+                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < GameplayConfig.Weapon.ShotInk ? Color.yellow : Color.white;
+                Panel(new Rect(639,360-gap-7,2,7),reticle); Panel(new Rect(639,360+gap,2,7),reticle);
+                Panel(new Rect(640-gap-7,359,7,2),reticle); Panel(new Rect(640+gap,359,7,2),reticle);
+                if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(628,347,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
+                if (local.MuzzleBlocked) GUI.Label(new Rect(580,403,210,32),"枪口被遮挡",_small);
+                if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
+            }
             if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"热身中，等待另一名玩家加入。":"房主按回车开始三分钟涂地赛。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(!_captured || state.Phase==MatchPhase.Finished)

@@ -178,6 +178,8 @@ namespace Splatoon.Editor
         public static void Bake(PrototypeArena arena)
         {
             arena.RegisterSurfaces();Physics.SyncTransforms();
+            arena.LayoutVersion=4;
+            foreach(var surface in arena.Surfaces.Values) { PaintRegionBaker.Bake(surface,arena.OwnershipCellSize);EditorUtility.SetDirty(surface); }
             foreach(var s in arena.Surfaces.Values.Where(s=>s.Scores))
             {
                 var grid=new SurfaceOwnershipGrid(s.WalkableSize,arena.OwnershipCellSize,null);var blocked=new List<int>();
@@ -193,7 +195,7 @@ namespace Splatoon.Editor
         public static void Validate(PrototypeArena arena)
         {
             arena.RegisterSurfaces();
-            if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=3)throw new InvalidOperationException("需要 32×64 米、版本 3 地图");
+            if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=4)throw new InvalidOperationException("需要 32×64 米、版本 4 地图");
             if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=4||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("出生点未完整绑定");
             long bytes=0;var sizes=new HashSet<Vector2Int>();
             foreach(var s in arena.Surfaces.Values)

@@ -48,10 +48,11 @@ namespace Splatoon.Combat
             int added = Mathf.FloorToInt(extra);
             _blobCounts[shot.Id] = Mathf.Clamp(BlobsPerShot + added, 1, 32);
             _emitters[shot.Shooter] = (shot.Origin, shot.Born, extra - added);
-            if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.CharacterView.Shot();
+            if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.PredictShotFeedback(shot.ActionId);
         }
         public void Impact(InkImpact impact)
         {
+            if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact.Killed);
             _shots.Remove(impact.Id);
             _blobCounts.Remove(impact.Id);
             if (_streams == null || !impact.Hit || _pool.Count == 0) return;
@@ -77,7 +78,7 @@ namespace Splatoon.Combat
                     for (int n = 0; n < blobs && count < _particles.Length; n++)
                     {
                         double t = System.Math.Max(0, System.Math.Min(w.Lifetime, age - n * .018 / blobs));
-                        _particles[count++] = new ParticleSystem.Particle { position = InkBallistics.Position(shot.Origin, shot.Velocity, w.Gravity, t), startColor = PrototypeArena.TeamColor(team), startSize = BlobSize, remainingLifetime = 1, startLifetime = 1, randomSeed = shot.Seed + (uint)n, velocity = Vector3.zero };
+                        _particles[count++] = new ParticleSystem.Particle { position = InkBallistics.Position(shot.Origin, shot.Velocity, w, t), startColor = PrototypeArena.TeamColor(team), startSize = BlobSize, remainingLifetime = 1, startLifetime = 1, randomSeed = shot.Seed + (uint)n, velocity = Vector3.zero };
                     }
                 }
                 _streams[team - 1].SetParticles(_particles, count);

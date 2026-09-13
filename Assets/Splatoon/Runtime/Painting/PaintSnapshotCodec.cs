@@ -21,7 +21,7 @@ namespace Splatoon.Painting
             using (var zip = new DeflateStream(output, CompressionLevel.Fastest, true))
             using (var writer = new BinaryWriter(zip))
             {
-                writer.Write(4); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
+                writer.Write(5); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
                 writer.Write(checkpoint.Topology);
                 WriteMaps(writer, checkpoint.Ownership); WriteMaps(writer, checkpoint.Surfaces);
             }
@@ -36,7 +36,7 @@ namespace Splatoon.Painting
         {
             using var input = new MemoryStream(compressed); using var zip = new DeflateStream(input, CompressionMode.Decompress);
             using var reader = new BinaryReader(zip);
-            if (reader.ReadInt32() != 4) throw new InvalidDataException("涂色快照版本不一致");
+            if (reader.ReadInt32() != 5) throw new InvalidDataException("涂色快照版本不一致");
             var result = new PaintCheckpoint { Round = reader.ReadUInt32(), Sequence = reader.ReadUInt32() };
             result.Topology = reader.ReadString();
             if (result.Topology != topology) throw new InvalidDataException("地图拓扑不一致");

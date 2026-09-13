@@ -141,7 +141,7 @@ namespace Splatoon.Prototype
             {
                 if (PaintSnapshotCodec.Hash(t.Bytes) != t.Hash) throw new InvalidOperationException("快照完整性校验失败");
                 var sizes = PrototypeArena.Current.Surfaces.ToDictionary(p => p.Key, p => p.Value.TextureBytes);
-                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Arena.BakedTopology, Arena.Surfaces.Values.Where(s => s.Ownership != null).ToDictionary(s => s.SurfaceId, s => s.Ownership.SnapshotBytes), sizes);
+                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Arena.BakedTopology, Arena.OwnershipSizes(), sizes);
                 if (checkpoint.Round != _paintRound) return;
                 PrototypeArena.Current.ClearPaint();
                 Arena.RestoreOwnership(checkpoint.Ownership);

@@ -16,6 +16,7 @@ namespace Splatoon.Combat
         [Min(.01f)] public float BlendSeconds = .1f;
         [Tooltip("前、后、左、右动画在 5 米/秒时的播放倍率")]
         public Vector4 WalkPlayback = Vector4.one;
+        [Min(.1f)] public float AnimationReferenceSpeed = 5;
         public float ShootDuration = 1, DieForwardDuration = 1.8f, DieBackwardDuration = 1.8f;
         [Header("相机与逻辑枪口，角色根节点坐标")]
         public Vector3 CameraPivot = new(0, 1.5f, 0);

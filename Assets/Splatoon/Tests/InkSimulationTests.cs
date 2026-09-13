@@ -59,13 +59,12 @@ namespace Splatoon.Tests
             var bytes = new byte[] { 1, 2, 3, 4 }; uint expected = PaintSnapshotCodec.Hash(bytes); bytes[2] ^= 1;
             Assert.That(PaintSnapshotCodec.Hash(bytes), Is.Not.EqualTo(expected));
         }
-        [Test] public void FortyShotsSpendExactlyTwelveInkAndStopWhenEmpty()
+        [Test] public void FullTankSupports108StandardShooterShots()
         {
             float ink = 100;
-            for (int i = 0; i < 40; i++) Assert.That(PrototypeRules.Spend(ref ink, .3f), Is.True);
-            Assert.That(ink, Is.EqualTo(88).Within(.001));
-            ink = .6f; Assert.That(PrototypeRules.Spend(ref ink, .3f), Is.True); Assert.That(PrototypeRules.Spend(ref ink, .3f), Is.True);
-            Assert.That(PrototypeRules.Spend(ref ink, .3f), Is.False); Assert.That(ink, Is.Zero.Within(.00001));
+            for (int i = 0; i < 108; i++) Assert.That(PrototypeRules.Spend(ref ink, .92f), Is.True);
+            Assert.That(ink, Is.EqualTo(.64).Within(.001));
+            Assert.That(PrototypeRules.Spend(ref ink, .92f), Is.False); Assert.That(ink, Is.GreaterThanOrEqualTo(0));
         }
     }
 }

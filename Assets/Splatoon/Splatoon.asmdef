@@ -3,6 +3,7 @@
   "rootNamespace": "Splatoon",
   "references": [
     "Splatoon.Config",
+    "Luban",
     "Splatoon.Skills.Data",
     "Splatoon.Skills.Support",
     "UniTask",

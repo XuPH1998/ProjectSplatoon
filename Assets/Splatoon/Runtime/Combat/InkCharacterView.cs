@@ -15,6 +15,7 @@ namespace Splatoon.Combat
         public ParticleSystem SwimEffect;
         public Vector2 CameraKick { get; private set; }
         private float _kick;
+        private ParticleSystem _muzzleEffect;
         private MaterialPropertyBlock _block;
         private Renderer[] _renderers;
         private bool[] _rendererEnabled;
@@ -34,9 +35,16 @@ namespace Splatoon.Combat
         private void Awake() => InitializeBindings();
         public void InitializeBindings()
         {
+            if (_renderers != null) return;
             _block = new MaterialPropertyBlock(); _renderers = GetComponentsInChildren<Renderer>(true);
             _rendererEnabled = new bool[_renderers.Length];
             for (int i = 0; i < _renderers.Length; i++) _rendererEnabled[i] = _renderers[i].enabled;
+            if (SwimEffect != null)
+            {
+                ConfigureSwimEffect(SwimEffect);
+                if (InkPresentation.Current != null && InkPresentation.Current.StreamPrefab != null)
+                    SetInkMesh(SwimEffect, InkPresentation.Current.StreamPrefab.GetComponent<ParticleSystemRenderer>().mesh);
+            }
             if (Profile != null && Animator != null && Animator.isHuman)
             {
                 _spine = Animator.GetBoneTransform(HumanBodyBones.Spine);
@@ -48,7 +56,21 @@ namespace Splatoon.Combat
             }
         }
         public void Shot()
-        { _kick = 1; }
+        {
+            _kick = 1;
+            if (Nozzle == null || SwimEffect == null) return;
+            if (_muzzleEffect == null)
+            {
+                var go = new GameObject("LocalMuzzleFeedback"); go.transform.SetParent(Nozzle, false);
+                _muzzleEffect = go.AddComponent<ParticleSystem>(); _muzzleEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                var main = _muzzleEffect.main; main.playOnAwake = false; main.loop = false; main.startLifetime = .07f; main.startSpeed = 2; main.startSize = .07f; main.maxParticles = 24; main.simulationSpace = ParticleSystemSimulationSpace.World;
+                var emission = _muzzleEffect.emission; emission.enabled = false;
+                var shape = _muzzleEffect.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.angle = 8; shape.radius = .01f;
+                go.GetComponent<ParticleSystemRenderer>().sharedMaterial = SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                SetInkMesh(_muzzleEffect, SwimEffect.GetComponent<ParticleSystemRenderer>().mesh);
+            }
+            var settings = _muzzleEffect.main; settings.startColor = PrototypeArena.TeamColor(_state.Team); _muzzleEffect.Emit(3);
+        }
         public void Present(PlayerSnapshot state, float dt, double now)
         {
             if (Profile == null || Animator == null) return;
@@ -73,10 +95,11 @@ namespace Splatoon.Combat
             {
                 // Speeds are measured in the body's space; FL and BR occupy the X axis.
                 var local = transform.InverseTransformDirection(state.Velocity);
-                float speed = GameplayConfig.Character.MoveSpeed;
+                float speed = new Vector2(local.x, local.z).magnitude;
                 float blend = reset || restored ? 0 : Profile.BlendSeconds;
-                Animator.SetFloat(MoveX, state.Grounded ? local.x / speed : 0, blend, dt);
-                Animator.SetFloat(MoveY, state.Grounded ? local.z / speed : 0, blend, dt);
+                Animator.SetFloat(MoveX, state.Grounded && speed > .05f ? local.x / speed : 0, blend, dt);
+                Animator.SetFloat(MoveY, state.Grounded && speed > .05f ? local.z / speed : 0, blend, dt);
+                Animator.SetFloat("MovePlayback", speed > .05f ? speed / Profile.AnimationReferenceSpeed : 1);
                 int desired = !alive ? (state.DeathDirection == 1 ? DieForward : DieBackward) : !state.Grounded ? Air
                     : state.TurnDirection < 0 ? TurnLeft : state.TurnDirection > 0 ? TurnRight : Locomotion;
                 double started = !alive ? state.DiedAt : state.TurnStartedAt;
@@ -111,10 +134,25 @@ namespace Splatoon.Combat
             }
             if (SwimEffect != null)
             {
+                bool wall = state.Movement == MovementMode.WallInk || state.Movement == MovementMode.Mantle;
+                SwimEffect.transform.position = wall ? state.Position + Vector3.up * .35f - state.WallNormal * .25f : state.Position + Vector3.up * .05f;
+                SwimEffect.transform.rotation = Quaternion.FromToRotation(Vector3.forward, wall ? state.WallNormal : Vector3.up);
                 var main = SwimEffect.main; main.startColor = color;
                 if (state.Swimming && alive) { if (!SwimEffect.isPlaying) SwimEffect.Play(); }
                 else if (SwimEffect.isPlaying) SwimEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
+        }
+
+        public static void ConfigureSwimEffect(ParticleSystem effect)
+        {
+            var main = effect.main; main.simulationSpace = ParticleSystemSimulationSpace.World;
+            var shape = effect.shape; shape.shapeType = ParticleSystemShapeType.Circle; shape.radius = .22f;
+        }
+        public static void SetInkMesh(ParticleSystem effect, Mesh mesh)
+        {
+            if (mesh == null) return;
+            var renderer = effect.GetComponent<ParticleSystemRenderer>(); renderer.renderMode = ParticleSystemRenderMode.Mesh; renderer.mesh = mesh;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
 
         // Source AnimationEvents are presentation-only; authority state always wins.

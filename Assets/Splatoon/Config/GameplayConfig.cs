@@ -27,6 +27,7 @@ namespace Splatoon.Config
             {
                 Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.Gravity > 0 && c.JumpSpeed > 0, "角色数值无效");
                 Require(!string.IsNullOrWhiteSpace(c.VisualAddress), "角色缺少外观地址");
+                Require(c.ShootMoveSpeed > 0 && c.MoveAcceleration > 0 && c.SwimAcceleration > 0 && c.WallSwimSpeed > 0 && c.WallProbeDistance > 0 && c.WallGraceSeconds <= .1f && c.MantleSeconds > 0 && c.EnemyInkHealthFloor <= c.MaxHealth, "移动与恢复配置无效");
             }
             foreach (var w in tables.TbWeapon.DataList)
             {
@@ -34,6 +35,8 @@ namespace Splatoon.Config
                 Require(w.SpeedMin > 0 && w.SpeedMax >= w.SpeedMin && w.CollisionRadius > 0 && w.Gravity > 0, "弹道配置无效");
                 Require(w.PaintRadiusMin > 0 && w.PaintRadiusMax >= w.PaintRadiusMin && w.PaintHardness <= 1 && w.PaintStrength <= 1 && w.PaintStrength > 0 && w.SpreadDegrees <= 45, "笔刷或散布配置无效");
                 Require(!string.IsNullOrWhiteSpace(w.PrefabAddress), "武器缺少资源地址");
+                Require(w.FireIntervalFrames > 0 && Math.Abs(w.FireRate * w.FireIntervalFrames - 60) < .001 && w.StartFrames >= 0 && w.EmergeStartFrames >= w.StartFrames && w.InkRecoverLockFrames >= 0, "武器时间参数以 60Hz 参考帧配置");
+                Require(w.DamageMin > 0 && w.DamageMin <= w.Damage && w.DamageReduceStartFrames >= 0 && w.DamageReduceEndFrames > w.DamageReduceStartFrames && w.StraightFrames >= 0 && w.BrakeFrames > 0 && w.BrakeSpeedMultiplier > 0 && w.BrakeSpeedMultiplier <= 1 && w.SpreadRecoverFrames > 0 && w.JumpSpreadDegrees <= 45 && w.TrailSpacing > 0 && w.TrailRadius > 0 && w.EffectiveRange > 0 && w.PaintRange >= w.EffectiveRange, "武器弹道或落墨配置无效");
             }
             foreach (var m in tables.TbRoomMode.DataList)
             {
@@ -43,6 +46,7 @@ namespace Splatoon.Config
             foreach (var a in tables.TbArena.DataList)
                 Require(a.Width > 0 && a.Length > 0 && a.Width <= 256 && a.Length <= 256 && a.CellSize >= .0625f && a.CellSize <= .5f && Math.Abs(a.Width / a.CellSize - Math.Round(a.Width / a.CellSize)) < .0001 && Math.Abs(a.Length / a.CellSize - Math.Round(a.Length / a.CellSize)) < .0001 && a.LayoutVersion > 0 && !string.IsNullOrWhiteSpace(a.SceneAddress), "场地尺寸或网格配置无效");
             Require(global.NetworkTickRate >= 10 && global.NetworkTickRate <= 120 && global.ProjectileStepRate >= global.NetworkTickRate && global.ProjectileStepRate % global.NetworkTickRate == 0 && global.ProjectileStepRate <= 480, "网络频率与子步频率必须整除");
+            Require(global.SimulationRate == 60 && global.SimulationRate % global.NetworkTickRate == 0 && global.ProjectileStepRate % global.SimulationRate == 0, "玩法固定 60Hz，输入发送与弹道子步必须整除");
             Require(global.DefaultPort > 0 && global.DefaultPort <= 65535 && global.ConnectionTimeout > 0 && global.InputTimeout > 0, "网络超时或端口无效");
             Require(global.SnapshotChunkBytes >= 512 && global.SnapshotChunkBytes <= 8192 && global.ChunksPerFrame > 0 && global.ChunksPerFrame <= 32 && global.CheckpointStamps >= 32, "同步预算无效");
             Require(global.PaintThreshold > 0 && global.PaintThreshold <= 1 && global.MaxPaintMemoryMiB > 0 && global.PaintWorldUvScale > 0 && global.PaintWorldUvScale <= 1 && global.PaintShapeNoiseScale > 0 && global.PaintShapeNoiseScale <= 512, "涂色阈值或内存预算无效");

@@ -247,8 +247,10 @@ namespace Splatoon.Editor
             }
             else { controller = new AnimatorController(); AssetDatabase.CreateAsset(controller, ControllerPath); }
             controller.AddParameter("MoveX", AnimatorControllerParameterType.Float); controller.AddParameter("MoveY", AnimatorControllerParameterType.Float);
+            controller.AddParameter("MovePlayback", AnimatorControllerParameterType.Float);
             controller.AddLayer("Base Layer"); var machine = controller.layers[0].stateMachine;
             var state = machine.AddState("Locomotion"); machine.defaultState = state; state.writeDefaultValues = false;
+            state.speedParameter = "MovePlayback"; state.speedParameterActive = true;
             var tree = new BlendTree { name = "AimWalkFourDirections", blendType = BlendTreeType.SimpleDirectional2D, blendParameter = "MoveX", blendParameterY = "MoveY", useAutomaticThresholds = false };
             AssetDatabase.AddObjectToAsset(tree, controller); state.motion = tree;
             tree.AddChild(Clip("R_AimIdle"), Vector2.zero);
@@ -306,6 +308,8 @@ namespace Splatoon.Editor
             main.loop = true; main.playOnAwake = false; main.startSpeed = .1f; main.startSize = .2f; main.startLifetime = .3f;
             var emission = ps.emission; emission.rateOverTime = 12;
             go.GetComponent<ParticleSystemRenderer>().sharedMaterial = Load<Material>("Assets/GameResource/Effects/Ink/Materials/InkParticle.mat");
+            InkCharacterView.ConfigureSwimEffect(ps);
+            InkCharacterView.SetInkMesh(ps, Load<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab").GetComponent<ParticleSystemRenderer>().mesh);
             ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); return ps;
         }
 
@@ -354,6 +358,10 @@ namespace Splatoon.Editor
             foreach (var t in visual.GetComponentsInChildren<Transform>(true))
                 if (GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject) != 0) throw new InvalidOperationException("正式外观存在丢失脚本：" + t.name);
             var clips = view.Animator.runtimeAnimatorController.animationClips.Distinct().ToArray();
+            var movementController=(AnimatorController)view.Animator.runtimeAnimatorController;
+            if(!movementController.parameters.Any(p=>p.name=="MovePlayback"))throw new InvalidOperationException("缺少移动动画独立播放倍率");
+            foreach(var layer in movementController.layers)foreach(var child in layer.stateMachine.states)
+                if(child.state.speedParameterActive!=(child.state.name=="Locomotion"))throw new InvalidOperationException("步频倍率只能作用于移动状态");
             if (clips.Length != 10) throw new InvalidOperationException("正式动画数量应为 10，实际=" + clips.Length);
             foreach (var clip in clips)
             {

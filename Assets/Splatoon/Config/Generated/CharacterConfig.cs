@@ -32,6 +32,19 @@ public sealed partial class CharacterConfig : Luban.BeanBase
         { if(!_buf["enemyInkMultiplier"].IsNumber) { throw new SerializationException(); }  EnemyInkMultiplier = _buf["enemyInkMultiplier"]; }
         { if(!_buf["jumpSpeed"].IsNumber) { throw new SerializationException(); }  JumpSpeed = _buf["jumpSpeed"]; }
         { if(!_buf["gravity"].IsNumber) { throw new SerializationException(); }  Gravity = _buf["gravity"]; }
+        { if(!_buf["shootMoveSpeed"].IsNumber) { throw new SerializationException(); }  ShootMoveSpeed = _buf["shootMoveSpeed"]; }
+        { if(!_buf["moveAcceleration"].IsNumber) { throw new SerializationException(); }  MoveAcceleration = _buf["moveAcceleration"]; }
+        { if(!_buf["swimAcceleration"].IsNumber) { throw new SerializationException(); }  SwimAcceleration = _buf["swimAcceleration"]; }
+        { if(!_buf["wallSwimSpeed"].IsNumber) { throw new SerializationException(); }  WallSwimSpeed = _buf["wallSwimSpeed"]; }
+        { if(!_buf["wallGraceSeconds"].IsNumber) { throw new SerializationException(); }  WallGraceSeconds = _buf["wallGraceSeconds"]; }
+        { if(!_buf["wallProbeDistance"].IsNumber) { throw new SerializationException(); }  WallProbeDistance = _buf["wallProbeDistance"]; }
+        { if(!_buf["wallJumpSpeed"].IsNumber) { throw new SerializationException(); }  WallJumpSpeed = _buf["wallJumpSpeed"]; }
+        { if(!_buf["mantleSeconds"].IsNumber) { throw new SerializationException(); }  MantleSeconds = _buf["mantleSeconds"]; }
+        { if(!_buf["healthRecoverDelay"].IsNumber) { throw new SerializationException(); }  HealthRecoverDelay = _buf["healthRecoverDelay"]; }
+        { if(!_buf["healthRecoverRate"].IsNumber) { throw new SerializationException(); }  HealthRecoverRate = _buf["healthRecoverRate"]; }
+        { if(!_buf["swimHealthRecoverRate"].IsNumber) { throw new SerializationException(); }  SwimHealthRecoverRate = _buf["swimHealthRecoverRate"]; }
+        { if(!_buf["enemyInkDamageRate"].IsNumber) { throw new SerializationException(); }  EnemyInkDamageRate = _buf["enemyInkDamageRate"]; }
+        { if(!_buf["enemyInkHealthFloor"].IsNumber) { throw new SerializationException(); }  EnemyInkHealthFloor = _buf["enemyInkHealthFloor"]; }
     }
 
     public static CharacterConfig DeserializeCharacterConfig(JSONNode _buf)
@@ -87,6 +100,58 @@ public sealed partial class CharacterConfig : Luban.BeanBase
     /// 角色重力（米/秒&#178;）
     /// </summary>
     public readonly float Gravity;
+    /// <summary>
+    /// 射击移动速度（米/秒）
+    /// </summary>
+    public readonly float ShootMoveSpeed;
+    /// <summary>
+    /// 人形加减速度（米/秒&#178;）
+    /// </summary>
+    public readonly float MoveAcceleration;
+    /// <summary>
+    /// 潜墨加减速度（米/秒&#178;）
+    /// </summary>
+    public readonly float SwimAcceleration;
+    /// <summary>
+    /// 墙游速度（米/秒）
+    /// </summary>
+    public readonly float WallSwimSpeed;
+    /// <summary>
+    /// 墙面接缝接触容错（秒）
+    /// </summary>
+    public readonly float WallGraceSeconds;
+    /// <summary>
+    /// 角色表面探测距离（米）
+    /// </summary>
+    public readonly float WallProbeDistance;
+    /// <summary>
+    /// 脱墙跳跃外推速度（米/秒）
+    /// </summary>
+    public readonly float WallJumpSpeed;
+    /// <summary>
+    /// 墨水形态翻越时长（秒）
+    /// </summary>
+    public readonly float MantleSeconds;
+    /// <summary>
+    /// 受伤后回血等待（秒）
+    /// </summary>
+    public readonly float HealthRecoverDelay;
+    /// <summary>
+    /// 普通回血（HP/秒）
+    /// </summary>
+    public readonly float HealthRecoverRate;
+    /// <summary>
+    /// 己方潜墨回血（HP/秒）
+    /// </summary>
+    public readonly float SwimHealthRecoverRate;
+    /// <summary>
+    /// 敌墨伤害（HP/秒）
+    /// </summary>
+    public readonly float EnemyInkDamageRate;
+    /// <summary>
+    /// 敌墨非致死生命下限（HP）
+    /// </summary>
+    public readonly float EnemyInkHealthFloor;
    
     public const int __ID__ = 676994987;
     public override int GetTypeId() => __ID__;
@@ -110,6 +175,19 @@ public sealed partial class CharacterConfig : Luban.BeanBase
         + "enemyInkMultiplier:" + EnemyInkMultiplier + ","
         + "jumpSpeed:" + JumpSpeed + ","
         + "gravity:" + Gravity + ","
+        + "shootMoveSpeed:" + ShootMoveSpeed + ","
+        + "moveAcceleration:" + MoveAcceleration + ","
+        + "swimAcceleration:" + SwimAcceleration + ","
+        + "wallSwimSpeed:" + WallSwimSpeed + ","
+        + "wallGraceSeconds:" + WallGraceSeconds + ","
+        + "wallProbeDistance:" + WallProbeDistance + ","
+        + "wallJumpSpeed:" + WallJumpSpeed + ","
+        + "mantleSeconds:" + MantleSeconds + ","
+        + "healthRecoverDelay:" + HealthRecoverDelay + ","
+        + "healthRecoverRate:" + HealthRecoverRate + ","
+        + "swimHealthRecoverRate:" + SwimHealthRecoverRate + ","
+        + "enemyInkDamageRate:" + EnemyInkDamageRate + ","
+        + "enemyInkHealthFloor:" + EnemyInkHealthFloor + ","
         + "}";
     }
 }

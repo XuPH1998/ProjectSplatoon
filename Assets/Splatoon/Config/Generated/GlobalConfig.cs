@@ -34,6 +34,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["paintWorldUvScale"].IsNumber) { throw new SerializationException(); }  PaintWorldUvScale = _buf["paintWorldUvScale"]; }
         { if(!_buf["paintShapeNoiseScale"].IsNumber) { throw new SerializationException(); }  PaintShapeNoiseScale = _buf["paintShapeNoiseScale"]; }
         { if(!_buf["maxPaintMemoryMiB"].IsNumber) { throw new SerializationException(); }  MaxPaintMemoryMiB = _buf["maxPaintMemoryMiB"]; }
+        { if(!_buf["simulationRate"].IsNumber) { throw new SerializationException(); }  SimulationRate = _buf["simulationRate"]; }
     }
 
     public static GlobalConfig DeserializeGlobalConfig(JSONNode _buf)
@@ -97,6 +98,10 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// 涂色 RT 内存预算（MiB）
     /// </summary>
     public readonly int MaxPaintMemoryMiB;
+    /// <summary>
+    /// 玩法模拟和输入采样频率（Hz）
+    /// </summary>
+    public readonly int SimulationRate;
    
     public const int __ID__ = -958250779;
     public override int GetTypeId() => __ID__;
@@ -122,6 +127,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "paintWorldUvScale:" + PaintWorldUvScale + ","
         + "paintShapeNoiseScale:" + PaintShapeNoiseScale + ","
         + "maxPaintMemoryMiB:" + MaxPaintMemoryMiB + ","
+        + "simulationRate:" + SimulationRate + ","
         + "}";
     }
 }

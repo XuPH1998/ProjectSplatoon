@@ -13,6 +13,7 @@
     "paintThreshold": 0.5,
     "paintWorldUvScale": 0.034424,
     "paintShapeNoiseScale": 110,
-    "maxPaintMemoryMiB": 128
+    "maxPaintMemoryMiB": 128,
+    "simulationRate": 60
   }
 ]

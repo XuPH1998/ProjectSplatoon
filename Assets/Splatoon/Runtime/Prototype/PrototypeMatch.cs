@@ -74,14 +74,22 @@ namespace Splatoon.Prototype
             PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear(); InitialSyncComplete = true;
         }
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer) ResetPaint(round); }
-        private void ServerTick()
+        private double _simulationTime;
+        private void FixedUpdate()
         {
-            double now = NetworkManager.ServerTime.Time; var s = State.Value;
+            if (!IsSpawned || !IsServer) return;
+            if (_simulationTime == 0) _simulationTime = NetworkManager.ServerTime.Time;
+            _simulationTime += 1.0 / GameplayConfig.Global.SimulationRate;
+            double now = _simulationTime; var s = State.Value;
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
             { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
-            foreach (var p in Players) p.Simulate(1f / NetworkManager.NetworkConfig.TickRate, now, s.Phase);
+            foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
+        }
+        private void ServerTick()
+        {
+            var s = State.Value;
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(Projectiles.Spawned.ToArray()); Projectiles.Spawned.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(Projectiles.Impacts.ToArray()); Projectiles.Impacts.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(_pending.ToArray()); _pending.Clear(); }
