@@ -8,7 +8,7 @@
     "shotInk": 0.92,
     "speedMin": 31,
     "speedMax": 31,
-    "gravity": 9.8,
+    "gravity": 18.6,
     "lifetime": 1.2,
     "collisionRadius": 0.025,
     "spreadDegrees": 5,
