@@ -9,7 +9,12 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 6;
+        public const uint ProtocolVersion = 7;
+        public int WeaponId, BurstRemaining, ChargeTicks;
+        public uint EquipmentRevision, ConsumedRelease;
+        public bool AttackNeedsRelease, ChargeReleasePending;
+        public double ChargeStartedAt, BurstReadyAt, FireVisualUntil;
+        public float LastShotCharge;
         public Vector3 Position, Velocity;
         public float Yaw, Pitch, Health, Ink;
         public float BodyYaw, TurnStartYaw;
@@ -32,6 +37,9 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref WeaponId); s.SerializeValue(ref EquipmentRevision); s.SerializeValue(ref ConsumedRelease);
+            s.SerializeValue(ref BurstRemaining); s.SerializeValue(ref ChargeTicks); s.SerializeValue(ref AttackNeedsRelease); s.SerializeValue(ref ChargeReleasePending);
+            s.SerializeValue(ref ChargeStartedAt); s.SerializeValue(ref BurstReadyAt); s.SerializeValue(ref FireVisualUntil); s.SerializeValue(ref LastShotCharge);
             s.SerializeValue(ref Position); s.SerializeValue(ref Yaw); s.SerializeValue(ref Pitch);
             s.SerializeValue(ref Health); s.SerializeValue(ref Ink); s.SerializeValue(ref RespawnsAt);
             s.SerializeValue(ref ProtectedUntil); s.SerializeValue(ref Revision); s.SerializeValue(ref Team);

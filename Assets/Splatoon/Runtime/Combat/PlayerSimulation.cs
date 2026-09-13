@@ -8,46 +8,7 @@ using Splatoon.Prototype;
 namespace Splatoon.Combat
 {
     public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead }
-    public enum WeaponPhase : byte { Idle, Starting, Firing, Ending }
-
-    public static class WeaponSimulation
-    {
-        public const double ReferenceRate = 60.0;
-        public static double Seconds(int frames) => frames / ReferenceRate;
-        public static float Damage(cfg.WeaponConfig w, double age) => Mathf.Lerp(w.Damage, w.DamageMin,
-            Mathf.InverseLerp((float)Seconds(w.DamageReduceStartFrames), (float)Seconds(w.DamageReduceEndFrames), (float)age));
-
-        // One simulation step returns at most one shot. NextShotAt survives releasing the trigger.
-        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, cfg.WeaponConfig w, double now, bool emerged, bool canShoot)
-        {
-            bool edge = input.FireSequence != s.ConsumedFire;
-            if (s.WeaponPhase == WeaponPhase.Ending) s.WeaponPhase = WeaponPhase.Idle;
-            if (!canShoot || s.Health <= 0)
-            { s.WeaponPhase = WeaponPhase.Idle; s.Firing = false; return false; }
-            if (s.WeaponPhase == WeaponPhase.Idle && (input.Fire || edge))
-            {
-                s.ConsumedFire = input.FireSequence;
-                if (s.Ink + .00001f < w.ShotInk) { s.Firing = false; return false; }
-                s.WeaponPhase = WeaponPhase.Starting;
-                s.FireBurstSequence = input.Sequence; s.BurstShotIndex = 0;
-                s.WeaponReadyAt = Math.Max(s.NextShotAt, now + Seconds(emerged ? w.EmergeStartFrames : w.StartFrames));
-            }
-            // A new press observed while the trigger is still held belongs to this burst.
-            // Do not leave its edge queued to produce an extra shot after release.
-            if (input.Fire && s.WeaponPhase != WeaponPhase.Idle) s.ConsumedFire = input.FireSequence;
-            if (s.WeaponPhase == WeaponPhase.Starting && now + 1e-8 < s.WeaponReadyAt) return false;
-            if (s.WeaponPhase == WeaponPhase.Firing && !input.Fire)
-            { s.WeaponPhase = WeaponPhase.Ending; s.Firing = false; return false; }
-            if (s.WeaponPhase == WeaponPhase.Idle || now + 1e-8 < s.NextShotAt) return false;
-            if (!PrototypeRules.Spend(ref s.Ink, w.ShotInk))
-            { s.WeaponPhase = WeaponPhase.Idle; s.Firing = false; return false; }
-            if (!s.Firing) s.FireStartedAt = now;
-            s.Firing = true; s.WeaponPhase = WeaponPhase.Firing; s.ShotSequence++; s.BurstShotIndex++;
-            s.NextShotAt = now + Seconds(w.FireIntervalFrames);
-            s.InkRecoverAt = now + Seconds(w.InkRecoverLockFrames); s.ProtectedUntil = 0;
-            return true;
-        }
-    }
+    public enum WeaponPhase : byte { Idle, Starting, Firing, Ending, Charging, BurstCooldown }
 
     public static class ResourceSimulation
     {
@@ -105,7 +66,7 @@ namespace Splatoon.Combat
             contact = default; return false;
         }
         public static bool IsEnemy(byte owner, byte team) => owner != 0 && owner != 255 && owner != team;
-        public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire)
+        public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1)
         {
             var c = GameplayConfig.Character;
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
@@ -174,7 +135,7 @@ namespace Splatoon.Combat
                 s.Swimming = true; s.Grounded = false; s.VerticalSpeed = 0; s.PlanarVelocity = Vector3.zero; s.Velocity = Vector3.zero;
                 SetShape(true); return;
             }
-            float speed = useInk ? c.SwimSpeed : wantsFire ? c.ShootMoveSpeed : c.MoveSpeed;
+            float speed = useInk ? c.SwimSpeed : wantsFire ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);

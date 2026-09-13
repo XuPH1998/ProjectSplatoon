@@ -61,6 +61,20 @@
     <var name="trailMaxDrop" type="float" comment="沿途落墨向下探测范围（米）"/>
     <var name="effectiveRange" type="float" comment="伤害弹最大前向射程（本项目米）"/>
     <var name="paintRange" type="float" comment="水平瞄准涂地射程目标（本项目米）"/>
+    <var name="displayName" type="string" comment="枪械中文显示名"/>
+    <var name="fireMode" type="int" comment="机制：0全自动／1三连发／2蓄力松开发射"/>
+    <var name="shootMoveSpeed" type="float" comment="射击或蓄力移动速度（米/秒）"/>
+    <var name="burstCount" type="int" comment="每组发数（全自动为1）"/>
+    <var name="burstRecoveryFrames" type="int" comment="末发到下一组首发（60Hz参考帧）"/>
+    <var name="chargeFrames" type="int" comment="满蓄时间（60Hz参考帧，非蓄力为0）"/>
+    <var name="chargeMinDamage" type="float" comment="点射伤害（HP）"/>
+    <var name="chargePartialMaxDamage" type="float" comment="未满蓄伤害上限（HP）"/>
+    <var name="chargeMinInk" type="float" comment="点射耗墨（点）"/>
+    <var name="chargeMinRange" type="float" comment="点射伤害射程（米）"/>
+    <var name="chargeMinSpeed" type="float" comment="点射初速（米/秒）"/>
+    <var name="chargeMinSpread" type="float" comment="点射地面散布半角（度）"/>
+    <var name="chargeMinJumpSpread" type="float" comment="点射空中散布半角（度）"/>
+    <var name="chargeMinPaintRange" type="float" comment="点射水平涂地射程目标（米）"/>
   </bean>
   <table name="TbWeapon" value="WeaponConfig" input="TbWeapon.xlsx" mode="map" index="id"/>
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">

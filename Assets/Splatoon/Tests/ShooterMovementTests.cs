@@ -105,6 +105,44 @@ namespace Splatoon.Tests
             var scene=EditorSceneManager.OpenScene("Assets/GameResource/Gameplay/maps/TrainingGround.unity",OpenSceneMode.Single);
             var arena=scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<PrototypeArena>()).Single();arena.InitializeRuntime();Physics.SyncTransforms();return arena;
         }
+        [TestCase(2)] [TestCase(32)] [TestCase(62)]
+        public void ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(int release)
+        {
+            var arena=LoadArena();var w=GameplayConfig.GetWeapon(5);
+            var s=Alive();s.WeaponId=w.Id;s.Position=new Vector3(0,.05f,-24);
+            Assert.That(Physics.Raycast(s.Position+Vector3.up*.2f,Vector3.down,out var hit,1,PlayerMotorSimulation.WorldMask),Is.True);
+            var floor=hit.collider.GetComponent<PaintSurface>();Assert.That(floor,Is.Not.Null);
+            arena.Apply(new PaintStamp{SurfaceId=floor.SurfaceId,Position=hit.point,Normal=hit.normal,Radius=3,Hardness=1,Strength=1,Team=s.Team},true);
+            Assert.That(arena.FloorOwner(s.Position),Is.EqualTo(s.Team));
+            for(int tick=0;tick<=release;tick++)
+                WeaponSimulation.Step(ref s,new PlayerInputFrame{Sequence=(uint)tick+1,Fire=tick<release,FireSequence=1},w,tick/60.0,false,true);
+            Assert.That(s.ShotSequence,Is.EqualTo(1));var checkpoint=s;
+            var go=new GameObject("Sniper swim probe");go.layer=8;
+            var cc=go.AddComponent<CharacterController>();cc.height=1.8f;cc.center=Vector3.up*.9f;cc.radius=.35f;cc.skinWidth=.03f;
+            try
+            {
+                var motor=new PlayerMotorSimulation(cc,arena);
+                PlayerSnapshot Swim(PlayerSnapshot state)
+                {
+                    motor.Restore(state);
+                    for(int tick=release+1;tick<=release+10;tick++)
+                    {
+                        var input=new PlayerInputFrame{Sequence=(uint)tick+1,FireSequence=1,Swim=true,Move=Vector2.up};
+                        motor.Step(ref state,input,1f/60,tick/60.0,WeaponSimulation.WantsFire(state,input),w.ShootMoveSpeed);
+                        Assert.That(state.Movement,Is.EqualTo(MovementMode.GroundInk));Assert.That(state.Swimming,Is.True);
+                        Assert.That(WeaponSimulation.Step(ref state,input,w,tick/60.0,false,!state.Swimming&&motor.CanStand(state.Position)),Is.False);
+                    }
+                    return state;
+                }
+                var authority=Swim(checkpoint);var replay=Swim(checkpoint);
+                Assert.That(authority.Position.z,Is.GreaterThan(checkpoint.Position.z));
+                Assert.That(Vector3.Distance(replay.Position,authority.Position),Is.LessThan(.003));
+                Assert.That(authority.NextShotAt,Is.EqualTo(checkpoint.NextShotAt));
+                Assert.That(authority.InkRecoverAt,Is.EqualTo(checkpoint.InkRecoverAt));
+                Assert.That(authority.Ink,Is.EqualTo(checkpoint.Ink));Assert.That(authority.ShotSequence,Is.EqualTo(1));
+            }
+            finally{UnityEngine.Object.DestroyImmediate(go);}
+        }
         [Test] public void WallPlanesAreIndependentAndDoNotAddScoreArea()
         {
             var arena=LoadArena();double area=arena.TotalArea;

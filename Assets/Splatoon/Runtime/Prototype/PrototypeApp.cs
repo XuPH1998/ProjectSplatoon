@@ -16,7 +16,7 @@ using Splatoon.Networking;
 
 namespace Splatoon.Prototype
 {
-    public sealed class PrototypeApp : MonoBehaviour
+    public sealed partial class PrototypeApp : MonoBehaviour
     {
         public const string ArenaAddress = "maps/TrainingGround";
         public const string PlayerAddress = "Prototype/Player";
@@ -25,7 +25,7 @@ namespace Splatoon.Prototype
         public bool Ready { get; private set; }
         public bool Busy { get; private set; }
         public bool InRoom { get; private set; }
-        public bool HasControl => InRoom && _captured && !Busy && Application.isFocused;
+        public bool HasControl => InRoom && _captured && _overlay == GameplayOverlay.Game && !Busy && Application.isFocused;
         public string Error { get; private set; } = "";
         public string Status { get; private set; } = "正在初始化…";
         public NetworkManager Manager { get; private set; }
@@ -184,7 +184,7 @@ namespace Splatoon.Prototype
         }
         private async UniTask Cleanup()
         {
-            InRoom = false; RoomCode = ""; _copiedUntil = 0; CaptureMouse(false);
+            InRoom = false; _overlay = GameplayOverlay.Game; RoomCode = ""; _copiedUntil = 0; CaptureMouse(false);
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
@@ -204,17 +204,23 @@ namespace Splatoon.Prototype
             Addressables.Release(handle); handle = default;
         }
         public void CaptureMouse(bool capture)
-        { _captured = capture; Cursor.lockState = capture ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !capture; }
+        { _captured = capture; if (capture) { _overlay = GameplayOverlay.Game; _fireInputBlocked = true; }
+          else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu; Cursor.lockState = capture ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !capture; }
         private void Update()
         {
+            UpdateOverlayInput();
             if (!InRoom || Busy) return;
             if (Session.State == NetworkSessionState.Failed) { Leave(Session.LastError).Forget(); return; }
             var k = Keyboard.current;
-            if (k != null && k.escapeKey.wasPressedThisFrame) CaptureMouse(!_captured);
-            if (k != null && k.enterKey.wasPressedThisFrame && Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.StartRound();
+            if (k != null && k.enterKey.wasPressedThisFrame && HasControl && Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.StartRound();
             if (PrototypeMatch.Current != null && PrototypeMatch.Current.State.Value.Phase == MatchPhase.Finished) CaptureMouse(false);
         }
-        private void OnApplicationFocus(bool focus) { if (!focus && InRoom) CaptureMouse(false); }
+        private void OnApplicationFocus(bool focus)
+        {
+            if (focus) return;
+            _overlay = InRoom ? GameplayOverlay.RoomMenu : GameplayOverlay.Game;
+            CaptureMouse(false);
+        }
         private void OnDestroy()
         {
             _operation?.Cancel(); Session?.Dispose();
@@ -236,7 +242,7 @@ namespace Splatoon.Prototype
             foreach (var style in new[] { _title, _label, _small, _button, _field }) style.font = _chineseFont;
             Debug.Log($"[中文字体] {_chineseFont.name}，房间涂墨字形={_chineseFont.HasCharacter('房') && _chineseFont.HasCharacter('间') && _chineseFont.HasCharacter('涂') && _chineseFont.HasCharacter('墨')}");
         }
-        private void OnGUI()
+        private void DrawAppGUI()
         {
             Styles(); GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1280f, Screen.height / 720f, 1));
             if (!InRoom)
@@ -281,6 +287,8 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
             var state=match.State.Value; var player=local.PresentedState;
+            var equipped = GameplayConfig.GetWeapon(player.WeaponId);
+            GUI.Label(new Rect(24,542,340,30),equipped.DisplayName,_label);
             double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
             GUI.color=PrototypeArena.Pink; GUI.Label(new Rect(378,37,200,35),$"粉队  {state.PinkArea/total:P1}",_label);
@@ -292,26 +300,35 @@ namespace Splatoon.Prototype
             Panel(new Rect(378,86,(float)(524*state.PinkArea/total),8),PrototypeArena.Pink);
             Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
             ulong ping=Manager.IsHost?0:((UnityTransport)Manager.NetworkConfig.NetworkTransport).GetCurrentRtt(0);
-            GUI.Label(new Rect(24,25,310,55),$"{Status}  /  {state.PlayerCount}/4\n延迟 {ping} 毫秒",_small);
+            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/4\n延迟 {ping} 毫秒",_small);
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/GameplayConfig.Character.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < GameplayConfig.Weapon.ShotInk ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetWeapon(player.WeaponId)) ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
             GUI.Label(new Rect(850,641,410,60),"左键射击　Shift 潜墨 / 回墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
+                if (equipped.FireMode == 2)
+                {
+                    float charge = Splatoon.Combat.WeaponSimulation.ChargeRatio(player, equipped);
+                    Panel(new Rect(570, 440, 140, 7), new Color(.2f,.23f,.27f));
+                    Panel(new Rect(570, 440, 140 * charge, 7), PrototypeArena.TeamColor(player.Team));
+                    bool limited = player.WeaponPhase == Splatoon.Combat.WeaponPhase.Charging && player.Ink < equipped.ShotInk &&
+                        charge >= Mathf.Floor((player.Ink - equipped.ChargeMinInk) / (equipped.ShotInk - equipped.ChargeMinInk) * equipped.ChargeFrames) / equipped.ChargeFrames;
+                    GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
+                }
                 float gap = 5 + player.CurrentSpread;
-                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < GameplayConfig.Weapon.ShotInk ? Color.yellow : Color.white;
+                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetWeapon(player.WeaponId)) ? Color.yellow : Color.white;
                 Panel(new Rect(639,360-gap-7,2,7),reticle); Panel(new Rect(639,360+gap,2,7),reticle);
                 Panel(new Rect(640-gap-7,359,7,2),reticle); Panel(new Rect(640+gap,359,7,2),reticle);
                 if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(628,347,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
                 if (local.MuzzleBlocked) GUI.Label(new Rect(580,403,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"热身中，等待另一名玩家加入。":"房主按回车开始三分钟涂地赛。",_small);
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"H 选择枪械 · 等待另一名玩家加入。":"H 选择枪械 · 房主按回车开始比赛。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
-            if(!_captured || state.Phase==MatchPhase.Finished)
+            if(_overlay == GameplayOverlay.RoomMenu)
             {
                 Panel(new Rect(430,222,420,295),new Color(.055f,.075f,.1f,.97f));
                 string winner=PrototypeRules.Winner(state.PinkArea,state.BlueArea) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};

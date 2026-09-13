@@ -53,6 +53,20 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         { if(!_buf["trailMaxDrop"].IsNumber) { throw new SerializationException(); }  TrailMaxDrop = _buf["trailMaxDrop"]; }
         { if(!_buf["effectiveRange"].IsNumber) { throw new SerializationException(); }  EffectiveRange = _buf["effectiveRange"]; }
         { if(!_buf["paintRange"].IsNumber) { throw new SerializationException(); }  PaintRange = _buf["paintRange"]; }
+        { if(!_buf["displayName"].IsString) { throw new SerializationException(); }  DisplayName = _buf["displayName"]; }
+        { if(!_buf["fireMode"].IsNumber) { throw new SerializationException(); }  FireMode = _buf["fireMode"]; }
+        { if(!_buf["shootMoveSpeed"].IsNumber) { throw new SerializationException(); }  ShootMoveSpeed = _buf["shootMoveSpeed"]; }
+        { if(!_buf["burstCount"].IsNumber) { throw new SerializationException(); }  BurstCount = _buf["burstCount"]; }
+        { if(!_buf["burstRecoveryFrames"].IsNumber) { throw new SerializationException(); }  BurstRecoveryFrames = _buf["burstRecoveryFrames"]; }
+        { if(!_buf["chargeFrames"].IsNumber) { throw new SerializationException(); }  ChargeFrames = _buf["chargeFrames"]; }
+        { if(!_buf["chargeMinDamage"].IsNumber) { throw new SerializationException(); }  ChargeMinDamage = _buf["chargeMinDamage"]; }
+        { if(!_buf["chargePartialMaxDamage"].IsNumber) { throw new SerializationException(); }  ChargePartialMaxDamage = _buf["chargePartialMaxDamage"]; }
+        { if(!_buf["chargeMinInk"].IsNumber) { throw new SerializationException(); }  ChargeMinInk = _buf["chargeMinInk"]; }
+        { if(!_buf["chargeMinRange"].IsNumber) { throw new SerializationException(); }  ChargeMinRange = _buf["chargeMinRange"]; }
+        { if(!_buf["chargeMinSpeed"].IsNumber) { throw new SerializationException(); }  ChargeMinSpeed = _buf["chargeMinSpeed"]; }
+        { if(!_buf["chargeMinSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinSpread = _buf["chargeMinSpread"]; }
+        { if(!_buf["chargeMinJumpSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinJumpSpread = _buf["chargeMinJumpSpread"]; }
+        { if(!_buf["chargeMinPaintRange"].IsNumber) { throw new SerializationException(); }  ChargeMinPaintRange = _buf["chargeMinPaintRange"]; }
     }
 
     public static WeaponConfig DeserializeWeaponConfig(JSONNode _buf)
@@ -192,6 +206,62 @@ public sealed partial class WeaponConfig : Luban.BeanBase
     /// 水平瞄准涂地射程目标（本项目米）
     /// </summary>
     public readonly float PaintRange;
+    /// <summary>
+    /// 枪械中文显示名
+    /// </summary>
+    public readonly string DisplayName;
+    /// <summary>
+    /// 机制：0全自动／1三连发／2蓄力松开发射
+    /// </summary>
+    public readonly int FireMode;
+    /// <summary>
+    /// 射击或蓄力移动速度（米/秒）
+    /// </summary>
+    public readonly float ShootMoveSpeed;
+    /// <summary>
+    /// 每组发数（全自动为1）
+    /// </summary>
+    public readonly int BurstCount;
+    /// <summary>
+    /// 末发到下一组首发（60Hz参考帧）
+    /// </summary>
+    public readonly int BurstRecoveryFrames;
+    /// <summary>
+    /// 满蓄时间（60Hz参考帧，非蓄力为0）
+    /// </summary>
+    public readonly int ChargeFrames;
+    /// <summary>
+    /// 点射伤害（HP）
+    /// </summary>
+    public readonly float ChargeMinDamage;
+    /// <summary>
+    /// 未满蓄伤害上限（HP）
+    /// </summary>
+    public readonly float ChargePartialMaxDamage;
+    /// <summary>
+    /// 点射耗墨（点）
+    /// </summary>
+    public readonly float ChargeMinInk;
+    /// <summary>
+    /// 点射伤害射程（米）
+    /// </summary>
+    public readonly float ChargeMinRange;
+    /// <summary>
+    /// 点射初速（米/秒）
+    /// </summary>
+    public readonly float ChargeMinSpeed;
+    /// <summary>
+    /// 点射地面散布半角（度）
+    /// </summary>
+    public readonly float ChargeMinSpread;
+    /// <summary>
+    /// 点射空中散布半角（度）
+    /// </summary>
+    public readonly float ChargeMinJumpSpread;
+    /// <summary>
+    /// 点射水平涂地射程目标（米）
+    /// </summary>
+    public readonly float ChargeMinPaintRange;
    
     public const int __ID__ = 127041694;
     public override int GetTypeId() => __ID__;
@@ -236,6 +306,20 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         + "trailMaxDrop:" + TrailMaxDrop + ","
         + "effectiveRange:" + EffectiveRange + ","
         + "paintRange:" + PaintRange + ","
+        + "displayName:" + DisplayName + ","
+        + "fireMode:" + FireMode + ","
+        + "shootMoveSpeed:" + ShootMoveSpeed + ","
+        + "burstCount:" + BurstCount + ","
+        + "burstRecoveryFrames:" + BurstRecoveryFrames + ","
+        + "chargeFrames:" + ChargeFrames + ","
+        + "chargeMinDamage:" + ChargeMinDamage + ","
+        + "chargePartialMaxDamage:" + ChargePartialMaxDamage + ","
+        + "chargeMinInk:" + ChargeMinInk + ","
+        + "chargeMinRange:" + ChargeMinRange + ","
+        + "chargeMinSpeed:" + ChargeMinSpeed + ","
+        + "chargeMinSpread:" + ChargeMinSpread + ","
+        + "chargeMinJumpSpread:" + ChargeMinJumpSpread + ","
+        + "chargeMinPaintRange:" + ChargeMinPaintRange + ","
         + "}";
     }
 }

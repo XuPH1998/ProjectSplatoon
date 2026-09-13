@@ -10,6 +10,7 @@ namespace Splatoon.Config
         public static cfg.RoomModeConfig Mode => LubanConfigService.Current.Tables.TbRoomMode.Get(Global.DefaultModeId);
         public static cfg.CharacterConfig Character => LubanConfigService.Current.Tables.TbCharacter.Get(Mode.CharacterId);
         public static cfg.WeaponConfig Weapon => LubanConfigService.Current.Tables.TbWeapon.Get(Mode.WeaponId);
+        public static cfg.WeaponConfig GetWeapon(int id) => LubanConfigService.Current.Tables.TbWeapon.Get(id == 0 ? Mode.WeaponId : id);
         public static cfg.ArenaConfig Arena => LubanConfigService.Current.Tables.TbArena.Get(Mode.ArenaId);
         public static void Validate(cfg.Tables supplied = null)
         {
@@ -31,6 +32,10 @@ namespace Splatoon.Config
             }
             foreach (var w in tables.TbWeapon.DataList)
             {
+                Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 2 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
+                Require(w.FireMode == 1 || w.BurstCount == 1, "非三连发武器每次只发射一颗");
+                if (w.FireMode == 1) Require(w.BurstCount == 3 && w.BurstRecoveryFrames >= w.FireIntervalFrames, "三连发组间冷却无效");
+                if (w.FireMode == 2) Require(w.ChargeFrames > 0 && w.ChargeMinDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.ChargePartialMaxDamage >= w.ChargeMinDamage && w.ChargeMinInk > 0 && w.ChargeMinInk < w.ShotInk && w.ChargeMinRange > 0 && w.ChargeMinRange <= w.EffectiveRange && w.ChargeMinSpeed > 0 && w.ChargeMinSpeed <= w.SpeedMin && w.ChargeMinJumpSpread >= w.ChargeMinSpread && w.ChargeMinPaintRange >= w.ChargeMinRange, "蓄力端点配置无效");
                 Require(w.Id > 0 && w.FireRate > 0 && w.FireRate <= 240 && w.Lifetime > 0 && w.Lifetime <= 10 && w.ShotInk > 0 && w.Damage > 0, "武器射击配置无效");
                 Require(w.SpeedMin > 0 && w.SpeedMax >= w.SpeedMin && w.CollisionRadius > 0 && w.Gravity > 0, "弹道配置无效");
                 Require(w.PaintRadiusMin > 0 && w.PaintRadiusMax >= w.PaintRadiusMin && w.PaintHardness <= 1 && w.PaintStrength <= 1 && w.PaintStrength > 0 && w.SpreadDegrees <= 45, "笔刷或散布配置无效");

@@ -14,6 +14,7 @@ namespace Splatoon.Combat
         public ulong Shooter;
         public ulong ActionId;
         public int WeaponId;
+        public float Charge;
         public byte Team;
         public double Born;
         public Vector3 Origin, Velocity;
@@ -21,6 +22,7 @@ namespace Splatoon.Combat
         {
             s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Seed); s.SerializeValue(ref Shooter);
             s.SerializeValue(ref WeaponId); s.SerializeValue(ref Team); s.SerializeValue(ref Born); s.SerializeValue(ref Origin); s.SerializeValue(ref Velocity);
+            s.SerializeValue(ref Charge);
             s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref ActionId);
         }
@@ -78,7 +80,7 @@ namespace Splatoon.Combat
         public int ActiveCount => _active.Count;
         public void Spawn(PrototypePlayer player, PlayerSnapshot state, double born, uint round)
         {
-            var w = GameplayConfig.Weapon;
+            var w = GameplayConfig.GetWeapon(state.WeaponId);
             var aim = Quaternion.Euler(state.Pitch, state.Yaw, 0);
             var pivot = state.Position + (player.Presentation != null ? player.Presentation.CameraPivot : Vector3.up * 1.5f);
             var camera = PrototypePlayer.CameraPosition(pivot, aim, player.Presentation);
@@ -91,7 +93,9 @@ namespace Splatoon.Combat
             if (seed == 0) seed = 1;
             var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, WeaponId = w.Id, Team = state.Team, Born = born, Origin = blocked ? pivot : muzzle };
             shot.ActionId = state.ShotActionId;
+            shot.Charge = state.LastShotCharge;
             shot.Velocity = InkBallistics.LaunchVelocity((target - muzzle).normalized, w, ref seed, state.CurrentSpread > 0 ? state.CurrentSpread : w.SpreadDegrees);
+            if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
             Spawned.Add(shot);
             if (blocked) Resolve(shot, wall.collider, wall.point, wall.normal, 0);
             else { PaintTrail(muzzle - forward * .6f, shot, w); _active.Add(new Active { Shot = shot, SimulatedUntil = born, LastTrail = muzzle }); }
@@ -161,8 +165,8 @@ namespace Splatoon.Combat
             if (victim != null)
             {
                 float before = victim.Snapshot.Value.Health;
-                if (shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= w.EffectiveRange)
-                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age), shot.Velocity);
+                if (shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
+                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), shot.Velocity);
                 actualDamage = before - victim.Snapshot.Value.Health; killed = actualDamage > 0 && victim.Snapshot.Value.Health <= 0;
             }
             else
