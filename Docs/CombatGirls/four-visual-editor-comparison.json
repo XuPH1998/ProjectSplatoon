@@ -1,0 +1,45 @@
+{
+    "limits": "Same machine, training scene, camera, 720p render request, quality and four animated visuals. Editor pacing and render submission CPU timings include Editor overhead; these are not GPU frame timings or four networked player build acceptance.",
+    "results": [
+        {
+            "character": "Jammo",
+            "device": "NVIDIA GeForce RTX 3060",
+            "quality": "PC",
+            "instances": 4,
+            "width": 1280,
+            "height": 720,
+            "samples": 360,
+            "renderers": 124,
+            "materialSlots": 124,
+            "vertices": 51684,
+            "triangles": 82872,
+            "uniqueMeshBytes": 1894348,
+            "uniqueTextureBytes": 207295654,
+            "editorFrameP95Ms": 11.814100000000054,
+            "renderSubmissionCpuP95Ms": 5.541400000000067,
+            "editorDrawCallsP95": 0,
+            "editorBatchesP95": 0,
+            "editorDrawCountersAvailable": false
+        },
+        {
+            "character": "RifleGirl",
+            "device": "NVIDIA GeForce RTX 3060",
+            "quality": "PC",
+            "instances": 4,
+            "width": 1280,
+            "height": 720,
+            "samples": 360,
+            "renderers": 52,
+            "materialSlots": 56,
+            "vertices": 119312,
+            "triangles": 183300,
+            "uniqueMeshBytes": 4922436,
+            "uniqueTextureBytes": 84335088,
+            "editorFrameP95Ms": 9.223299999999881,
+            "renderSubmissionCpuP95Ms": 6.4331999999999429,
+            "editorDrawCallsP95": 0,
+            "editorBatchesP95": 0,
+            "editorDrawCountersAvailable": false
+        }
+    ]
+}

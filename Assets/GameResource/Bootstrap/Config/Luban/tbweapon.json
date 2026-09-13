@@ -1,19 +1,19 @@
 [
   {
     "id": 1,
-    "name": "Splattershot",
-    "prefabAddress": "Weapon/Splattershot",
+    "name": "RifleGirlRifle",
+    "prefabAddress": "Weapon/RifleGirlRifle",
     "fireRate": 40,
-    "damage": 3.75,
+    "damage": 3,
     "shotInk": 0.3,
     "speedMin": 20,
-    "speedMax": 25,
-    "gravity": 19.62,
-    "lifetime": 0.5,
+    "speedMax": 32,
+    "gravity": 9.8,
+    "lifetime": 1,
     "collisionRadius": 0.025,
-    "spreadDegrees": 1.82,
+    "spreadDegrees": 5,
     "paintRadiusMin": 0.2,
-    "paintRadiusMax": 1.5,
+    "paintRadiusMax": 2,
     "paintHardness": 0.01,
     "paintStrength": 1
   }

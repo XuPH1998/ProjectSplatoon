@@ -1,0 +1,29 @@
+{
+    "passed": true,
+    "role": "client",
+    "error": "",
+    "maxPlayers": 2,
+    "snapshots": 20604,
+    "screenWidth": 640,
+    "screenHeight": 480,
+    "firing": true,
+    "turn": true,
+    "death": true,
+    "respawn": true,
+    "swimming": false,
+    "jump": true,
+    "reconnect": true,
+    "roundFinished": true,
+    "remoteMove": true,
+    "remoteFire": true,
+    "remoteTurn": true,
+    "remoteDeath": true,
+    "remoteRespawn": true,
+    "releasedPaintBytes": 0,
+    "duration": 181.99562012785504,
+    "p95FrameMilliseconds": 8.73089599609375,
+    "events": [
+        "Connected with RifleGirl content and character protocol 5",
+        "Disconnect/rejoin and content rebind passed"
+    ]
+}

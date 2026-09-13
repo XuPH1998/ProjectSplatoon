@@ -1,0 +1,9 @@
+idle: leftGripError=0.000000m; muzzleAimError=0.0626deg
+forward: leftGripError=0.000000m; muzzleAimError=0.0000deg
+backward: leftGripError=0.000000m; muzzleAimError=0.0000deg
+left: leftGripError=0.000000m; muzzleAimError=0.0000deg
+right: leftGripError=0.000000m; muzzleAimError=0.0000deg
+moving-autoshoot: leftGripError=0.000000m; muzzleAimError=0.0000deg
+AutoShoot 300-frame arm/wrist seam: wraps=5, maxSeam=0.7913deg, maxInterior=7.4344deg
+turn-aim: leftGripError=0.000000m; muzzleAimError=0.0000deg
+respawn: leftGripError=0.000000m; muzzleAimError=0.0442deg

@@ -92,7 +92,7 @@ namespace Splatoon.Editor
             var lighting = Group("05 灯光与相机",root.transform);
             var sun=Group("Sun",lighting).gameObject.AddComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.8f;sun.color=new Color(1,.96f,.88f);sun.shadows=LightShadows.Soft;sun.transform.rotation=Quaternion.Euler(48,-35,0);sun.gameObject.AddComponent<UniversalAdditionalLightData>();
             RenderSettings.sun=sun;RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=new Color(.64f,.75f,.84f);RenderSettings.ambientEquatorColor=new Color(.52f,.59f,.64f);RenderSettings.ambientGroundColor=new Color(.32f,.35f,.38f);
-            RenderSettings.skybox=AssetDatabase.LoadAssetAtPath<Material>("Assets/GameResource/Characters/Jammo/Materials/Skybox.mat");
+            RenderSettings.skybox=AssetDatabase.LoadAssetAtPath<Material>("Assets/GameResource/Environment/Ink/Sky/Sky_8.mat");
             var cam=Group("Main Camera",lighting).gameObject.AddComponent<Camera>();cam.tag="MainCamera";cam.transform.position=new Vector3(0,19,-36);cam.transform.LookAt(new Vector3(0,0,2));cam.fieldOfView=65;cam.farClipPlane=250;cam.nearClipPlane=.05f;cam.backgroundColor=new Color(.66f,.79f,.87f);cam.clearFlags=CameraClearFlags.Skybox;cam.gameObject.AddComponent<AudioListener>();cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
             var effects=root.AddComponent<InkPresentation>();
             effects.StreamPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab").GetComponent<ParticleSystem>();

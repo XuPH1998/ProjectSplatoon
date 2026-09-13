@@ -1,0 +1,53 @@
+{
+  "sourceUnchanged": true,
+  "artUnchanged": true,
+  "workbookChanges": {
+    "TbCharacter": [
+      {
+        "sheet": "Character",
+        "cell": "C4",
+        "before": "Jammo",
+        "after": "RifleGirl"
+      },
+      {
+        "sheet": "Character",
+        "cell": "D4",
+        "before": "Character/Jammo",
+        "after": "Character/RifleGirl"
+      }
+    ],
+    "TbWeapon": [
+      {
+        "sheet": "Weapon",
+        "cell": "C4",
+        "before": "Splattershot",
+        "after": "RifleGirlRifle"
+      },
+      {
+        "sheet": "Weapon",
+        "cell": "D4",
+        "before": "Weapon/Splattershot",
+        "after": "Weapon/RifleGirlRifle"
+      }
+    ]
+  },
+  "legacyExternalReferences": [],
+  "errors": [],
+  "legacyRemoved": true,
+  "legacyFileCount": 91,
+  "legacyBytes": 131976596,
+  "clipFiles": [
+    "R_AimIdle",
+    "R_AimIdle_AutoShoot",
+    "R_AimTurn_L90",
+    "R_AimTurn_R90",
+    "R_AimWalk_B",
+    "R_AimWalk_BR",
+    "R_AimWalk_F",
+    "R_AimWalk_FL",
+    "R_Die_B",
+    "R_Die_F"
+  ],
+  "passed": true,
+  "validatedFilesCompared": 500
+}

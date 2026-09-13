@@ -1,0 +1,15 @@
+AimTurn_L90: root=RootQ, rotation=-89.9999, length=1.0000
+AimTurn_R90: root=RootQ, rotation=90.0000, length=1.0000
+R_AimWalk_F: nativeSpeed=1.52317, playbackAt5mps=3.28263
+R_AimWalk_B: nativeSpeed=1.45224, playbackAt5mps=3.44295
+R_AimWalk_FL: nativeSpeed=1.39681, playbackAt5mps=3.57958
+R_AimWalk_BR: nativeSpeed=1.39681, playbackAt5mps=3.57958
+Material Assets/GameResource/Characters/RifleGirl/Materials/Rifle_Hair 1_06ceb916.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 1.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Rifle_Cloth 1_63516f85.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 1.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Rifle_Weapon_Style_Wood_c03d6f01.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Style_Wood.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Sportswear_092b63aa.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Sportswear/Sportswear.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Body_94f4f438.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Body.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Face_a3e0c985.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Face.mat, only _Is_Filter_LightColor 0 -> 1
+Material Assets/GameResource/Characters/RifleGirl/Materials/Eye_f81fa2f6.mat: source=Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Eye.mat, only _Is_Filter_LightColor 0 -> 1
+CameraPivot=(0, 1.315198, 0); AimPivot=(0, 1.26519942, 0); Muzzle=(0.08368365, 1.29914987, 0.7684866)
+Avatar, source art, 10-clip whitelist, bindings, looping and missing scripts: PASS

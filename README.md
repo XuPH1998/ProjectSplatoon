@@ -33,3 +33,5 @@
 默认地图为 `Assets/GameResource/Gameplay/maps/TrainingGround.unity`，X 宽 32 米、Z 长 64 米。可通过 **喷墨对战/地图/打开立体训练场** 直接编辑，游戏仍从 Boot 启动。地面、高台、坡道、桥面独立涂地与面积计分；进入房间加载固定 Scene，退出卸载。编辑地图几何或出生点后执行 **校验并烘焙当前地图**，再重新构建资源。见 [地图说明与验证](Docs/TrainingGround.md)。
 
 粉蓝配色、渐变墨量、按米材质与版本 4 同步的修复说明及本轮验收见 [墨水效果修复](Docs/InkLook/Implementation.md)。
+
+默认角色已迁入 CombatGirls RifleGirl 与步枪，接入持枪四向移动、原地转身、循环射击和死亡重生；旧 Jammo 模型及动作已清理。预览入口、源目标对照图、3C/联机说明与分项验收见 [RifleGirl 移植交付](Docs/CombatGirls/Implementation.md)。

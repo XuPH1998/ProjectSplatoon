@@ -60,8 +60,8 @@ namespace Splatoon.Combat
         {
             var w = GameplayConfig.Weapon;
             var aim = Quaternion.Euler(state.Pitch, state.Yaw, 0);
-            var pivot = state.Position + Vector3.up * 1.5f;
-            var camera = PrototypePlayer.CameraPosition(pivot, aim);
+            var pivot = state.Position + (player.Presentation != null ? player.Presentation.CameraPivot : Vector3.up * 1.5f);
+            var camera = PrototypePlayer.CameraPosition(pivot, aim, player.Presentation);
             var forward = aim * Vector3.forward;
             Vector3 target = camera + forward * 100;
             if (ClosestRay(camera, forward, 100, player.OwnerClientId, out var aimHit)) target = aimHit.point;
@@ -129,7 +129,7 @@ namespace Splatoon.Combat
         {
             var w = LubanConfigService.Current.Tables.TbWeapon.Get(shot.WeaponId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
-            if (victim != null) victim.ReceiveDamage(shot.Team, w.Damage);
+            if (victim != null) victim.ReceiveDamage(shot.Team, w.Damage, shot.Velocity);
             else
             {
                 var surface = collider.GetComponentInParent<PaintSurface>();

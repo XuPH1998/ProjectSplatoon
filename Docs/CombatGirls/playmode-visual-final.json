@@ -1,0 +1,31 @@
+{
+    "passed": true,
+    "role": "host",
+    "error": "",
+    "maxPlayers": 1,
+    "snapshots": 3283,
+    "screenWidth": 640,
+    "screenHeight": 480,
+    "firing": true,
+    "turn": true,
+    "death": true,
+    "respawn": true,
+    "swimming": true,
+    "jump": true,
+    "reconnect": false,
+    "roundFinished": false,
+    "remoteMove": false,
+    "remoteFire": false,
+    "remoteTurn": false,
+    "remoteDeath": false,
+    "remoteRespawn": false,
+    "releasedPaintBytes": 0,
+    "duration": 28.004305852878607,
+    "p95FrameMilliseconds": 8.689498901367188,
+    "events": [
+        "Connected with RifleGirl content and character protocol 5",
+        "Actual controller ground/bridge/ramp swimming, recovery and enemy-ink slowdown passed",
+        "Authority backward death direction passed",
+        "Authority forward death direction passed"
+    ]
+}

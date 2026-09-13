@@ -22,7 +22,7 @@ namespace Splatoon.Editor
     {
         private const string Root = "Assets/GameResource/Gameplay/Prototype";
         [MenuItem("喷墨对战/内容/安装正式喷墨资源")]
-        public static void SetupGraybox() => InkMigrationBuilder.Install();
+        public static void SetupGraybox() => CombatGirlsBuilder.Install();
         public static void ConfigureAddressables()
         {
             var settings=AddressableAssetSettingsDefaultObject.GetSettings(true);
@@ -43,8 +43,9 @@ namespace Splatoon.Editor
             AddAddress(settings,group,TrainingGroundBuilder.ScenePath,PrototypeApp.ArenaAddress);
             AddAddress(settings,group,Root+"/Prefabs/PrototypePlayer.prefab",PrototypeApp.PlayerAddress);
             AddAddress(settings,group,Root+"/Prefabs/PrototypeMatch.prefab",PrototypeApp.MatchAddress);
-            AddAddress(settings,group,"Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab","Character/Jammo");
-            AddAddress(settings,group,"Assets/GameResource/Weapons/Splattershot/Prefabs/Splattershot.prefab","Weapon/Splattershot");
+            foreach (var obsolete in group.entries.Where(e => e.address == "Character/Jammo" || e.address == "Weapon/Splattershot").ToArray()) settings.RemoveAssetEntry(obsolete.guid);
+            AddAddress(settings,group,CombatGirlsBuilder.CharacterPath,"Character/RifleGirl");
+            AddAddress(settings,group,CombatGirlsBuilder.WeaponPath,"Weapon/RifleGirlRifle");
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab","Effects/InkStream");
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab","Effects/InkImpact");
             settings.BuildAddressablesWithPlayerBuild=AddressableAssetSettings.PlayerBuildOption.DoNotBuildWithPlayer;
@@ -55,7 +56,7 @@ namespace Splatoon.Editor
         [MenuItem("喷墨对战/构建/Windows 正式资源版本")]
         public static void BuildWindows()
         {
-            InkMigrationBuilder.ValidateInstalled();
+            CombatGirlsBuilder.ValidateInstalled();
             TrainingGroundBuilder.ValidateSavedScene();
             ConfigureAddressables();
             AddressableAssetSettings.BuildPlayerContent(out var content);

@@ -10,11 +10,11 @@ const { Workbook, SpreadsheetFile } = await import(pathToFileURL(require.resolve
 const root = path.resolve(process.argv[2] || '.');
 const tables = {
   Character: [
-    ['id','int','角色 ID',1],['name','string','角色名称','Jammo'],['visualAddress','string','正式角色外观地址','Character/Jammo'],
+    ['id','int','角色 ID',1],['name','string','角色名称','RifleGirl'],['visualAddress','string','正式角色外观地址','Character/RifleGirl'],
     ['maxHealth','float','生命上限',100],['maxInk','float','墨水上限',100],['recoverInk','float','普通回墨（点/秒）',10],['swimRecoverInk','float','潜墨回墨（点/秒）',35],
     ['moveSpeed','float','移动速度（米/秒）',5],['swimSpeed','float','潜墨速度（米/秒）',8],['enemyInkMultiplier','float','敌方墨水速度倍率',0.55],['jumpSpeed','float','起跳速度（米/秒）',7],['gravity','float','角色重力（米/秒²）',22]],
   Weapon: [
-    ['id','int','武器 ID',1],['name','string','武器名称','Splattershot'],['prefabAddress','string','正式武器地址','Weapon/Splattershot'],
+    ['id','int','武器 ID',1],['name','string','武器名称','RifleGirlRifle'],['prefabAddress','string','正式武器地址','Weapon/RifleGirlRifle'],
     ['fireRate','float','权威射速（发/秒）',40],['damage','float','每颗伤害',3.75],['shotInk','float','每颗耗墨',0.3],
     ['speedMin','float','最低初速（米/秒）',20],['speedMax','float','最高初速（米/秒）',25],['gravity','float','墨弹重力（米/秒²）',19.62],
     ['lifetime','float','有效寿命（秒）',0.5],['collisionRadius','float','扫掠半径（米）',0.025],['spreadDegrees','float','散布半角（度）',1.82],

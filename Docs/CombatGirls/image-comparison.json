@@ -1,0 +1,25 @@
+{
+  "conditions": "Same imported source prefab, pose, camera, white key light, ambient, URP renderer and 960x960 target. Team ring disabled.",
+  "views": {
+    "front": {
+      "meanAbsoluteChannelErrorOutOf255": 2.170138888888889e-05,
+      "maxChannelError": 24,
+      "changedPixels": 1
+    },
+    "side": {
+      "meanAbsoluteChannelErrorOutOf255": 6.944444444444444e-05,
+      "maxChannelError": 96,
+      "changedPixels": 1
+    },
+    "back": {
+      "meanAbsoluteChannelErrorOutOf255": 0.0,
+      "maxChannelError": 0,
+      "changedPixels": 0
+    },
+    "face": {
+      "meanAbsoluteChannelErrorOutOf255": 0.0,
+      "maxChannelError": 0,
+      "changedPixels": 0
+    }
+  }
+}

@@ -26,11 +26,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3b4759869974d6646bb3982804fb7eea
-    m_Address: Character/Jammo
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 44d8719a2225d96458480952313d3ed4
     m_Address: Effects/InkStream
     m_ReadOnly: 0
@@ -53,6 +48,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fc6e6c01920f2349a9074deec382a79
+    m_Address: Weapon/RifleGirlRifle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a2ae82d2d55f53b795f638d938078ee5
     m_Address: tbglobal
     m_ReadOnly: 0
@@ -64,13 +64,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ba9857d2828655c48aa4a94d77a6a88a
-    m_Address: Weapon/Splattershot
+  - m_GUID: cb40c19915243c44cac8eebfcf3bc7dd
+    m_Address: Prototype/Match
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cb40c19915243c44cac8eebfcf3bc7dd
-    m_Address: Prototype/Match
+  - m_GUID: dab96b2249b6abf4f8bc137a54dbc771
+    m_Address: Character/RifleGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

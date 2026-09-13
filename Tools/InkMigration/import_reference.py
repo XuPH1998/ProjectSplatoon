@@ -1,4 +1,4 @@
-"""Copy the current reference art, preserving GUIDs and recording provenance."""
+"""Copy ink/environment reference art. RifleGirl owns character content now."""
 from pathlib import Path
 import hashlib, json, re, shutil, subprocess, sys
 
@@ -6,11 +6,6 @@ project = Path(__file__).resolve().parents[2]
 reference = Path(sys.argv[1] if len(sys.argv) > 1 else r'D:\XPHUNITY\Splatoon-Ink')
 manifest = []
 routes = {
-    'Assets/Jammo-Character/Models': 'Assets/GameResource/Characters/Jammo/Models',
-    'Assets/Jammo-Character/Animations': 'Assets/GameResource/Characters/Jammo/Animations',
-    'Assets/Jammo-Character/Materials': 'Assets/GameResource/Characters/Jammo/Materials',
-    'Assets/Jammo-Character/Textures': 'Assets/GameResource/Characters/Jammo/Textures',
-    'Assets/Jammo-Character/Prefabs': 'Assets/Art/_Incoming/InkReference/Jammo',
     'Assets/Splattershot-Splatoon': 'Assets/GameResource/Weapons/Splattershot/Art',
     'Assets/Textures': 'Assets/GameResource/Environment/Ink/Textures',
     'Assets/Materials/PaintableMaterials': 'Assets/GameResource/Environment/Ink/Materials',

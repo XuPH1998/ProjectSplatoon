@@ -9,8 +9,13 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
+        public const uint ProtocolVersion = 5;
         public Vector3 Position, Velocity;
         public float Yaw, Pitch, Health, Ink;
+        public float BodyYaw, TurnStartYaw;
+        public sbyte TurnDirection;
+        public byte DeathDirection;
+        public double TurnStartedAt, FireStartedAt, DiedAt;
         public double RespawnsAt, ProtectedUntil;
         public uint Revision;
         public byte Team, Slot;
@@ -21,6 +26,8 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref Health); s.SerializeValue(ref Ink); s.SerializeValue(ref RespawnsAt);
             s.SerializeValue(ref ProtectedUntil); s.SerializeValue(ref Revision); s.SerializeValue(ref Team);
             s.SerializeValue(ref Slot); s.SerializeValue(ref Swimming); s.SerializeValue(ref Velocity); s.SerializeValue(ref Grounded); s.SerializeValue(ref Firing);
+            s.SerializeValue(ref BodyYaw); s.SerializeValue(ref TurnStartYaw); s.SerializeValue(ref TurnDirection);
+            s.SerializeValue(ref TurnStartedAt); s.SerializeValue(ref FireStartedAt); s.SerializeValue(ref DiedAt); s.SerializeValue(ref DeathDirection);
         }
     }
     [RequireComponent(typeof(CharacterController))]
@@ -33,7 +40,9 @@ namespace Splatoon.Prototype
         [Tooltip("独立于美术后坐力的逻辑枪口")] public Transform SimulationMuzzle;
         public Vector3 SimulationAimPivot;
         public GameObject BoundVisualPrefab;
-        public Vector3 MuzzleOffset(float pitch) => SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
+        public CharacterPresentationProfile Presentation => CharacterView != null ? CharacterView.Profile : null;
+        public Vector3 CameraPivot => transform.position + (Presentation != null ? Presentation.CameraPivot : Vector3.up * 1.5f);
+        public Vector3 MuzzleOffset(float pitch) => Presentation != null ? Presentation.MuzzleOffset(pitch) : SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
         private CharacterController _controller;
         private PlayerInputFrame _input;
         private uint _sequence, _jumpSequence, _consumedJump, _revision;
@@ -61,6 +70,7 @@ namespace Splatoon.Prototype
             _vertical = 0; _input.Fire = _input.Swim = false; _input.Move = Vector2.zero; _consumedJump = _input.JumpSequence;
             s.Position = transform.position; s.Health = GameplayConfig.Character.MaxHealth; s.Ink = GameplayConfig.Character.MaxInk;
             s.Yaw = s.Team == 1 ? 0 : 180; s.Pitch = 12; s.Swimming = false; s.RespawnsAt = 0;
+            s.BodyYaw = s.TurnStartYaw = s.Yaw; s.TurnDirection = 0; s.TurnStartedAt = s.FireStartedAt = s.DiedAt = 0; s.DeathDirection = 0;
             s.ProtectedUntil = Unity.Netcode.NetworkManager.Singleton.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds;
             s.Velocity = Vector3.zero; s.Firing = false; s.Grounded = true; s.Revision++; Snapshot.Value = s; _nextShot = 0;
             _input.Look = new Vector2(s.Yaw, s.Pitch);
@@ -75,6 +85,7 @@ namespace Splatoon.Prototype
             }
             _controller.enabled = IsServer;
             transform.position = Snapshot.Value.Position;
+            Visual.localRotation = Quaternion.Euler(0, Snapshot.Value.BodyYaw, 0);
             _revision = Snapshot.Value.Revision;
             if (IsOwner)
             {
@@ -90,10 +101,12 @@ namespace Splatoon.Prototype
             if (_revision != s.Revision)
             {
                 _revision = s.Revision; transform.position = s.Position;
+                Visual.localRotation = Quaternion.Euler(0, Presentation != null ? s.BodyYaw : s.Yaw, 0);
                 if (IsOwner) _look = new Vector2(s.Yaw, s.Pitch);
             }
             if (!IsServer) transform.position = Vector3.Lerp(transform.position, s.Position, 1 - Mathf.Exp(-18 * Time.deltaTime));
-            Visual.localRotation = Quaternion.Slerp(Visual.localRotation, Quaternion.Euler(0, s.Yaw, 0), 1 - Mathf.Exp(-20 * Time.deltaTime));
+            float bodyYaw = Presentation != null ? s.BodyYaw : s.Yaw;
+            Visual.localRotation = Quaternion.Slerp(Visual.localRotation, Quaternion.Euler(0, bodyYaw, 0), 1 - Mathf.Exp(-20 * Time.deltaTime));
             CharacterView.Present(s, Time.deltaTime, NetworkManager.ServerTime.Time);
             if (!IsOwner || !PrototypeApp.Current.HasControl) return;
             if (Mouse.current != null)
@@ -118,6 +131,8 @@ namespace Splatoon.Prototype
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             PrototypeSmoke.ModifyInput(this, ref frame);
             if (PrototypeSmoke.Active) _look = frame.Look;
+            RifleGirlSmoke.ModifyInput(this, ref frame);
+            if (RifleGirlSmoke.Active) _look = frame.Look;
 #endif
             if (IsServer) AcceptInput(frame); else InputRpc(frame);
         }
@@ -136,7 +151,12 @@ namespace Splatoon.Prototype
         {
             if (!IsServer) return;
             var s = Snapshot.Value;
-            if (phase == MatchPhase.Finished) return;
+            if (phase == MatchPhase.Finished)
+            {
+                if (s.Firing || s.TurnDirection != 0 || s.Velocity != Vector3.zero)
+                { s.Firing = false; s.TurnDirection = 0; s.Velocity = Vector3.zero; Snapshot.Value = s; }
+                return;
+            }
             if (s.Health <= 0)
             { if (PrototypeRules.CanRespawn(s.Health, now, s.RespawnsAt)) Respawn(); return; }
             var input = _input;
@@ -157,9 +177,13 @@ namespace Splatoon.Prototype
             s.Velocity = (transform.position - beforeMove) / dt; s.Grounded = _controller.isGrounded;
             if (transform.position.y < -5) { Respawn(); return; }
             s.Position = transform.position;
+            if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now);
+            else s.BodyYaw = s.Yaw;
             bool fired = false;
             var weapon = GameplayConfig.Weapon;
+            bool wasFiring = s.Firing;
             s.Firing = input.Fire && !s.Swimming && s.Ink + .00001f >= weapon.ShotInk;
+            if (s.Firing && !wasFiring) s.FireStartedAt = now;
             if (s.Firing)
             {
                 _nextShot = System.Math.Max(_nextShot, now - dt);
@@ -173,16 +197,24 @@ namespace Splatoon.Prototype
             else _nextShot = now;
             // Holding the trigger must actually empty the tank, including intervals between shots.
             if (!fired && (!input.Fire || s.Swimming)) s.Ink = PrototypeRules.Recover(s.Ink, GameplayConfig.Character.MaxInk, (s.Swimming ? GameplayConfig.Character.SwimRecoverInk : GameplayConfig.Character.RecoverInk), dt);
+            if (s.Ink + .00001f < weapon.ShotInk) s.Firing = false;
             Snapshot.Value = s;
         }
-        public void ReceiveDamage(byte attackerTeam, float damage)
+        public void ReceiveDamage(byte attackerTeam, float damage, Vector3 incomingVelocity = default)
         {
             if (!IsServer) return;
             var s = Snapshot.Value; double now = NetworkManager.ServerTime.Time;
+            if (s.Health <= 0) return;
             float before=s.Health;
             s.Health = PrototypeRules.Damage(s.Health, damage, attackerTeam == s.Team && !GameplayConfig.Mode.FriendlyFire, s.ProtectedUntil, now);
             if(before!=s.Health) Debug.Log($"[LAN] Damage player={OwnerClientId} hp={s.Health:F0}");
-            if (s.Health <= 0) { s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.Swimming = false; _controller.enabled = false; }
+            if (s.Health <= 0)
+            {
+                s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.DiedAt = now;
+                s.DeathDirection = CharacterFacing.DeathDirection(s.BodyYaw, incomingVelocity);
+                s.Firing = s.Swimming = false; s.TurnDirection = 0; s.Velocity = Vector3.zero;
+                _controller.enabled = false;
+            }
             Snapshot.Value = s;
         }
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -200,7 +232,7 @@ namespace Splatoon.Prototype
                     var surface = hit.collider.GetComponent<Splatoon.Painting.PaintSurface>();
                     var state = original; state.Ink = 40; state.Position = transform.position; state.Health = 100; Snapshot.Value = state;
                     double now = NetworkManager.ServerTime.Time; _lastInput = now; _vertical = -2;
-                    _input = new PlayerInputFrame { Swim = true, Look = Vector2.zero };
+                    _input = new PlayerInputFrame { Swim = true, Look = Vector2.zero, JumpSequence = _consumedJump };
                     PrototypeMatch.Current.Paint(surface, hit.point, hit.normal, 1.5f, state.Team, .5f, 1);
                     Simulate(1f / 30, now, MatchPhase.Practice);
                     if (!Snapshot.Value.Swimming || Snapshot.Value.Ink <= 40) throw new System.InvalidOperationException("实际角色潜墨或回墨失败：" + surface.name);
@@ -220,11 +252,12 @@ namespace Splatoon.Prototype
             }
         }
 #endif
-        public static Vector3 CameraPosition(Vector3 pivot, Quaternion rotation)
+        public static Vector3 CameraPosition(Vector3 pivot, Quaternion rotation, CharacterPresentationProfile profile = null)
         {
-            Vector3 offset = rotation * new Vector3(.65f, .15f, -3.8f);
+            Vector3 offset = rotation * (profile != null ? profile.CameraOffset : new Vector3(.65f, .15f, -3.8f));
             float distance = offset.magnitude;
-            if (Physics.SphereCast(pivot, .2f, offset / distance, out var hit, distance, ~(1 << 8), QueryTriggerInteraction.Ignore)) distance = Mathf.Max(.05f, hit.distance - .08f);
+            if (Physics.SphereCast(pivot, profile != null ? profile.CameraCollisionRadius : .2f, offset / distance, out var hit, distance, ~(1 << 8), QueryTriggerInteraction.Ignore))
+                distance = Mathf.Max(.05f, hit.distance - (profile != null ? profile.CameraCollisionPadding : .08f));
             return pivot + offset.normalized * distance;
         }
         private void LateUpdate()
@@ -232,7 +265,7 @@ namespace Splatoon.Prototype
             if (!IsSpawned || !IsOwner || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0);
             Vector2 kick = CharacterView.CameraKick;
-            _camera.transform.SetPositionAndRotation(CameraPosition(transform.position + Vector3.up * 1.5f, rotation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
+            _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
         }
         public override void OnNetworkDespawn()
         {

@@ -121,7 +121,8 @@ namespace Splatoon.Prototype
                 if (PrototypeArena.Current == null) throw new InvalidOperationException("场景缺少地图组件");
                 PrototypeArena.Current.InitializeRuntime();
                 using (var sha = System.Security.Cryptography.SHA256.Create())
-                    _signature = sha.ComputeHash(LubanConfigService.Current.ContentSignature.Concat(Encoding.UTF8.GetBytes(PrototypeArena.Current.BakedTopology)).ToArray());
+                    _signature = sha.ComputeHash(LubanConfigService.Current.ContentSignature
+                        .Concat(Encoding.UTF8.GetBytes(PrototypeArena.Current.BakedTopology + "|character-state:" + PlayerSnapshot.ProtocolVersion)).ToArray());
                 Manager.NetworkConfig.ConnectionData = _signature;
                 if (_bootCamera != null) _bootCamera.gameObject.SetActive(false);
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);

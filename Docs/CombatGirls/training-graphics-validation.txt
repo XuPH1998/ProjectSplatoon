@@ -1,0 +1,2 @@
+Final gameplay materials: bright front/back/face, occluder shadow, pitch -65/+75; actual TrainingGround lights and ink renderer. Captured in Editor using evaluated Animator and baked per-pose skinning.
+Bright floor=(10, 0.02, -20); shadow floor=(-6, 0.02, 0); shadow classification uses a ray towards the scene sun.
