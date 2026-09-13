@@ -32,7 +32,7 @@ namespace Splatoon.Combat
             ("地面／空中散布", WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinSpread:0.#}°/{w.ChargeMinJumpSpread:0.#}° → {w.SpreadDegrees:0.#}°/{w.JumpSpreadDegrees:0.#}°" : $"{w.SpreadDegrees:0.#}° / {w.JumpSpreadDegrees:0.#}°"),
             ("射击移动速度", $"{w.ShootMoveSpeed:0.#} 米/秒"), ("人形／出墨起手", $"{w.StartFrames}F / {w.EmergeStartFrames}F"),
             ("回墨锁定", $"{w.InkRecoverLockFrames}F"),
-            ("涂地目标", WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinPaintRange:0.#}–{w.PaintRange:0.#} 米" : $"{w.PaintRange:0.#} 米")
+            ("水平涂地目标", WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinPaintRange:0.#}–{w.PaintRange:0.#} 米（待标定）" : $"{w.PaintRange:0.#} 米（待标定）")
         };
     }
 }

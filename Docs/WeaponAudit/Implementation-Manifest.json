@@ -1,0 +1,95 @@
+{
+  "referenceVersion": "11.3.0",
+  "baselineCommit": "00be31ff3662c77cb2b62d1f6f61ce3c62492d19",
+  "leanCommit": "7280ff9cde8bb1c5dcef46c700c326471584d2e6",
+  "sendouReferenceCommit": "55889eccc7c18f24569098959ae28f4a7034ce4e",
+  "completeReplica": false,
+  "changes": [
+    {
+      "table": "Weapon",
+      "id": 2,
+      "field": "shotInk",
+      "before": 0.55,
+      "after": 0.5
+    },
+    {
+      "table": "Weapon",
+      "id": 2,
+      "field": "inkRecoverLockFrames",
+      "before": 20,
+      "after": 15
+    },
+    {
+      "table": "Weapon",
+      "id": 3,
+      "field": "fireRate",
+      "before": 6,
+      "after": 6.666666666666667
+    },
+    {
+      "table": "Weapon",
+      "id": 3,
+      "field": "shotInk",
+      "before": 1.8,
+      "after": 1.5
+    },
+    {
+      "table": "Weapon",
+      "id": 3,
+      "field": "fireIntervalFrames",
+      "before": 10,
+      "after": 9
+    },
+    {
+      "table": "Weapon",
+      "id": 4,
+      "field": "shotInk",
+      "before": 0.9,
+      "after": 1.1
+    },
+    {
+      "table": "Weapon",
+      "id": 4,
+      "field": "inkRecoverLockFrames",
+      "before": 20,
+      "after": 25
+    },
+    {
+      "table": "Weapon",
+      "id": 5,
+      "field": "damage",
+      "before": 120,
+      "after": 160
+    },
+    {
+      "table": "Character",
+      "id": 1,
+      "field": "swimRecoverInk",
+      "before": 35,
+      "after": 33.33333333333334
+    }
+  ],
+  "referenceSha256": {
+    "WeaponShooterNormal.1130.json": "dfca9f45fd0df3b6afab8f6ec0e47034912f3a6fc411936b9fd7257fe85c4cb9",
+    "WeaponShooterBlaze.1130.json": "287ffb3b99b4bda1d7ccabf8798a19240a9009f136d851c0e348d106c911b857",
+    "WeaponShooterGravity.1130.json": "c1a42d516bfb5c1763f4285159456589b7a647ee0862004654c36d604889b838",
+    "WeaponShooterTripleQuick.1130.json": "0ce1d682ab866a17d7b4931cbb799faa1a813c350893803a63b0259cfbf47875",
+    "WeaponChargerNormal.1130.json": "dfe4637def507f933b0bbecbc805331f6357bb69ac165608a6e558406a4b72c1",
+    "Common.1130.json": "7d01dc1542316bc496425a35efe1a7ece553b2e1b8140ebc4b465555e754788e"
+  },
+  "gatedMechanisms": {
+    "metadata": "项目标识/资源，不属于原作玩法数值",
+    "paint": "缺少原作轮廓/落墨生成及下落算法、统一空间换算；硬度/强度无直接对应",
+    "ballistics": "缺少可核实的统一空间标定和完整状态转移/碰撞规则；保留整段旧模型",
+    "damage": "原始端点可读，但未取得固定版本衰减/蓄力插值及取整算法；保留整段旧曲线",
+    "dispersion": "缺少角度口径、随机分布、偏差累积与恢复算法；保留整段旧模型",
+    "ink": "缺失默认值或蓄力耗墨/扣墨时机规则未闭合",
+    "movement": "空间比例、重量默认分类和状态限制未闭合",
+    "firing": "起手/组间/蓄力状态规则及继承默认值未闭合"
+  },
+  "sourceCounts": {
+    "projectWeaponFields": 235,
+    "rawReferenceFields": 295,
+    "commonFields": 40
+  }
+}

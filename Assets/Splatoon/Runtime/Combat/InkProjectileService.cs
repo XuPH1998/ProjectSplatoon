@@ -78,6 +78,18 @@ namespace Splatoon.Combat
         public readonly List<InkShot> Spawned = new(16);
         public readonly List<InkImpact> Impacts = new(32);
         public int ActiveCount => _active.Count;
+#if UNITY_EDITOR
+        // Opt-in observations of the real simulation; never sent over the network.
+        public Action<InkShot, double, Vector3> TraceObserved;
+        public Action<PaintStamp> PaintObserved;
+        public void SpawnForMeasurement(InkShot shot)
+        {
+            if (GameplayConfig.GetWeapon(shot.WeaponId) == null || shot.Velocity.sqrMagnitude <= 0)
+                throw new ArgumentException("测量墨弹必须指定有效武器与初速");
+            Spawned.Add(shot);
+            BeginFlight(shot, shot.Origin, shot.Velocity.normalized);
+        }
+#endif
         public void Spawn(PrototypePlayer player, PlayerSnapshot state, double born, uint round)
         {
             var w = GameplayConfig.GetWeapon(state.WeaponId);
@@ -98,7 +110,15 @@ namespace Splatoon.Combat
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
             Spawned.Add(shot);
             if (blocked) Resolve(shot, wall.collider, wall.point, wall.normal, 0);
-            else { PaintTrail(muzzle - forward * .6f, shot, w); _active.Add(new Active { Shot = shot, SimulatedUntil = born, LastTrail = muzzle }); }
+            else BeginFlight(shot, muzzle, forward);
+        }
+        private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
+        {
+            PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetWeapon(shot.WeaponId));
+            _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle });
+#if UNITY_EDITOR
+            TraceObserved?.Invoke(shot, 0, muzzle);
+#endif
         }
         private bool ClosestRay(Vector3 origin, Vector3 direction, float distance, ulong shooter, out RaycastHit closest)
         {
@@ -140,6 +160,9 @@ namespace Splatoon.Combat
                     for (int n = 0; n < count; n++)
                         if (Valid(_hits[n].collider, a.Shot.Shooter) && _hits[n].distance < nearest) { nearest = _hits[n].distance; index = n; }
                     if (index >= 0) { var h = _hits[index]; Resolve(a.Shot, h.collider, h.point, h.normal, a.SimulatedUntil - a.Shot.Born + (next - a.SimulatedUntil) * h.distance / Mathf.Max(.0001f, distance)); hit = true; break; }
+#if UNITY_EDITOR
+                    TraceObserved?.Invoke(a.Shot, next - a.Shot.Born, to);
+#endif
                     if (Vector3.Distance(a.LastTrail, to) >= w.TrailSpacing) { PaintTrail(to, a.Shot, w); a.LastTrail = to; }
                     a.SimulatedUntil = next;
                 }
@@ -153,12 +176,28 @@ namespace Splatoon.Combat
         }
         private void PaintTrail(Vector3 position, InkShot shot, cfg.WeaponConfig w)
         {
-            if (PrototypeMatch.Current == null || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
+            bool enabled = PrototypeMatch.Current != null;
+#if UNITY_EDITOR
+            enabled |= PaintObserved != null;
+#endif
+            if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null) PrototypeMatch.Current.Paint(surface, h.point, h.normal, w.TrailRadius, shot.Team, w.PaintHardness, w.PaintStrength);
+            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, w.TrailRadius, w);
+        }
+        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.WeaponConfig w)
+        {
+#if UNITY_EDITOR
+            PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
+                Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength });
+#endif
+            if (PrototypeMatch.Current != null)
+                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength);
         }
         private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age)
         {
+#if UNITY_EDITOR
+            TraceObserved?.Invoke(shot, age, point);
+#endif
             var w = LubanConfigService.Current.Tables.TbWeapon.Get(shot.WeaponId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
             float actualDamage = 0; bool killed = false;
@@ -172,10 +211,10 @@ namespace Splatoon.Combat
             else
             {
                 var surface = collider.GetComponentInParent<PaintSurface>();
-                if (surface != null && PrototypeMatch.Current != null)
+                if (surface != null)
                 {
                     uint seed = shot.Seed;
-                    PrototypeMatch.Current.Paint(surface, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), shot.Team, w.PaintHardness, w.PaintStrength);
+                    ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w);
                 }
             }
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,

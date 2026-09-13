@@ -6,7 +6,7 @@
     "maxHealth": 100,
     "maxInk": 100,
     "recoverInk": 10,
-    "swimRecoverInk": 35,
+    "swimRecoverInk": 33.333332,
     "moveSpeed": 5,
     "swimSpeed": 8,
     "enemyInkMultiplier": 0.55,

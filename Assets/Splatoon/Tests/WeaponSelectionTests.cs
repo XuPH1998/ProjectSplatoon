@@ -23,7 +23,7 @@ namespace Splatoon.Tests
         static PlayerInputFrame Input(int tick, bool held = true, uint press = 1, bool cancel = false) => new() { Sequence = (uint)tick + 1, Fire = held, FireSequence = press, CancelFire = cancel };
         static bool Step(ref PlayerSnapshot s, int tick, bool held = true, uint press = 1, bool cancel = false) => WeaponSimulation.Step(ref s, Input(tick, held, press, cancel), GameplayConfig.GetWeapon(s.WeaponId), tick / 60.0, false, true);
 
-        [TestCase(1,6,108)] [TestCase(2,4,181)] [TestCase(3,10,55)]
+        [TestCase(1,6,108)] [TestCase(2,4,200)] [TestCase(3,9,66)]
         public void AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(int id, int interval, int count)
         {
             var s = Alive(id); var shots = new List<int>();
@@ -51,10 +51,10 @@ namespace Splatoon.Tests
             Assert.That(shots,Is.EqualTo(3));
             s=Alive(4);shots=0;for(int i=0;i<20;i++)if(Step(ref s,i,i<4,1,i>=4))shots++;
             Assert.That(shots,Is.EqualTo(1));
-            s=Alive(4);s.Ink=1.8f;shots=0;for(int i=0;i<60;i++)if(Step(ref s,i))shots++;
+            s=Alive(4);s.Ink=2.2f;shots=0;for(int i=0;i<60;i++)if(Step(ref s,i))shots++;
             Assert.That(shots,Is.EqualTo(2));Assert.That(s.Ink,Is.Zero.Within(.0001));
         }
-        [TestCase(2,0,40,2)] [TestCase(32,.5f,60,5)] [TestCase(62,1,120,8)]
+        [TestCase(2,0,40,2)] [TestCase(32,.5f,60,5)] [TestCase(62,1,160,8)]
         public void ChargeReleasesOnceWithResolvedDamageInkAndRange(int release, float q, float damage, float ink)
         {
             var s=Alive(5);int shots=0;
