@@ -7,12 +7,12 @@
 | TbCharacter | 角色资源、生命、墨量、移动、跳跃和回墨 |
 | TbWeapon | 武器资源、射速、伤害、耗墨、下落弹道和涂色笔刷 |
 | TbRoomMode | 默认角色/武器/场地、人数、时长、重生及计分规则 |
-| TbArena | 场景地址、尺寸、归属网格、布局版本 |
+| TbMap | 场景地址、尺寸、归属网格、布局版本 |
 | TbGlobal | 唯一全局记录 ID=1，默认模式、网络及子步频率、超时、同步与内存预算、墨水轮廓阈值及按米噪声参数 |
 
 修改工作簿后运行 `cmd /c Config\Luban\gen_luban.bat`。运行时通过 Addressables 的 `Luban` 标签加载 JSON，再通过 `GameplayConfig` 访问五张表。字段定义位于 `source/Defines/gameplay.xml`。构建入口为 **喷墨对战/构建/Windows 正式资源版本**。全部生成表参与联机内容签名。
 
-生成的 C#/JSON 禁止手工编辑。当前立体训练场 X 宽 32 米、Z 长 64 米（Width/Length），各可行走表面归属网格默认 0.125 米，最多 4 人。修改场地布局时必须同步正式场景、SurfaceId 和场地布局版本。人物重力 22 与墨弹重力 19.62 分别配置，不能混用。旧 Range 已由初速、重力和寿命替代；旧固定 PaintRadius 改为半径范围。
+生成的 C#/JSON 禁止手工编辑。当前立体训练场 X 宽 32 米、Z 长 64 米（Width/Length），各可行走表面归属网格默认 0.125 米，最多 4 人。修改场地布局时必须同步正式场景、SurfaceId 和场地布局版本。人物重力 22 与墨弹重力 9.8 分别配置，不能混用。`effectiveRange` 控制伤害有效射程；`paintRange` 当前用于校验和展示，实际墨迹距离由弹道和碰撞决定。模式以 `mapId` 引用 `TbMap`，配置加载地址为 `tbmap`。
 
 ## luban.conf 字段说明
 

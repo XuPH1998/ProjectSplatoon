@@ -14,11 +14,11 @@ using SimpleJSON;
 namespace cfg
 {
 /// <summary>
-/// Arena 强类型配置
+/// Map 强类型配置
 /// </summary>
-public sealed partial class ArenaConfig : Luban.BeanBase
+public sealed partial class MapConfig : Luban.BeanBase
 {
-    public ArenaConfig(JSONNode _buf) 
+    public MapConfig(JSONNode _buf) 
     {
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
@@ -29,9 +29,9 @@ public sealed partial class ArenaConfig : Luban.BeanBase
         { if(!_buf["layoutVersion"].IsNumber) { throw new SerializationException(); }  LayoutVersion = _buf["layoutVersion"]; }
     }
 
-    public static ArenaConfig DeserializeArenaConfig(JSONNode _buf)
+    public static MapConfig DeserializeMapConfig(JSONNode _buf)
     {
-        return new ArenaConfig(_buf);
+        return new MapConfig(_buf);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public sealed partial class ArenaConfig : Luban.BeanBase
     /// </summary>
     public readonly int LayoutVersion;
    
-    public const int __ID__ = 1013430537;
+    public const int __ID__ = -1840922722;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)

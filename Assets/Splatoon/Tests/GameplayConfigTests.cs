@@ -26,11 +26,14 @@ namespace Splatoon.Tests
             Assert.That(t.TbWeapon.Get(1).Damage, Is.EqualTo(36));
             Assert.That(t.TbCharacter.Get(1).VisualAddress, Is.EqualTo("Character/RifleGirl"));
             Assert.That(t.TbWeapon.Get(1).PrefabAddress, Is.EqualTo("Weapon/RifleGirlRifle"));
-            Assert.That(t.TbArena.Get(1).Width / t.TbArena.Get(1).CellSize, Is.EqualTo(256));
+            Assert.That(t.TbMap.Get(1).Width / t.TbMap.Get(1).CellSize, Is.EqualTo(256));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()
-        { Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["weaponId"] = 999))); }
+        {
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["weaponId"] = 999)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["mapId"] = 999)));
+        }
         [Test] public void ImpossibleProjectileAndNetworkSettingsAreRejected()
         {
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbweapon"][0]["lifetime"] = 0)));

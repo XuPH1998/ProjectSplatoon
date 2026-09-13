@@ -28,6 +28,7 @@ namespace Splatoon.Networking
         { State = state; LastError = error; StateChanged?.Invoke(state); }
         public async UniTask<HostResult> StartHostAsync(LanHostOptions options, CancellationToken token = default)
         {
+            if (!LanDiscoveryProtocol.ValidGamePort(options.Port)) return new HostResult(false, "游戏端口无效，47777 为房间发现保留端口。");
             token.ThrowIfCancellationRequested();
             if (_manager.IsListening) return new HostResult(false, "已有房间正在运行，请先退出。");
             _intentionalShutdown = false;
@@ -44,6 +45,7 @@ namespace Splatoon.Networking
         }
         public async UniTask<JoinResult> JoinAsync(LanJoinOptions options, CancellationToken token = default)
         {
+            if (!LanDiscoveryProtocol.ValidGamePort(options.Port)) return new JoinResult(false, "游戏端口无效，47777 为房间发现保留端口。");
             if (_manager.IsListening) return new JoinResult(false, "已有房间正在运行，请先退出。");
             if (!IPAddress.TryParse(options.Address, out var ip) || ip.AddressFamily != AddressFamily.InterNetwork)
                 return new JoinResult(false, "请输入有效的 IPv4 地址。");

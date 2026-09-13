@@ -87,6 +87,7 @@ namespace Splatoon.Prototype
                 Manager.OnClientDisconnectCallback += ClientDisconnected;
                 Session = new NgLanSessionService(Manager);
                 Ready = true; Status = "准备就绪，可以创建或加入房间";
+                _discovery.StartBrowsing();
                 Debug.Log("[LAN] Ready. Config loaded from Luban.");
             }
             catch (Exception e)
@@ -102,7 +103,7 @@ namespace Splatoon.Prototype
             response.Approved = request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
             response.CreatePlayerObject = false; response.Pending = false;
             if(response.Approved) _admitted.Add(request.ClientNetworkId);
-            if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? "协议或游戏内容不一致（需要玩家协议 6、墨水协议 5），请使用相同地图、配置和角色资源。" : "房间已满（最多 4 人）。";
+            if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? $"协议或游戏内容不一致（玩家协议 {PlayerSnapshot.ProtocolVersion}、墨水协议 {GameplayContentSignature.PaintProtocolVersion}），请使用相同地图、配置和角色资源。" : $"房间已满（最多 {GameplayConfig.Mode.MaxPlayers} 人）。";
         }
         private void ClientConnected(ulong id)
         { if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.AddPlayer(id, _playerPrefab.Result); }
@@ -111,6 +112,8 @@ namespace Splatoon.Prototype
         public async UniTask Connect(bool host, string address, ushort port)
         {
             if (!Ready || Busy || InRoom) return;
+            if (!LanDiscoveryProtocol.ValidGamePort(port)) { Error = "游戏端口须为 1～65535，且不能使用房间发现端口 47777。"; return; }
+            _discovery.Stop();
             Busy = true; Error = ""; Status = "正在加载场地…"; _progress = 0;
             _operation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
             try
@@ -119,7 +122,7 @@ namespace Splatoon.Prototype
                 var bootScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Main/Boot.unity");
                 _bootRoots = bootScene.IsValid() ? bootScene.GetRootGameObjects().Where(x => x.activeSelf).ToArray() : Array.Empty<GameObject>();
                 foreach (var root in _bootRoots) root.SetActive(false);
-                _scene = await _loader.LoadAsync(GameplayConfig.Arena.SceneAddress, new Progress<float>(p => _progress = p), _operation.Token); _loaded = true;
+                _scene = await _loader.LoadAsync(GameplayConfig.Map.SceneAddress, new Progress<float>(p => _progress = p), _operation.Token); _loaded = true;
                 UnityEngine.SceneManagement.SceneManager.SetActiveScene(_scene.Scene.Scene);
                 if (PrototypeArena.Current == null) throw new InvalidOperationException("场景缺少地图组件");
                 PrototypeArena.Current.InitializeRuntime();
@@ -157,6 +160,7 @@ namespace Splatoon.Prototype
                 if (host) { int index = Array.IndexOf(_localAddresses, address); if (index >= 0) _hostAddressIndex = index; }
                 RoomCode = LanRoomCode.Encode(host ? _localAddresses[_hostAddressIndex] : address, port);
                 InRoom = true; CaptureMouse(true); Status = host ? "房主" : "已连接";
+                if (host) { _discoveryRoomId = Guid.NewGuid(); _discovery.StartAdvertising(DiscoverySnapshot); }
                 Debug.Log("[LAN] 房间码=" + RoomCode);
                 Debug.Log($"[LAN] Connected role={(host ? "host" : "client")} address={address} port={port}");
             }
@@ -165,7 +169,7 @@ namespace Splatoon.Prototype
                 Error = e is OperationCanceledException ? "连接已取消，或房间状态同步超时。" : ChineseText.Error(e.Message);
                 Debug.LogWarning("[LAN] " + Error); await Cleanup(); Status = "准备就绪";
             }
-            finally { Busy = false; _operation.Dispose(); _operation = null; }
+            finally { Busy = false; _operation.Dispose(); _operation = null; if (!InRoom && !_destroying) _discovery.StartBrowsing(); }
         }
         private static async UniTask WaitForPrefab(AsyncOperationHandle<GameObject> handle, CancellationToken token)
         {
@@ -180,10 +184,11 @@ namespace Splatoon.Prototype
             _leaving = true; Busy = true; Error = reason;
             try { await Cleanup(); Status = "准备就绪"; Debug.Log("[LAN] Returned to menu. " + reason); }
             catch (Exception e) { Error = ChineseText.Error(e.Message); Debug.LogException(e); }
-            finally { Busy = false; _leaving = false; }
+            finally { Busy = false; _leaving = false; if (!_destroying) _discovery.StartBrowsing(); }
         }
         private async UniTask Cleanup()
         {
+            _discovery.Stop();
             InRoom = false; _overlay = GameplayOverlay.Game; RoomCode = ""; _copiedUntil = 0; CaptureMouse(false);
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
@@ -208,6 +213,7 @@ namespace Splatoon.Prototype
           else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu; Cursor.lockState = capture ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !capture; }
         private void Update()
         {
+            _discovery.Tick();
             UpdateOverlayInput();
             if (!InRoom || Busy) return;
             if (Session.State == NetworkSessionState.Failed) { Leave(Session.LastError).Forget(); return; }
@@ -223,6 +229,7 @@ namespace Splatoon.Prototype
         }
         private void OnDestroy()
         {
+            _destroying = true; _discovery.Dispose();
             _operation?.Cancel(); Session?.Dispose();
             if (Manager != null) { Manager.Shutdown(); Destroy(Manager.gameObject); }
             LubanConfigService.Current.Reset(); if (Current == this) Current = null;
@@ -247,41 +254,7 @@ namespace Splatoon.Prototype
             Styles(); GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1280f, Screen.height / 720f, 1));
             if (!InRoom)
             {
-                Panel(new Rect(0,0,1280,720),new Color(.055f,.075f,.10f));
-                Panel(new Rect(60,90,8,520),PrototypeArena.Pink);
-                GUI.Label(new Rect(92,104,540,74),"喷墨对战 / 局域网",_title);
-                GUI.Label(new Rect(96,190,500,90),"墨流涂地赛 · 最多四人\n粉蓝两队，三分钟决胜负",_label);
-                GUI.Label(new Rect(96,330,500,150),"WASD 移动　鼠标转动视角\n空格跳跃　鼠标左键持续射击\n按住 Shift 在己方墨水中潜行、回墨\nEsc 菜单　回车开始比赛（房主）",_small);
-                GUI.Label(new Rect(96,515,500,95),"同一局域网内，房主创建房间后按 Esc，\n复制房间码发给伙伴；伙伴粘贴即可加入。\n房间码包含地址和端口，无需互联网。",_small);
-                Panel(new Rect(660,55,560,605),new Color(.10f,.135f,.18f));
-                GUI.Label(new Rect(695,73,490,34),"创建房间",_label);
-                GUI.Label(new Rect(695,113,335,27),"房主地址（点击切换网卡）",_small);
-                GUI.enabled=Ready&&!Busy;
-                if(GUI.Button(new Rect(695,145,320,43),_localAddresses[_hostAddressIndex],_button)) CycleHostAddress();
-                _port=GUI.TextField(new Rect(1030,145,150,43),_port,5,_field);
-                GUI.Label(new Rect(1030,113,150,27),"UDP 端口",_small);
-                if(GUI.Button(new Rect(695,199,485,44),"创建房间并生成房间码",_button)) ConnectFromUI(true);
-                GUI.Label(new Rect(695,262,480,30),"填写房间码加入",_label);
-                _roomCodeInput=GUI.TextField(new Rect(695,300,355,48),_roomCodeInput,80,_field);
-                if(GUI.Button(new Rect(1065,300,115,48),"粘贴",_button)) _roomCodeInput=GUIUtility.systemCopyBuffer;
-                if(GUI.Button(new Rect(695,360,485,44),"加入房间",_button)) ConnectRoomCode(_roomCodeInput).Forget();
-                if(GUI.Button(new Rect(695,414,485,32),_advanced?"收起直接 IP 连接":"高级：使用 IPv4 地址直接连接",_small)) _advanced=!_advanced;
-                if(_advanced)
-                {
-                    _ip=GUI.TextField(new Rect(695,453,320,43),_ip,45,_field);
-                    if(GUI.Button(new Rect(1030,453,150,43),"直接加入",_button)) ConnectFromUI(false);
-                    GUI.Label(new Rect(695,501,485,25),"使用上方 UDP 端口；同机测试可填 127.0.0.1。",_small);
-                }
-                GUI.enabled=true;
-                GUI.Label(new Rect(695,535,485,28),Status,_small);
-                if(Busy)
-                {
-                    Panel(new Rect(695,570,315*Mathf.Max(.04f,_progress),4),PrototypeArena.Blue);
-                    if(Ready && GUI.Button(new Rect(1030,563,150,35),"取消连接",_button)) CancelConnection();
-                }
-                if(!string.IsNullOrEmpty(Error)) GUI.Label(new Rect(695,600,485,58),Error,_small);
-                if(!Ready&&!Busy&&GUI.Button(new Rect(1030,560,150,35),"重试启动",_button)) Initialize().Forget();
-                GUI.Label(new Rect(95,677,1100,30),"双方使用同一构建包。同机联机请选择回环地址；双机联机请选择双方可达的局域网网卡地址。",_small);
+                DrawLobby();
                 return;
             }
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
@@ -300,7 +273,7 @@ namespace Splatoon.Prototype
             Panel(new Rect(378,86,(float)(524*state.PinkArea/total),8),PrototypeArena.Pink);
             Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
             ulong ping=Manager.IsHost?0:((UnityTransport)Manager.NetworkConfig.NetworkTransport).GetCurrentRtt(0);
-            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/4\n延迟 {ping} 毫秒",_small);
+            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/{GameplayConfig.Mode.MaxPlayers}\n连接延迟 {ping} 毫秒",_small);
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
@@ -356,6 +329,7 @@ namespace Splatoon.Prototype
         }
         private void DrawRoomCode()
         {
+            if (!string.IsNullOrEmpty(_discovery.LastError)) GUI.Label(new Rect(330,637,650,55),_discovery.LastError,_small);
             Panel(new Rect(330,532,620,100),new Color(.055f,.075f,.1f,.97f));
             GUI.Label(new Rect(350,540,395,30),"房间码：" + RoomCode,_label);
             if(GUI.Button(new Rect(778,540,150,35),Time.unscaledTime<_copiedUntil?"已复制":"复制房间码",_button))

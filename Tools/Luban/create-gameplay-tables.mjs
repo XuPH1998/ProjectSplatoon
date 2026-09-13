@@ -20,11 +20,11 @@ const tables = {
     ['lifetime','float','有效寿命（秒）',0.5],['collisionRadius','float','扫掠半径（米）',0.025],['spreadDegrees','float','散布半角（度）',1.82],
     ['paintRadiusMin','float','最小涂色半径（米）',0.2],['paintRadiusMax','float','最大涂色半径（米）',1.5],['paintHardness','float','笔刷硬度（0 到 1）',0.01],['paintStrength','float','笔刷强度（0 到 1）',1]],
   RoomMode: [
-    ['id','int','房间模式 ID',1],['name','string','房间模式名称','三分钟涂地赛'],['characterId','int','默认角色 ID',1],['weaponId','int','默认武器 ID',1],['arenaId','int','场地 ID',1],
+    ['id','int','房间模式 ID',1],['name','string','房间模式名称','三分钟涂地赛'],['characterId','int','默认角色 ID',1],['weaponId','int','默认武器 ID',1],['mapId','int','场地 ID',1],
     ['maxPlayers','int','最大人数（当前场景上限 4）',4],['minPlayers','int','最低开局人数',2],['matchSeconds','float','比赛时长（秒）',180],['respawnSeconds','float','重生等待（秒）',3],['protectionSeconds','float','重生保护（秒）',2],
     ['friendlyFire','bool','是否友伤',false],['groundOnlyScore','bool','仅竞技场地面计分',true]],
-  Arena: [
-    ['id','int','场地 ID',1],['name','string','场地名称','对称竞技场'],['sceneAddress','string','场景地址','Prototype/Arena'],['size','float','场地边长（米）',32],['cellSize','float','归属网格边长（米）',0.125],['layoutVersion','int','场地布局协议版本',2]],
+  Map: [
+    ['id','int','场地 ID',1],['name','string','地图名称','立体训练场'],['sceneAddress','string','场景地址','maps/TrainingGround'],['width','float','场地宽度 X（米）',32],['length','float','场地长度 Z（米）',64],['cellSize','float','归属网格边长（米）',0.125],['layoutVersion','int','场地布局协议版本',4]],
   Global: [
     ['id','int','唯一全局记录 ID，固定 1',1],['defaultModeId','int','默认房间模式 ID',1],['networkTickRate','int','网络频率（Hz）',30],['projectileStepRate','int','弹道子步频率（Hz）',120],
     ['defaultPort','int','默认 UDP 端口',7777],['connectionTimeout','float','连接超时（秒）',20],['inputTimeout','float','输入失联停止（秒）',0.3],

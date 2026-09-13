@@ -8,10 +8,11 @@ namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
+        public const int PaintProtocolVersion = 5;
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
-            w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(5); // paint protocol
+            w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion);
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);

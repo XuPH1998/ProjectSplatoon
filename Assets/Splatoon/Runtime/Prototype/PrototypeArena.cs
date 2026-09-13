@@ -31,7 +31,7 @@ namespace Splatoon.Prototype
         }
         public void InitializeRuntime()
         {
-            var config = GameplayConfig.Arena;
+            var config = GameplayConfig.Map;
             if (LayoutVersion != config.LayoutVersion || Dimensions != new Vector2(config.Width, config.Length) || OwnershipCellSize != config.CellSize)
                 throw new InvalidOperationException("场景布局与配置不一致");
             RegisterSurfaces();

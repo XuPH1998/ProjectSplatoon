@@ -24,7 +24,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["characterId"].IsNumber) { throw new SerializationException(); }  CharacterId = _buf["characterId"]; }
         { if(!_buf["weaponId"].IsNumber) { throw new SerializationException(); }  WeaponId = _buf["weaponId"]; }
-        { if(!_buf["arenaId"].IsNumber) { throw new SerializationException(); }  ArenaId = _buf["arenaId"]; }
+        { if(!_buf["mapId"].IsNumber) { throw new SerializationException(); }  MapId = _buf["mapId"]; }
         { if(!_buf["maxPlayers"].IsNumber) { throw new SerializationException(); }  MaxPlayers = _buf["maxPlayers"]; }
         { if(!_buf["minPlayers"].IsNumber) { throw new SerializationException(); }  MinPlayers = _buf["minPlayers"]; }
         { if(!_buf["matchSeconds"].IsNumber) { throw new SerializationException(); }  MatchSeconds = _buf["matchSeconds"]; }
@@ -58,7 +58,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// <summary>
     /// 场地 ID
     /// </summary>
-    public readonly int ArenaId;
+    public readonly int MapId;
     /// <summary>
     /// 最大人数（当前场景上限 4）
     /// </summary>
@@ -102,7 +102,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         + "name:" + Name + ","
         + "characterId:" + CharacterId + ","
         + "weaponId:" + WeaponId + ","
-        + "arenaId:" + ArenaId + ","
+        + "mapId:" + MapId + ","
         + "maxPlayers:" + MaxPlayers + ","
         + "minPlayers:" + MinPlayers + ","
         + "matchSeconds:" + MatchSeconds + ","

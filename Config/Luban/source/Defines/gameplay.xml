@@ -82,7 +82,7 @@
     <var name="name" type="string" comment="房间模式名称"/>
     <var name="characterId" type="int" comment="默认角色 ID"/>
     <var name="weaponId" type="int" comment="默认武器 ID"/>
-    <var name="arenaId" type="int" comment="场地 ID"/>
+    <var name="mapId" type="int" comment="场地 ID"/>
     <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 4）"/>
     <var name="minPlayers" type="int" comment="最低开局人数"/>
     <var name="matchSeconds" type="float" comment="比赛时长（秒）"/>
@@ -92,7 +92,7 @@
     <var name="groundOnlyScore" type="bool" comment="仅可行走地面计分（含坡道、高台及桥面）"/>
   </bean>
   <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id"/>
-  <bean name="ArenaConfig" comment="Arena 强类型配置">
+  <bean name="MapConfig" comment="Map 强类型配置">
     <var name="id" type="int" comment="场地 ID"/>
     <var name="name" type="string" comment="场地名称"/>
     <var name="sceneAddress" type="string" comment="场景地址"/>
@@ -101,7 +101,7 @@
     <var name="cellSize" type="float" comment="归属网格边长（米）"/>
     <var name="layoutVersion" type="int" comment="场地布局协议版本"/>
   </bean>
-  <table name="TbArena" value="ArenaConfig" input="TbArena.xlsx" mode="map" index="id"/>
+  <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id"/>
   <bean name="GlobalConfig" comment="Global 强类型配置">
     <var name="id" type="int" comment="唯一全局记录 ID，固定 1"/>
     <var name="defaultModeId" type="int" comment="默认房间模式 ID"/>

@@ -11,15 +11,15 @@ namespace Splatoon.Config
         public static cfg.CharacterConfig Character => LubanConfigService.Current.Tables.TbCharacter.Get(Mode.CharacterId);
         public static cfg.WeaponConfig Weapon => LubanConfigService.Current.Tables.TbWeapon.Get(Mode.WeaponId);
         public static cfg.WeaponConfig GetWeapon(int id) => LubanConfigService.Current.Tables.TbWeapon.Get(id == 0 ? Mode.WeaponId : id);
-        public static cfg.ArenaConfig Arena => LubanConfigService.Current.Tables.TbArena.Get(Mode.ArenaId);
+        public static cfg.MapConfig Map => LubanConfigService.Current.Tables.TbMap.Get(Mode.MapId);
         public static void Validate(cfg.Tables supplied = null)
         {
             var tables = supplied ?? LubanConfigService.Current.Tables;
             var global = tables.TbGlobal.GetOrDefault(1);
             var mode = global == null ? null : tables.TbRoomMode.GetOrDefault(global.DefaultModeId);
             Require(tables.TbGlobal.DataList.Count == 1 && global != null, "全局表必须且只能包含 ID=1 的记录");
-            Require(mode != null && tables.TbCharacter.GetOrDefault(mode.CharacterId) != null && tables.TbWeapon.GetOrDefault(mode.WeaponId) != null && tables.TbArena.GetOrDefault(mode.ArenaId) != null, "默认模式引用不存在");
-            foreach (var table in new System.Collections.IEnumerable[] { tables.TbGlobal.DataList, tables.TbCharacter.DataList, tables.TbWeapon.DataList, tables.TbRoomMode.DataList, tables.TbArena.DataList })
+            Require(mode != null && tables.TbCharacter.GetOrDefault(mode.CharacterId) != null && tables.TbWeapon.GetOrDefault(mode.WeaponId) != null && tables.TbMap.GetOrDefault(mode.MapId) != null, "默认模式引用不存在");
+            foreach (var table in new System.Collections.IEnumerable[] { tables.TbGlobal.DataList, tables.TbCharacter.DataList, tables.TbWeapon.DataList, tables.TbRoomMode.DataList, tables.TbMap.DataList })
                 foreach (var row in table)
                     foreach (var field in row.GetType().GetFields())
                         if (field.FieldType == typeof(float))
@@ -45,10 +45,10 @@ namespace Splatoon.Config
             }
             foreach (var m in tables.TbRoomMode.DataList)
             {
-                Require(tables.TbCharacter.GetOrDefault(m.CharacterId) != null && tables.TbWeapon.GetOrDefault(m.WeaponId) != null && tables.TbArena.GetOrDefault(m.ArenaId) != null, "模式表存在无效引用");
+                Require(tables.TbCharacter.GetOrDefault(m.CharacterId) != null && tables.TbWeapon.GetOrDefault(m.WeaponId) != null && tables.TbMap.GetOrDefault(m.MapId) != null, "模式表存在无效引用");
                 Require(m.MaxPlayers >= 2 && m.MaxPlayers <= 4 && m.MinPlayers >= 2 && m.MinPlayers <= m.MaxPlayers && m.MatchSeconds > 0 && m.GroundOnlyScore, "当前模式要求 2–4 人且仅地面计分");
             }
-            foreach (var a in tables.TbArena.DataList)
+            foreach (var a in tables.TbMap.DataList)
                 Require(a.Width > 0 && a.Length > 0 && a.Width <= 256 && a.Length <= 256 && a.CellSize >= .0625f && a.CellSize <= .5f && Math.Abs(a.Width / a.CellSize - Math.Round(a.Width / a.CellSize)) < .0001 && Math.Abs(a.Length / a.CellSize - Math.Round(a.Length / a.CellSize)) < .0001 && a.LayoutVersion > 0 && !string.IsNullOrWhiteSpace(a.SceneAddress), "场地尺寸或网格配置无效");
             Require(global.NetworkTickRate >= 10 && global.NetworkTickRate <= 120 && global.ProjectileStepRate >= global.NetworkTickRate && global.ProjectileStepRate % global.NetworkTickRate == 0 && global.ProjectileStepRate <= 480, "网络频率与子步频率必须整除");
             Require(global.SimulationRate == 60 && global.SimulationRate % global.NetworkTickRate == 0 && global.ProjectileStepRate % global.SimulationRate == 0, "玩法固定 60Hz，输入发送与弹道子步必须整除");

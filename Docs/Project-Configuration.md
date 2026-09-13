@@ -16,6 +16,8 @@
 | `EnableSceneManagement` | 关闭 NGO 自动场景管理，使用现有异步加载器 |
 | `ConnectionApproval` | 启用连接审批，校验配置签名和最多 4 人的容量 |
 | `UnityTransport.SetConnectionData` | 房主监听所有网卡 0.0.0.0，默认 UDP 7777 |
+| `UdpLanDiscoveryService` | 独立 UDP 47777；2 秒刷新、6 秒未响应移除；发现失败保留直接连接入口 |
+| `TbMap / RoomMode.mapId` | 地图配置与模式引用；JSON/Addressables 地址为 `tbmap`，场景仍使用 `maps/TrainingGround` |
 | 连接超时 | 20 秒，支持取消与失败重试 |
 | `Splatoon Local` 资源组 | 本地内容打包组，使用 LocalBuildPath / LocalLoadPath |
 | `Luban` 标签 | 运行时批量加载配置 JSON 的标签 |
