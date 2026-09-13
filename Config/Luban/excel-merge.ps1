@@ -9,8 +9,8 @@ $ErrorActionPreference = "Stop"
 function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\excel-merge.ps1"
-    Write-Host "  .\excel-merge.ps1 -File TbWeapon.xlsx"
-    Write-Host "  .\excel-merge.ps1 -File Config\Luban\source\TbWeapon.xlsx"
+    Write-Host "  .\excel-merge.ps1 -File TbHero.xlsx"
+    Write-Host "  .\excel-merge.ps1 -File Config\Luban\source\TbHero.xlsx"
     Write-Host "  .\excel-merge.ps1 -AllXlsx"
 }
 

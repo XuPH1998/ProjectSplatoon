@@ -62,7 +62,26 @@ def load(path): return json.loads(path.read_text(encoding='utf-8-sig'))
 def base(table):
     path=f'Assets/GameResource/Bootstrap/Config/Luban/tb{table.lower()}.json'
     return json.loads(subprocess.check_output(['git','show',f'{BASE}:{path}'],cwd=ROOT))
-def current(table): return load(ROOT/f'Assets/GameResource/Bootstrap/Config/Luban/tb{table.lower()}.json')
+def hero_field(table, field):
+    mapping=load(ROOT/'Docs/HeroMigration/Field-Mapping.json')
+    return next((m['heroField'] for m in mapping if m['sourceTable']==table and m['sourceField']==field),None)
+
+def project_legacy(table, rows):
+    # Historical reference ledgers keep their old field names; all live data comes from TbHero.
+    if table in ('Character','Weapon'):
+        before=base(table); projected=[]
+        for i,row in enumerate(rows if table=='Weapon' else rows[:1]):
+            template=before[i] if table=='Weapon' else before[0]
+            projected.append({field:row[hero_field(table,field)] if hero_field(table,field) else value for field,value in template.items()})
+        return projected
+    if table=='RoomMode':
+        previous={r['id']:r for r in base(table)}
+        return [{**{k:v for k,v in row.items() if k!='heroId'},'weaponId':row['heroId'],'characterId':previous[row['id']]['characterId']} for row in rows]
+    return rows
+
+def current(table):
+    actual='Hero' if table in ('Character','Weapon') else table
+    return project_legacy(table,load(ROOT/f'Assets/GameResource/Bootstrap/Config/Luban/tb{actual.lower()}.json'))
 def equal(a,b): return math.isclose(a,b,rel_tol=1e-6,abs_tol=1e-6) if isinstance(a,(float,int)) and isinstance(b,(float,int)) else a==b
 def get(node,path):
     for key in path.split('.'):
@@ -76,11 +95,17 @@ def flatten(node,prefix=''):
         else: yield path,value
 def text(value): return '待核实（覆盖中缺失，不等于零）' if value is None else json.dumps(value,ensure_ascii=False)
 def source(table):
+    if table in ('Character','Weapon'):
+        rows,labels=source('Hero')
+        return project_legacy(table,rows),{k:labels.get(hero_field(table,k),'历史角色标识，已并入英雄身份') for k in base(table)[0]}
     wb=openpyxl.load_workbook(ROOT/f'Config/Luban/source/Tb{table}.xlsx',data_only=False)
     sheet=wb[table]; headers=[c.value for c in sheet[1]][1:]
     rows=[dict(zip(headers,[c.value for c in row][1:])) for row in sheet.iter_rows(min_row=4) if row[1].value is not None]
     labels={key:sheet.cell(3,i+2).value for i,key in enumerate(headers)}
-    wb.close(); return rows,labels
+    wb.close()
+    if table=='RoomMode':
+        rows=project_legacy(table,rows);labels['weaponId']=labels.pop('heroId');labels['characterId']='旧版角色引用（合表前）'
+    return rows,labels
 def verify():
     changes=[]
     for table in ['Weapon','Character','Global','Map','RoomMode']:
@@ -124,7 +149,7 @@ def generate():
                       'speedMin':'MoveParam.SpawnSpeedFullCharge','speedMax':'MoveParam.SpawnSpeedFullCharge',
                       'shootMoveSpeed':'WeaponParam.MoveSpeedFullCharge','effectiveRange':'MoveParam.DistanceFullCharge'}.get(field,path)
             raw_value=get(raw,path) if path else None
-            if path: refs.setdefault(path,[]).append(field)
+            if path: refs.setdefault(path,[]).append(hero_field('Weapon',field) or field)
             status='保留旧机制'; reason=REASONS[group]; conversion='未确认或无一一对应关系'
             if group=='metadata': status='项目配置'; conversion='不适用'
             if field in ('damage','damageMin','chargeMinDamage','chargePartialMaxDamage'): conversion='原作伤害 / 10 = 项目 HP；曲线与取整另行核实'
@@ -142,7 +167,7 @@ def generate():
             if field in ('paintRange','chargeMinPaintRange'): consumer='GameplayConfig.Validate; WeaponDisplay.Details; 编辑器测量目标（不参与实际涂色）'
             if field=='fireRate': consumer='GameplayConfig.Validate（不直接参与发射和 HUD 射速）'
             if id==5 and field=='damageMin': consumer='GameplayConfig.Validate；蓄力伤害分支不消费'
-            ledger.append(dict(weapon=id,name=weapon['displayName'],group=group,field=field,meaning=labels[field],baseline=text(before[id][field]),current=text(value),referencePath='GameParameters.'+path if path else '无直接字段',referenceValue=text(raw_value),conversion=conversion,consumer=consumer,status=status,reason=reason,source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/weapon/{name}.game__GameParameterTable.json'))
+            ledger.append(dict(weapon=id,name=weapon['displayName'],group=group,field=field,heroField=hero_field('Weapon',field),meaning=labels[field],baseline=text(before[id][field]),current=text(value),referencePath='GameParameters.'+path if path else '无直接字段',referenceValue=text(raw_value),conversion=conversion,consumer=consumer,status=status,reason=reason,source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/weapon/{name}.game__GameParameterTable.json'))
         for path,value in flatten(raw):
             if path.endswith('$type'): continue
             originals.append(dict(weapon=id,path='GameParameters.'+path,value=text(value),projectFields=','.join(refs.get(path,[])) or '未建模/无直接对应',status='原始覆盖；不包含缺失的类型默认值'))
@@ -178,14 +203,14 @@ def generate():
                 if field=='maxInk':
                     consumer='ResourceSimulation.Step / WeaponSelectionRules / PrototypePlayer.Network / HUD'
                     reason='项目 100 点表示整罐；原作整罐比例 × 100 的换算已确认'
-                common.append(dict(table=table,field=field,meaning=labels[field],baseline=text(before[row['id']][field]),current=text(value),
+                common.append(dict(table=table,field=field,heroField=hero_field(table,field) if table=='Character' else '',meaning=labels[field],baseline=text(before[row['id']][field]),current=text(value),
                     referencePath=reference+'[2]' if reference else '未确认直接字段',referenceValue=text(raw_value),
                     referenceKind='公开能力曲线的零能力点值' if reference else '无已确认对应；不是零',conversion=conversion,
                     consumer=consumer,status=status,reason=reason,
                     source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/misc/params.json' if reference else ''))
     write_csv(DOC/'Common-Parameter-Coverage.csv',list(common[0]),common)
     hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [*(DOC/f'{name}.1130.json' for name in NAMES.values()),DOC/'Common.1130.json']}
-    manifest={'referenceVersion':'11.3.0','baselineCommit':BASE,'leanCommit':LEAN,'sendouReferenceCommit':SENDOU,'completeReplica':False,
+    manifest={'referenceVersion':'11.3.0','baselineCommit':BASE,'leanCommit':LEAN,'sendouReferenceCommit':SENDOU,'completeReplica':False,'runtimeTable':'TbHero','ledgerFieldNames':'Historical projection; heroField names the live merged field.',
               'changes':changes,'referenceSha256':hashes,'gatedMechanisms':REASONS,
               'sourceCounts':{'projectWeaponFields':len(ledger),'rawReferenceFields':len(originals),'commonFields':len(common)}}
     (DOC/'Implementation-Manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

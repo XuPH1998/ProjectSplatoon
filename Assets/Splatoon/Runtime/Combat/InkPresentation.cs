@@ -72,7 +72,7 @@ namespace Splatoon.Combat
                 foreach (var pair in _shots)
                 {
                     var shot = pair.Value; if (shot.Team != team) continue;
-                    var w = LubanConfigService.Current.Tables.TbWeapon.Get(shot.WeaponId); double age = now - shot.Born;
+                    var w = LubanConfigService.Current.Tables.TbHero.Get(shot.HeroId); double age = now - shot.Born;
                     if (age > w.Lifetime + .05) { _expired.Add(pair.Key); continue; }
                     int blobs = _blobCounts[pair.Key];
                     for (int n = 0; n < blobs && count < _particles.Length; n++)

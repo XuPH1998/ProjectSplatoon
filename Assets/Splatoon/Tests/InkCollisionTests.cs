@@ -50,7 +50,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ExpiryAndRoundClearDoNotCreatePaintHits()
         {
-            var service = Shot(); service.Simulate(GameplayConfig.Weapon.Lifetime + .01);
+            var service = Shot(); service.Simulate(GameplayConfig.DefaultHero.Lifetime + .01);
             Assert.That(service.ActiveCount, Is.Zero); Assert.That(service.Impacts.Count, Is.EqualTo(1)); Assert.That(service.Impacts[0].Hit, Is.False);
             service = Shot(); service.Clear(); service.Simulate(1);
             Assert.That(service.ActiveCount, Is.Zero); Assert.That(service.Spawned, Is.Empty); Assert.That(service.Impacts, Is.Empty);

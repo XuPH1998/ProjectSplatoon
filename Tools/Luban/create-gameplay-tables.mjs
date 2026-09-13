@@ -9,7 +9,7 @@ const destination = path.resolve(process.argv[2]);
 const key = p => p.toLowerCase();
 if (key(destination) === key(repo) || key(destination) === key(source) || key(destination).startsWith(key(source) + path.sep))
   throw new Error('输出必须使用独立的新目录。');
-const files = ['TbCharacter.xlsx', 'TbWeapon.xlsx', 'TbRoomMode.xlsx', 'TbMap.xlsx', 'TbGlobal.xlsx', 'Defines/gameplay.xml'];
+const files = ['TbHero.xlsx', 'TbRoomMode.xlsx', 'TbMap.xlsx', 'TbGlobal.xlsx', 'Defines/gameplay.xml'];
 for (const file of files) {
   await fs.access(path.join(source, file));
   try { await fs.access(path.join(destination, file)); throw new Error('输出已存在：' + file); }

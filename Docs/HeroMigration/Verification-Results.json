@@ -1,0 +1,35 @@
+{
+  "unity": "6000.3.9f1",
+  "baselineCommit": "b43f28f784c4a4723b15599a6b5e933b4723674f",
+  "tests": [
+    {
+      "result": "Passed",
+      "total": "130",
+      "passed": "130",
+      "failed": "0",
+      "start-time": "2026-09-13 12:30:30Z",
+      "end-time": "2026-09-13 12:30:52Z",
+      "suite": "Hero-EditMode",
+      "log": "Logs/WeaponReference/Hero-EditMode-tests.xml",
+      "sha256": "75ab163813637bd233bffac82b34fa20d2bd12a681b5e70b6a0b28531304cc04"
+    },
+    {
+      "result": "Passed",
+      "total": "2",
+      "passed": "2",
+      "failed": "0",
+      "start-time": "2026-09-13 12:47:47Z",
+      "end-time": "2026-09-13 12:47:55Z",
+      "suite": "Hero-PlayMode",
+      "log": "Logs/WeaponReference/Hero-PlayMode-tests.xml",
+      "sha256": "5dd89a6079537ced0c78dc38e5dcf1e2b12b453b90603bd968dbc274aa725ebf"
+    }
+  ],
+  "baselineValuesVerified": 345,
+  "unchangedMeasurementScenarios": 87,
+  "measurementManifestSha256": "d25d0ab3b9b5bc4326edfd05696f1ad29f9b78ce88289d6a9565f6e0d024c8e0",
+  "uiValidation": "Logs/HeroMigration/ui-validation.txt",
+  "physicalLanVerified": false,
+  "remoteClientVerified": false,
+  "playerBuildCreated": false
+}

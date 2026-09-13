@@ -13,6 +13,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using Splatoon.Config;
 using Splatoon.Loading;
 using Splatoon.Networking;
+using Splatoon.Combat;
 
 namespace Splatoon.Prototype
 {
@@ -35,7 +36,7 @@ namespace Splatoon.Prototype
         private bool _loaded, _captured, _leaving;
         private CancellationTokenSource _operation;
         private AsyncOperationHandle<GameObject> _playerPrefab, _matchPrefab;
-        private AsyncOperationHandle<GameObject> _characterContent, _weaponContent;
+        public HeroContentService Heroes { get; } = new();
         private byte[] _signature;
         private readonly HashSet<ulong> _admitted = new();
         private float _progress;
@@ -130,14 +131,10 @@ namespace Splatoon.Prototype
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);
                 _matchPrefab = Addressables.LoadAssetAsync<GameObject>(MatchAddress);
                 await WaitForPrefab(_playerPrefab, _operation.Token); await WaitForPrefab(_matchPrefab, _operation.Token);
-                _characterContent = Addressables.LoadAssetAsync<GameObject>(GameplayConfig.Character.VisualAddress);
-                _weaponContent = Addressables.LoadAssetAsync<GameObject>(GameplayConfig.Weapon.PrefabAddress);
-                await WaitForPrefab(_characterContent, _operation.Token); await WaitForPrefab(_weaponContent, _operation.Token);
+                await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
-                _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings);
+                _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
                 Manager.NetworkConfig.ConnectionData = _signature;
-                if (bindings.BoundVisualPrefab != _characterContent.Result || bindings.CharacterView.BoundWeaponPrefab != _weaponContent.Result)
-                    throw new InvalidOperationException("角色或武器配置地址与正式网络预制体绑定不一致，请同步资源绑定后重新构建。");
                 Manager.AddNetworkPrefab(_playerPrefab.Result); Manager.AddNetworkPrefab(_matchPrefab.Result);
                 Status = host ? "正在创建房间…" : "正在连接房主…";
                 if (host)
@@ -193,8 +190,7 @@ namespace Splatoon.Prototype
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
-            if (_characterContent.IsValid()) Addressables.Release(_characterContent); _characterContent = default;
-            if (_weaponContent.IsValid()) Addressables.Release(_weaponContent); _weaponContent = default;
+            Heroes.Clear();
             var boot = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Main/Boot.unity");
             if (boot.IsValid() && boot.isLoaded) UnityEngine.SceneManagement.SceneManager.SetActiveScene(boot);
             if (_loaded) { await _loader.UnloadAsync(_scene); _loaded = false; }
@@ -232,6 +228,7 @@ namespace Splatoon.Prototype
             _destroying = true; _discovery.Dispose();
             _operation?.Cancel(); Session?.Dispose();
             if (Manager != null) { Manager.Shutdown(); Destroy(Manager.gameObject); }
+            Heroes.Dispose();
             LubanConfigService.Current.Reset(); if (Current == this) Current = null;
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
             if (_chineseFont != null) Destroy(_chineseFont);
@@ -260,7 +257,7 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
             var state=match.State.Value; var player=local.PresentedState;
-            var equipped = GameplayConfig.GetWeapon(player.WeaponId);
+            var equipped = GameplayConfig.GetHero(player.HeroId);
             GUI.Label(new Rect(24,542,340,30),equipped.DisplayName,_label);
             double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
@@ -277,8 +274,8 @@ namespace Splatoon.Prototype
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
-            Panel(new Rect(42,635,285*player.Ink/GameplayConfig.Character.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetWeapon(player.WeaponId)) ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {GameplayConfig.Character.MaxInk:0}",_small);
+            Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? "墨量不足 / 松开射击回墨" : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
             GUI.Label(new Rect(850,641,410,60),"左键射击　Shift 潜墨 / 回墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
@@ -292,14 +289,14 @@ namespace Splatoon.Prototype
                     GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
                 }
                 float gap = 5 + player.CurrentSpread;
-                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetWeapon(player.WeaponId)) ? Color.yellow : Color.white;
+                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetHero(player.HeroId)) ? Color.yellow : Color.white;
                 Panel(new Rect(639,360-gap-7,2,7),reticle); Panel(new Rect(639,360+gap,2,7),reticle);
                 Panel(new Rect(640-gap-7,359,7,2),reticle); Panel(new Rect(640+gap,359,7,2),reticle);
                 if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(628,347,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
                 if (local.MuzzleBlocked) GUI.Label(new Rect(580,403,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"H 选择枪械 · 等待另一名玩家加入。":"H 选择枪械 · 房主按回车开始比赛。",_small);
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"H 选择英雄 · 等待另一名玩家加入。":"H 选择英雄 · 房主按回车开始比赛。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(_overlay == GameplayOverlay.RoomMenu)
             {

@@ -108,6 +108,8 @@ namespace Splatoon.Editor
             weapon.SetParent(socket, false); weapon.localPosition = Vector3.zero; weapon.localRotation = Quaternion.identity;
             var muzzle = new GameObject("Muzzle").transform; muzzle.SetParent(weapon, false);
             muzzle.position = MeasureMuzzle(weapon); muzzle.rotation = Quaternion.identity;
+            var heroWeapon = weapon.gameObject.AddComponent<HeroWeaponBindings>();
+            heroWeapon.Nozzle = muzzle; heroWeapon.LeftGrip = Find(weapon.gameObject, "Left_Handle");
             var weaponPrefab = PrefabUtility.SaveAsPrefabAssetAndConnect(weapon.gameObject, WeaponPath, InteractionMode.AutomatedAction);
             character.name = "RifleGirlVisual";
             foreach (var transform in character.GetComponentsInChildren<Transform>(true)) transform.gameObject.layer = 8;

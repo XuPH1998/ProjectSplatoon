@@ -9,7 +9,7 @@
 1,GameParameters.DamageParam.ReduceStartFrame,8,damageReduceStartFrames,原始覆盖；不包含缺失的类型默认值
 1,GameParameters.DamageParam.ValueMax,360,damage,原始覆盖；不包含缺失的类型默认值
 1,GameParameters.DamageParam.ValueMin,180,damageMin,原始覆盖；不包含缺失的类型默认值
-1,GameParameters.MoveParam.FreeGravity,0.016,gravity,原始覆盖；不包含缺失的类型默认值
+1,GameParameters.MoveParam.FreeGravity,0.016,projectileGravity,原始覆盖；不包含缺失的类型默认值
 1,GameParameters.MoveParam.GoStraightStateEndMaxSpeed,1.493,未建模/无直接对应,原始覆盖；不包含缺失的类型默认值
 1,GameParameters.MoveParam.GoStraightToBrakeStateFrame,4,straightFrames,原始覆盖；不包含缺失的类型默认值
 1,GameParameters.MoveParam.SpawnSpeed,2.266,"speedMin,speedMax",原始覆盖；不包含缺失的类型默认值
@@ -65,7 +65,7 @@
 2,GameParameters.DamageParam.ValueMax,240,damage,原始覆盖；不包含缺失的类型默认值
 2,GameParameters.DamageParam.ValueMin,120,damageMin,原始覆盖；不包含缺失的类型默认值
 2,GameParameters.MainWeaponSetting.WeaponSpeedType,"""Fast""",未建模/无直接对应,原始覆盖；不包含缺失的类型默认值
-2,GameParameters.MoveParam.FreeGravity,0.016,gravity,原始覆盖；不包含缺失的类型默认值
+2,GameParameters.MoveParam.FreeGravity,0.016,projectileGravity,原始覆盖；不包含缺失的类型默认值
 2,GameParameters.MoveParam.GoStraightStateEndMaxSpeed,1.9513,未建模/无直接对应,原始覆盖；不包含缺失的类型默认值
 2,GameParameters.MoveParam.GoStraightToBrakeStateFrame,3,straightFrames,原始覆盖；不包含缺失的类型默认值
 2,GameParameters.MoveParam.SpawnSpeed,2.266,"speedMin,speedMax",原始覆盖；不包含缺失的类型默认值
@@ -127,7 +127,7 @@
 3,GameParameters.DamageParam.ValueMax,520,damage,原始覆盖；不包含缺失的类型默认值
 3,GameParameters.DamageParam.ValueMin,300,damageMin,原始覆盖；不包含缺失的类型默认值
 3,GameParameters.MoveParam.FreeAirResist,0.02,未建模/无直接对应,原始覆盖；不包含缺失的类型默认值
-3,GameParameters.MoveParam.FreeGravity,0.016,gravity,原始覆盖；不包含缺失的类型默认值
+3,GameParameters.MoveParam.FreeGravity,0.016,projectileGravity,原始覆盖；不包含缺失的类型默认值
 3,GameParameters.MoveParam.GoStraightStateEndMaxSpeed,1.667,未建模/无直接对应,原始覆盖；不包含缺失的类型默认值
 3,GameParameters.MoveParam.GoStraightToBrakeStateFrame,3,straightFrames,原始覆盖；不包含缺失的类型默认值
 3,GameParameters.MoveParam.SpawnSpeed,3.06,"speedMin,speedMax",原始覆盖；不包含缺失的类型默认值

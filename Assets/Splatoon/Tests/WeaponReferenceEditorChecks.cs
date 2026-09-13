@@ -24,15 +24,26 @@ namespace Splatoon.Tests
             if (EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode || SessionState.GetBool(Running, false)) return;
             if (File.Exists("Temp/WeaponReference/run-editmode")) { File.Delete("Temp/WeaponReference/run-editmode"); Run(); }
             else if (File.Exists("Temp/WeaponReference/run-playmode")) { File.Delete("Temp/WeaponReference/run-playmode"); Play(); }
+            else if (File.Exists("Temp/HeroMigration/run-editmode")) { File.Delete("Temp/HeroMigration/run-editmode"); HeroEdit(); }
+            else if (File.Exists("Temp/HeroMigration/run-playmode")) { File.Delete("Temp/HeroMigration/run-playmode"); HeroPlay(); }
         }
         [MenuItem("喷墨对战/验证/武器参考与测量 EditMode")]
         public static void Run() => Start("EditMode", new[] {
-            "Splatoon.Tests.WeaponReferenceTests", "Splatoon.Tests.WeaponSelectionTests", "Splatoon.Tests.GameplayConfigTests",
+            "Splatoon.Tests.WeaponReferenceTests", "Splatoon.Tests.HeroSelectionTests", "Splatoon.Tests.GameplayConfigTests",
             "Splatoon.Tests.InkSimulationTests", "Splatoon.Tests.InkCollisionTests", "Splatoon.Tests.InkCoverageTests",
             "Splatoon.Tests.WeaponReferenceMeasurementTests.CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode",
             "Splatoon.Tests.WeaponReferenceMeasurementTests.RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage" });
         [MenuItem("喷墨对战/验证/武器参考与测量 PlayMode")]
         public static void Play() => Start("PlayMode", new[] { "Splatoon.Tests.WeaponReferenceMeasurementTests.PlayModeUsesTheSameMeasuredPhysicsAndCoverage" });
+        [MenuItem("喷墨对战/验证/英雄迁移 EditMode")]
+        public static void HeroEdit() => Start("Hero-EditMode", new[] {
+            "Splatoon.Tests.HeroMigrationTests", "Splatoon.Tests.HeroSelectionTests", "Splatoon.Tests.GameplayConfigTests",
+            "Splatoon.Tests.WeaponReferenceTests", "Splatoon.Tests.ShooterMovementTests", "Splatoon.Tests.CharacterPresentationTests",
+            "Splatoon.Tests.LanDiscoveryTests", "Splatoon.Tests.InkSimulationTests", "Splatoon.Tests.InkCollisionTests", "Splatoon.Tests.InkCoverageTests",
+            "Splatoon.Tests.WeaponReferenceMeasurementTests.CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode",
+            "Splatoon.Tests.WeaponReferenceMeasurementTests.RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage" });
+        [MenuItem("喷墨对战/验证/英雄迁移 PlayMode")]
+        public static void HeroPlay() => Start("Hero-PlayMode", new[] { "Splatoon.Tests.HeroMigrationPlayTests", "Splatoon.Tests.WeaponReferenceMeasurementTests.PlayModeUsesTheSameMeasuredPhysicsAndCoverage" });
         static void Start(string mode, string[] names)
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || SessionState.GetBool(Running, false)) return;

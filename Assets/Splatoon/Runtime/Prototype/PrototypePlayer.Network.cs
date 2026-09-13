@@ -20,7 +20,8 @@ namespace Splatoon.Prototype
         public Transform SimulationMuzzle;
         public Vector3 SimulationAimPivot;
         public GameObject BoundVisualPrefab;
-        public CharacterPresentationProfile Presentation => CharacterView != null ? CharacterView.Profile : null;
+        public CharacterPresentationProfile Presentation => _heroView?.Content?.Profile ?? (CharacterView != null ? CharacterView.Profile : null);
+        HeroViewBinder _heroView;
         public PlayerSnapshot PresentedState => IsOwner && !IsServer ? _predicted : Snapshot.Value;
         public Vector2 Look => _look;
         public Vector3 CameraPivot => transform.position + _visualOffset + (Presentation != null ? Presentation.CameraPivot : Vector3.up * 1.5f);
@@ -53,12 +54,13 @@ namespace Splatoon.Prototype
         public void Respawn()
         {
             var old = Snapshot.Value;
+            var hero = GameplayConfig.GetHero(old.HeroId);
             var s = new PlayerSnapshot { Team = old.Team, Slot = old.Slot, Revision = old.Revision + 1,
-                WeaponId = old.WeaponId == 0 ? GameplayConfig.Mode.WeaponId : old.WeaponId, EquipmentRevision = old.EquipmentRevision, ConsumedRelease = old.ConsumedRelease,
-                Health = GameplayConfig.Character.MaxHealth, Ink = GameplayConfig.Character.MaxInk,
+                HeroId = old.HeroId == 0 ? GameplayConfig.Mode.HeroId : old.HeroId, HeroRevision = old.HeroRevision, ConsumedRelease = old.ConsumedRelease,
+                Health = hero.MaxHealth, Ink = hero.MaxInk,
                 Position = PrototypeArena.Spawn(old.Team, old.Slot), Yaw = old.Team == 1 ? 0 : 180, Pitch = 12,
                 ProtectedUntil = NetworkManager.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds,
-                Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetWeapon(old.WeaponId), false, 0),
+                Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetHero(old.HeroId), false, 0),
                 SimulatedAt = NetworkManager.ServerTime.Time, AcknowledgedInput = old.AcknowledgedInput,
                 ShotSequence = old.ShotSequence, ConsumedFire = old.ConsumedFire, ConsumedJump = old.ConsumedJump };
             s.BodyYaw = s.TurnStartYaw = s.Yaw; s.LastDamageAt = s.SimulatedAt;
@@ -71,6 +73,7 @@ namespace Splatoon.Prototype
             if (IsServer) { Snapshot.Value = new PlayerSnapshot { Team = _initialTeam, Slot = _initialSlot }; Respawn(); }
             _predicted = Snapshot.Value; _controller.enabled = IsServer || IsOwner;
             transform.position = _predicted.Position;
+            EnsureHeroPresentation(_predicted.HeroId);
             _visualRest = Visual.localPosition; Visual.localRotation = Quaternion.Euler(0, _predicted.BodyYaw, 0);
             Snapshot.OnValueChanged += Reconcile;
             if (IsOwner)
@@ -105,7 +108,7 @@ namespace Splatoon.Prototype
                 Reconcile(Snapshot.Value, Snapshot.Value);
             var k = Keyboard.current;
             var frame = new PlayerInputFrame { Sequence = ++_sequence, Tick = (uint)Math.Max(0, NetworkManager.ServerTime.Time * GameplayConfig.Global.SimulationRate),
-                JumpSequence = _jumpSequence, FireSequence = _fireSequence, Revision = PresentedState.Revision, Look = _look, EquipmentRevision = PresentedState.EquipmentRevision,
+                JumpSequence = _jumpSequence, FireSequence = _fireSequence, Revision = PresentedState.Revision, Look = _look, HeroRevision = PresentedState.HeroRevision,
                 ReleaseSequence = _releaseSequence, CancelFire = !PrototypeApp.Current.HasControl || !PrototypeApp.Current.CanFireInput };
             if (PrototypeApp.Current.HasControl && k != null && PresentedState.Health > 0)
             {
@@ -116,8 +119,8 @@ namespace Splatoon.Prototype
             PrototypeSmoke.ModifyInput(this, ref frame);
             RifleGirlSmoke.ModifyInput(this, ref frame);
             ShooterMovementSmoke.ModifyInput(this, ref frame);
-            WeaponSelectionSmoke.ModifyInput(this, ref frame);
-            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || WeaponSelectionSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
+            HeroSelectionSmoke.ModifyInput(this, ref frame);
+            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
 #endif
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1);
             if (frame.Fire && !_fireWasHeld && frame.FireSequence == PresentedState.ConsumedFire) frame.FireSequence = ++_fireSequence;
@@ -163,7 +166,7 @@ namespace Splatoon.Prototype
         {
             if (!IsServer) return;
             var s = Snapshot.Value;
-            ApplyWeaponRequest(ref s, phase);
+            ApplyHeroRequest(ref s, phase);
             if (s.Health <= 0 && now >= s.RespawnsAt && phase != MatchPhase.Finished) { Respawn(); return; }
             if (_serverInputs.Count > 0)
             {
@@ -189,11 +192,12 @@ namespace Splatoon.Prototype
         }
         bool Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, MatchPhase phase)
         {
+            EnsureHeroPresentation(s.HeroId);
             s.SimulatedAt = now; s.SimulationTick++;
             if (phase == MatchPhase.Finished)
             { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; return false; }
-            var w = GameplayConfig.GetWeapon(s.WeaponId);
-            if (input.EquipmentRevision != s.EquipmentRevision) { input.CancelFire = true; input.Fire = false; }
+            var w = GameplayConfig.GetHero(s.HeroId);
+            if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
             bool fire = WeaponSimulation.WantsFire(s, input);
             _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed);
@@ -207,11 +211,12 @@ namespace Splatoon.Prototype
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             if (shot && WeaponSimulation.IsCharge(w)) s.CurrentSpread = WeaponSimulation.Spread(w, !s.Grounded, fireResult.Charge);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
-            ResourceSimulation.Step(ref s, GameplayConfig.Character, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire, dt, now);
+            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire, dt, now);
             return shot;
         }
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
         {
+            EnsureHeroPresentation(authority.HeroId);
             if (authority.Revision != before.Revision)
             {
                 _visualOffset = Vector3.zero;
@@ -262,6 +267,21 @@ namespace Splatoon.Prototype
         }
         public void ConfirmHit(bool killed)
         { if (!IsOwner) return; HitConfirmedUntil = Time.unscaledTimeAsDouble + .16; LastHitKilled = killed; if (_audio != null) _audio.PlayOneShot(_hitAudio, .18f); }
+        void EnsureHeroPresentation(int heroId)
+        {
+            if (PrototypeApp.Current == null) return;
+            if (heroId == 0) heroId = GameplayConfig.Mode.HeroId;
+            if (_heroView?.Content?.Config.Id == heroId) return;
+            var content = PrototypeApp.Current.Heroes.Get(heroId);
+            var authoredVisual = _heroView == null ? Visual : null;
+            _heroView ??= new HeroViewBinder(transform);
+            bool changed = _heroView.Apply(content);
+            Visual = _heroView.Visual; CharacterView = _heroView.View; BoundVisualPrefab = content.CharacterPrefab;
+            SimulationAimPivot = content.Profile.AimPivot; SimulationMuzzle.localPosition = content.Profile.MuzzlePosition;
+            if (changed) { _visualRest = Visual.localPosition; _visualOffset = Vector3.zero; }
+            if (authoredVisual != null && authoredVisual != Visual)
+            { authoredVisual.gameObject.SetActive(false); HeroViewBinder.Destroy(authoredVisual.gameObject); }
+        }
         static AudioClip Tone(string name, float frequency, float seconds)
         {
             int count = Mathf.CeilToInt(22050 * seconds); var samples = new float[count];
@@ -296,6 +316,7 @@ namespace Splatoon.Prototype
         }
         public override void OnNetworkDespawn()
         {
+            _heroView?.Dispose(); _heroView = null;
             Snapshot.OnValueChanged -= Reconcile; ByOwner.Remove(OwnerClientId);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= SendInput;
             _history.Clear(); _serverInputs.Clear(); if (_shotAudio != null) Destroy(_shotAudio); if (_hitAudio != null) Destroy(_hitAudio);

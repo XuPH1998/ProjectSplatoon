@@ -13,7 +13,7 @@ namespace Splatoon.Combat
         public uint Id, Round, Seed, ShotSequence;
         public ulong Shooter;
         public ulong ActionId;
-        public int WeaponId;
+        public int HeroId;
         public float Charge;
         public byte Team;
         public double Born;
@@ -21,7 +21,7 @@ namespace Splatoon.Combat
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Seed); s.SerializeValue(ref Shooter);
-            s.SerializeValue(ref WeaponId); s.SerializeValue(ref Team); s.SerializeValue(ref Born); s.SerializeValue(ref Origin); s.SerializeValue(ref Velocity);
+            s.SerializeValue(ref HeroId); s.SerializeValue(ref Team); s.SerializeValue(ref Born); s.SerializeValue(ref Origin); s.SerializeValue(ref Velocity);
             s.SerializeValue(ref Charge);
             s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref ActionId);
@@ -44,7 +44,7 @@ namespace Splatoon.Combat
     {
         public static Vector3 Position(Vector3 origin, Vector3 velocity, float gravity, double age)
         { float t = (float)age; return origin + velocity * t + Vector3.down * (.5f * gravity * t * t); }
-        public static float TravelTime(cfg.WeaponConfig w, double age)
+        public static float TravelTime(cfg.HeroConfig w, double age)
         {
             float t = Mathf.Max(0, (float)age), straight = (float)WeaponSimulation.Seconds(w.StraightFrames);
             if (t <= straight) return t;
@@ -52,14 +52,14 @@ namespace Splatoon.Combat
             float b = Mathf.Min(t - straight, brake);
             return straight + b - .5f * (1 - w.BrakeSpeedMultiplier) * b * b / brake + Mathf.Max(0, t - straight - brake) * w.BrakeSpeedMultiplier;
         }
-        public static Vector3 Position(Vector3 origin, Vector3 velocity, cfg.WeaponConfig w, double age)
+        public static Vector3 Position(Vector3 origin, Vector3 velocity, cfg.HeroConfig w, double age)
         {
             float fall = Mathf.Max(0, (float)(age - WeaponSimulation.Seconds(w.StraightFrames)));
-            return origin + velocity * TravelTime(w, age) + Vector3.down * (.5f * w.Gravity * fall * fall);
+            return origin + velocity * TravelTime(w, age) + Vector3.down * (.5f * w.ProjectileGravity * fall * fall);
         }
         public static float Random01(ref uint seed)
         { seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5; return (seed & 0xFFFFFF) / 16777216f; }
-        public static Vector3 LaunchVelocity(Vector3 direction, cfg.WeaponConfig w, ref uint seed, float spread = -1)
+        public static Vector3 LaunchVelocity(Vector3 direction, cfg.HeroConfig w, ref uint seed, float spread = -1)
         {
             float radius = Mathf.Sqrt(Random01(ref seed)) * Mathf.Tan((spread < 0 ? w.SpreadDegrees : spread) * Mathf.Deg2Rad);
             float angle = Random01(ref seed) * Mathf.PI * 2;
@@ -84,7 +84,7 @@ namespace Splatoon.Combat
         public Action<PaintStamp> PaintObserved;
         public void SpawnForMeasurement(InkShot shot)
         {
-            if (GameplayConfig.GetWeapon(shot.WeaponId) == null || shot.Velocity.sqrMagnitude <= 0)
+            if (GameplayConfig.GetHero(shot.HeroId) == null || shot.Velocity.sqrMagnitude <= 0)
                 throw new ArgumentException("测量墨弹必须指定有效武器与初速");
             Spawned.Add(shot);
             BeginFlight(shot, shot.Origin, shot.Velocity.normalized);
@@ -92,7 +92,7 @@ namespace Splatoon.Combat
 #endif
         public void Spawn(PrototypePlayer player, PlayerSnapshot state, double born, uint round)
         {
-            var w = GameplayConfig.GetWeapon(state.WeaponId);
+            var w = GameplayConfig.GetHero(state.HeroId);
             var aim = Quaternion.Euler(state.Pitch, state.Yaw, 0);
             var pivot = state.Position + (player.Presentation != null ? player.Presentation.CameraPivot : Vector3.up * 1.5f);
             var camera = PrototypePlayer.CameraPosition(pivot, aim, player.Presentation);
@@ -103,7 +103,7 @@ namespace Splatoon.Combat
             bool blocked = ClosestRay(pivot, (muzzle - pivot).normalized, (muzzle - pivot).magnitude, player.OwnerClientId, out var wall);
             uint seed = unchecked(++_id * 747796405u + round * 2891336453u + (uint)player.OwnerClientId + 1u);
             if (seed == 0) seed = 1;
-            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, WeaponId = w.Id, Team = state.Team, Born = born, Origin = blocked ? pivot : muzzle };
+            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, HeroId = w.Id, Team = state.Team, Born = born, Origin = blocked ? pivot : muzzle };
             shot.ActionId = state.ShotActionId;
             shot.Charge = state.LastShotCharge;
             shot.Velocity = InkBallistics.LaunchVelocity((target - muzzle).normalized, w, ref seed, state.CurrentSpread > 0 ? state.CurrentSpread : w.SpreadDegrees);
@@ -114,7 +114,7 @@ namespace Splatoon.Combat
         }
         private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
         {
-            PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetWeapon(shot.WeaponId));
+            PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId));
             _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle });
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, 0, muzzle);
@@ -138,7 +138,7 @@ namespace Splatoon.Combat
             double step = 1.0 / GameplayConfig.Global.ProjectileStepRate;
             for (int i = _active.Count - 1; i >= 0; i--)
             {
-                var a = _active[i]; var w = LubanConfigService.Current.Tables.TbWeapon.Get(a.Shot.WeaponId);
+                var a = _active[i]; var w = LubanConfigService.Current.Tables.TbHero.Get(a.Shot.HeroId);
                 double end = Math.Min(until, a.Shot.Born + w.Lifetime); bool hit = false;
                 while (a.SimulatedUntil < end - 1e-8)
                 {
@@ -174,7 +174,7 @@ namespace Splatoon.Combat
                 else _active[i] = a;
             }
         }
-        private void PaintTrail(Vector3 position, InkShot shot, cfg.WeaponConfig w)
+        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w)
         {
             bool enabled = PrototypeMatch.Current != null;
 #if UNITY_EDITOR
@@ -184,7 +184,7 @@ namespace Splatoon.Combat
             var surface = h.collider.GetComponentInParent<PaintSurface>();
             if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, w.TrailRadius, w);
         }
-        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.WeaponConfig w)
+        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w)
         {
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
@@ -198,7 +198,7 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
 #endif
-            var w = LubanConfigService.Current.Tables.TbWeapon.Get(shot.WeaponId);
+            var w = LubanConfigService.Current.Tables.TbHero.Get(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
             float actualDamage = 0; bool killed = false;
             if (victim != null)

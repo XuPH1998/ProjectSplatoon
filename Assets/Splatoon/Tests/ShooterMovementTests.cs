@@ -18,7 +18,7 @@ namespace Splatoon.Tests
 {
     public sealed class ShooterMovementTests
     {
-        cfg.WeaponConfig W => GameplayConfig.Weapon;
+        cfg.HeroConfig W => GameplayConfig.DefaultHero;
         [SetUp] public void Setup()
         {
             var tables=new cfg.Tables(name=>SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/"+name+".json")));
@@ -64,22 +64,22 @@ namespace Splatoon.Tests
         [Test] public void SwimmingCannotBypassRecoveryLock()
         {
             var s=Alive();s.Ink=40;s.Swimming=true;s.InkRecoverAt=20/60.0;
-            ResourceSimulation.Step(ref s,GameplayConfig.Character,false,false,1f/60,19/60.0);Assert.That(s.Ink,Is.EqualTo(40));
-            ResourceSimulation.Step(ref s,GameplayConfig.Character,false,false,1f/60,20/60.0);Assert.That(s.Ink,Is.EqualTo(40+35f/60).Within(.0001));
+            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,19/60.0);Assert.That(s.Ink,Is.EqualTo(40));
+            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,20/60.0);Assert.That(s.Ink,Is.EqualTo(40+100f/180).Within(.0001));
         }
         [TestCase(100,60)] [TestCase(59,59)] [TestCase(20,20)]
         public void EnemyInkIsNonlethalAndNeverHeals(float initial,float expected)
         {
             var s=Alive();s.Health=initial;
-            for(int i=0;i<600;i++)ResourceSimulation.Step(ref s,GameplayConfig.Character,true,false,1f/60,i/60.0);
+            for(int i=0;i<600;i++)ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,true,false,1f/60,i/60.0);
             Assert.That(s.Health,Is.EqualTo(expected).Within(.001));
         }
         [Test] public void HealthRecoveryWaitsAfterDamageAndEnemyInk()
         {
             var s=Alive();s.Health=30;s.LastDamageAt=2;
-            ResourceSimulation.Step(ref s,GameplayConfig.Character,false,false,1f/60,2.99);Assert.That(s.Health,Is.EqualTo(30));
-            ResourceSimulation.Step(ref s,GameplayConfig.Character,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.5f));
-            s.Swimming=true;ResourceSimulation.Step(ref s,GameplayConfig.Character,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
+            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,2.99);Assert.That(s.Health,Is.EqualTo(30));
+            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.5f));
+            s.Swimming=true;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
         }
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void RenderRatesDoNotChangeFixedSimulationResults(int rate)
@@ -95,7 +95,7 @@ namespace Splatoon.Tests
         }
         [Test] public void HorizontalBallisticsReachCalibratedPaintDistance()
         {
-            float age=(float)WeaponSimulation.Seconds(W.StraightFrames)+Mathf.Sqrt(2*1.4f/W.Gravity);
+            float age=(float)WeaponSimulation.Seconds(W.StraightFrames)+Mathf.Sqrt(2*1.4f/W.ProjectileGravity);
             var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*W.SpeedMin,W,age);
             Assert.That(hit.y,Is.Zero.Within(.0001));Assert.That(hit.z,Is.InRange(W.PaintRange*.9f,W.PaintRange*1.1f));
             Assert.That(InkBallistics.Position(Vector3.zero,Vector3.forward*31,W,4/60.0).y,Is.Zero);
@@ -108,8 +108,9 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(32)] [TestCase(62)]
         public void ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(int release)
         {
-            var arena=LoadArena();var w=GameplayConfig.GetWeapon(5);
-            var s=Alive();s.WeaponId=w.Id;s.Position=new Vector3(0,.05f,-24);
+            var arena=LoadArena();var w=GameplayConfig.GetHero(5);
+            // Keep this firing/swimming test off the tile seam and the spawn shield.
+            var s=Alive();s.HeroId=w.Id;s.Position=arena.SpawnPoints[0].position+Vector3.forward;
             Assert.That(Physics.Raycast(s.Position+Vector3.up*.2f,Vector3.down,out var hit,1,PlayerMotorSimulation.WorldMask),Is.True);
             var floor=hit.collider.GetComponent<PaintSurface>();Assert.That(floor,Is.Not.Null);
             arena.Apply(new PaintStamp{SurfaceId=floor.SurfaceId,Position=hit.point,Normal=hit.normal,Radius=3,Hardness=1,Strength=1,Team=s.Team},true);
@@ -125,6 +126,9 @@ namespace Splatoon.Tests
                 PlayerSnapshot Swim(PlayerSnapshot state)
                 {
                     motor.Restore(state);
+                    // Restore teleports the controller; establish a real grounded contact first.
+                    cc.Move(Vector3.down*.2f);state.Position=go.transform.position;state.VerticalSpeed=-2;state.Grounded=cc.isGrounded;
+                    Assert.That(state.Grounded,Is.True);
                     for(int tick=release+1;tick<=release+10;tick++)
                     {
                         var input=new PlayerInputFrame{Sequence=(uint)tick+1,FireSequence=1,Swim=true,Move=Vector2.up};

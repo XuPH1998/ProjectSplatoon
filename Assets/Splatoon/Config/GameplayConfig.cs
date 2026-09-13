@@ -8,9 +8,8 @@ namespace Splatoon.Config
     {
         public static cfg.GlobalConfig Global => LubanConfigService.Current.Tables.TbGlobal.Get(1);
         public static cfg.RoomModeConfig Mode => LubanConfigService.Current.Tables.TbRoomMode.Get(Global.DefaultModeId);
-        public static cfg.CharacterConfig Character => LubanConfigService.Current.Tables.TbCharacter.Get(Mode.CharacterId);
-        public static cfg.WeaponConfig Weapon => LubanConfigService.Current.Tables.TbWeapon.Get(Mode.WeaponId);
-        public static cfg.WeaponConfig GetWeapon(int id) => LubanConfigService.Current.Tables.TbWeapon.Get(id == 0 ? Mode.WeaponId : id);
+        public static cfg.HeroConfig DefaultHero => GetHero(Mode.HeroId);
+        public static cfg.HeroConfig GetHero(int id) => LubanConfigService.Current.Tables.TbHero.Get(id == 0 ? Mode.HeroId : id);
         public static cfg.MapConfig Map => LubanConfigService.Current.Tables.TbMap.Get(Mode.MapId);
         public static void Validate(cfg.Tables supplied = null)
         {
@@ -18,34 +17,34 @@ namespace Splatoon.Config
             var global = tables.TbGlobal.GetOrDefault(1);
             var mode = global == null ? null : tables.TbRoomMode.GetOrDefault(global.DefaultModeId);
             Require(tables.TbGlobal.DataList.Count == 1 && global != null, "全局表必须且只能包含 ID=1 的记录");
-            Require(mode != null && tables.TbCharacter.GetOrDefault(mode.CharacterId) != null && tables.TbWeapon.GetOrDefault(mode.WeaponId) != null && tables.TbMap.GetOrDefault(mode.MapId) != null, "默认模式引用不存在");
-            foreach (var table in new System.Collections.IEnumerable[] { tables.TbGlobal.DataList, tables.TbCharacter.DataList, tables.TbWeapon.DataList, tables.TbRoomMode.DataList, tables.TbMap.DataList })
+            Require(mode != null && tables.TbHero.GetOrDefault(mode.HeroId) != null && tables.TbMap.GetOrDefault(mode.MapId) != null, "默认模式引用不存在");
+            foreach (var table in new System.Collections.IEnumerable[] { tables.TbGlobal.DataList, tables.TbHero.DataList, tables.TbRoomMode.DataList, tables.TbMap.DataList })
                 foreach (var row in table)
                     foreach (var field in row.GetType().GetFields())
                         if (field.FieldType == typeof(float))
                             Require(float.IsFinite((float)field.GetValue(row)) && (float)field.GetValue(row) >= 0, row.GetType().Name + "." + field.Name + " 必须为有限非负数");
-            foreach (var c in tables.TbCharacter.DataList)
+            foreach (var c in tables.TbHero.DataList)
             {
-                Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.Gravity > 0 && c.JumpSpeed > 0, "角色数值无效");
-                Require(!string.IsNullOrWhiteSpace(c.VisualAddress), "角色缺少外观地址");
+                Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.CharacterGravity > 0 && c.JumpSpeed > 0, "英雄角色数值无效");
+                Require(!string.IsNullOrWhiteSpace(c.CharacterPrefabAddress), "角色缺少外观地址");
                 Require(c.ShootMoveSpeed > 0 && c.MoveAcceleration > 0 && c.SwimAcceleration > 0 && c.WallSwimSpeed > 0 && c.WallProbeDistance > 0 && c.WallGraceSeconds <= .1f && c.MantleSeconds > 0 && c.EnemyInkHealthFloor <= c.MaxHealth, "移动与恢复配置无效");
             }
-            foreach (var w in tables.TbWeapon.DataList)
+            foreach (var w in tables.TbHero.DataList)
             {
                 Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 2 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
                 Require(w.FireMode == 1 || w.BurstCount == 1, "非三连发武器每次只发射一颗");
                 if (w.FireMode == 1) Require(w.BurstCount == 3 && w.BurstRecoveryFrames >= w.FireIntervalFrames, "三连发组间冷却无效");
                 if (w.FireMode == 2) Require(w.ChargeFrames > 0 && w.ChargeMinDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.ChargePartialMaxDamage >= w.ChargeMinDamage && w.ChargeMinInk > 0 && w.ChargeMinInk < w.ShotInk && w.ChargeMinRange > 0 && w.ChargeMinRange <= w.EffectiveRange && w.ChargeMinSpeed > 0 && w.ChargeMinSpeed <= w.SpeedMin && w.ChargeMinJumpSpread >= w.ChargeMinSpread && w.ChargeMinPaintRange >= w.ChargeMinRange, "蓄力端点配置无效");
                 Require(w.Id > 0 && w.FireRate > 0 && w.FireRate <= 240 && w.Lifetime > 0 && w.Lifetime <= 10 && w.ShotInk > 0 && w.Damage > 0, "武器射击配置无效");
-                Require(w.SpeedMin > 0 && w.SpeedMax >= w.SpeedMin && w.CollisionRadius > 0 && w.Gravity > 0, "弹道配置无效");
+                Require(w.SpeedMin > 0 && w.SpeedMax >= w.SpeedMin && w.CollisionRadius > 0 && w.ProjectileGravity > 0, "弹道配置无效");
                 Require(w.PaintRadiusMin > 0 && w.PaintRadiusMax >= w.PaintRadiusMin && w.PaintHardness <= 1 && w.PaintStrength <= 1 && w.PaintStrength > 0 && w.SpreadDegrees <= 45, "笔刷或散布配置无效");
-                Require(!string.IsNullOrWhiteSpace(w.PrefabAddress), "武器缺少资源地址");
+                Require(!string.IsNullOrWhiteSpace(w.WeaponPrefabAddress), "武器缺少资源地址");
                 Require(w.FireIntervalFrames > 0 && Math.Abs(w.FireRate * w.FireIntervalFrames - 60) < .001 && w.StartFrames >= 0 && w.EmergeStartFrames >= w.StartFrames && w.InkRecoverLockFrames >= 0, "武器时间参数以 60Hz 参考帧配置");
                 Require(w.DamageMin > 0 && w.DamageMin <= w.Damage && w.DamageReduceStartFrames >= 0 && w.DamageReduceEndFrames > w.DamageReduceStartFrames && w.StraightFrames >= 0 && w.BrakeFrames > 0 && w.BrakeSpeedMultiplier > 0 && w.BrakeSpeedMultiplier <= 1 && w.SpreadRecoverFrames > 0 && w.JumpSpreadDegrees <= 45 && w.TrailSpacing > 0 && w.TrailRadius > 0 && w.EffectiveRange > 0 && w.PaintRange >= w.EffectiveRange, "武器弹道或落墨配置无效");
             }
             foreach (var m in tables.TbRoomMode.DataList)
             {
-                Require(tables.TbCharacter.GetOrDefault(m.CharacterId) != null && tables.TbWeapon.GetOrDefault(m.WeaponId) != null && tables.TbMap.GetOrDefault(m.MapId) != null, "模式表存在无效引用");
+                Require(tables.TbHero.GetOrDefault(m.HeroId) != null && tables.TbMap.GetOrDefault(m.MapId) != null, "模式表存在无效引用");
                 Require(m.MaxPlayers >= 2 && m.MaxPlayers <= 4 && m.MinPlayers >= 2 && m.MinPlayers <= m.MaxPlayers && m.MatchSeconds > 0 && m.GroundOnlyScore, "当前模式要求 2–4 人且仅地面计分");
             }
             foreach (var a in tables.TbMap.DataList)

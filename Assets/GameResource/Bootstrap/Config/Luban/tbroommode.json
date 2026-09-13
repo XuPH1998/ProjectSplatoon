@@ -2,8 +2,7 @@
   {
     "id": 1,
     "name": "三分钟涂地赛",
-    "characterId": 1,
-    "weaponId": 1,
+    "heroId": 1,
     "mapId": 1,
     "maxPlayers": 4,
     "minPlayers": 2,

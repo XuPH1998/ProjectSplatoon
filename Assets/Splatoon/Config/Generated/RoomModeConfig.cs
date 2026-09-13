@@ -22,8 +22,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     {
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
-        { if(!_buf["characterId"].IsNumber) { throw new SerializationException(); }  CharacterId = _buf["characterId"]; }
-        { if(!_buf["weaponId"].IsNumber) { throw new SerializationException(); }  WeaponId = _buf["weaponId"]; }
+        { if(!_buf["heroId"].IsNumber) { throw new SerializationException(); }  HeroId = _buf["heroId"]; }
         { if(!_buf["mapId"].IsNumber) { throw new SerializationException(); }  MapId = _buf["mapId"]; }
         { if(!_buf["maxPlayers"].IsNumber) { throw new SerializationException(); }  MaxPlayers = _buf["maxPlayers"]; }
         { if(!_buf["minPlayers"].IsNumber) { throw new SerializationException(); }  MinPlayers = _buf["minPlayers"]; }
@@ -48,13 +47,9 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// </summary>
     public readonly string Name;
     /// <summary>
-    /// 默认角色 ID
+    /// 默认英雄 ID
     /// </summary>
-    public readonly int CharacterId;
-    /// <summary>
-    /// 默认武器 ID
-    /// </summary>
-    public readonly int WeaponId;
+    public readonly int HeroId;
     /// <summary>
     /// 场地 ID
     /// </summary>
@@ -100,8 +95,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         return "{ "
         + "id:" + Id + ","
         + "name:" + Name + ","
-        + "characterId:" + CharacterId + ","
-        + "weaponId:" + WeaponId + ","
+        + "heroId:" + HeroId + ","
         + "mapId:" + MapId + ","
         + "maxPlayers:" + MaxPlayers + ","
         + "minPlayers:" + MinPlayers + ","

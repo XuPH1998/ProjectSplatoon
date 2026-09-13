@@ -31,12 +31,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5dff61c7a711523daed91f1834534179
-    m_Address: tbcharacter
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Luban
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6099aec9a79bca34298597ce157343bd
     m_Address: Effects/InkImpact
     m_ReadOnly: 0
@@ -75,7 +69,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e80213c8510252d294cec97d0342e84f
-    m_Address: tbweapon
+    m_Address: tbhero
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban

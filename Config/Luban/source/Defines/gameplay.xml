@@ -1,123 +1,116 @@
 <module name="">
-  <bean name="CharacterConfig" comment="Character 强类型配置">
-    <var name="id" type="int" comment="角色 ID"/>
-    <var name="name" type="string" comment="角色名称"/>
-    <var name="visualAddress" type="string" comment="正式角色外观地址"/>
-    <var name="maxHealth" type="float" comment="生命上限"/>
-    <var name="maxInk" type="float" comment="墨水上限"/>
-    <var name="recoverInk" type="float" comment="普通回墨（点/秒）"/>
-    <var name="swimRecoverInk" type="float" comment="潜墨回墨（点/秒）"/>
-    <var name="moveSpeed" type="float" comment="移动速度（米/秒）"/>
-    <var name="swimSpeed" type="float" comment="潜墨速度（米/秒）"/>
-    <var name="enemyInkMultiplier" type="float" comment="敌方墨水速度倍率"/>
-    <var name="jumpSpeed" type="float" comment="起跳速度（米/秒）"/>
-    <var name="gravity" type="float" comment="角色重力（米/秒²）"/>
-    <var name="shootMoveSpeed" type="float" comment="射击移动速度（米/秒）"/>
-    <var name="moveAcceleration" type="float" comment="人形加减速度（米/秒²）"/>
-    <var name="swimAcceleration" type="float" comment="潜墨加减速度（米/秒²）"/>
-    <var name="wallSwimSpeed" type="float" comment="墙游速度（米/秒）"/>
-    <var name="wallGraceSeconds" type="float" comment="墙面接缝接触容错（秒）"/>
-    <var name="wallProbeDistance" type="float" comment="角色表面探测距离（米）"/>
-    <var name="wallJumpSpeed" type="float" comment="脱墙跳跃外推速度（米/秒）"/>
-    <var name="mantleSeconds" type="float" comment="墨水形态翻越时长（秒）"/>
-    <var name="healthRecoverDelay" type="float" comment="受伤后回血等待（秒）"/>
-    <var name="healthRecoverRate" type="float" comment="普通回血（HP/秒）"/>
-    <var name="swimHealthRecoverRate" type="float" comment="己方潜墨回血（HP/秒）"/>
-    <var name="enemyInkDamageRate" type="float" comment="敌墨伤害（HP/秒）"/>
-    <var name="enemyInkHealthFloor" type="float" comment="敌墨非致死生命下限（HP）"/>
+  <bean name="HeroConfig" comment="英雄完整角色、武器与射击配置">
+    <var name="id" type="int" comment="英雄 ID" />
+    <var name="name" type="string" comment="英雄英文标识" />
+    <var name="displayName" type="string" comment="英雄中文显示名" />
+    <var name="characterPrefabAddress" type="string" comment="模型：正式角色外观地址" />
+    <var name="weaponPrefabAddress" type="string" comment="模型：正式武器地址" />
+    <var name="maxHealth" type="float" comment="角色属性：生命上限" />
+    <var name="maxInk" type="float" comment="角色属性：墨水上限" />
+    <var name="recoverInk" type="float" comment="移动恢复：普通回墨（点/秒）" />
+    <var name="swimRecoverInk" type="float" comment="移动恢复：潜墨回墨（点/秒）" />
+    <var name="moveSpeed" type="float" comment="移动恢复：移动速度（米/秒）" />
+    <var name="swimSpeed" type="float" comment="移动恢复：潜墨速度（米/秒）" />
+    <var name="enemyInkMultiplier" type="float" comment="移动恢复：敌方墨水速度倍率" />
+    <var name="jumpSpeed" type="float" comment="移动恢复：起跳速度（米/秒）" />
+    <var name="characterGravity" type="float" comment="移动恢复：角色重力（米/秒²）" />
+    <var name="moveAcceleration" type="float" comment="移动恢复：人形加减速度（米/秒²）" />
+    <var name="swimAcceleration" type="float" comment="移动恢复：潜墨加减速度（米/秒²）" />
+    <var name="wallSwimSpeed" type="float" comment="移动恢复：墙游速度（米/秒）" />
+    <var name="wallGraceSeconds" type="float" comment="移动恢复：墙面接缝接触容错（秒）" />
+    <var name="wallProbeDistance" type="float" comment="移动恢复：角色表面探测距离（米）" />
+    <var name="wallJumpSpeed" type="float" comment="移动恢复：脱墙跳跃外推速度（米/秒）" />
+    <var name="mantleSeconds" type="float" comment="移动恢复：墨水形态翻越时长（秒）" />
+    <var name="healthRecoverDelay" type="float" comment="移动恢复：受伤后回血等待（秒）" />
+    <var name="healthRecoverRate" type="float" comment="移动恢复：普通回血（HP/秒）" />
+    <var name="swimHealthRecoverRate" type="float" comment="移动恢复：己方潜墨回血（HP/秒）" />
+    <var name="enemyInkDamageRate" type="float" comment="移动恢复：敌墨伤害（HP/秒）" />
+    <var name="enemyInkHealthFloor" type="float" comment="移动恢复：敌墨非致死生命下限（HP）" />
+    <var name="fireMode" type="int" comment="发射：机制：0全自动／1三连发／2蓄力松开发射" />
+    <var name="fireRate" type="float" comment="发射：权威射速（发/秒）" />
+    <var name="shotInk" type="float" comment="发射：每颗耗墨" />
+    <var name="fireIntervalFrames" type="int" comment="发射：连发间隔（60Hz参考帧）" />
+    <var name="startFrames" type="int" comment="发射：人形起手（60Hz参考帧）" />
+    <var name="emergeStartFrames" type="int" comment="发射：出墨起手（60Hz参考帧）" />
+    <var name="inkRecoverLockFrames" type="int" comment="发射：最后一发后回墨锁定（60Hz参考帧）" />
+    <var name="shootMoveSpeed" type="float" comment="发射：射击或蓄力移动速度（米/秒）" />
+    <var name="burstCount" type="int" comment="发射：每组发数（全自动为1）" />
+    <var name="burstRecoveryFrames" type="int" comment="发射：末发到下一组首发（60Hz参考帧）" />
+    <var name="speedMin" type="float" comment="弹道：最低初速（米/秒）" />
+    <var name="speedMax" type="float" comment="弹道：最高初速（米/秒）" />
+    <var name="projectileGravity" type="float" comment="弹道：墨弹重力（米/秒²）" />
+    <var name="lifetime" type="float" comment="弹道：有效寿命（秒）" />
+    <var name="collisionRadius" type="float" comment="弹道：扫掠半径（米）" />
+    <var name="spreadDegrees" type="float" comment="弹道：散布半角（度）" />
+    <var name="straightFrames" type="int" comment="弹道：直行阶段（60Hz参考帧）" />
+    <var name="brakeFrames" type="int" comment="弹道：减速过渡（60Hz参考帧）" />
+    <var name="brakeSpeedMultiplier" type="float" comment="弹道：减速后的速度比例" />
+    <var name="jumpSpreadDegrees" type="float" comment="弹道：跳跃散布半角（度）" />
+    <var name="spreadRecoverFrames" type="int" comment="弹道：落地散布恢复（60Hz参考帧）" />
+    <var name="effectiveRange" type="float" comment="弹道：伤害弹最大前向射程（本项目米）" />
+    <var name="damage" type="float" comment="伤害：每颗伤害" />
+    <var name="damageMin" type="float" comment="伤害：衰减后伤害（HP）" />
+    <var name="damageReduceStartFrames" type="int" comment="伤害：伤害衰减开始（飞行60Hz参考帧）" />
+    <var name="damageReduceEndFrames" type="int" comment="伤害：伤害衰减结束（飞行60Hz参考帧）" />
+    <var name="paintRadiusMin" type="float" comment="涂色：最小涂色半径（米）" />
+    <var name="paintRadiusMax" type="float" comment="涂色：最大涂色半径（米）" />
+    <var name="paintHardness" type="float" comment="涂色：笔刷硬度（0 到 1）" />
+    <var name="paintStrength" type="float" comment="涂色：笔刷强度（0 到 1）" />
+    <var name="trailSpacing" type="float" comment="涂色：沿途落墨间隔（米）" />
+    <var name="trailRadius" type="float" comment="涂色：沿途落墨笔刷半径（米）" />
+    <var name="trailMaxDrop" type="float" comment="涂色：沿途落墨向下探测范围（米）" />
+    <var name="paintRange" type="float" comment="涂色：水平瞄准涂地射程目标（本项目米）" />
+    <var name="chargeFrames" type="int" comment="蓄力：满蓄时间（60Hz参考帧，非蓄力为0）" />
+    <var name="chargeMinDamage" type="float" comment="蓄力：点射伤害（HP）" />
+    <var name="chargePartialMaxDamage" type="float" comment="蓄力：未满蓄伤害上限（HP）" />
+    <var name="chargeMinInk" type="float" comment="蓄力：点射耗墨（点）" />
+    <var name="chargeMinRange" type="float" comment="蓄力：点射伤害射程（米）" />
+    <var name="chargeMinSpeed" type="float" comment="蓄力：点射初速（米/秒）" />
+    <var name="chargeMinSpread" type="float" comment="蓄力：点射地面散布半角（度）" />
+    <var name="chargeMinJumpSpread" type="float" comment="蓄力：点射空中散布半角（度）" />
+    <var name="chargeMinPaintRange" type="float" comment="蓄力：点射水平涂地射程目标（米）" />
   </bean>
-  <table name="TbCharacter" value="CharacterConfig" input="TbCharacter.xlsx" mode="map" index="id"/>
-  <bean name="WeaponConfig" comment="Weapon 强类型配置">
-    <var name="id" type="int" comment="武器 ID"/>
-    <var name="name" type="string" comment="武器名称"/>
-    <var name="prefabAddress" type="string" comment="正式武器地址"/>
-    <var name="fireRate" type="float" comment="权威射速（发/秒）"/>
-    <var name="damage" type="float" comment="每颗伤害"/>
-    <var name="shotInk" type="float" comment="每颗耗墨"/>
-    <var name="speedMin" type="float" comment="最低初速（米/秒）"/>
-    <var name="speedMax" type="float" comment="最高初速（米/秒）"/>
-    <var name="gravity" type="float" comment="墨弹重力（米/秒²）"/>
-    <var name="lifetime" type="float" comment="有效寿命（秒）"/>
-    <var name="collisionRadius" type="float" comment="扫掠半径（米）"/>
-    <var name="spreadDegrees" type="float" comment="散布半角（度）"/>
-    <var name="paintRadiusMin" type="float" comment="最小涂色半径（米）"/>
-    <var name="paintRadiusMax" type="float" comment="最大涂色半径（米）"/>
-    <var name="paintHardness" type="float" comment="笔刷硬度（0 到 1）"/>
-    <var name="paintStrength" type="float" comment="笔刷强度（0 到 1）"/>
-    <var name="fireIntervalFrames" type="int" comment="连发间隔（60Hz参考帧）"/>
-    <var name="startFrames" type="int" comment="人形起手（60Hz参考帧）"/>
-    <var name="emergeStartFrames" type="int" comment="出墨起手（60Hz参考帧）"/>
-    <var name="inkRecoverLockFrames" type="int" comment="最后一发后回墨锁定（60Hz参考帧）"/>
-    <var name="damageMin" type="float" comment="衰减后伤害（HP）"/>
-    <var name="damageReduceStartFrames" type="int" comment="伤害衰减开始（飞行60Hz参考帧）"/>
-    <var name="damageReduceEndFrames" type="int" comment="伤害衰减结束（飞行60Hz参考帧）"/>
-    <var name="straightFrames" type="int" comment="直行阶段（60Hz参考帧）"/>
-    <var name="brakeFrames" type="int" comment="减速过渡（60Hz参考帧）"/>
-    <var name="brakeSpeedMultiplier" type="float" comment="减速后的速度比例"/>
-    <var name="jumpSpreadDegrees" type="float" comment="跳跃散布半角（度）"/>
-    <var name="spreadRecoverFrames" type="int" comment="落地散布恢复（60Hz参考帧）"/>
-    <var name="trailSpacing" type="float" comment="沿途落墨间隔（米）"/>
-    <var name="trailRadius" type="float" comment="沿途落墨笔刷半径（米）"/>
-    <var name="trailMaxDrop" type="float" comment="沿途落墨向下探测范围（米）"/>
-    <var name="effectiveRange" type="float" comment="伤害弹最大前向射程（本项目米）"/>
-    <var name="paintRange" type="float" comment="水平瞄准涂地射程目标（本项目米）"/>
-    <var name="displayName" type="string" comment="枪械中文显示名"/>
-    <var name="fireMode" type="int" comment="机制：0全自动／1三连发／2蓄力松开发射"/>
-    <var name="shootMoveSpeed" type="float" comment="射击或蓄力移动速度（米/秒）"/>
-    <var name="burstCount" type="int" comment="每组发数（全自动为1）"/>
-    <var name="burstRecoveryFrames" type="int" comment="末发到下一组首发（60Hz参考帧）"/>
-    <var name="chargeFrames" type="int" comment="满蓄时间（60Hz参考帧，非蓄力为0）"/>
-    <var name="chargeMinDamage" type="float" comment="点射伤害（HP）"/>
-    <var name="chargePartialMaxDamage" type="float" comment="未满蓄伤害上限（HP）"/>
-    <var name="chargeMinInk" type="float" comment="点射耗墨（点）"/>
-    <var name="chargeMinRange" type="float" comment="点射伤害射程（米）"/>
-    <var name="chargeMinSpeed" type="float" comment="点射初速（米/秒）"/>
-    <var name="chargeMinSpread" type="float" comment="点射地面散布半角（度）"/>
-    <var name="chargeMinJumpSpread" type="float" comment="点射空中散布半角（度）"/>
-    <var name="chargeMinPaintRange" type="float" comment="点射水平涂地射程目标（米）"/>
-  </bean>
-  <table name="TbWeapon" value="WeaponConfig" input="TbWeapon.xlsx" mode="map" index="id"/>
+  <table name="TbHero" value="HeroConfig" input="TbHero.xlsx" mode="map" index="id" />
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">
-    <var name="id" type="int" comment="房间模式 ID"/>
-    <var name="name" type="string" comment="房间模式名称"/>
-    <var name="characterId" type="int" comment="默认角色 ID"/>
-    <var name="weaponId" type="int" comment="默认武器 ID"/>
-    <var name="mapId" type="int" comment="场地 ID"/>
-    <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 4）"/>
-    <var name="minPlayers" type="int" comment="最低开局人数"/>
-    <var name="matchSeconds" type="float" comment="比赛时长（秒）"/>
-    <var name="respawnSeconds" type="float" comment="重生等待（秒）"/>
-    <var name="protectionSeconds" type="float" comment="重生保护（秒）"/>
-    <var name="friendlyFire" type="bool" comment="是否友伤"/>
-    <var name="groundOnlyScore" type="bool" comment="仅可行走地面计分（含坡道、高台及桥面）"/>
+    <var name="id" type="int" comment="房间模式 ID" />
+    <var name="name" type="string" comment="房间模式名称" />
+    <var name="heroId" type="int" comment="默认英雄 ID" />
+    <var name="mapId" type="int" comment="场地 ID" />
+    <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 4）" />
+    <var name="minPlayers" type="int" comment="最低开局人数" />
+    <var name="matchSeconds" type="float" comment="比赛时长（秒）" />
+    <var name="respawnSeconds" type="float" comment="重生等待（秒）" />
+    <var name="protectionSeconds" type="float" comment="重生保护（秒）" />
+    <var name="friendlyFire" type="bool" comment="是否友伤" />
+    <var name="groundOnlyScore" type="bool" comment="仅可行走地面计分（含坡道、高台及桥面）" />
   </bean>
-  <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id"/>
+  <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id" />
   <bean name="MapConfig" comment="Map 强类型配置">
-    <var name="id" type="int" comment="场地 ID"/>
-    <var name="name" type="string" comment="场地名称"/>
-    <var name="sceneAddress" type="string" comment="场景地址"/>
-    <var name="width" type="float" comment="场地宽度 X（米）"/>
-    <var name="length" type="float" comment="场地长度 Z（米）"/>
-    <var name="cellSize" type="float" comment="归属网格边长（米）"/>
-    <var name="layoutVersion" type="int" comment="场地布局协议版本"/>
+    <var name="id" type="int" comment="场地 ID" />
+    <var name="name" type="string" comment="场地名称" />
+    <var name="sceneAddress" type="string" comment="场景地址" />
+    <var name="width" type="float" comment="场地宽度 X（米）" />
+    <var name="length" type="float" comment="场地长度 Z（米）" />
+    <var name="cellSize" type="float" comment="归属网格边长（米）" />
+    <var name="layoutVersion" type="int" comment="场地布局协议版本" />
   </bean>
-  <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id"/>
+  <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id" />
   <bean name="GlobalConfig" comment="Global 强类型配置">
-    <var name="id" type="int" comment="唯一全局记录 ID，固定 1"/>
-    <var name="defaultModeId" type="int" comment="默认房间模式 ID"/>
-    <var name="networkTickRate" type="int" comment="网络频率（Hz）"/>
-    <var name="projectileStepRate" type="int" comment="弹道子步频率（Hz）"/>
-    <var name="defaultPort" type="int" comment="默认 UDP 端口"/>
-    <var name="connectionTimeout" type="float" comment="连接超时（秒）"/>
-    <var name="inputTimeout" type="float" comment="输入失联停止（秒）"/>
-    <var name="snapshotChunkBytes" type="int" comment="每个快照分块的最大字节数"/>
-    <var name="chunksPerFrame" type="int" comment="每帧最多发送的快照块数"/>
-    <var name="checkpointStamps" type="int" comment="触发滚动检查点的涂色事件数"/>
-    <var name="paintThreshold" type="float" comment="地面归属阈值（0 到 1）"/>
-    <var name="paintWorldUvScale" type="float" comment="墨水细节坐标密度（UV/米），影响覆盖边缘"/>
-    <var name="paintShapeNoiseScale" type="float" comment="墨水轮廓噪声频率，CPU 与 GPU 共用"/>
-    <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）"/>
-    <var name="simulationRate" type="int" comment="玩法模拟和输入采样频率（Hz）"/>
+    <var name="id" type="int" comment="唯一全局记录 ID，固定 1" />
+    <var name="defaultModeId" type="int" comment="默认房间模式 ID" />
+    <var name="networkTickRate" type="int" comment="网络频率（Hz）" />
+    <var name="projectileStepRate" type="int" comment="弹道子步频率（Hz）" />
+    <var name="defaultPort" type="int" comment="默认 UDP 端口" />
+    <var name="connectionTimeout" type="float" comment="连接超时（秒）" />
+    <var name="inputTimeout" type="float" comment="输入失联停止（秒）" />
+    <var name="snapshotChunkBytes" type="int" comment="每个快照分块的最大字节数" />
+    <var name="chunksPerFrame" type="int" comment="每帧最多发送的快照块数" />
+    <var name="checkpointStamps" type="int" comment="触发滚动检查点的涂色事件数" />
+    <var name="paintThreshold" type="float" comment="地面归属阈值（0 到 1）" />
+    <var name="paintWorldUvScale" type="float" comment="墨水细节坐标密度（UV/米），影响覆盖边缘" />
+    <var name="paintShapeNoiseScale" type="float" comment="墨水轮廓噪声频率，CPU 与 GPU 共用" />
+    <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）" />
+    <var name="simulationRate" type="int" comment="玩法模拟和输入采样频率（Hz）" />
   </bean>
-  <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id"/>
+  <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id" />
 </module>

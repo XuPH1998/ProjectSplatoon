@@ -12,7 +12,7 @@ namespace Splatoon.Combat
 
     public static class ResourceSimulation
     {
-        public static void Step(ref PlayerSnapshot s, cfg.CharacterConfig c, bool enemyInk, bool triggerHeld, float dt, double now)
+        public static void Step(ref PlayerSnapshot s, cfg.HeroConfig c, bool enemyInk, bool triggerHeld, float dt, double now)
         {
             if (s.Health <= 0) return;
             if (now + 1e-8 >= s.InkRecoverAt && (!triggerHeld || s.Swimming) && s.WeaponPhase == WeaponPhase.Idle)
@@ -68,7 +68,7 @@ namespace Splatoon.Combat
         public static bool IsEnemy(byte owner, byte team) => owner != 0 && owner != 255 && owner != team;
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1)
         {
-            var c = GameplayConfig.Character;
+            var c = GameplayConfig.GetHero(s.HeroId);
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
             bool jump = input.JumpSequence != s.ConsumedJump; s.ConsumedJump = input.JumpSequence;
@@ -141,7 +141,7 @@ namespace Splatoon.Combat
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;
             if (jump && grounded) s.VerticalSpeed = c.JumpSpeed;
-            s.VerticalSpeed -= c.Gravity * dt;
+            s.VerticalSpeed -= c.CharacterGravity * dt;
             _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
             if (!s.Grounded && useInk && CanStand(s.Position)) { useInk = false; s.Swimming = false; SetShape(false); }
@@ -184,7 +184,7 @@ namespace Splatoon.Combat
         void StepDead(ref PlayerSnapshot s, float dt)
         {
             _controller.enabled = false; s.Movement = MovementMode.Dead; s.Swimming = s.Firing = false; s.WeaponPhase = WeaponPhase.Idle; s.TurnDirection = 0;
-            s.VerticalSpeed -= GameplayConfig.Character.Gravity * dt;
+            s.VerticalSpeed -= GameplayConfig.GetHero(s.HeroId).CharacterGravity * dt;
             Vector3 direction = s.VerticalSpeed > 0 ? Vector3.up : Vector3.down;
             float distance = Mathf.Abs(s.VerticalSpeed * dt); s.Grounded = false;
             Vector3 origin = s.Position + Vector3.up * .3f;

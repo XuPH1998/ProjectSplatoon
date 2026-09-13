@@ -18,27 +18,27 @@ namespace Splatoon.Tests
                 data[Path.GetFileNameWithoutExtension(file)] = JSONNode.Parse(File.ReadAllText(file));
             edit?.Invoke(data); return new cfg.Tables(name => data[name]);
         }
-        [Test] public void GeneratedDefaultsResolveFiveTablesAndBallisticValues()
+        [Test] public void GeneratedDefaultsResolveFourTablesAndBallisticValues()
         {
             var t = Tables(); GameplayConfig.Validate(t);
-            Assert.That(t.TbCharacter.Get(1).MaxHealth, Is.EqualTo(100));
-            Assert.That(t.TbWeapon.Get(1).FireRate, Is.EqualTo(10));
-            Assert.That(t.TbWeapon.Get(1).Damage, Is.EqualTo(36));
-            Assert.That(t.TbCharacter.Get(1).VisualAddress, Is.EqualTo("Character/RifleGirl"));
-            Assert.That(t.TbWeapon.Get(1).PrefabAddress, Is.EqualTo("Weapon/RifleGirlRifle"));
+            Assert.That(t.TbHero.Get(1).MaxHealth, Is.EqualTo(100));
+            Assert.That(t.TbHero.Get(1).FireRate, Is.EqualTo(10));
+            Assert.That(t.TbHero.Get(1).Damage, Is.EqualTo(36));
+            Assert.That(t.TbHero.Get(1).CharacterPrefabAddress, Is.EqualTo("Character/RifleGirl"));
+            Assert.That(t.TbHero.Get(1).WeaponPrefabAddress, Is.EqualTo("Weapon/RifleGirlRifle"));
             Assert.That(t.TbMap.Get(1).Width / t.TbMap.Get(1).CellSize, Is.EqualTo(256));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()
         {
-            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["weaponId"] = 999)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["heroId"] = 999)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["mapId"] = 999)));
         }
         [Test] public void ImpossibleProjectileAndNetworkSettingsAreRejected()
         {
-            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbweapon"][0]["lifetime"] = 0)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["lifetime"] = 0)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["projectileStepRate"] = 121)));
-            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbweapon"][0]["speedMax"] = 10)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["speedMax"] = 10)));
         }
     }
 }

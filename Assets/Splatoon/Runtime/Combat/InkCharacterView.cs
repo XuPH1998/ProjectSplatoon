@@ -33,6 +33,14 @@ namespace Splatoon.Combat
         private static readonly int DieForward = UnityEngine.Animator.StringToHash("Base Layer.DieForward"), DieBackward = UnityEngine.Animator.StringToHash("Base Layer.DieBackward");
         private static readonly int Shoot = UnityEngine.Animator.StringToHash("Shooting.AutoShoot");
         private void Awake() => InitializeBindings();
+        public void BindWeapon(HeroWeaponBindings bindings, GameObject prefab)
+        {
+            if (_muzzleEffect != null) HeroViewBinder.Destroy(_muzzleEffect.gameObject);
+            _muzzleEffect = null;
+            Weapon = bindings.transform; Nozzle = bindings.Nozzle; LeftGrip = bindings.LeftGrip; BoundWeaponPrefab = prefab;
+            _renderers = null; _rendererEnabled = null; _presented = false;
+            InitializeBindings();
+        }
         public void InitializeBindings()
         {
             if (_renderers != null) return;

@@ -12,9 +12,9 @@ using Splatoon.Painting;
 namespace Splatoon.Prototype
 {
     /// <summary>Opt-in real transport integration driver. Never active in ordinary gameplay.</summary>
-    public sealed class WeaponSelectionSmoke : MonoBehaviour
+    public sealed class HeroSelectionSmoke : MonoBehaviour
     {
-        static WeaponSelectionSmoke _instance;
+        static HeroSelectionSmoke _instance;
         public static bool Active => _instance != null;
         public static string Arg(string key,string fallback)
         {var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
@@ -24,7 +24,7 @@ namespace Splatoon.Prototype
         readonly HashSet<int> _equipped=new(),_fired=new();readonly HashSet<ulong> _placed=new();
         readonly List<string> _errors=new();readonly List<float> _frames=new();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Initialize()
-        {if(_instance!=null||!Environment.GetCommandLineArgs().Contains("-weaponRole"))return;var go=new GameObject("WeaponSelectionSmoke");DontDestroyOnLoad(go);_instance=go.AddComponent<WeaponSelectionSmoke>();}
+        {if(_instance!=null||!Environment.GetCommandLineArgs().Contains("-weaponRole"))return;var go=new GameObject("HeroSelectionSmoke");DontDestroyOnLoad(go);_instance=go.AddComponent<HeroSelectionSmoke>();}
         async UniTaskVoid Start()
         {
             _host=Arg("-weaponRole","host")=="host";_expected=int.Parse(Arg("-weaponPlayers","2"));_wallStart=Time.realtimeSinceStartup;
@@ -52,18 +52,18 @@ namespace Splatoon.Prototype
             {var s=other.Snapshot.Value;other.DiagnosticPlace(PrototypeArena.Spawn(s.Team,s.Slot),s.Team==1?0:180);}
             if(_start==0&&p.Snapshot.Value.Revision>=2&&PrototypePlayer.ByOwner.Count>=_expected){_start=p.NetworkManager.ServerTime.Time;_life=p.Snapshot.Value.Revision;}
             if(_start==0)return;double age=p.NetworkManager.ServerTime.Time-_start;var state=p.Snapshot.Value;
-            _equipped.Add(state.WeaponId);if(state.ShotSequence!=_shots){_shots=state.ShotSequence;_fired.Add(state.WeaponId);_fullCharge|=state.WeaponId==5&&state.LastShotCharge>=1;}
+            _equipped.Add(state.HeroId);if(state.ShotSequence!=_shots){_shots=state.ShotSequence;_fired.Add(state.HeroId);_fullCharge|=state.HeroId==5&&state.LastShotCharge>=1;}
             _frames.Add(Time.unscaledDeltaTime*1000);_maxPlayers=Math.Max(_maxPlayers,PrototypePlayer.ByOwner.Count);
             _peakProjectiles=Math.Max(_peakProjectiles,match.Projectiles.ActiveCount);_peakPaint=Math.Max(_peakPaint,PaintSurface.AllocatedBytes);
             _maxCorrection=Mathf.Max(_maxCorrection,p.LastCorrectionDistance);
-            _remoteMixed|=PrototypePlayer.ByOwner.Values.Select(x=>x.Snapshot.Value.WeaponId).Distinct().Count()>1;
+            _remoteMixed|=PrototypePlayer.ByOwner.Values.Select(x=>x.Snapshot.Value.HeroId).Distinct().Count()>1;
             int desired=age<40 ? ((int)(age/4)+(int)p.OwnerClientId)%5+1 : 2;
-            if(state.Health>0&&!p.WeaponChangePending&&state.WeaponId!=desired&&desired!=_lastDesired)
-            {_lastDesired=desired;p.RequestWeaponChange(desired,match.State.Value.Phase==MatchPhase.Practice?WeaponSelectionOrigin.Warmup:WeaponSelectionOrigin.Debug);}
-            if(!p.WeaponChangePending&&state.WeaponId!=desired)_lastDesired=0;
+            if(state.Health>0&&!p.HeroChangePending&&state.HeroId!=desired&&desired!=_lastDesired)
+            {_lastDesired=desired;p.RequestHeroChange(desired,match.State.Value.Phase==MatchPhase.Practice?HeroSelectionOrigin.Warmup:HeroSelectionOrigin.Debug);}
+            if(!p.HeroChangePending&&state.HeroId!=desired)_lastDesired=0;
             if(_host&&age>22&&!_roundStarted&&match.Players.Count>=2){match.StartRound();_roundStarted=true;}
             if(_host&&age>49&&!_killed){foreach(var other in match.Players)other.ReceiveDamage((byte)(other.Snapshot.Value.Team==1?2:1),200,Vector3.forward);_killed=true;}
-            if(age>54&&state.Health>0&&state.Revision>_life)_respawnRetained|=state.WeaponId==2;
+            if(age>54&&state.Health>0&&state.Revision>_life)_respawnRetained|=state.HeroId==2;
             if(_host&&age>56&&!_roundReset)
             {var m=match.State.Value;m.Phase=MatchPhase.Finished;match.State.Value=m;match.StartRound();_roundReset=true;}
             if(!_host&&match.State.Value.Round>=2)_roundReset=true;
@@ -76,7 +76,7 @@ namespace Splatoon.Prototype
             double age=p.NetworkManager.ServerTime.Time-s._start;
             input.Move=Vector2.zero;input.Swim=false;input.JumpSequence=p.PresentedState.ConsumedJump;
             input.Look=new Vector2((p.PresentedState.Team==1?0:180)+(p.PresentedState.Slot==0?-25:25),5);
-            input.Fire=age%3<1.9 && !p.WeaponChangePending;
+            input.Fire=age%3<1.9 && !p.HeroChangePending;
             if(age>40&&age<48)input.Move=new Vector2(Mathf.Sin((float)age)*.2f,0);
         }
         async UniTask Reconnect()
@@ -85,7 +85,7 @@ namespace Splatoon.Prototype
             try
             {
                 await PrototypeApp.Current.Leave();await PrototypeApp.Current.Connect(false,"127.0.0.1",ushort.Parse(Arg("-weaponPort","18213")));
-                if(!PrototypeApp.Current.InRoom||PrototypePlayer.Local.Snapshot.Value.WeaponId!=1)throw new Exception("Reconnect did not restore default weapon");
+                if(!PrototypeApp.Current.InRoom||PrototypePlayer.Local.Snapshot.Value.HeroId!=1)throw new Exception("Reconnect did not restore default weapon");
                 _reconnected=true;_lastDesired=0;_shots=PrototypePlayer.Local.Snapshot.Value.ShotSequence;_ready=true;
             }catch(Exception e){Finish(e.Message);}
         }

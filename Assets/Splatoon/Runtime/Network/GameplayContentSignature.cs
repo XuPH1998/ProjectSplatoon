@@ -1,5 +1,7 @@
 using System.IO;
 using System.Security.Cryptography;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Splatoon.Combat;
 using Splatoon.Prototype;
@@ -9,7 +11,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 5;
-        public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player)
+        public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion);
@@ -21,6 +23,26 @@ namespace Splatoon.Networking
             for (int layer=0;layer<32;layer++) w.Write(Physics.GetIgnoreLayerCollision(player.gameObject.layer,layer));
             w.Write(p.StationarySpeed); w.Write(p.TurnThreshold); w.Write(p.MovingTurnSpeed); w.Write(p.TurnLeftDuration); w.Write(p.TurnRightDuration);
             Write(w, p.TurnLeftProgress); Write(w, p.TurnRightProgress);
+            if (heroes != null)
+            {
+                var entries = heroes.OrderBy(h => h.Config.Id).ToArray(); w.Write(entries.Length);
+                foreach (var hero in entries)
+                {
+                    w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.Config.WeaponPrefabAddress);
+                    var profile = hero.Profile;
+                    Write(w, profile.AimPivot); Write(w, profile.MuzzlePosition);
+                    Write(w, profile.CameraPivot); Write(w, profile.CameraOffset);
+                    w.Write(profile.CameraCollisionRadius); w.Write(profile.CameraCollisionPadding);
+                    w.Write(profile.StationarySpeed); w.Write(profile.TurnThreshold); w.Write(profile.MovingTurnSpeed);
+                    w.Write(profile.TurnLeftDuration); w.Write(profile.TurnRightDuration);
+                    Write(w, profile.TurnLeftProgress); Write(w, profile.TurnRightProgress);
+                    var binding = hero.WeaponPrefab.GetComponent<HeroWeaponBindings>();
+                    Write(w, hero.WeaponPrefab.transform.localPosition); Write(w, hero.WeaponPrefab.transform.localEulerAngles);
+                    Write(w, hero.WeaponPrefab.transform.localScale);
+                    Write(w, hero.WeaponPrefab.transform.InverseTransformPoint(binding.Nozzle.position));
+                    Write(w, hero.WeaponPrefab.transform.InverseTransformPoint(binding.LeftGrip.position));
+                }
+            }
             using var sha = SHA256.Create(); return sha.ComputeHash(stream.ToArray());
         }
         static void Write(BinaryWriter w, Vector3 v) { w.Write(v.x); w.Write(v.y); w.Write(v.z); }

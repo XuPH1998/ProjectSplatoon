@@ -6,45 +6,45 @@ namespace Splatoon.Prototype
 {
     public sealed partial class PrototypePlayer
     {
-        struct EquipRequest { public uint Id, Round, Life; public int Weapon; public WeaponSelectionOrigin Origin; }
-        EquipRequest? _equipRequest;
-        uint _equipRequestId, _lastEquipRequest, _awaitEquipmentRevision;
-        bool _equipReplyReceived;
-        public bool WeaponChangePending { get; private set; }
-        public string WeaponChangeMessage { get; private set; } = "";
-        public void RequestWeaponChange(int weaponId, WeaponSelectionOrigin origin)
+        struct HeroRequest { public uint Id, Round, Life; public int Hero; public HeroSelectionOrigin Origin; }
+        HeroRequest? _heroRequest;
+        uint _heroRequestId, _lastHeroRequest, _awaitHeroRevision;
+        bool _heroReplyReceived;
+        public bool HeroChangePending { get; private set; }
+        public string HeroChangeMessage { get; private set; } = "";
+        public void RequestHeroChange(int heroId, HeroSelectionOrigin origin)
         {
-            if (!IsOwner || !IsSpawned || WeaponChangePending || PrototypeMatch.Current == null) return;
-            WeaponChangePending = true; _equipReplyReceived = false; WeaponChangeMessage = "切换中…";
-            ChangeWeaponRpc(weaponId, origin, ++_equipRequestId, PrototypeMatch.Current.State.Value.Round, Snapshot.Value.Revision);
+            if (!IsOwner || !IsSpawned || HeroChangePending || PrototypeMatch.Current == null) return;
+            HeroChangePending = true; _heroReplyReceived = false; HeroChangeMessage = "切换中…";
+            ChangeHeroRpc(heroId, origin, ++_heroRequestId, PrototypeMatch.Current.State.Value.Round, Snapshot.Value.Revision);
         }
         [Rpc(SendTo.Server)]
-        void ChangeWeaponRpc(int weaponId, WeaponSelectionOrigin origin, uint request, uint round, uint life, RpcParams rpc = default)
+        void ChangeHeroRpc(int heroId, HeroSelectionOrigin origin, uint request, uint round, uint life, RpcParams rpc = default)
         {
-            if (rpc.Receive.SenderClientId != OwnerClientId || request <= _lastEquipRequest) return;
-            _lastEquipRequest = request;
-            _equipRequest = new EquipRequest { Id = request, Weapon = weaponId, Origin = origin, Round = round, Life = life };
+            if (rpc.Receive.SenderClientId != OwnerClientId || request <= _lastHeroRequest) return;
+            _lastHeroRequest = request;
+            _heroRequest = new HeroRequest { Id = request, Hero = heroId, Origin = origin, Round = round, Life = life };
         }
-        void ApplyWeaponRequest(ref PlayerSnapshot s, MatchPhase phase)
+        void ApplyHeroRequest(ref PlayerSnapshot s, MatchPhase phase)
         {
-            if (!_equipRequest.HasValue) return;
-            var request = _equipRequest.Value; _equipRequest = null;
-            string error = WeaponSelectionRules.Validate(s, request.Weapon, request.Origin, request.Round,
-                PrototypeMatch.Current.State.Value.Round, request.Life, phase, WeaponSelectionRules.Development);
-            if (error == null) WeaponSelectionRules.Apply(ref s, request.Weapon, phase == MatchPhase.Practice, _lastInput);
-            WeaponChangeReplyRpc(request.Id, s.EquipmentRevision, error ?? "已装备");
+            if (!_heroRequest.HasValue) return;
+            var request = _heroRequest.Value; _heroRequest = null;
+            string error = HeroSelectionRules.Validate(s, request.Hero, request.Origin, request.Round,
+                PrototypeMatch.Current.State.Value.Round, request.Life, phase, HeroSelectionRules.Development);
+            if (error == null) HeroSelectionRules.Apply(ref s, request.Hero, phase == MatchPhase.Practice, _lastInput);
+            HeroChangeReplyRpc(request.Id, s.HeroRevision, error ?? "当前英雄");
         }
         [Rpc(SendTo.Owner)]
-        void WeaponChangeReplyRpc(uint request, uint revision, string message)
+        void HeroChangeReplyRpc(uint request, uint revision, string message)
         {
-            if (request != _equipRequestId) return;
-            _equipReplyReceived = true; _awaitEquipmentRevision = revision; WeaponChangeMessage = message;
-            RefreshWeaponChangeStatus();
+            if (request != _heroRequestId) return;
+            _heroReplyReceived = true; _awaitHeroRevision = revision; HeroChangeMessage = message;
+            RefreshHeroChangeStatus();
         }
-        public void RefreshWeaponChangeStatus()
+        public void RefreshHeroChangeStatus()
         {
-            if (WeaponChangePending && _equipReplyReceived && Snapshot.Value.EquipmentRevision >= _awaitEquipmentRevision)
-                WeaponChangePending = false;
+            if (HeroChangePending && _heroReplyReceived && Snapshot.Value.HeroRevision >= _awaitHeroRevision)
+                HeroChangePending = false;
         }
     }
 }

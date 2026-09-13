@@ -43,7 +43,7 @@ namespace Splatoon.Tests
             Directory.CreateDirectory(directory); LoadTables(); GameplayConfig.Validate();
             var results = new List<Result>();
             string[] scenarios = { "flat", "up30", "down30", "wall-near", "wall-middle", "wall-far", "slope", "high-drop", "occluded" };
-            foreach (var w in LubanConfigService.Current.Tables.TbWeapon.DataList)
+            foreach (var w in LubanConfigService.Current.Tables.TbHero.DataList)
             {
                 var charges = WeaponSimulation.IsCharge(w) ? new[] { 0f, .5f, 59f / 60, 1f } : new[] { 0f };
                 foreach (float charge in charges)
@@ -74,7 +74,7 @@ namespace Splatoon.Tests
             var roots = new List<GameObject>(); var surfaces = new Dictionary<int, PaintSurface>();
             var trace = new StringBuilder("shot,ageSeconds,x,y,z\n");
             var stamps = new StringBuilder("surface,x,y,z,normalX,normalY,normalZ,radiusM,hardness,strength\n");
-            var w = GameplayConfig.GetWeapon(weapon);
+            var w = GameplayConfig.GetHero(weapon);
             var result = new Result { weapon = weapon, charge = charge, scenario = scenario, driverHz = rate, shotCount = shotCount,
                 targetPaintRange = WeaponSimulation.IsCharge(w) ? Mathf.Lerp(w.ChargeMinPaintRange, w.PaintRange, charge) : w.PaintRange };
             PaintSurface Surface(int id, Vector3 position, Vector2 size, Quaternion rotation, bool floor)
@@ -123,7 +123,7 @@ namespace Splatoon.Tests
                     {
                         launched++;
                         service.SpawnForMeasurement(new InkShot { Id = (uint)launched, Seed = (uint)(12345 + launched), Round = 1,
-                            WeaponId = weapon, Charge = charge, Born = nextShot, Origin = origin, Velocity = velocity, Team = 1, ShotSequence = (uint)launched });
+                            HeroId = weapon, Charge = charge, Born = nextShot, Origin = origin, Velocity = velocity, Team = 1, ShotSequence = (uint)launched });
                         int gap = WeaponSimulation.IsCharge(w) ? w.StartFrames + w.ChargeFrames + w.FireIntervalFrames :
                             w.FireMode == 1 && launched % w.BurstCount == 0 ? w.BurstRecoveryFrames : w.FireIntervalFrames;
                         nextShot += gap / 60.0;
@@ -202,15 +202,15 @@ namespace Splatoon.Tests
             Assert.That(PrototypeApp.Current, Is.Not.Null, "Real application bootstrap must run before manually loading measurement tables.");
             Assert.That(PrototypeApp.Current.Ready, Is.True, PrototypeApp.Current.Error);
             Assert.That(LubanConfigService.Current.ContentSignature, Has.Length.EqualTo(32));
-            Assert.That(GameplayConfig.GetWeapon(2).ShotInk, Is.EqualTo(.5f));
-            Assert.That(GameplayConfig.GetWeapon(2).InkRecoverLockFrames, Is.EqualTo(15));
-            Assert.That(GameplayConfig.GetWeapon(3).ShotInk, Is.EqualTo(1.5f));
-            Assert.That(GameplayConfig.GetWeapon(3).FireIntervalFrames, Is.EqualTo(9));
-            Assert.That(GameplayConfig.GetWeapon(3).FireRate, Is.EqualTo(60f / 9).Within(.00001));
-            Assert.That(GameplayConfig.GetWeapon(4).ShotInk, Is.EqualTo(1.1f));
-            Assert.That(GameplayConfig.GetWeapon(4).InkRecoverLockFrames, Is.EqualTo(25));
-            Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(160));
-            Assert.That(GameplayConfig.Character.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
+            Assert.That(GameplayConfig.GetHero(2).ShotInk, Is.EqualTo(.5f));
+            Assert.That(GameplayConfig.GetHero(2).InkRecoverLockFrames, Is.EqualTo(15));
+            Assert.That(GameplayConfig.GetHero(3).ShotInk, Is.EqualTo(1.5f));
+            Assert.That(GameplayConfig.GetHero(3).FireIntervalFrames, Is.EqualTo(9));
+            Assert.That(GameplayConfig.GetHero(3).FireRate, Is.EqualTo(60f / 9).Within(.00001));
+            Assert.That(GameplayConfig.GetHero(4).ShotInk, Is.EqualTo(1.1f));
+            Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(25));
+            Assert.That(GameplayConfig.GetHero(5).Damage, Is.EqualTo(160));
+            Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
             Directory.CreateDirectory("Logs/WeaponReference/PlayMode");
             File.WriteAllText("Logs/WeaponReference/PlayMode/addressables.txt",
                 "Real PrototypeApp initialization reached Ready; all 9 changed scalar cells verified before measurement LoadTables().\n" +

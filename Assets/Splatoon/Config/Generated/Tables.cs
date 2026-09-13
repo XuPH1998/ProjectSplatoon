@@ -14,16 +14,14 @@ namespace cfg
 {
 public partial class Tables
 {
-    public TbCharacter TbCharacter {get; }
-    public TbWeapon TbWeapon {get; }
+    public TbHero TbHero {get; }
     public TbRoomMode TbRoomMode {get; }
     public TbMap TbMap {get; }
     public TbGlobal TbGlobal {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
-        TbCharacter = new TbCharacter(loader("tbcharacter"));
-        TbWeapon = new TbWeapon(loader("tbweapon"));
+        TbHero = new TbHero(loader("tbhero"));
         TbRoomMode = new TbRoomMode(loader("tbroommode"));
         TbMap = new TbMap(loader("tbmap"));
         TbGlobal = new TbGlobal(loader("tbglobal"));
@@ -32,8 +30,7 @@ public partial class Tables
     
     private void ResolveRef()
     {
-        TbCharacter.ResolveRef(this);
-        TbWeapon.ResolveRef(this);
+        TbHero.ResolveRef(this);
         TbRoomMode.ResolveRef(this);
         TbMap.ResolveRef(this);
         TbGlobal.ResolveRef(this);

@@ -4,6 +4,8 @@
   "leanCommit": "7280ff9cde8bb1c5dcef46c700c326471584d2e6",
   "sendouReferenceCommit": "55889eccc7c18f24569098959ae28f4a7034ce4e",
   "completeReplica": false,
+  "runtimeTable": "TbHero",
+  "ledgerFieldNames": "Historical projection; heroField names the live merged field.",
   "changes": [
     {
       "table": "Weapon",

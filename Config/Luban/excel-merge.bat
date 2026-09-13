@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 rem ProjectSplatoon Excel three-way merge tool.
 rem Usage:
 rem   excel-merge.bat
-rem   excel-merge.bat TbWeapon.xlsx
+rem   excel-merge.bat TbHero.xlsx
 rem   excel-merge.bat --all-xlsx
 
 set "SCRIPT_DIR=%~dp0"
@@ -195,7 +195,7 @@ exit /b %EXITCODE%
 :usage
 echo Usage:
 echo   excel-merge.bat
-echo   excel-merge.bat TbWeapon.xlsx
-echo   excel-merge.bat Config\Luban\source\TbWeapon.xlsx
+echo   excel-merge.bat TbHero.xlsx
+echo   excel-merge.bat Config\Luban\source\TbHero.xlsx
 echo   excel-merge.bat --all-xlsx
 exit /b 0
