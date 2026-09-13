@@ -156,6 +156,10 @@ namespace Splatoon.Combat
                 float weight = !alive ? 0 : Mathf.MoveTowards(Animator.GetLayerWeight(1), firing ? 1 : 0, dt / Profile.BlendSeconds);
                 Animator.SetLayerWeight(1, weight);
                 }
+                // Present runs after Unity's Animator update. Rebind restores the
+                // bind pose, so evaluate the selected state now on spawn/respawn
+                // and emergence instead of rendering that pose for one frame.
+                if (reset || restored) Animator.Update(0);
             }
             if (!visible || !alive)
             {

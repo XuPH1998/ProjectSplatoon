@@ -1,0 +1,20 @@
+ShotgunGirl: regenerated source Avatar from its authored Humanoid mapping
+ShotgunGirl AimWalk_F: speed=1.52317, playback=3.28263
+ShotgunGirl AimWalk_B: speed=1.45224, playback=3.44296
+ShotgunGirl AimWalk_L: speed=1.39681, playback=3.57958
+ShotgunGirl AimWalk_R: speed=1.39620, playback=3.58115
+ShotgunGirl: DieForward=Die1, DieBackward=Die2; signed torso offset=0.9165/-0.8567
+ShotgunGirl material Body2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Hair 1: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Weapon_Shotgun_Metal: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Cloth 1: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Face2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Eye2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Sportswear2: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl material Shotgun_Glass: Toon/Toon; only _Is_Filter_LightColor=1
+ShotgunGirl weapon meshes: Weapon_Shotgun
+ShotgunGirl: avatar=Humanoid_FePistol, camera=(0, 1.31519842, 0), muzzleR=(0.087470755, 1.219139, 0.8860235), muzzleL=(-0.25, 1.4, 0.7)
+DualPistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+ShotgunGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+PistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+RocketLauncherGirl: bindings, humanoid, whitelist, loops and missing scripts PASS

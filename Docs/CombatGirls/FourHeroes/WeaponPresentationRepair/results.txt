@@ -1,0 +1,11 @@
+hero-1-team-1: particles=2, visiblePixels=17807, host RPC + GPU PASS
+hero-1-team-2: particles=2, visiblePixels=14437, host RPC + GPU PASS
+hero-2-team-1: particles=2, visiblePixels=16523, host RPC + GPU PASS
+hero-2-team-2: particles=2, visiblePixels=14202, host RPC + GPU PASS
+hero-3-team-1: particles=16, visiblePixels=76109, host RPC + GPU PASS
+hero-3-team-2: particles=16, visiblePixels=110160, host RPC + GPU PASS
+hero-4-team-1: particles=2, visiblePixels=18191, host RPC + GPU PASS
+hero-4-team-2: particles=2, visiblePixels=14964, host RPC + GPU PASS
+hero-5-team-1: particles=2, visiblePixels=19804, host RPC + GPU PASS
+hero-5-team-2: particles=2, visiblePixels=13510, host RPC + GPU PASS
+Shotgun: live idle/down/up aim, support grip, hero switching and swim-death-respawn PASS

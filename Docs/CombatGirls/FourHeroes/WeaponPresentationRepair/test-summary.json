@@ -1,0 +1,719 @@
+{
+  "total": 173,
+  "passed": 173,
+  "runs": [
+    {
+      "file": "regression.xml",
+      "total": "173",
+      "passed": "154",
+      "failed": "19"
+    },
+    {
+      "file": "regression-reference.xml",
+      "total": "12",
+      "passed": "12",
+      "failed": "0"
+    },
+    {
+      "file": "regression-history.xml",
+      "total": "7",
+      "passed": "7",
+      "failed": "0"
+    }
+  ],
+  "note": "Initial run lacked two historical baseline folders in the isolated copy; all 19 affected cases passed after supplying the unchanged repository fixtures.",
+  "cases": {
+    "Splatoon.Tests.CharacterPresentationTests.DeathCancelsTurningWithoutRotatingBody": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,1,1)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,-1,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,1,0,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(90,1,0,1)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(90,-1,0,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,0,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.FourDirectionGraphAndUpperBodyMaskMatchApprovedBindings": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(\"move\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(\"air\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(\"swim\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.SnapshotRoundTripRetainsAnimationTimelineForLateJoin": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(45,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(46,1)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(314,-1)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(359,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CharacterPresentationTests.TurnSamplesAuthoredCurveAndContinuesAcrossNinetyDegrees": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.AlternatingLogicalMuzzlesHaveIndependentWorldObstruction": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.CancelledBufferedClickDoesNotFireAfterControlReturns": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.FailedClicksCannotResurfaceLaterOrChangeAlternatingHand": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(2)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(3)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(4)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.NewProtocolAndHeroSchemaRejectInvalidGunAssemblies": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.SemiHoldDoesNotRequestMovementLockAndRecoversAfterConfiguredDelay": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(2)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(3)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(4)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.CombatGirlsWeaponTests.SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.GameplayConfigTests.GeneratedDefaultsResolveFourTablesAndBallisticValues": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.GameplayConfigTests.ImpossibleProjectileAndNetworkSettingsAreRejected": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.GameplayConfigTests.InvalidCrossTableReferenceIsRejected": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationPlayTests.RealAppLoadsSelectsRespawnsAndReleasesHeroModels": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.AlternativeAddressesResolveAndAssembleTheirOwnModels": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.HeroSwitchClampsResourcesWithoutResettingLifeOrPosition": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.MissingWeaponBindingsAreRejectedBeforeAssembly": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.SelectedHeroDrivesMovementRecoveryAndDisplay": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroMigrationTests.SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(1,0,13.6f)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,0,11.2f)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,1,20.4f)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(1,6,108)": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(2,4,200)": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(3,9,66)": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.BurstReleaseFinishesGroupButCancelOrEmptyStopsIt": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.CancellingShotFeedbackCannotReviveOldFireLoop": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeCannotExceedAffordablePower(5,30)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeCannotExceedAffordablePower(2,0)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(2,0,40,2)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(32,0.5f,60,5)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(62,1,160,8)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ChargeWaitsAtFullAndRejectsCooldownClicks": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ContinuousFireDoesNotRestartUpperBodyLoopEveryShot": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(1,36,18)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(2,32,16)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(3,10,4)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(4,52,26)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Practice,Warmup,False,True)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Warmup,True,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,True,True)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,False,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Finished,Debug,True,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.StaleRoundLifeDeadAndInvalidWeaponAreRejected": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.SwitchingMidAttackRequiresReleaseAndNewStartup(4)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.SwitchingMidAttackRequiresReleaseAndNewStartup(5)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.SwitchPreservesLifeMovementProtectionAndLocksWithPhaseSpecificInk": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.HeroSelectionTests.UiCancellationDoesNotDischargeOrSpendAndRequiresRelease": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCollisionTests.ExpiryAndRoundClearDoNotCreatePaintHits": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCollisionTests.MuzzleInsideColliderResolvesOnce": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(30)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(60)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(144)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCoverageTests.DetailCoordinatesAreContinuousAcrossTranslatedFloorTiles": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCoverageTests.FaintPaintAccumulatesInsteadOfBeingDiscarded": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCoverageTests.OpposingPaintErodesPreviousTeamAndTiesKeepPreviousOwner": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCoverageTests.PaletteUsesOriginalReferencePinkAndMintBlue": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkCoverageTests.RestoringFaintInkThenContinuingMatchesUninterruptedPainting": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.BallisticEquationIsIndependentOfVisualFrameRate": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.BallisticPositionIncludesRealFlightTimeAndDrop": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.BrushAndGridUseSameOwnershipThreshold": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.FullTankSupports108StandardShooterShots": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.SnapshotChecksumDetectsCorruptedChunk": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.SnapshotRejectsUnknownSurfacesAndDifferentTopology": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.InkSimulationTests.SnapshotRoundTripPreservesLargeGridAndEveryPaintedSurface": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(0,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(47777,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(65536,False)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(7777,True)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(65535,True)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.IncompatibleAndFullRoomsRemainVisible": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.MultipleRoomsAndInterfacesAreMergedWithoutLosingEndpoints": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.RealUdpDiscoversTwoHostsAndCanRestart": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.UnsolicitedDuplicateExpiredAndReorderedRepliesDoNotRefreshRoom": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanDiscoveryTests.WireRoundTripAndMalformedPackets": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(\"192.168.1.8\",7777)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(\"10.0.12.3\",65535)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(\"172.16.0.1\",1)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(\"127.0.0.1\",7788)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.AvailableAddressesAreUniqueAndLoopbackRemainsAvailable": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.ChineseUiFontContainsRepresentativeGlyphs": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.EverySingleCharacterTypoIsRejected": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidEndpointCannotBeEncoded": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(null)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(\"\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(\"1234\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(\"!!!!!!!!!!!!!\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(\"ZZZZZZZZZZZZZ\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(\"0000000000000\")": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.LanRoomCodeTests.PasteAllowsSpacesLowercaseAndAmbiguousGlyphs": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.DamageRespectsTeamsProtectionAndDeath": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.InkCannotGoNegativeAndRecoveryCapsAtCapacity": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.LateJoinStateReconstructsIdenticalPaintAndScore": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.PaintBoundsAndBlockedCellsAreExcluded": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.PaintOverwriteAndClearPreserveDenominator": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.PrototypeRulesTests.TeamsBalanceAndRoundTransitionsRequirePlayersAndDeadline": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.DamageHasExactAgeBoundariesAndThreeShotCloseKill": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(100,60)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(59,59)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(20,20)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.HorizontalBallisticsReachCalibratedPaintDistance": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.OnlyLocomotionUsesSpeedParameter": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.PredictionSnapshotSerializesEverySimulationField": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst": {
+      "result": "Passed",
+      "evidence": "regression-history.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.RifleGirlLogicalMuzzleProjectileHitsFloorWithinPaintRangeTarget": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.WallClimbMantleAndEnemyCoverUseActualController": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.ShooterMovementTests.WallPlanesAreIndependentAndDoNotAddScoreArea": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.SkillDefinitionTests.ResolveDurationIncludesClips": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.AuthoredBridgeAndGroundResolveDifferentFootSurfaces": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.AuthoredRoutesAllowHighPlatformJumpDropAndOuterLaneTraversal": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.BlockedFootprintsCannotBePaintedOrRestoredAsWalkable": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.CheckpointSeparatesLayersAndRejectsTopologyOrInvalidOwners": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.CoplanarBrushCrossesTileSeamWithoutPaintingBridge": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.RectangularGroundHasCorrectAreaAndIndependentBounds": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.TrainingGroundTests.SlopeCountsActualAreaIncludingPartialEdgeCells": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.WeaponPresentationPlayTests.FlightInkAndShotgunGripInRealHost": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceMeasurementTests.CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceMeasurementTests.PlayModeUsesTheSameMeasuredPhysicsAndCoverage": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceMeasurementTests.RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage": {
+      "result": "Passed",
+      "evidence": "regression.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.FullChargeDamageIsIndependentOfUnverifiedPartialCurve": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.GatedPhysicsAndPaintParametersRetainBaseline": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.HeavyShooterConsecutiveShotsAreNineReferenceFramesApart": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(2)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(4)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(1)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(2)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(3)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(4)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(False,600)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    },
+    "Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)": {
+      "result": "Passed",
+      "evidence": "regression-reference.xml"
+    }
+  }
+}

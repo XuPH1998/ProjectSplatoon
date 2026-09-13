@@ -57,6 +57,21 @@ namespace Splatoon.Editor
             finally { EditorSceneManager.ClosePreviewScene(preview); }
         }
 
+        [MenuItem("喷墨对战/角色/重建霰弹枪握持与骨架绑定")]
+        public static void RebuildShotgun()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Cannot rebuild while playing");
+            Directory.CreateDirectory(ReportRoot + "/Screenshots"); Report.Clear(); Materials.Clear();
+            var preview = EditorSceneManager.NewPreviewScene();
+            try
+            {
+                Build(Definitions.Single(p => p.id == 3), preview);
+                AssetDatabase.SaveAssets(); Validate();
+                File.WriteAllLines(ReportRoot + "/shotgun-binding-validation.txt", Report);
+            }
+            finally { EditorSceneManager.ClosePreviewScene(preview); }
+        }
+
         static void Build(Pack p, Scene preview)
         {
             foreach (var folder in new[] { p.Root + "/Animations", p.Root + "/Materials", p.Root + "/Prefabs", Path.GetDirectoryName(p.WeaponPath) }) Directory.CreateDirectory(folder);
@@ -65,12 +80,25 @@ namespace Splatoon.Editor
             string isolatedAvatar = CombatGirlsBuilder.SourceRoot + "/SharedFourHeroes/Humanoid_Bot/Models/" + p.avatar + ".fbx";
             avatarPath = File.Exists(isolatedAvatar) ? isolatedAvatar : avatarPath;
             var avatar = AssetDatabase.LoadAssetAtPath<Avatar>(avatarPath);
-            if (avatar == null)
+            // FePistol is authored with the shared female Humanoid mapping. Unity's
+            // automatic CreateFromThisModel mapping chooses "root" as Hips instead
+            // of "pelvis", leaving the animated weapon outside the retargeted body.
+            // Preserve the explicit source mapping when creating its local Avatar.
+            bool incorrectHips = avatar != null && avatar.humanDescription.human.Any(b => b.humanName == "Hips" && b.boneName != "pelvis");
+            if (avatar == null || (p.avatar == "Humanoid_FePistol" && incorrectHips))
             {
-                // FePistol's source importer copies another Avatar and exposes no Avatar subasset.
-                // Its authored human description is complete; generate the intended local Avatar.
                 var importer = (ModelImporter)AssetImporter.GetAtPath(avatarPath);
-                importer.animationType = ModelImporterAnimationType.Human; importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                var description = importer.humanDescription;
+                if (p.avatar == "Humanoid_FePistol")
+                {
+                    var shared = (ModelImporter)AssetImporter.GetAtPath(CombatGirlsBuilder.SourceRoot + "/SharedFourHeroes/Humanoid_Bot/Models/Humanoid_F.fbx");
+                    description = shared.humanDescription;
+                    if (!description.human.Any(b => b.humanName == "Hips" && b.boneName == "pelvis"))
+                        throw new InvalidOperationException("Missing authored female pelvis mapping");
+                }
+                importer.animationType = ModelImporterAnimationType.Human;
+                importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                importer.humanDescription = description;
                 importer.SaveAndReimport(); avatar = Load<Avatar>(avatarPath);
                 Report.Add(p.name + ": regenerated source Avatar from its authored Humanoid mapping");
             }

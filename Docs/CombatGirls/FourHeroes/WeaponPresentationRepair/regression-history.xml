@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="7" result="Passed" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.701831">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.701831" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1215" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoonValidation/WeaponRepair/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.689323" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="34568" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1216" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.685658" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1217" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.682070" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1054" name="HeroSelectionTests" fullname="Splatoon.Tests.HeroSelectionTests" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.443696" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1058" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.211897" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1055" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(1,6,108)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(1,6,108)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1077357712" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.107412" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1056" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(2,4,200)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(2,4,200)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1931793263" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.045859" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1057" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(3,9,66)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(3,9,66)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1379394112" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.044747" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1061" name="BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" fullname="Splatoon.Tests.HeroSelectionTests.BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" methodname="BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="990557521" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.044549" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1059" name="HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" fullname="Splatoon.Tests.HeroSelectionTests.HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" methodname="HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="676306513" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.050617" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1151" name="ShooterMovementTests" fullname="Splatoon.Tests.ShooterMovementTests" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.173826" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1179" name="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" fullname="Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" methodname="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1869684083" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.049924" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1180" name="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" fullname="Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" methodname="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1162662291" result="Passed" start-time="2026-09-13 16:15:14Z" end-time="2026-09-13 16:15:14Z" duration="0.058031" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

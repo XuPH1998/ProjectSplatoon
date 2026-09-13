@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="12" result="Passed" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.2642853">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.264285" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1215" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoonValidation/WeaponRepair/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.241816" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="33812" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1216" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.227292" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1217" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="173" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.188794" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1045" name="HeroMigrationTests" fullname="Splatoon.Tests.HeroMigrationTests" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.055797" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1046" name="RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" fullname="Splatoon.Tests.HeroMigrationTests.RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" methodname="RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="745627989" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.036963" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1200" name="WeaponReferenceTests" fullname="Splatoon.Tests.WeaponReferenceTests" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.074088" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1210" name="FullChargeDamageIsIndependentOfUnverifiedPartialCurve" fullname="Splatoon.Tests.WeaponReferenceTests.FullChargeDamageIsIndependentOfUnverifiedPartialCurve" methodname="FullChargeDamageIsIndependentOfUnverifiedPartialCurve" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1335247103" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.011479" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1214" name="GatedPhysicsAndPaintParametersRetainBaseline" fullname="Splatoon.Tests.WeaponReferenceTests.GatedPhysicsAndPaintParametersRetainBaseline" methodname="GatedPhysicsAndPaintParametersRetainBaseline" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1754771038" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005430" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1209" name="HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" fullname="Splatoon.Tests.WeaponReferenceTests.HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" methodname="HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1515886861" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005842" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1208" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.012848" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1206" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(2)" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(2)" methodname="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1229336574" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.006346" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1207" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(4)" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(4)" methodname="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="588638823" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005179" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1205" name="ShooterInkAndFullTankCountMatchPinnedReference" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.023141" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1201" name="ShooterInkAndFullTankCountMatchPinnedReference(1)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(1)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="777076147" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005808" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1202" name="ShooterInkAndFullTankCountMatchPinnedReference(2)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(2)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1821651869" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005199" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1203" name="ShooterInkAndFullTankCountMatchPinnedReference(3)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(3)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1807449859" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005128" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1204" name="ShooterInkAndFullTankCountMatchPinnedReference(4)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(4)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1740949912" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005102" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1213" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.011809" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1211" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(False,600)" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(False,600)" methodname="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="130395339" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.005556" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1212" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)" methodname="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="658223691" result="Passed" start-time="2026-09-13 16:14:02Z" end-time="2026-09-13 16:14:02Z" duration="0.004864" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

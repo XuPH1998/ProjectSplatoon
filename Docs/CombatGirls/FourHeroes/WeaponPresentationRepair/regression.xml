@@ -1,0 +1,1110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="173" result="Failed(Child)" total="173" passed="154" failed="19" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.7694098">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="174" result="Failed" site="Child" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.769410" total="173" passed="154" failed="19" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1215" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoonValidation/WeaponRepair/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="173" result="Failed" site="Child" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.677364" total="173" passed="154" failed="19" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="30856" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[[LAN] Ready. Config loaded from Luban.
+]]></output>
+      <test-suite type="TestSuite" id="1216" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="173" result="Failed" site="Child" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.596972" total="173" passed="154" failed="19" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1217" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="173" result="Failed" site="Child" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.587351" total="173" passed="154" failed="19" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1001" name="CharacterPresentationTests" fullname="Splatoon.Tests.CharacterPresentationTests" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-09-13 16:11:00Z" end-time="2026-09-13 16:11:01Z" duration="0.164837" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1012" name="DeathCancelsTurningWithoutRotatingBody" fullname="Splatoon.Tests.CharacterPresentationTests.DeathCancelsTurningWithoutRotatingBody" methodname="DeathCancelsTurningWithoutRotatingBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1081008369" result="Passed" start-time="2026-09-13 16:11:00Z" end-time="2026-09-13 16:11:01Z" duration="0.034298" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1019" name="DeathDirectionUsesIncomingTravelAndVictimBody" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.063785" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1013" name="DeathDirectionUsesIncomingTravelAndVictimBody(0,0,1,1)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,1,1)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="2130231112" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.005599" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1014" name="DeathDirectionUsesIncomingTravelAndVictimBody(0,0,-1,0)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,-1,0)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="619813931" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003949" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1015" name="DeathDirectionUsesIncomingTravelAndVictimBody(0,1,0,0)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,1,0,0)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="598936516" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.004450" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1016" name="DeathDirectionUsesIncomingTravelAndVictimBody(90,1,0,1)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(90,1,0,1)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1268232119" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000551" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1017" name="DeathDirectionUsesIncomingTravelAndVictimBody(90,-1,0,0)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(90,-1,0,0)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="742303138" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000380" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1018" name="DeathDirectionUsesIncomingTravelAndVictimBody(0,0,0,0)" fullname="Splatoon.Tests.CharacterPresentationTests.DeathDirectionUsesIncomingTravelAndVictimBody(0,0,0,0)" methodname="DeathDirectionUsesIncomingTravelAndVictimBody" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1212887913" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000329" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1021" name="FourDirectionGraphAndUpperBodyMaskMatchApprovedBindings" fullname="Splatoon.Tests.CharacterPresentationTests.FourDirectionGraphAndUpperBodyMaskMatchApprovedBindings" methodname="FourDirectionGraphAndUpperBodyMaskMatchApprovedBindings" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="424027338" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.015389" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1011" name="LocomotionInterruptsTurnAndLimitsBodyRotation" fullname="Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003239" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1008" name="LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;move&quot;)" fullname="Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;move&quot;)" methodname="LocomotionInterruptsTurnAndLimitsBodyRotation" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1189965299" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.001307" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1009" name="LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;air&quot;)" fullname="Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;air&quot;)" methodname="LocomotionInterruptsTurnAndLimitsBodyRotation" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1397108762" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000218" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1010" name="LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;swim&quot;)" fullname="Splatoon.Tests.CharacterPresentationTests.LocomotionInterruptsTurnAndLimitsBodyRotation(&quot;swim&quot;)" methodname="LocomotionInterruptsTurnAndLimitsBodyRotation" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1226788676" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000193" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1020" name="SnapshotRoundTripRetainsAnimationTimelineForLateJoin" fullname="Splatoon.Tests.CharacterPresentationTests.SnapshotRoundTripRetainsAnimationTimelineForLateJoin" methodname="SnapshotRoundTripRetainsAnimationTimelineForLateJoin" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1547334720" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.007663" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1006" name="StationaryTurnUsesShortestAngleAndThreshold" fullname="Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003431" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="StationaryTurnUsesShortestAngleAndThreshold(45,0)" fullname="Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(45,0)" methodname="StationaryTurnUsesShortestAngleAndThreshold" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="625652187" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000648" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1003" name="StationaryTurnUsesShortestAngleAndThreshold(46,1)" fullname="Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(46,1)" methodname="StationaryTurnUsesShortestAngleAndThreshold" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="112867735" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000308" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1004" name="StationaryTurnUsesShortestAngleAndThreshold(314,-1)" fullname="Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(314,-1)" methodname="StationaryTurnUsesShortestAngleAndThreshold" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="562124932" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000307" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1005" name="StationaryTurnUsesShortestAngleAndThreshold(359,0)" fullname="Splatoon.Tests.CharacterPresentationTests.StationaryTurnUsesShortestAngleAndThreshold(359,0)" methodname="StationaryTurnUsesShortestAngleAndThreshold" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="552211927" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.000249" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1007" name="TurnSamplesAuthoredCurveAndContinuesAcrossNinetyDegrees" fullname="Splatoon.Tests.CharacterPresentationTests.TurnSamplesAuthoredCurveAndContinuesAcrossNinetyDegrees" methodname="TurnSamplesAuthoredCurveAndContinuesAcrossNinetyDegrees" classname="Splatoon.Tests.CharacterPresentationTests" runstate="Runnable" seed="1882806431" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.001444" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1022" name="CombatGirlsWeaponTests" fullname="Splatoon.Tests.CombatGirlsWeaponTests" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.113732" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1038" name="AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" fullname="Splatoon.Tests.CombatGirlsWeaponTests.AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" methodname="AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="2135965622" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.045485" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1032" name="AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" fullname="Splatoon.Tests.CombatGirlsWeaponTests.AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" methodname="AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="2013888712" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.006541" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1033" name="CancelledBufferedClickDoesNotFireAfterControlReturns" fullname="Splatoon.Tests.CombatGirlsWeaponTests.CancelledBufferedClickDoesNotFireAfterControlReturns" methodname="CancelledBufferedClickDoesNotFireAfterControlReturns" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1218076988" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003381" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1031" name="FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" fullname="Splatoon.Tests.CombatGirlsWeaponTests.FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" methodname="FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1926835601" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003213" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1026" name="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.010616" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1023" name="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(2)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(2)" methodname="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="174584310" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003633" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1024" name="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(3)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(3)" methodname="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1137287091" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.002581" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1025" name="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(4)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(4)" methodname="HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="504638293" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.002420" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1036" name="NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" fullname="Splatoon.Tests.CombatGirlsWeaponTests.NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" methodname="NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="396144456" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.013010" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1034" name="SemiHoldDoesNotRequestMovementLockAndRecoversAfterConfiguredDelay" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SemiHoldDoesNotRequestMovementLockAndRecoversAfterConfiguredDelay" methodname="SemiHoldDoesNotRequestMovementLockAndRecoversAfterConfiguredDelay" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="2086349823" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.005123" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1035" name="ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" fullname="Splatoon.Tests.CombatGirlsWeaponTests.ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" methodname="ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="459575368" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.008057" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1030" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.010748" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1027" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(2)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(2)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="333464707" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003191" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1028" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(3)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(3)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1457948085" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.002519" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1029" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(4)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(4)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="69318769" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003097" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1037" name="SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" methodname="SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="300362319" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.003381" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1039" name="GameplayConfigTests" fullname="Splatoon.Tests.GameplayConfigTests" classname="Splatoon.Tests.GameplayConfigTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.020501" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1040" name="GeneratedDefaultsResolveFourTablesAndBallisticValues" fullname="Splatoon.Tests.GameplayConfigTests.GeneratedDefaultsResolveFourTablesAndBallisticValues" methodname="GeneratedDefaultsResolveFourTablesAndBallisticValues" classname="Splatoon.Tests.GameplayConfigTests" runstate="Runnable" seed="1473024242" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.004103" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1042" name="ImpossibleProjectileAndNetworkSettingsAreRejected" fullname="Splatoon.Tests.GameplayConfigTests.ImpossibleProjectileAndNetworkSettingsAreRejected" methodname="ImpossibleProjectileAndNetworkSettingsAreRejected" classname="Splatoon.Tests.GameplayConfigTests" runstate="Runnable" seed="571101910" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.009314" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1041" name="InvalidCrossTableReferenceIsRejected" fullname="Splatoon.Tests.GameplayConfigTests.InvalidCrossTableReferenceIsRejected" methodname="InvalidCrossTableReferenceIsRejected" classname="Splatoon.Tests.GameplayConfigTests" runstate="Runnable" seed="1095018329" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:01Z" duration="0.004830" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1043" name="HeroMigrationPlayTests" fullname="Splatoon.Tests.HeroMigrationPlayTests" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-13 16:11:05Z" end-time="2026-09-13 16:11:31Z" duration="25.399264" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1044" name="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" fullname="Splatoon.Tests.HeroMigrationPlayTests.RealAppLoadsSelectsRespawnsAndReleasesHeroModels" methodname="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" seed="1054069008" result="Passed" start-time="2026-09-13 16:11:01Z" end-time="2026-09-13 16:11:31Z" duration="30.007909" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-YT4S4
+[LAN] Connected role=host address=127.0.0.1 port=60691
+[LAN] Returned to menu. 
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-YT4S4
+[LAN] Connected role=host address=127.0.0.1 port=60691
+[LAN] Returned to menu. 
+[中文字体] Microsoft YaHei，房间涂墨字形=True
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-YT4S4
+[LAN] Connected role=host address=127.0.0.1 port=60691
+[LAN] Returned to menu. 
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1045" name="HeroMigrationTests" fullname="Splatoon.Tests.HeroMigrationTests" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.149497" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1052" name="AlternativeAddressesResolveAndAssembleTheirOwnModels" fullname="Splatoon.Tests.HeroMigrationTests.AlternativeAddressesResolveAndAssembleTheirOwnModels" methodname="AlternativeAddressesResolveAndAssembleTheirOwnModels" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1632486794" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.077691" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1049" name="BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" fullname="Splatoon.Tests.HeroMigrationTests.BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" methodname="BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="407147765" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.023345" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1050" name="CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" fullname="Splatoon.Tests.HeroMigrationTests.CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" methodname="CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1843911816" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.007417" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1048" name="HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" fullname="Splatoon.Tests.HeroMigrationTests.HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" methodname="HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1862661703" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.005338" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1051" name="MissingWeaponBindingsAreRejectedBeforeAssembly" fullname="Splatoon.Tests.HeroMigrationTests.MissingWeaponBindingsAreRejectedBeforeAssembly" methodname="MissingWeaponBindingsAreRejectedBeforeAssembly" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="93236153" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.002378" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1046" name="RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" fullname="Splatoon.Tests.HeroMigrationTests.RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" methodname="RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="305587231" result="Failed" label="Error" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.010850" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests.RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords () [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:58 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1047" name="SelectedHeroDrivesMovementRecoveryAndDisplay" fullname="Splatoon.Tests.HeroMigrationTests.SelectedHeroDrivesMovementRecoveryAndDisplay" methodname="SelectedHeroDrivesMovementRecoveryAndDisplay" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="525866736" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.007668" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1053" name="SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" fullname="Splatoon.Tests.HeroMigrationTests.SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" methodname="SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="2074570546" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.010631" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1054" name="HeroSelectionTests" fullname="Splatoon.Tests.HeroSelectionTests" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="31" result="Failed" site="Child" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:32Z" duration="1.238064" total="31" passed="26" failed="5" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="ParameterizedMethod" id="1092" name="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon" fullname="Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.257503" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1089" name="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(1,0,13.6f)" fullname="Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(1,0,13.6f)" methodname="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1870974191" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.093839" asserts="0">
+                <properties />
+                <output><![CDATA[[WEAPON-RANGE] id=1 charge=0 floor=14.227 target=13.6
+]]></output>
+              </test-case>
+              <test-case id="1090" name="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,0,11.2f)" fullname="Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,0,11.2f)" methodname="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="634738196" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.080237" asserts="0">
+                <properties />
+                <output><![CDATA[[WEAPON-RANGE] id=5 charge=0 floor=11.607 target=11.2
+]]></output>
+              </test-case>
+              <test-case id="1091" name="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,1,20.4f)" fullname="Splatoon.Tests.HeroSelectionTests.ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(5,1,20.4f)" methodname="ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1591001631" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.081821" asserts="0">
+                <properties />
+                <output><![CDATA[[WEAPON-RANGE] id=5 charge=1 floor=20.807 target=20.4
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1058" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.108383" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1055" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(1,6,108)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(1,6,108)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="420183573" result="Failed" label="Error" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.034495" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary (System.Int32 id, System.Int32 interval, System.Int32 count) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroSelectionTests.cs:29 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1056" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(2,4,200)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(2,4,200)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="2066325484" result="Failed" label="Error" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.035116" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary (System.Int32 id, System.Int32 interval, System.Int32 count) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroSelectionTests.cs:29 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1057" name="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(3,9,66)" fullname="Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(3,9,66)" methodname="AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1536483939" result="Failed" label="Error" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.034289" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.HeroSelectionTests.AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary (System.Int32 id, System.Int32 interval, System.Int32 count) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroSelectionTests.cs:29 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-case id="1061" name="BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" fullname="Splatoon.Tests.HeroSelectionTests.BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" methodname="BurstReleaseFinishesGroupButCancelOrEmptyStopsIt" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1508013740" result="Failed" label="Error" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.035224" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.HeroSelectionTests.BurstReleaseFinishesGroupButCancelOrEmptyStopsIt () [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroSelectionTests.cs:52 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1077" name="CancellingShotFeedbackCannotReviveOldFireLoop" fullname="Splatoon.Tests.HeroSelectionTests.CancellingShotFeedbackCannotReviveOldFireLoop" methodname="CancellingShotFeedbackCannotReviveOldFireLoop" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1148249775" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.034188" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1069" name="ChargeCannotExceedAffordablePower" fullname="Splatoon.Tests.HeroSelectionTests.ChargeCannotExceedAffordablePower" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.073435" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1067" name="ChargeCannotExceedAffordablePower(5,30)" fullname="Splatoon.Tests.HeroSelectionTests.ChargeCannotExceedAffordablePower(5,30)" methodname="ChargeCannotExceedAffordablePower" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1873126623" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.035580" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1068" name="ChargeCannotExceedAffordablePower(2,0)" fullname="Splatoon.Tests.HeroSelectionTests.ChargeCannotExceedAffordablePower(2,0)" methodname="ChargeCannotExceedAffordablePower" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="592430121" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:31Z" duration="0.033090" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1065" name="ChargeReleasesOnceWithResolvedDamageInkAndRange" fullname="Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:32Z" duration="0.105606" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1062" name="ChargeReleasesOnceWithResolvedDamageInkAndRange(2,0,40,2)" fullname="Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(2,0,40,2)" methodname="ChargeReleasesOnceWithResolvedDamageInkAndRange" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1719851833" result="Passed" start-time="2026-09-13 16:11:31Z" end-time="2026-09-13 16:11:32Z" duration="0.033818" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1063" name="ChargeReleasesOnceWithResolvedDamageInkAndRange(32,0.5f,60,5)" fullname="Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(32,0.5f,60,5)" methodname="ChargeReleasesOnceWithResolvedDamageInkAndRange" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1066890628" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033529" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1064" name="ChargeReleasesOnceWithResolvedDamageInkAndRange(62,1,160,8)" fullname="Splatoon.Tests.HeroSelectionTests.ChargeReleasesOnceWithResolvedDamageInkAndRange(62,1,160,8)" methodname="ChargeReleasesOnceWithResolvedDamageInkAndRange" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="933850855" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033546" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1066" name="ChargeWaitsAtFullAndRejectsCooldownClicks" fullname="Splatoon.Tests.HeroSelectionTests.ChargeWaitsAtFullAndRejectsCooldownClicks" methodname="ChargeWaitsAtFullAndRejectsCooldownClicks" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="273362978" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032814" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1060" name="ContinuousFireDoesNotRestartUpperBodyLoopEveryShot" fullname="Splatoon.Tests.HeroSelectionTests.ContinuousFireDoesNotRestartUpperBodyLoopEveryShot" methodname="ContinuousFireDoesNotRestartUpperBodyLoopEveryShot" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="239695613" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032637" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1075" name="EachRegularGunUsesItsConfiguredDamageFalloff" fullname="Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.136547" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1071" name="EachRegularGunUsesItsConfiguredDamageFalloff(1,36,18)" fullname="Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(1,36,18)" methodname="EachRegularGunUsesItsConfiguredDamageFalloff" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="469028916" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033479" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1072" name="EachRegularGunUsesItsConfiguredDamageFalloff(2,32,16)" fullname="Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(2,32,16)" methodname="EachRegularGunUsesItsConfiguredDamageFalloff" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1942898434" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032545" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1073" name="EachRegularGunUsesItsConfiguredDamageFalloff(3,10,4)" fullname="Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(3,10,4)" methodname="EachRegularGunUsesItsConfiguredDamageFalloff" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1599597844" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032787" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1074" name="EachRegularGunUsesItsConfiguredDamageFalloff(4,52,26)" fullname="Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(4,52,26)" methodname="EachRegularGunUsesItsConfiguredDamageFalloff" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1199394771" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032186" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1059" name="HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" fullname="Splatoon.Tests.HeroSelectionTests.HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" methodname="HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="460757203" result="Failed" label="Error" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033957" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.HeroSelectionTests.HeldBurstUsesFourFrameIntervalsAndSixteenFrameRecovery () [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroSelectionTests.cs:38 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1076" name="HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum" fullname="Splatoon.Tests.HeroSelectionTests.HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum" methodname="HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="2089683186" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033560" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1086" name="ServerChecksPhaseAndBuildNotJustButtonVisibility" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.170633" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1081" name="ServerChecksPhaseAndBuildNotJustButtonVisibility(Practice,Warmup,False,True)" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Practice,Warmup,False,True)" methodname="ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="153111216" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032803" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1082" name="ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Warmup,True,False)" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Warmup,True,False)" methodname="ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1531867876" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.034172" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1083" name="ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,True,True)" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,True,True)" methodname="ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1613747765" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032183" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1084" name="ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,False,False)" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Playing,Debug,False,False)" methodname="ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="645632570" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.032459" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1085" name="ServerChecksPhaseAndBuildNotJustButtonVisibility(Finished,Debug,True,False)" fullname="Splatoon.Tests.HeroSelectionTests.ServerChecksPhaseAndBuildNotJustButtonVisibility(Finished,Debug,True,False)" methodname="ServerChecksPhaseAndBuildNotJustButtonVisibility" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="419791817" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033350" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1088" name="StaleRoundLifeDeadAndInvalidWeaponAreRejected" fullname="Splatoon.Tests.HeroSelectionTests.StaleRoundLifeDeadAndInvalidWeaponAreRejected" methodname="StaleRoundLifeDeadAndInvalidWeaponAreRejected" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1015417163" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033282" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1080" name="SwitchingMidAttackRequiresReleaseAndNewStartup" fullname="Splatoon.Tests.HeroSelectionTests.SwitchingMidAttackRequiresReleaseAndNewStartup" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.069992" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1078" name="SwitchingMidAttackRequiresReleaseAndNewStartup(4)" fullname="Splatoon.Tests.HeroSelectionTests.SwitchingMidAttackRequiresReleaseAndNewStartup(4)" methodname="SwitchingMidAttackRequiresReleaseAndNewStartup" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1455117961" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033946" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1079" name="SwitchingMidAttackRequiresReleaseAndNewStartup(5)" fullname="Splatoon.Tests.HeroSelectionTests.SwitchingMidAttackRequiresReleaseAndNewStartup(5)" methodname="SwitchingMidAttackRequiresReleaseAndNewStartup" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1683421378" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.031922" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1087" name="SwitchPreservesLifeMovementProtectionAndLocksWithPhaseSpecificInk" fullname="Splatoon.Tests.HeroSelectionTests.SwitchPreservesLifeMovementProtectionAndLocksWithPhaseSpecificInk" methodname="SwitchPreservesLifeMovementProtectionAndLocksWithPhaseSpecificInk" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1281011693" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.035464" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1070" name="UiCancellationDoesNotDischargeOrSpendAndRequiresRelease" fullname="Splatoon.Tests.HeroSelectionTests.UiCancellationDoesNotDischargeOrSpendAndRequiresRelease" methodname="UiCancellationDoesNotDischargeOrSpendAndRequiresRelease" classname="Splatoon.Tests.HeroSelectionTests" runstate="Runnable" seed="1197669561" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033365" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1093" name="InkCollisionTests" fullname="Splatoon.Tests.InkCollisionTests" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.179736" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1098" name="ExpiryAndRoundClearDoNotCreatePaintHits" fullname="Splatoon.Tests.InkCollisionTests.ExpiryAndRoundClearDoNotCreatePaintHits" methodname="ExpiryAndRoundClearDoNotCreatePaintHits" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" seed="427214463" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.034525" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1099" name="MuzzleInsideColliderResolvesOnce" fullname="Splatoon.Tests.InkCollisionTests.MuzzleInsideColliderResolvesOnce" methodname="MuzzleInsideColliderResolvesOnce" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" seed="1154533170" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.034888" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1097" name="SweptBallHitsNearestThinWallOnlyOnce" fullname="Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.105641" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1094" name="SweptBallHitsNearestThinWallOnlyOnce(30)" fullname="Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(30)" methodname="SweptBallHitsNearestThinWallOnlyOnce" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" seed="979564670" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.034153" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1095" name="SweptBallHitsNearestThinWallOnlyOnce(60)" fullname="Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(60)" methodname="SweptBallHitsNearestThinWallOnlyOnce" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" seed="644809717" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033141" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1096" name="SweptBallHitsNearestThinWallOnlyOnce(144)" fullname="Splatoon.Tests.InkCollisionTests.SweptBallHitsNearestThinWallOnlyOnce(144)" methodname="SweptBallHitsNearestThinWallOnlyOnce" classname="Splatoon.Tests.InkCollisionTests" runstate="Runnable" seed="1468011442" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.033350" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1100" name="InkCoverageTests" fullname="Splatoon.Tests.InkCoverageTests" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.053407" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1104" name="DetailCoordinatesAreContinuousAcrossTranslatedFloorTiles" fullname="Splatoon.Tests.InkCoverageTests.DetailCoordinatesAreContinuousAcrossTranslatedFloorTiles" methodname="DetailCoordinatesAreContinuousAcrossTranslatedFloorTiles" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" seed="163936798" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000982" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1101" name="FaintPaintAccumulatesInsteadOfBeingDiscarded" fullname="Splatoon.Tests.InkCoverageTests.FaintPaintAccumulatesInsteadOfBeingDiscarded" methodname="FaintPaintAccumulatesInsteadOfBeingDiscarded" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" seed="969891219" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.020128" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1102" name="OpposingPaintErodesPreviousTeamAndTiesKeepPreviousOwner" fullname="Splatoon.Tests.InkCoverageTests.OpposingPaintErodesPreviousTeamAndTiesKeepPreviousOwner" methodname="OpposingPaintErodesPreviousTeamAndTiesKeepPreviousOwner" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" seed="1060290958" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000368" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1105" name="PaletteUsesOriginalReferencePinkAndMintBlue" fullname="Splatoon.Tests.InkCoverageTests.PaletteUsesOriginalReferencePinkAndMintBlue" methodname="PaletteUsesOriginalReferencePinkAndMintBlue" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" seed="1606961871" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000918" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1103" name="RestoringFaintInkThenContinuingMatchesUninterruptedPainting" fullname="Splatoon.Tests.InkCoverageTests.RestoringFaintInkThenContinuingMatchesUninterruptedPainting" methodname="RestoringFaintInkThenContinuingMatchesUninterruptedPainting" classname="Splatoon.Tests.InkCoverageTests" runstate="Runnable" seed="1652108648" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.024795" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1106" name="InkSimulationTests" fullname="Splatoon.Tests.InkSimulationTests" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:33Z" duration="0.241701" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1108" name="BallisticEquationIsIndependentOfVisualFrameRate" fullname="Splatoon.Tests.InkSimulationTests.BallisticEquationIsIndependentOfVisualFrameRate" methodname="BallisticEquationIsIndependentOfVisualFrameRate" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="1183697143" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000830" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1107" name="BallisticPositionIncludesRealFlightTimeAndDrop" fullname="Splatoon.Tests.InkSimulationTests.BallisticPositionIncludesRealFlightTimeAndDrop" methodname="BallisticPositionIncludesRealFlightTimeAndDrop" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="878014562" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000308" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1109" name="BrushAndGridUseSameOwnershipThreshold" fullname="Splatoon.Tests.InkSimulationTests.BrushAndGridUseSameOwnershipThreshold" methodname="BrushAndGridUseSameOwnershipThreshold" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="1959522377" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.002786" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1113" name="FullTankSupports108StandardShooterShots" fullname="Splatoon.Tests.InkSimulationTests.FullTankSupports108StandardShooterShots" methodname="FullTankSupports108StandardShooterShots" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="2130406623" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000357" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1112" name="SnapshotChecksumDetectsCorruptedChunk" fullname="Splatoon.Tests.InkSimulationTests.SnapshotChecksumDetectsCorruptedChunk" methodname="SnapshotChecksumDetectsCorruptedChunk" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="1110607993" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.000240" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1111" name="SnapshotRejectsUnknownSurfacesAndDifferentTopology" fullname="Splatoon.Tests.InkSimulationTests.SnapshotRejectsUnknownSurfacesAndDifferentTopology" methodname="SnapshotRejectsUnknownSurfacesAndDifferentTopology" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="1063913952" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:32Z" duration="0.010687" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1110" name="SnapshotRoundTripPreservesLargeGridAndEveryPaintedSurface" fullname="Splatoon.Tests.InkSimulationTests.SnapshotRoundTripPreservesLargeGridAndEveryPaintedSurface" methodname="SnapshotRoundTripPreservesLargeGridAndEveryPaintedSurface" classname="Splatoon.Tests.InkSimulationTests" runstate="Runnable" seed="898787313" result="Passed" start-time="2026-09-13 16:11:32Z" end-time="2026-09-13 16:11:33Z" duration="0.223156" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1114" name="LanDiscoveryTests" fullname="Splatoon.Tests.LanDiscoveryTests" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.084463" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1121" name="DiscoveryPortCannotBeUsedForGame" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.002481" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1116" name="DiscoveryPortCannotBeUsedForGame(0,False)" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(0,False)" methodname="DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="2131936003" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000354" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1117" name="DiscoveryPortCannotBeUsedForGame(47777,False)" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(47777,False)" methodname="DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="254470534" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000107" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1118" name="DiscoveryPortCannotBeUsedForGame(65536,False)" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(65536,False)" methodname="DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="716481483" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000085" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1119" name="DiscoveryPortCannotBeUsedForGame(7777,True)" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(7777,True)" methodname="DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="267800812" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000082" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1120" name="DiscoveryPortCannotBeUsedForGame(65535,True)" fullname="Splatoon.Tests.LanDiscoveryTests.DiscoveryPortCannotBeUsedForGame(65535,True)" methodname="DiscoveryPortCannotBeUsedForGame" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="1709586616" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000081" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1124" name="IncompatibleAndFullRoomsRemainVisible" fullname="Splatoon.Tests.LanDiscoveryTests.IncompatibleAndFullRoomsRemainVisible" methodname="IncompatibleAndFullRoomsRemainVisible" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="1606980778" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.002343" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1122" name="MultipleRoomsAndInterfacesAreMergedWithoutLosingEndpoints" fullname="Splatoon.Tests.LanDiscoveryTests.MultipleRoomsAndInterfacesAreMergedWithoutLosingEndpoints" methodname="MultipleRoomsAndInterfacesAreMergedWithoutLosingEndpoints" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="1435811031" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.002167" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1125" name="RealUdpDiscoversTwoHostsAndCanRestart" fullname="Splatoon.Tests.LanDiscoveryTests.RealUdpDiscoversTwoHostsAndCanRestart" methodname="RealUdpDiscoversTwoHostsAndCanRestart" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="1687915936" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.067826" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1123" name="UnsolicitedDuplicateExpiredAndReorderedRepliesDoNotRefreshRoom" fullname="Splatoon.Tests.LanDiscoveryTests.UnsolicitedDuplicateExpiredAndReorderedRepliesDoNotRefreshRoom" methodname="UnsolicitedDuplicateExpiredAndReorderedRepliesDoNotRefreshRoom" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="722325673" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000899" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1115" name="WireRoundTripAndMalformedPackets" fullname="Splatoon.Tests.LanDiscoveryTests.WireRoundTripAndMalformedPackets" methodname="WireRoundTripAndMalformedPackets" classname="Splatoon.Tests.LanDiscoveryTests" runstate="Runnable" seed="1204804953" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.003757" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1126" name="LanRoomCodeTests" fullname="Splatoon.Tests.LanRoomCodeTests" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.028952" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1131" name="AddressAndPortRoundTrip" fullname="Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.002401" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1127" name="AddressAndPortRoundTrip(&quot;192.168.1.8&quot;,7777)" fullname="Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(&quot;192.168.1.8&quot;,7777)" methodname="AddressAndPortRoundTrip" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="332974349" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000824" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1128" name="AddressAndPortRoundTrip(&quot;10.0.12.3&quot;,65535)" fullname="Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(&quot;10.0.12.3&quot;,65535)" methodname="AddressAndPortRoundTrip" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="409265435" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000091" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1129" name="AddressAndPortRoundTrip(&quot;172.16.0.1&quot;,1)" fullname="Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(&quot;172.16.0.1&quot;,1)" methodname="AddressAndPortRoundTrip" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1841036818" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000088" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1130" name="AddressAndPortRoundTrip(&quot;127.0.0.1&quot;,7788)" fullname="Splatoon.Tests.LanRoomCodeTests.AddressAndPortRoundTrip(&quot;127.0.0.1&quot;,7788)" methodname="AddressAndPortRoundTrip" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1652719252" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000082" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1142" name="AvailableAddressesAreUniqueAndLoopbackRemainsAvailable" fullname="Splatoon.Tests.LanRoomCodeTests.AvailableAddressesAreUniqueAndLoopbackRemainsAvailable" methodname="AvailableAddressesAreUniqueAndLoopbackRemainsAvailable" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1033958152" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.014705" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1143" name="ChineseUiFontContainsRepresentativeGlyphs" fullname="Splatoon.Tests.LanRoomCodeTests.ChineseUiFontContainsRepresentativeGlyphs" methodname="ChineseUiFontContainsRepresentativeGlyphs" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1831335444" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.001042" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1133" name="EverySingleCharacterTypoIsRejected" fullname="Splatoon.Tests.LanRoomCodeTests.EverySingleCharacterTypoIsRejected" methodname="EverySingleCharacterTypoIsRejected" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="758567333" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.001284" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1141" name="InvalidEndpointCannotBeEncoded" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidEndpointCannotBeEncoded" methodname="InvalidEndpointCannotBeEncoded" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1496540587" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000710" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1140" name="InvalidInputHasChineseError" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.005520" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1134" name="InvalidInputHasChineseError(null)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(null)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="56428678" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000397" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1135" name="InvalidInputHasChineseError(&quot;&quot;)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(&quot;&quot;)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="667895335" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000108" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1136" name="InvalidInputHasChineseError(&quot;1234&quot;)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(&quot;1234&quot;)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1174792581" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000078" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1137" name="InvalidInputHasChineseError(&quot;!!!!!!!!!!!!!&quot;)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(&quot;!!!!!!!!!!!!!&quot;)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="239881732" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000074" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1138" name="InvalidInputHasChineseError(&quot;ZZZZZZZZZZZZZ&quot;)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(&quot;ZZZZZZZZZZZZZ&quot;)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="1912820368" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000072" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1139" name="InvalidInputHasChineseError(&quot;0000000000000&quot;)" fullname="Splatoon.Tests.LanRoomCodeTests.InvalidInputHasChineseError(&quot;0000000000000&quot;)" methodname="InvalidInputHasChineseError" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="2051390061" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000076" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1132" name="PasteAllowsSpacesLowercaseAndAmbiguousGlyphs" fullname="Splatoon.Tests.LanRoomCodeTests.PasteAllowsSpacesLowercaseAndAmbiguousGlyphs" methodname="PasteAllowsSpacesLowercaseAndAmbiguousGlyphs" classname="Splatoon.Tests.LanRoomCodeTests" runstate="Runnable" seed="661858246" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000238" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1144" name="PrototypeRulesTests" fullname="Splatoon.Tests.PrototypeRulesTests" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.004216" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1149" name="DamageRespectsTeamsProtectionAndDeath" fullname="Splatoon.Tests.PrototypeRulesTests.DamageRespectsTeamsProtectionAndDeath" methodname="DamageRespectsTeamsProtectionAndDeath" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="642967636" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000434" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1148" name="InkCannotGoNegativeAndRecoveryCapsAtCapacity" fullname="Splatoon.Tests.PrototypeRulesTests.InkCannotGoNegativeAndRecoveryCapsAtCapacity" methodname="InkCannotGoNegativeAndRecoveryCapsAtCapacity" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="511671159" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000173" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1146" name="LateJoinStateReconstructsIdenticalPaintAndScore" fullname="Splatoon.Tests.PrototypeRulesTests.LateJoinStateReconstructsIdenticalPaintAndScore" methodname="LateJoinStateReconstructsIdenticalPaintAndScore" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="2133843187" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000392" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1147" name="PaintBoundsAndBlockedCellsAreExcluded" fullname="Splatoon.Tests.PrototypeRulesTests.PaintBoundsAndBlockedCellsAreExcluded" methodname="PaintBoundsAndBlockedCellsAreExcluded" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="50229190" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000503" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1145" name="PaintOverwriteAndClearPreserveDenominator" fullname="Splatoon.Tests.PrototypeRulesTests.PaintOverwriteAndClearPreserveDenominator" methodname="PaintOverwriteAndClearPreserveDenominator" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="737630309" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000372" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1150" name="TeamsBalanceAndRoundTransitionsRequirePlayersAndDeadline" fullname="Splatoon.Tests.PrototypeRulesTests.TeamsBalanceAndRoundTransitionsRequirePlayersAndDeadline" methodname="TeamsBalanceAndRoundTransitionsRequirePlayersAndDeadline" classname="Splatoon.Tests.PrototypeRulesTests" runstate="Runnable" seed="747157356" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.000200" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1151" name="ShooterMovementTests" fullname="Splatoon.Tests.ShooterMovementTests" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:37Z" duration="4.330239" total="28" passed="26" failed="2" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1181" name="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" fullname="Splatoon.Tests.ShooterMovementTests.ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" methodname="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="938343216" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.057004" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1183" name="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" fullname="Splatoon.Tests.ShooterMovementTests.CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" methodname="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="12851126" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.397480" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1157" name="DamageHasExactAgeBoundariesAndThreeShotCloseKill" fullname="Splatoon.Tests.ShooterMovementTests.DamageHasExactAgeBoundariesAndThreeShotCloseKill" methodname="DamageHasExactAgeBoundariesAndThreeShotCloseKill" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1065897009" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.033024" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1162" name="EnemyInkIsNonlethalAndNeverHeals" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.102992" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1159" name="EnemyInkIsNonlethalAndNeverHeals(100,60)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(100,60)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1484583824" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.031981" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1160" name="EnemyInkIsNonlethalAndNeverHeals(59,59)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(59,59)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="421168547" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.032993" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1161" name="EnemyInkIsNonlethalAndNeverHeals(20,20)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(20,20)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="754372559" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.032534" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1156" name="FullTankFires108AndNeverGoesNegative" fullname="Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative" methodname="FullTankFires108AndNeverGoesNegative" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1700358641" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.033333" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1163" name="HealthRecoveryWaitsAfterDamageAndEnemyInk" fullname="Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk" methodname="HealthRecoveryWaitsAfterDamageAndEnemyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="323923585" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.034736" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1168" name="HorizontalBallisticsReachCalibratedPaintDistance" fullname="Splatoon.Tests.ShooterMovementTests.HorizontalBallisticsReachCalibratedPaintDistance" methodname="HorizontalBallisticsReachCalibratedPaintDistance" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="77273" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:33Z" duration="0.034555" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1175" name="OnlyLocomotionUsesSpeedParameter" fullname="Splatoon.Tests.ShooterMovementTests.OnlyLocomotionUsesSpeedParameter" methodname="OnlyLocomotionUsesSpeedParameter" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1841883895" result="Passed" start-time="2026-09-13 16:11:33Z" end-time="2026-09-13 16:11:34Z" duration="0.037442" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1174" name="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" fullname="Splatoon.Tests.ShooterMovementTests.OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" methodname="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="652190938" result="Passed" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:34Z" duration="0.386943" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1177" name="PredictionSnapshotSerializesEverySimulationField" fullname="Splatoon.Tests.ShooterMovementTests.PredictionSnapshotSerializesEverySimulationField" methodname="PredictionSnapshotSerializesEverySimulationField" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="2055953069" result="Passed" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:34Z" duration="0.036042" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1179" name="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" fullname="Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" methodname="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="535877240" result="Failed" label="Error" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:34Z" duration="0.035198" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease () [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\ShooterMovementTests.cs:238 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1172" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:36Z" duration="1.597364" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1169" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1449132544" result="Passed" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:34Z" duration="0.392393" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1170" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="997701810" result="Passed" start-time="2026-09-13 16:11:34Z" end-time="2026-09-13 16:11:35Z" duration="0.392290" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1171" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1703296051" result="Passed" start-time="2026-09-13 16:11:35Z" end-time="2026-09-13 16:11:36Z" duration="0.807154" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1167" name="RenderRatesDoNotChangeFixedSimulationResults" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.106167" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1164" name="RenderRatesDoNotChangeFixedSimulationResults(30)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1310294120" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033759" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1165" name="RenderRatesDoNotChangeFixedSimulationResults(60)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1839564546" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033476" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1166" name="RenderRatesDoNotChangeFixedSimulationResults(144)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="709650985" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033039" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1180" name="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" fullname="Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" methodname="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1772739725" result="Failed" label="Error" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.034834" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst () [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\ShooterMovementTests.cs:249 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1178" name="RifleGirlLogicalMuzzleProjectileHitsFloorWithinPaintRangeTarget" fullname="Splatoon.Tests.ShooterMovementTests.RifleGirlLogicalMuzzleProjectileHitsFloorWithinPaintRangeTarget" methodname="RifleGirlLogicalMuzzleProjectileHitsFloorWithinPaintRangeTarget" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1263503016" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.087987" asserts="0">
+              <properties />
+              <output><![CDATA[[SHOOTER-RANGE] RifleGirl horizontal center shot floor=14.227m target=13.6m
+]]></output>
+            </test-case>
+            <test-case id="1155" name="ShortTapCompletesStartupAndCannotBypassCooldown" fullname="Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown" methodname="ShortTapCompletesStartupAndCannotBypassCooldown" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="99188041" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033491" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1154" name="StartupAndContinuousCadenceUseReferenceFrames" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.072002" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1152" name="StartupAndContinuousCadenceUseReferenceFrames(False,2)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1250730082" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033714" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1153" name="StartupAndContinuousCadenceUseReferenceFrames(True,10)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="96822542" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.033201" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1158" name="SwimmingCannotBypassRecoveryLock" fullname="Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock" methodname="SwimmingCannotBypassRecoveryLock" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="183014368" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.032099" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1176" name="WallClimbMantleAndEnemyCoverUseActualController" fullname="Splatoon.Tests.ShooterMovementTests.WallClimbMantleAndEnemyCoverUseActualController" methodname="WallClimbMantleAndEnemyCoverUseActualController" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1029315626" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:36Z" duration="0.390164" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1182" name="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" fullname="Splatoon.Tests.ShooterMovementTests.WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" methodname="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="61945610" result="Passed" start-time="2026-09-13 16:11:36Z" end-time="2026-09-13 16:11:37Z" duration="0.377782" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1173" name="WallPlanesAreIndependentAndDoNotAddScoreArea" fullname="Splatoon.Tests.ShooterMovementTests.WallPlanesAreIndependentAndDoNotAddScoreArea" methodname="WallPlanesAreIndependentAndDoNotAddScoreArea" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="837669961" result="Passed" start-time="2026-09-13 16:11:37Z" end-time="2026-09-13 16:11:37Z" duration="0.401473" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1184" name="SkillDefinitionTests" fullname="Splatoon.Tests.SkillDefinitionTests" classname="Splatoon.Tests.SkillDefinitionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-13 16:11:37Z" end-time="2026-09-13 16:11:37Z" duration="0.005637" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1185" name="ResolveDurationIncludesClips" fullname="Splatoon.Tests.SkillDefinitionTests.ResolveDurationIncludesClips" methodname="ResolveDurationIncludesClips" classname="Splatoon.Tests.SkillDefinitionTests" runstate="Runnable" seed="1194248081" result="Passed" start-time="2026-09-13 16:11:37Z" end-time="2026-09-13 16:11:37Z" duration="0.000994" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1186" name="TrainingGroundTests" fullname="Splatoon.Tests.TrainingGroundTests" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-13 16:11:37Z" end-time="2026-09-13 16:11:38Z" duration="1.161246" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1191" name="AuthoredBridgeAndGroundResolveDifferentFootSurfaces" fullname="Splatoon.Tests.TrainingGroundTests.AuthoredBridgeAndGroundResolveDifferentFootSurfaces" methodname="AuthoredBridgeAndGroundResolveDifferentFootSurfaces" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="1740791433" result="Passed" start-time="2026-09-13 16:11:37Z" end-time="2026-09-13 16:11:38Z" duration="0.393977" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1193" name="AuthoredRoutesAllowHighPlatformJumpDropAndOuterLaneTraversal" fullname="Splatoon.Tests.TrainingGroundTests.AuthoredRoutesAllowHighPlatformJumpDropAndOuterLaneTraversal" methodname="AuthoredRoutesAllowHighPlatformJumpDropAndOuterLaneTraversal" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="47591549" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.366150" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1189" name="BlockedFootprintsCannotBePaintedOrRestoredAsWalkable" fullname="Splatoon.Tests.TrainingGroundTests.BlockedFootprintsCannotBePaintedOrRestoredAsWalkable" methodname="BlockedFootprintsCannotBePaintedOrRestoredAsWalkable" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="472380367" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.000679" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1190" name="CheckpointSeparatesLayersAndRejectsTopologyOrInvalidOwners" fullname="Splatoon.Tests.TrainingGroundTests.CheckpointSeparatesLayersAndRejectsTopologyOrInvalidOwners" methodname="CheckpointSeparatesLayersAndRejectsTopologyOrInvalidOwners" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="817600189" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.000766" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1192" name="CoplanarBrushCrossesTileSeamWithoutPaintingBridge" fullname="Splatoon.Tests.TrainingGroundTests.CoplanarBrushCrossesTileSeamWithoutPaintingBridge" methodname="CoplanarBrushCrossesTileSeamWithoutPaintingBridge" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="377301940" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.393637" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1187" name="RectangularGroundHasCorrectAreaAndIndependentBounds" fullname="Splatoon.Tests.TrainingGroundTests.RectangularGroundHasCorrectAreaAndIndependentBounds" methodname="RectangularGroundHasCorrectAreaAndIndependentBounds" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="1740751197" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.002668" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1188" name="SlopeCountsActualAreaIncludingPartialEdgeCells" fullname="Splatoon.Tests.TrainingGroundTests.SlopeCountsActualAreaIncludingPartialEdgeCells" methodname="SlopeCountsActualAreaIncludingPartialEdgeCells" classname="Splatoon.Tests.TrainingGroundTests" runstate="Runnable" seed="1290752396" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:38Z" duration="0.000536" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1194" name="WeaponPresentationPlayTests" fullname="Splatoon.Tests.WeaponPresentationPlayTests" classname="Splatoon.Tests.WeaponPresentationPlayTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-13 16:11:44Z" end-time="2026-09-13 16:11:55Z" duration="11.422392" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1195" name="FlightInkAndShotgunGripInRealHost" fullname="Splatoon.Tests.WeaponPresentationPlayTests.FlightInkAndShotgunGripInRealHost" methodname="FlightInkAndShotgunGripInRealHost" classname="Splatoon.Tests.WeaponPresentationPlayTests" runstate="Runnable" seed="1815741939" result="Passed" start-time="2026-09-13 16:11:38Z" end-time="2026-09-13 16:11:55Z" duration="16.657805" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-Y9VBD
+[LAN] Connected role=host address=127.0.0.1 port=58605
+[LAN] Returned to menu. 
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1196" name="WeaponReferenceMeasurementTests" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-13 16:12:04Z" end-time="2026-09-13 16:12:10Z" duration="5.507888" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1197" name="CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests.CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode" methodname="CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" seed="1772357433" result="Passed" start-time="2026-09-13 16:11:55Z" end-time="2026-09-13 16:11:59Z" duration="4.284228" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1199" name="PlayModeUsesTheSameMeasuredPhysicsAndCoverage" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests.PlayModeUsesTheSameMeasuredPhysicsAndCoverage" methodname="PlayModeUsesTheSameMeasuredPhysicsAndCoverage" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" seed="1053739137" result="Passed" start-time="2026-09-13 16:11:59Z" end-time="2026-09-13 16:12:09Z" duration="10.150413" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1198" name="RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests.RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage" methodname="RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" seed="984024540" result="Passed" start-time="2026-09-13 16:12:09Z" end-time="2026-09-13 16:12:10Z" duration="0.097629" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1200" name="WeaponReferenceTests" fullname="Splatoon.Tests.WeaponReferenceTests" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="11" result="Failed" site="Child" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.037042" total="11" passed="0" failed="11" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1210" name="FullChargeDamageIsIndependentOfUnverifiedPartialCurve" fullname="Splatoon.Tests.WeaponReferenceTests.FullChargeDamageIsIndependentOfUnverifiedPartialCurve" methodname="FullChargeDamageIsIndependentOfUnverifiedPartialCurve" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1831882828" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.008377" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1214" name="GatedPhysicsAndPaintParametersRetainBaseline" fullname="Splatoon.Tests.WeaponReferenceTests.GatedPhysicsAndPaintParametersRetainBaseline" methodname="GatedPhysicsAndPaintParametersRetainBaseline" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="291376761" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.002125" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1209" name="HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" fullname="Splatoon.Tests.WeaponReferenceTests.HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" methodname="HeavyShooterConsecutiveShotsAreNineReferenceFramesApart" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1805045200" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001799" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1208" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.004807" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1206" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(2)" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(2)" methodname="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="687801465" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001916" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1207" name="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(4)" fullname="Splatoon.Tests.WeaponReferenceTests.RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(4)" methodname="RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="773597267" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001854" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1205" name="ShooterInkAndFullTankCountMatchPinnedReference" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.009727" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1201" name="ShooterInkAndFullTankCountMatchPinnedReference(1)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(1)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1730587516" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.002247" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1202" name="ShooterInkAndFullTankCountMatchPinnedReference(2)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(2)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="869170581" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.002382" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1203" name="ShooterInkAndFullTankCountMatchPinnedReference(3)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(3)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="2117520195" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001803" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1204" name="ShooterInkAndFullTankCountMatchPinnedReference(4)" fullname="Splatoon.Tests.WeaponReferenceTests.ShooterInkAndFullTankCountMatchPinnedReference(4)" methodname="ShooterInkAndFullTankCountMatchPinnedReference" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1161469018" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001713" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1213" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.004642" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1211" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(False,600)" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(False,600)" methodname="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="466832059" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001856" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1212" name="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)" fullname="Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)" methodname="ZeroAbilityFullInkRecoveryMatchesPinnedCommonData" classname="Splatoon.Tests.WeaponReferenceTests" runstate="Runnable" seed="1920468340" result="Failed" label="Error" start-time="2026-09-13 16:12:10Z" end-time="2026-09-13 16:12:10Z" duration="0.001726" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[SetUp : System.IO.DirectoryNotFoundException : Could not find a part of the path "D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Docs\HeroMigration\Migration-Baseline.json".]]></message>
+                  <stack-trace><![CDATA[--SetUp
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Splatoon.Tests.HeroMigrationTests+<>c.<LoadHistoricalWeapons>b__4_0 (SimpleJSON.JSONNode rows) [0x00001] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:34 
+  at Splatoon.Tests.HeroMigrationTests.Load (System.Action`1[T] edit) [0x0004c] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:27 
+  at Splatoon.Tests.HeroMigrationTests.LoadHistoricalWeapons () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\HeroMigrationTests.cs:32 
+  at Splatoon.Tests.WeaponReferenceTests.Load () [0x00000] in D:\XPHUNITY\ProjectSplatoonValidation\WeaponRepair\Assets\Splatoon\Tests\WeaponReferenceTests.cs:16 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+                </failure>
+                <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -8,7 +8,7 @@ using Splatoon.Painting;
 
 namespace Splatoon.Prototype
 {
-    public sealed partial class PrototypeMatch : NetworkBehaviour
+    public sealed partial class PrototypeMatch : NetworkBehaviour, INetworkUpdateSystem
     {
         public static PrototypeMatch Current { get; private set; }
         public readonly NetworkVariable<MatchStateSnapshot> State = new();
@@ -35,6 +35,8 @@ namespace Splatoon.Prototype
             {
                 State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalArea = Arena.TotalArea };
                 InitialSyncComplete = true; NetworkManager.NetworkTickSystem.Tick += ServerTick;
+                this.RegisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
+                _networkFrameOffset = NetworkManager.ServerTime.Time - Time.timeAsDouble;
             }
             else RequestSnapshotRpc();
             Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
@@ -75,11 +77,21 @@ namespace Splatoon.Prototype
         }
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer) ResetPaint(round); }
         private double _simulationTime;
+        private double _networkFrameOffset;
+        public void NetworkUpdate(NetworkUpdateStage stage)
+        {
+            if (stage != NetworkUpdateStage.EarlyUpdate || !IsSpawned || !IsServer) return;
+            // NGO advances its unscaled clock in PreUpdate, after Unity's fixed
+            // steps. Anchor this frame's fixed timestamps to that same clock.
+            // Unity caps catch-up at maximumDeltaTime; accumulating dt forever
+            // therefore loses time on a hitch and makes new shots look expired.
+            double frameServerTime = NetworkManager.ServerTime.Time + Time.unscaledDeltaTime;
+            _networkFrameOffset = frameServerTime - Time.timeAsDouble;
+        }
         private void FixedUpdate()
         {
             if (!IsSpawned || !IsServer) return;
-            if (_simulationTime == 0) _simulationTime = NetworkManager.ServerTime.Time;
-            _simulationTime += 1.0 / GameplayConfig.Global.SimulationRate;
+            _simulationTime = System.Math.Max(_simulationTime, Time.fixedTimeAsDouble + _networkFrameOffset);
             double now = _simulationTime; var s = State.Value;
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
             { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
@@ -112,6 +124,7 @@ namespace Splatoon.Prototype
         }
         public override void OnNetworkDespawn()
         {
+            this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
             _captureGeneration++; Projectiles.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
             if (Current == this) Current = null;

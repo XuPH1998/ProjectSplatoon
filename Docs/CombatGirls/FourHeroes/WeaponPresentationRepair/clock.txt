@@ -1,0 +1,1 @@
+new shot age at spawn=0.001173s
