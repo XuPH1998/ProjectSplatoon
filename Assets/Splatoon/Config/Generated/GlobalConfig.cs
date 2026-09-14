@@ -35,6 +35,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["paintShapeNoiseScale"].IsNumber) { throw new SerializationException(); }  PaintShapeNoiseScale = _buf["paintShapeNoiseScale"]; }
         { if(!_buf["maxPaintMemoryMiB"].IsNumber) { throw new SerializationException(); }  MaxPaintMemoryMiB = _buf["maxPaintMemoryMiB"]; }
         { if(!_buf["simulationRate"].IsNumber) { throw new SerializationException(); }  SimulationRate = _buf["simulationRate"]; }
+        { if(!_buf["aimCorrectionDistance"].IsNumber) { throw new SerializationException(); }  AimCorrectionDistance = _buf["aimCorrectionDistance"]; }
     }
 
     public static GlobalConfig DeserializeGlobalConfig(JSONNode _buf)
@@ -102,6 +103,10 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// 玩法模拟和输入采样频率（Hz）
     /// </summary>
     public readonly int SimulationRate;
+    /// <summary>
+    /// 瞄准：修正点距逻辑摄像机的距离（米，必须大于0）
+    /// </summary>
+    public readonly float AimCorrectionDistance;
    
     public const int __ID__ = -958250779;
     public override int GetTypeId() => __ID__;
@@ -128,6 +133,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "paintShapeNoiseScale:" + PaintShapeNoiseScale + ","
         + "maxPaintMemoryMiB:" + MaxPaintMemoryMiB + ","
         + "simulationRate:" + SimulationRate + ","
+        + "aimCorrectionDistance:" + AimCorrectionDistance + ","
         + "}";
     }
 }

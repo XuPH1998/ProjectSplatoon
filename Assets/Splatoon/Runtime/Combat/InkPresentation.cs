@@ -83,7 +83,7 @@ namespace Splatoon.Combat
                     for (int n = 0; n < blobs && count < _particles.Length; n++)
                     {
                         double t = System.Math.Max(0, System.Math.Min(w.Lifetime, age - n * .018 / blobs));
-                        _particles[count++] = new ParticleSystem.Particle { position = InkBallistics.Position(shot.Origin, shot.Velocity, w, t), startColor = PrototypeArena.TeamColor(team), startSize = BlobSize, remainingLifetime = 1, startLifetime = 1, randomSeed = shot.Seed + (uint)n, velocity = Vector3.zero };
+                        _particles[count++] = new ParticleSystem.Particle { position = InkBallistics.Position(shot, w, t), startColor = PrototypeArena.TeamColor(team), startSize = BlobSize, remainingLifetime = 1, startLifetime = 1, randomSeed = shot.Seed + (uint)n, velocity = Vector3.zero };
                     }
                 }
                 _streams[team - 1].SetParticles(_particles, count);

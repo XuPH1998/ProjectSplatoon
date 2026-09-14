@@ -37,7 +37,7 @@ namespace Splatoon.Prototype
             RegisterSurfaces();
             if (SpawnPoints == null || SpawnPoints.Length != 4 || SpawnPoints.Any(p => p == null)) throw new InvalidOperationException("场景需要四个出生点");
             if (string.IsNullOrEmpty(BakedTopology) || BakedTopology != ComputeTopology()) throw new InvalidOperationException("地图已修改，请先执行：喷墨对战/地图/校验并烘焙当前地图");
-            foreach (var surface in Surfaces.Values) surface.InitializeOwnership(config.CellSize);
+            foreach (var surface in Surfaces.Values) { InkShapeAtlas.Configure(surface.ShapeAtlas); surface.InitializeOwnership(config.CellSize); }
             if (TotalArea <= 0) throw new InvalidOperationException("地图缺少可计分区域");
         }
         public void RegisterSurfaces()
@@ -107,8 +107,9 @@ namespace Splatoon.Prototype
                 if (neighbour == surface) continue;
                 foreach (var region in neighbour.GameplayRegions)
                 {
-                    var matrix = region.Matrix(neighbour); var local = matrix.inverse.MultiplyPoint3x4(stamp.Position);
-                    if (Vector3.Dot(matrix.MultiplyVector(Vector3.up).normalized, stamp.Normal) < .9999f || Mathf.Abs(local.y) > .005f || Mathf.Abs(local.x) > region.Size.x / 2 + stamp.Radius || Mathf.Abs(local.z) > region.Size.y / 2 + stamp.Radius) continue;
+                    var matrix = region.Matrix(neighbour); var inverse = matrix.inverse; var local = inverse.MultiplyPoint3x4(stamp.Position);
+                    var extent = InkShapeAtlas.LocalExtents(stamp, inverse);
+                    if (Vector3.Dot(matrix.MultiplyVector(Vector3.up).normalized, stamp.Normal) < .9999f || Mathf.Abs(local.y) > .005f || Mathf.Abs(local.x) > region.Size.x / 2 + extent.x || Mathf.Abs(local.z) > region.Size.y / 2 + extent.y) continue;
                     ApplyToSurface(neighbour, stamp, updateOwnership); break;
                 }
             }

@@ -114,12 +114,16 @@ namespace Splatoon.Tests
             Assert.That(a.Count, Is.GreaterThan(3)); Assert.That(a.Select(s => s.Radius).Distinct().Count(), Is.GreaterThan(3));
             Assert.That(a.All(s => s.Radius >= .464f && s.Radius <= .696f), Is.True);
             Assert.That(a.Select(s => s.Radius), Is.EqualTo(b.Select(s => s.Radius)));
+            Assert.That(a.Select(s => s.ShapeSeed), Is.EqualTo(b.Select(s => s.ShapeSeed)));
+            Assert.That(a.Take(32).Select(s => InkShapeAtlas.Index(s.ShapeSeed)).Distinct().Count(), Is.EqualTo(Math.Min(a.Count, 32)));
         }
         [Test] public void FixedRadiusAndDifferentSimulationCallRatesAgree()
         {
             Assert.That(CaptureTrail(60, true).All(s => s.Radius == .5f), Is.True);
             var a = CaptureTrail(30); var b = CaptureTrail(144);
             Assert.That(a.Select(s => s.Radius), Is.EqualTo(b.Select(s => s.Radius)));
+            Assert.That(a.Select(s => s.ShapeSeed), Is.EqualTo(b.Select(s => s.ShapeSeed)));
+            Assert.That(a.Take(32).Select(s => InkShapeAtlas.Index(s.ShapeSeed)).Distinct().Count(), Is.EqualTo(Math.Min(a.Count, 32)));
             Assert.That(a.Select(s => s.Position), Is.EqualTo(b.Select(s => s.Position)));
         }
         [Test] public void TeamSwitchSupportsEmptyOppositionAndUsesOnlyFreeSlot()

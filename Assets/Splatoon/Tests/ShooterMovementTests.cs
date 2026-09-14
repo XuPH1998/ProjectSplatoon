@@ -93,11 +93,16 @@ namespace Splatoon.Tests
             }
             Assert.That(tick,Is.EqualTo(600));Assert.That(shots,Is.EqualTo(100));Assert.That(s.Ink,Is.EqualTo(8).Within(.001));
         }
-        [Test] public void HorizontalBallisticsReachCalibratedPaintDistance()
+        [Test] public void HorizontalBallisticsUsesCurrentStraightAndBrakeTimings()
         {
             float age=(float)WeaponSimulation.Seconds(W.StraightFrames)+Mathf.Sqrt(2*1.4f/W.ProjectileGravity);
             var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*W.SpeedMin,W,age);
-            Assert.That(hit.y,Is.Zero.Within(.0001));Assert.That(hit.z,Is.InRange(W.PaintRange*.9f,W.PaintRange*1.1f));
+            float straight=(float)WeaponSimulation.Seconds(W.StraightFrames),brake=(float)WeaponSimulation.Seconds(W.BrakeFrames);
+            Assert.That(age,Is.GreaterThan(straight+brake));
+            // Integrate the three speed phases independently. PaintRange is a tuning target,
+            // and was not recalibrated when the live straight period changed from 4 to 10 frames.
+            float expected=W.SpeedMin*(straight+brake*(1+W.BrakeSpeedMultiplier)*.5f+(age-straight-brake)*W.BrakeSpeedMultiplier);
+            Assert.That(hit.y,Is.Zero.Within(.0001));Assert.That(hit.z,Is.EqualTo(expected).Within(.0001));
             Assert.That(InkBallistics.Position(Vector3.zero,Vector3.forward*31,W,4/60.0).y,Is.Zero);
         }
         PrototypeArena LoadArena()
@@ -216,7 +221,7 @@ namespace Splatoon.Tests
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
             Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.LessThan(512));
         }
-        [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorWithinPaintRangeTarget()
+        [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.position=new Vector3(0,-.25f,0);floor.transform.localScale=new Vector3(100,.5f,100);
@@ -225,11 +230,18 @@ namespace Splatoon.Tests
             try
             {
                 var state=Alive();state.Position=Vector3.up*.04f;state.CurrentSpread=.000001f;go.transform.position=state.Position;Physics.SyncTransforms();
-                var service=new InkProjectileService();service.Spawn(player,state,0,0);service.Simulate(W.Lifetime+.01);
+                var service=new InkProjectileService();service.Spawn(player,state,0,0);
+                var shot=service.Spawned[0];
+                var fallStart=InkBallistics.Position(shot,W,shot.GravityStartAge);
+                Assert.That(shot.PostCorrectionVelocity.y,Is.Zero.Within(.00001));
+                double impactAge=shot.GravityStartAge+Math.Sqrt(2*(fallStart.y-W.CollisionRadius)/W.ProjectileGravity);
+                var expected=InkBallistics.Position(shot,W,impactAge);
+                service.Simulate(W.Lifetime+.01);
                 Assert.That(service.Impacts.Count,Is.EqualTo(1));Assert.That(service.Impacts[0].Hit,Is.True);
                 var point=service.Impacts[0].Position;Assert.That(point.y,Is.Zero.Within(.04));
-                Assert.That(point.z,Is.InRange(W.PaintRange*.9f,W.PaintRange*1.1f));
-                Debug.Log($"[SHOOTER-RANGE] RifleGirl horizontal center shot floor={point.z:F3}m target={W.PaintRange:F1}m");
+                Assert.That(point.z,Is.EqualTo(expected.z).Within(.01));
+                Assert.That(point.x,Is.EqualTo(expected.x).Within(.01));
+                Debug.Log($"[SHOOTER-RANGE] RifleGirl corrected floor={point.z:F3}m; configured tuning target={W.PaintRange:F1}m");
             }
             finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(floor);}
         }
@@ -257,6 +269,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve()
         {
+            Splatoon.Painting.InkShapeAtlas.Configure(AssetDatabase.LoadAssetAtPath<Texture2D>(Splatoon.Painting.InkShapeAtlas.AssetPath));
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var go=UnityEngine.Object.Instantiate(prefab);var player=go.GetComponent<PrototypePlayer>();var profile=UnityEngine.Object.Instantiate(player.Presentation);player.CharacterView.Profile=profile;
             try

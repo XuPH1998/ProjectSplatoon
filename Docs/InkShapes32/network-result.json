@@ -1,0 +1,44 @@
+{
+  "client-late": {
+    "render_texture_hashes": {
+      "1": "70201601",
+      "5": "2058329707",
+      "22": "837154536"
+    },
+    "final_state": [
+      "3182564366",
+      "614"
+    ],
+    "reconnected": false,
+    "clean_leaves": 1,
+    "errors": []
+  },
+  "client-reconnect": {
+    "render_texture_hashes": {
+      "1": "70201601",
+      "5": "2058329707",
+      "22": "837154536"
+    },
+    "final_state": [
+      "3182564366",
+      "614"
+    ],
+    "reconnected": true,
+    "clean_leaves": 2,
+    "errors": []
+  },
+  "host": {
+    "render_texture_hashes": {
+      "1": "70201601",
+      "5": "2058329707",
+      "22": "837154536"
+    },
+    "final_state": [
+      "3182564366",
+      "614"
+    ],
+    "reconnected": false,
+    "clean_leaves": 1,
+    "errors": []
+  }
+}

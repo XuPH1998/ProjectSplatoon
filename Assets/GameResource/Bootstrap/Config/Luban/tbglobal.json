@@ -14,6 +14,7 @@
     "paintWorldUvScale": 0.034424,
     "paintShapeNoiseScale": 110,
     "maxPaintMemoryMiB": 128,
-    "simulationRate": 60
+    "simulationRate": 60,
+    "aimCorrectionDistance": 6
   }
 ]

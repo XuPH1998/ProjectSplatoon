@@ -31,6 +31,8 @@ namespace Splatoon.Prototype
         public double HitConfirmedUntil { get; private set; }
         public bool LastHitKilled { get; private set; }
         public bool MuzzleBlocked { get; private set; }
+        public Vector2 ReticleViewport { get; private set; } = new(.5f, .5f);
+        readonly TpsAimSolver _aimSolver = new();
         public int PendingInputCount => _history.Count;
         CharacterController _controller;
         PlayerMotorSimulation _motor;
@@ -334,10 +336,9 @@ namespace Splatoon.Prototype
             if (!IsOwner || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
-            var muzzle = transform.position + Quaternion.Euler(0, _look.x, 0) * MuzzleOffset(_look.y, s.NextMuzzle);
-            Vector3 pivot = transform.position + (Presentation != null ? Presentation.CameraPivot : Vector3.up * 1.5f);
-            Vector3 delta = muzzle - pivot;
-            MuzzleBlocked = Physics.Raycast(pivot, delta.normalized, delta.magnitude, PlayerMotorSimulation.WorldMask);
+            var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
+            ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
+            MuzzleBlocked = _aimSolver.IsObstructed(aim, GameplayConfig.GetHero(s.HeroId).CollisionRadius, OwnerClientId);
         }
         public override void OnNetworkDespawn()
         {

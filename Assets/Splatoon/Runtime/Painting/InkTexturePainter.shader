@@ -4,6 +4,7 @@ Shader "Splatoon/InkTexturePainter"
     Properties
     {
         [NoScaleOffset] _ShapeAtlas("Ink Shape Atlas", 2D) = "black" {}
+        _ShapeIndex("Shape index", Integer) = 0
     }
     SubShader
     {
@@ -13,13 +14,16 @@ Shader "Splatoon/InkTexturePainter"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma target 3.5
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "InkCoverage.hlsl"
-            sampler2D _MainTex, _ShapeAtlas;
+            sampler2D _MainTex;
+            Texture2D<float4> _ShapeAtlas;
             float _PainterTeam;
             float3 _PainterPosition, _PainterNormal;
             float4 _PainterColor;
-            float _Radius, _Hardness, _Strength, _Threshold, _PrepareUV, _ShapeRotation;
+            float _Radius, _Hardness, _Strength, _Threshold, _PrepareUV;
+            float4 _ShapeTransform, _ShapeLayout;
             int _ShapeIndex;
             struct Input { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 paintUV:TEXCOORD1; };
             struct Output { float4 positionCS:SV_POSITION; float2 uv:TEXCOORD0; float3 positionWS:TEXCOORD1; float3 normalWS:TEXCOORD2; };
@@ -41,10 +45,26 @@ Shader "Splatoon/InkTexturePainter"
                 float3 n=normalize(_PainterNormal); float3 axis=abs(n.y)>.5?float3(0,0,1):float3(0,1,0);
                 float3 tangent=normalize(cross(n,axis)), bitangent=cross(tangent,n);
                 float2 p=float2(dot(i.positionWS-_PainterPosition,tangent),dot(i.positionWS-_PainterPosition,bitangent))/max(.0001,_Radius);
-                float c=cos(_ShapeRotation),s=sin(_ShapeRotation); p=float2(p.x*c-p.y*s,p.x*s+p.y*c)*.5+.5;
-                float2 tile=float2(_ShapeIndex%4,_ShapeIndex/4); float alpha=0;
-                if(all(p>=0)&&all(p<=1)) alpha=tex2D(_ShapeAtlas,(tile+p)/4).a;
-                float f=smoothstep(0,1,max(0.0001,alpha-(1-_Hardness)))*_Strength;
+                float c=_ShapeTransform.x,s=_ShapeTransform.y; p=float2((p.x*c-p.y*s)*_ShapeTransform.z,p.x*s+p.y*c)*.5+.5;
+                int columns=(int)_ShapeLayout.x;
+                float2 tile=float2(_ShapeIndex%columns,_ShapeIndex/columns); float alpha=0;
+                if(all(p>=0)&&all(p<=1))
+                {
+                    // Explicit bilinear weights match the CPU lookup. Hardware filtering
+                    // quantizes its weights and amplifies edge differences at low hardness.
+                    float2 pixel=clamp(p*_ShapeLayout.z-.5,0,_ShapeLayout.z-1);
+                    int2 lo=(int2)floor(pixel), hi=min(lo+1,(int)_ShapeLayout.z-1);
+                    int2 origin=(int2)tile*(int)_ShapeLayout.z;
+                    float2 weight=frac(pixel);
+                    float a=lerp(_ShapeAtlas.Load(int3(origin+lo,0)).a,
+                                 _ShapeAtlas.Load(int3(origin+int2(hi.x,lo.y),0)).a,weight.x);
+                    float b=lerp(_ShapeAtlas.Load(int3(origin+int2(lo.x,hi.y),0)).a,
+                                 _ShapeAtlas.Load(int3(origin+hi,0)).a,weight.x);
+                    alpha=lerp(a,b,weight.y);
+                }
+                float h=max(.0001,saturate(_Hardness));
+                float t=saturate((alpha-(1-h))/h);
+                float f=t*t*(3-2*t)*saturate(_Strength);
                 return InkAccumulate(old, _PainterTeam, saturate(f));
             }
             ENDHLSL

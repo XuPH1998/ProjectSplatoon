@@ -117,8 +117,9 @@ namespace Splatoon.Painting
             _painter.SetFloat("_PrepareUV", 0); _painter.SetVector("_PainterPosition", stamp.Position); _painter.SetVector("_PainterNormal", stamp.Normal);
             _painter.SetFloat("_Radius", stamp.Radius); _painter.SetFloat("_Hardness", stamp.Hardness); _painter.SetFloat("_Strength", stamp.Strength);
             _painter.SetFloat("_PainterTeam", stamp.Team);
-            _painter.SetTexture("_ShapeAtlas", ShapeAtlas); _painter.SetInt("_ShapeIndex", InkShapeAtlas.Index(stamp.ShapeSeed));
-            _painter.SetFloat("_ShapeRotation", InkShapeAtlas.Rotation(stamp.ShapeSeed));
+            _painter.SetTexture("_ShapeAtlas", ShapeAtlas); _painter.SetInteger("_ShapeIndex", InkShapeAtlas.Index(stamp.ShapeSeed));
+            _painter.SetVector("_ShapeTransform", InkShapeAtlas.Transform(stamp.ShapeSeed));
+            _painter.SetVector("_ShapeLayout", new Vector4(InkShapeAtlas.Columns, InkShapeAtlas.Rows, InkShapeAtlas.CellSize, 0));
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (!_firstStampDiagnostic)
             {
@@ -189,52 +190,5 @@ namespace Splatoon.Painting
         { if (texture == null) return; if (RenderTexture.active == texture) RenderTexture.active = null; AllocatedBytes -= (long)texture.width * texture.height * 4; texture.Release(); DisposeObject(texture); }
         private static void DisposeObject(UnityEngine.Object value)
         { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
-    }
-}
-
-namespace Splatoon.Painting
-{
-    /// <summary>Shared deterministic splat atlas sampling for GPU presentation and CPU ownership.</summary>
-    public static class InkShapeAtlas
-    {
-        public const int Columns = 4;
-        public const int Rows = 4;
-        public const string ContentHash = "49da548eddd6a0f7e820869a715658bed4adf4f3b072b3a662572dc81337f839";
-        private static Texture2D _texture;
-        public static Texture2D Texture => _texture;
-        public static void Configure(Texture2D texture)
-        {
-            if (texture == null) throw new InvalidOperationException("未绑定不规则落墨图集。请在 PaintSurface.ShapeAtlas 中指定 InkSplatAtlas-Reference.png");
-            if (texture.width != 1024 || texture.height != 1024 || !texture.isReadable)
-                throw new InvalidOperationException($"不规则落墨图集导入设置无效：{texture.name} {texture.width}x{texture.height} readable={texture.isReadable}");
-            if (_texture != null && _texture != texture)
-                throw new InvalidOperationException("场景中绑定了多个不同的不规则落墨图集");
-            _texture = texture;
-        }
-        public static uint Hash(uint value) { value ^= value >> 16; value *= 0x7feb352d; value ^= value >> 15; value *= 0x846ca68b; return value ^ (value >> 16); }
-        public static int Index(uint seed) => (int)(Hash(seed) % 16u);
-        public static float Rotation(uint seed) => (Hash(seed ^ 0x9e3779b9u) & 255) * (Mathf.PI * 2f / 256f);
-        public static Vector2 ProjectedUv(Vector3 point, Vector3 center, Vector3 normal, float radius, uint seed)
-        {
-            normal = normal.sqrMagnitude > 1e-8f ? normal.normalized : Vector3.up;
-            Vector3 axis = Mathf.Abs(normal.y) > .5f ? Vector3.forward : Vector3.up;
-            Vector3 tangent = Vector3.Cross(normal, axis).normalized, bitangent = Vector3.Cross(tangent, normal);
-            Vector3 delta = point - center; Vector2 p = new(Vector3.Dot(delta, tangent), Vector3.Dot(delta, bitangent));
-            float angle = Rotation(seed), c = Mathf.Cos(angle), s = Mathf.Sin(angle); p = new Vector2(p.x * c - p.y * s, p.x * s + p.y * c) / Mathf.Max(.0001f, radius);
-            return p * .5f + Vector2.one * .5f;
-        }
-        public static float Sample(Vector2 uv, uint seed)
-        {
-            if (Texture == null || uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) return 0;
-            int index = Index(seed); return Texture.GetPixelBilinear((index % 4 + uv.x) / 4, (index / 4 + uv.y) / 4).a;
-        }
-        public static float Coverage(Vector3 point, PaintStamp stamp)
-        {
-            if (Texture == null)
-                return InkBrush.Coverage(Vector3.Distance(point, stamp.Position), stamp.Radius, stamp.Hardness, stamp.Strength);
-            float alpha = Sample(ProjectedUv(point, stamp.Position, stamp.Normal, stamp.Radius, stamp.ShapeSeed), stamp.ShapeSeed);
-            float edge = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1 - Mathf.Clamp01(stamp.Hardness), 1, alpha));
-            return edge * Mathf.Clamp01(stamp.Strength);
-        }
     }
 }

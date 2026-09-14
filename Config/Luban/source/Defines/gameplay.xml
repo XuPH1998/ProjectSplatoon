@@ -115,6 +115,7 @@
     <var name="paintShapeNoiseScale" type="float" comment="墨水轮廓噪声频率，CPU 与 GPU 共用" />
     <var name="maxPaintMemoryMiB" type="int" comment="涂色 RT 内存预算（MiB）" />
     <var name="simulationRate" type="int" comment="玩法模拟和输入采样频率（Hz）" />
+    <var name="aimCorrectionDistance" type="float" comment="瞄准：修正点距逻辑摄像机的距离（米，必须大于0）" />
   </bean>
   <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id" />
 </module>

@@ -289,11 +289,12 @@ namespace Splatoon.Prototype
                     GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
                 }
                 float gap = 5 + player.CurrentSpread;
+                Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
                 Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetHero(player.HeroId)) ? Color.yellow : Color.white;
-                Panel(new Rect(639,360-gap-7,2,7),reticle); Panel(new Rect(639,360+gap,2,7),reticle);
-                Panel(new Rect(640-gap-7,359,7,2),reticle); Panel(new Rect(640+gap,359,7,2),reticle);
-                if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(628,347,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
-                if (local.MuzzleBlocked) GUI.Label(new Rect(580,403,210,32),"枪口被遮挡",_small);
+                Panel(new Rect(reticleCenter.x-1,reticleCenter.y-gap-7,2,7),reticle); Panel(new Rect(reticleCenter.x-1,reticleCenter.y+gap,2,7),reticle);
+                Panel(new Rect(reticleCenter.x-gap-7,reticleCenter.y-1,7,2),reticle); Panel(new Rect(reticleCenter.x+gap,reticleCenter.y-1,7,2),reticle);
+                if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(reticleCenter.x-12,reticleCenter.y-13,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
+                if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
             if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"H 选择英雄 · 等待另一名玩家加入。":"H 选择英雄 · 房主按回车开始比赛。",_small);

@@ -72,6 +72,7 @@ namespace Splatoon.Tests
 
         public static Result Capture(int weapon, float charge, string scenario, int rate, int shotCount, string directory)
         {
+            InkShapeAtlas.Configure(AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath));
             var roots = new List<GameObject>(); var surfaces = new Dictionary<int, PaintSurface>();
             var trace = new StringBuilder("shot,ageSeconds,x,y,z\n");
             var stamps = new StringBuilder("surface,x,y,z,normalX,normalY,normalZ,radiusM,hardness,strength\n");

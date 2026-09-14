@@ -28,6 +28,7 @@ namespace Splatoon.Tests
             Assert.That(t.TbHero.Get(1).WeaponPrefabAddress, Is.EqualTo("Weapon/RifleGirlRifle"));
             Assert.That(t.TbMap.Get(1).Width / t.TbMap.Get(1).CellSize, Is.EqualTo(256));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
+            Assert.That(t.TbGlobal.Get(1).AimCorrectionDistance, Is.EqualTo(6));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()
         {
@@ -39,6 +40,8 @@ namespace Splatoon.Tests
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["lifetime"] = 0)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["projectileStepRate"] = 121)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["speedMax"] = 10)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimCorrectionDistance"] = 0)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimCorrectionDistance"] = -1)));
         }
     }
 }

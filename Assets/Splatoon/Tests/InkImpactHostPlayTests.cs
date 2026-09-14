@@ -36,6 +36,14 @@ namespace Splatoon.Tests
             yield return new ExitPlayMode();
         }
 
+        static byte[] ReadBytes(RenderTexture target)
+        {
+            var previous = RenderTexture.active; RenderTexture.active = target;
+            var texture = new Texture2D(target.width, target.height, TextureFormat.RGBA32, false, true);
+            try { texture.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); texture.Apply(); return texture.GetRawTextureData<byte>().ToArray(); }
+            finally { RenderTexture.active = previous; UnityEngine.Object.Destroy(texture); }
+        }
+
         // Construct captured waits only after the EnterPlayMode domain reload.
         static IEnumerator Scenario()
         {
@@ -51,6 +59,15 @@ namespace Splatoon.Tests
             var match = PrototypeMatch.Current; var player = PrototypePlayer.Local;
             Assert.That(match.NetworkManager, Is.Not.Null, "Spawned match network manager");
             var presentation = InkPresentation.Current;
+            var mismatch = (byte[])app.Manager.NetworkConfig.ConnectionData.Clone(); mismatch[0] ^= 1;
+            var rejected = new Unity.Netcode.NetworkManager.ConnectionApprovalResponse();
+            app.Manager.ConnectionApprovalCallback(new Unity.Netcode.NetworkManager.ConnectionApprovalRequest
+                { ClientNetworkId = 900001, Payload = mismatch }, rejected);
+            Assert.That(rejected.Approved, Is.False, "Different content/protocol signature is rejected");
+            Assert.That(rejected.Reason, Does.Contain("协议或游戏内容不一致"));
+            var observed = new System.Collections.Generic.List<PaintStamp>();
+            match.Projectiles.PaintObserved = observed.Add;
+            var appearanceEvidence = new System.Text.StringBuilder("hero,sequence,seed,index,radius,mask_pixels,display_pixels\n");
             var surface = UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)
                 .First(s => s.GetComponent<Collider>() != null && s.GetComponent<Collider>().bounds.size.y > 2 &&
                     s.GetComponent<Collider>().bounds.size.x > 5 && s.GetComponent<Collider>().bounds.size.z < 1);
@@ -62,7 +79,7 @@ namespace Splatoon.Tests
             camera.transform.LookAt(hit.point);
             for (int hero = 1; hero <= 5; hero++)
             {
-                presentation.Clear();
+                presentation.Clear(); surface.Clear(); observed.Clear();
                 player.RequestHeroChange(hero, HeroSelectionOrigin.Warmup);
                 yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == hero, "Select hero " + hero);
                 var state = player.Snapshot.Value;
@@ -74,6 +91,19 @@ namespace Splatoon.Tests
                 match.Projectiles.SpawnForMeasurement(shot);
                 yield return Wait(() => presentation.GetComponentsInChildren<InkImpactEffect>().Any(e => e.IsAlive), "Authoritative impact RPC starts layered effect", 3);
                 yield return Wait(() => match.AppliedPaintSequence > beforePaint, "Authoritative impact paints the real map", 3);
+                surface.FlushDisplay();
+                var raw = ReadBytes(surface.Mask); var display = ReadBytes(surface.DisplayMask);
+                int rawCount = raw.Where((v, i) => i % 4 == 3 && v > 0).Count();
+                int displayCount = display.Where((v, i) => i % 4 == 3 && v > 0).Count();
+                Assert.That(rawCount, Is.GreaterThan(0), "Persistent raw ink after actual impact");
+                Assert.That(displayCount, Is.GreaterThan(0), "Persistent display ink after actual impact");
+                var block = new MaterialPropertyBlock(); surface.GetComponent<Renderer>().GetPropertyBlock(block);
+                Assert.That(block.GetTexture("_MaskTexture"), Is.SameAs(surface.DisplayMask));
+                var actualStamp = observed.Last(s => s.SurfaceId == surface.SurfaceId);
+                appearanceEvidence.AppendLine(FormattableString.Invariant($"{hero},{match.AppliedPaintSequence},{actualStamp.ShapeSeed},{InkShapeAtlas.Index(actualStamp.ShapeSeed)},{actualStamp.Radius},{rawCount},{displayCount}"));
+                surface.Clear(); surface.Restore(raw); surface.FlushDisplay();
+                CollectionAssert.AreEqual(raw, ReadBytes(surface.Mask), "Raw snapshot restores exactly in Play Mode");
+                CollectionAssert.AreEqual(display, ReadBytes(surface.DisplayMask), "Display restores exactly in Play Mode");
                 var active = presentation.GetComponentsInChildren<InkImpactEffect>().First(e => e.IsAlive);
                 Assert.That(active.Streaks.particleCount + active.Droplets.particleCount, Is.GreaterThan(0));
                 var type = AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "Splatoon.Editor").GetType("Splatoon.Editor.CombatGirlsGraphicsValidation");
@@ -84,11 +114,13 @@ namespace Splatoon.Tests
                 Assert.That(match.Arena.OwnershipHash(), Is.EqualTo(painted), "Visual splashes cannot expand ink ownership");
                 Assert.That(player.Snapshot.Value.Health, Is.EqualTo(health), "Visual splashes cannot deal damage");
             }
+            match.Projectiles.PaintObserved = null;
+            File.WriteAllText(Output + "/shape-evidence.csv", appearanceEvidence.ToString());
             UnityEngine.Object.Destroy(camera.gameObject);
             presentation.Clear();
             yield return app.Leave().ToCoroutine();
             yield return Wait(() => InkPresentation.Current == null, "Leaving unloads the pooled effects");
-            File.WriteAllText(Output + "/result.txt", "PASS: real Boot/TrainingGround host, five heroes, authoritative projectile -> impact RPC -> layered particles + paint; cosmetic-only impacts preserve ownership and health; room leave cleans effects. Physical remote client not tested.");
+            File.WriteAllText(Output + "/result.txt", "PASS: real Boot/TrainingGround host, five heroes, authoritative projectile -> impact RPC -> layered particles + paint; cosmetic-only impacts preserve ownership and health; room leave cleans effects. Persistent Mask/DisplayMask, material binding and exact snapshot restore checked for all five heroes; mismatched content signature rejected. Physical remote client not tested.");
         }
     }
 }

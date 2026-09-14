@@ -20,6 +20,8 @@ namespace Splatoon.Combat
         public byte Team;
         public double Born;
         public Vector3 Origin, Velocity;
+        public float FirstSegmentLength, GravityStartAge;
+        public Vector3 PostCorrectionVelocity;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Seed); s.SerializeValue(ref Shooter);
@@ -29,6 +31,7 @@ namespace Splatoon.Combat
             s.SerializeValue(ref ActionId);
             s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision);
             s.SerializeValue(ref MuzzleIndex); s.SerializeValue(ref PelletIndex);
+            s.SerializeValue(ref FirstSegmentLength); s.SerializeValue(ref PostCorrectionVelocity); s.SerializeValue(ref GravityStartAge);
         }
     }
     public struct InkImpact : INetworkSerializable
@@ -65,6 +68,49 @@ namespace Splatoon.Combat
             float fall = Mathf.Max(0, (float)(age - WeaponSimulation.Seconds(w.StraightFrames)));
             return origin + velocity * TravelTime(w, age) + Vector3.down * (.5f * w.ProjectileGravity * fall * fall);
         }
+        public static double AgeAtDistance(cfg.HeroConfig w, float speed, float distance)
+        {
+            double travel = Math.Max(0, distance) / Math.Max(.0001, speed);
+            double straight = WeaponSimulation.Seconds(w.StraightFrames);
+            if (travel <= straight) return travel;
+            double brake = Math.Max(.0001, WeaponSimulation.Seconds(w.BrakeFrames));
+            double multiplier = w.BrakeSpeedMultiplier, extra = travel - straight;
+            double brakingTravel = brake * (1 + multiplier) * .5;
+            if (extra >= brakingTravel) return straight + brake + (extra - brakingTravel) / multiplier;
+            // Stable inverse of b - (1 - multiplier) * b^2 / (2 * brake).
+            return straight + 2 * extra / (1 + Math.Sqrt(Math.Max(0, 1 - 2 * (1 - multiplier) * extra / brake)));
+        }
+        public static double CorrectionAge(InkShot shot, cfg.HeroConfig w) =>
+            AgeAtDistance(w, shot.Velocity.magnitude, shot.FirstSegmentLength);
+        public static void ApplyCorrection(ref InkShot shot, TpsAimSolution aim, cfg.HeroConfig w)
+        {
+            // Reuse the already sampled spread, including the shotgun's disk pattern.
+            // Rotate both legs equally; pellets never reconverge at the correction point.
+            Vector3 localSpread = Quaternion.Inverse(Quaternion.LookRotation(aim.InitialDirection)) * shot.Velocity;
+            shot.PostCorrectionVelocity = Quaternion.LookRotation(aim.ExitDirection) * localSpread;
+            shot.FirstSegmentLength = aim.FirstSegmentLength;
+            shot.GravityStartAge = (float)Math.Max(WeaponSimulation.Seconds(w.StraightFrames), CorrectionAge(shot, w));
+        }
+        public static Vector3 Position(InkShot shot, cfg.HeroConfig w, double age)
+        {
+            if (shot.PostCorrectionVelocity.sqrMagnitude == 0) return Position(shot.Origin, shot.Velocity, w, age);
+            float distance = shot.Velocity.magnitude * TravelTime(w, age);
+            float first = Mathf.Min(distance, shot.FirstSegmentLength);
+            float fall = Mathf.Max(0, (float)age - shot.GravityStartAge);
+            return shot.Origin + shot.Velocity.normalized * first
+                + shot.PostCorrectionVelocity.normalized * (distance - first)
+                + Vector3.down * (.5f * w.ProjectileGravity * fall * fall);
+        }
+        public static Vector3 Velocity(InkShot shot, cfg.HeroConfig w, double age)
+        {
+            float straight = (float)WeaponSimulation.Seconds(w.StraightFrames);
+            float brake = Mathf.Max(.0001f, (float)WeaponSimulation.Seconds(w.BrakeFrames));
+            float multiplier = Mathf.Lerp(1, w.BrakeSpeedMultiplier, Mathf.Clamp01(((float)age - straight) / brake));
+            bool corrected = shot.PostCorrectionVelocity.sqrMagnitude > 0;
+            Vector3 velocity = corrected && age >= CorrectionAge(shot, w) ? shot.PostCorrectionVelocity : shot.Velocity;
+            float fall = Mathf.Max(0, (float)age - (corrected ? shot.GravityStartAge : straight));
+            return velocity * multiplier + Vector3.down * (w.ProjectileGravity * fall);
+        }
         public static float Random01(ref uint seed)
         { seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5; return (seed & 0xFFFFFF) / 16777216f; }
         public static Vector3 LaunchVelocity(Vector3 direction, cfg.HeroConfig w, ref uint seed, float spread = -1)
@@ -85,10 +131,10 @@ namespace Splatoon.Combat
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
     public sealed class InkProjectileService
     {
-        private struct Active { public InkShot Shot; public double SimulatedUntil; public Vector3 LastTrail; public uint TrailSeed; }
+        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; }
         private readonly List<Active> _active = new(256);
-        private readonly RaycastHit[] _hits = new RaycastHit[64];
-        private readonly Collider[] _overlaps = new Collider[64];
+        private readonly TpsAimSolver _aim = new();
+        private readonly InkShapeSelector _shapes = new();
         private uint _id;
         public readonly List<InkShot> Spawned = new(16);
         public readonly List<InkImpact> Impacts = new(32);
@@ -108,56 +154,38 @@ namespace Splatoon.Combat
         public void Spawn(PrototypePlayer player, PlayerSnapshot state, double born, uint round)
         {
             var w = GameplayConfig.GetHero(state.HeroId);
-            var aim = Quaternion.Euler(state.Pitch, state.Yaw, 0);
-            var pivot = state.Position + (player.Presentation != null ? player.Presentation.CameraPivot : Vector3.up * 1.5f);
-            var camera = PrototypePlayer.CameraPosition(pivot, aim, player.Presentation);
-            var forward = aim * Vector3.forward;
-            Vector3 target = camera + forward * 100;
-            if (ClosestRay(camera, forward, 100, player.OwnerClientId, out var aimHit)) target = aimHit.point;
-            Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch, state.LastShotMuzzle);
-            bool blocked = ClosestRay(pivot, (muzzle - pivot).normalized, (muzzle - pivot).magnitude, player.OwnerClientId, out var wall);
+            var aim = _aim.Resolve(player, state, state.LastShotMuzzle);
             uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.OwnerClientId ^ state.HeroRevision);
             if (groupSeed == 0) groupSeed = 1;
             for (byte pellet = 0; pellet < w.PelletCount; pellet++)
             {
             uint seed = unchecked(++_id * 747796405u + round * 2891336453u + (uint)player.OwnerClientId + 1u);
             if (seed == 0) seed = 1;
-            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, HeroId = w.Id, Team = state.Team, Born = born, Origin = blocked ? pivot : muzzle };
+            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, HeroId = w.Id, Team = state.Team, Born = born, Origin = aim.MuzzleBlocked ? aim.Pivot : aim.Muzzle };
             shot.ActionId = state.ShotActionId;
             shot.Lifecycle = state.Revision; shot.HeroRevision = state.HeroRevision;
             shot.MuzzleIndex = state.LastShotMuzzle; shot.PelletIndex = pellet;
             shot.Charge = state.LastShotCharge;
             float spread = state.CurrentSpread > 0 ? state.CurrentSpread : w.SpreadDegrees;
-            shot.Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity((target - muzzle).normalized, w, spread, pellet, groupSeed)
-                : InkBallistics.LaunchVelocity((target - muzzle).normalized, w, ref seed, spread);
+            shot.Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity(aim.InitialDirection, w, spread, pellet, groupSeed)
+                : InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
+            InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
-            if (blocked) Resolve(shot, wall.collider, wall.point, wall.normal, 0);
-            else BeginFlight(shot, muzzle, forward);
+            if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
+            else BeginFlight(shot, aim.Muzzle, aim.InitialDirection);
             }
         }
         private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
         {
-            uint trailSeed = shot.Seed ^ 0x9E3779B9u;
+            uint trailSeed = shot.Seed ^ 0x9E3779B9u, ordinal = 0;
             if (trailSeed == 0) trailSeed = 1;
-            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId), ref trailSeed);
-            _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed });
+            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId), ref trailSeed, ref ordinal);
+            _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
+                CorrectionAt = shot.Born + InkBallistics.CorrectionAge(shot, GameplayConfig.GetHero(shot.HeroId)) });
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, 0, muzzle);
 #endif
-        }
-        private bool ClosestRay(Vector3 origin, Vector3 direction, float distance, ulong shooter, out RaycastHit closest)
-        {
-            int count = Physics.RaycastNonAlloc(origin, direction, _hits, distance, ~0, QueryTriggerInteraction.Ignore);
-            closest = default; float nearest = float.MaxValue;
-            for (int i = 0; i < count; i++)
-                if (Valid(_hits[i].collider, shooter) && _hits[i].distance < nearest) { nearest = _hits[i].distance; closest = _hits[i]; }
-            return nearest < float.MaxValue;
-        }
-        private static bool Valid(Collider c, ulong shooter)
-        {
-            var p = c.GetComponentInParent<PrototypePlayer>();
-            return p == null || (p.OwnerClientId != shooter && p.Snapshot.Value.Health > 0);
         }
         public void Simulate(double until)
         {
@@ -172,38 +200,50 @@ namespace Splatoon.Combat
                     // configured projectile steps, so trail positions and random draws agree.
                     double next = Math.Min(a.SimulatedUntil + step, a.Shot.Born + w.Lifetime);
                     if (next > end + 1e-8) break;
-                    Vector3 from = InkBallistics.Position(a.Shot.Origin, a.Shot.Velocity, w, a.SimulatedUntil - a.Shot.Born);
-                    Vector3 to = InkBallistics.Position(a.Shot.Origin, a.Shot.Velocity, w, next - a.Shot.Born);
-                    int overlaps = Physics.OverlapSphereNonAlloc(from, w.CollisionRadius, _overlaps, ~0, QueryTriggerInteraction.Ignore);
-                    for (int n = 0; n < overlaps; n++)
+                    double from = a.SimulatedUntil;
+                    // Keep the fixed grid intact; split only the collision path at the bend.
+                    if (a.CorrectionAt > from && a.CorrectionAt < next)
                     {
-                        if (!Valid(_overlaps[n], a.Shot.Shooter)) continue;
-                        Vector3 point = _overlaps[n].ClosestPoint(from);
-                        Vector3 normal = (from - point).sqrMagnitude > 1e-8f ? (from - point).normalized : -(to - from).normalized;
-                        Resolve(a.Shot, _overlaps[n], point, normal, a.SimulatedUntil - a.Shot.Born); hit = true; break;
+                        hit = TraceSegment(ref a, w, from, a.CorrectionAt);
+                        from = a.CorrectionAt;
                     }
+                    if (!hit) hit = TraceSegment(ref a, w, from, next);
                     if (hit) break;
-                    Vector3 delta = to - from; float distance = delta.magnitude;
-                    int count = Physics.SphereCastNonAlloc(from, w.CollisionRadius, delta.normalized, _hits, distance, ~0, QueryTriggerInteraction.Ignore);
-                    float nearest = float.MaxValue; int index = -1;
-                    for (int n = 0; n < count; n++)
-                        if (Valid(_hits[n].collider, a.Shot.Shooter) && _hits[n].distance < nearest) { nearest = _hits[n].distance; index = n; }
-                    if (index >= 0) { var h = _hits[index]; Resolve(a.Shot, h.collider, h.point, h.normal, a.SimulatedUntil - a.Shot.Born + (next - a.SimulatedUntil) * h.distance / Mathf.Max(.0001f, distance)); hit = true; break; }
-#if UNITY_EDITOR
-                    TraceObserved?.Invoke(a.Shot, next - a.Shot.Born, to);
-#endif
-                    if (Vector3.Distance(a.LastTrail, to) >= w.TrailSpacing) { PaintTrail(to, a.Shot, w, ref a.TrailSeed); a.LastTrail = to; }
                     a.SimulatedUntil = next;
                 }
                 if (hit || end >= a.Shot.Born + w.Lifetime - 1e-8)
                 {
-                    if (!hit) Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = InkBallistics.Position(a.Shot.Origin, a.Shot.Velocity, w, w.Lifetime), Hit = false });
+                    if (!hit) Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = InkBallistics.Position(a.Shot, w, w.Lifetime), Hit = false });
                     _active.RemoveAt(i);
                 }
                 else _active[i] = a;
             }
         }
-        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w, ref uint seed)
+        private bool TraceSegment(ref Active active, cfg.HeroConfig weapon, double start, double end)
+        {
+            var shot = active.Shot;
+            Vector3 from = InkBallistics.Position(shot, weapon, start - shot.Born);
+            Vector3 to = InkBallistics.Position(shot, weapon, end - shot.Born);
+            Vector3 delta = to - from;
+            float distance = delta.magnitude;
+            if (_aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
+            {
+                Resolve(shot, overlap.Collider, overlap.Point, overlap.Normal, start - shot.Born, ref active.PaintOrdinal);
+                return true;
+            }
+            if (_aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
+            {
+                Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
+                return true;
+            }
+#if UNITY_EDITOR
+            TraceObserved?.Invoke(shot, end - shot.Born, to);
+#endif
+            if (Vector3.Distance(active.LastTrail, to) >= weapon.TrailSpacing)
+            { PaintTrail(to, shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal); active.LastTrail = to; }
+            return false;
+        }
+        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w, ref uint seed, ref uint ordinal)
         {
             bool enabled = PrototypeMatch.Current != null;
 #if UNITY_EDITOR
@@ -211,11 +251,11 @@ namespace Splatoon.Combat
 #endif
             if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w);
+            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, false);
         }
-        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w)
+        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w, uint ordinal, bool impact)
         {
-            uint shapeSeed = InkShapeAtlas.Hash(shot.Seed ^ shot.Id ^ shot.PelletIndex ^ (uint)surface.SurfaceId);
+            uint shapeSeed = _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.Id, shot.PelletIndex, ordinal, impact);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed });
@@ -223,7 +263,7 @@ namespace Splatoon.Combat
             if (PrototypeMatch.Current != null)
                 PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed);
         }
-        private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age)
+        private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal)
         {
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
@@ -235,7 +275,7 @@ namespace Splatoon.Combat
             {
                 float before = victim.Snapshot.Value.Health;
                 if (shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
-                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), shot.Velocity);
+                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), InkBallistics.Velocity(shot, w, age));
                 actualDamage = before - victim.Snapshot.Value.Health; killed = actualDamage > 0 && victim.Snapshot.Value.Health <= 0;
             }
             else
@@ -244,7 +284,7 @@ namespace Splatoon.Combat
                 if (surface != null)
                 {
                     uint seed = shot.Seed;
-                    ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w);
+                    ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,
@@ -252,6 +292,6 @@ namespace Splatoon.Combat
                 Shooter = shot.Shooter, Victim = victim != null ? victim.OwnerClientId : 0, Damage = actualDamage, Killed = killed });
         }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();
-        public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); }
+        public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); _shapes.Clear(); }
     }
 }

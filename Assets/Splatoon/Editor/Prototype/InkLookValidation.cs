@@ -22,6 +22,8 @@ namespace Splatoon.Editor
             ValidateAtlasLifecycle();ValidateCpuGpu();ValidateAtlasFaces();CompareReference();CaptureTrainingGround();
             EditorApplication.Exit(0);
         }
+        public static void ValidateShapeRegression()
+        { ValidateAtlasLifecycle(); ValidateCpuGpu(); ValidateAtlasFaces(); }
         static void Check(bool condition,string message){if(!condition)throw new InvalidOperationException("[INK-LOOK] "+message);}
         public static Texture2D Read(RenderTexture texture)
         {
@@ -53,7 +55,7 @@ namespace Splatoon.Editor
             foreach(var surface in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)) surface.ReleaseGraphics();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);Check(PaintSurface.AllocatedBytes==0,"RT leaked after unload");
         }
-        static PaintSurface Plane(string name,float size,int resolution,Material material,bool referenceUV=false)
+        internal static PaintSurface Plane(string name,float size,int resolution,Material material,bool referenceUV=false)
         {
             var go=new GameObject(name);var mesh=new Mesh{name=name};float h=size/2;
             mesh.vertices=new[]{new Vector3(-h,0,-h),new Vector3(-h,0,h),new Vector3(h,0,h),new Vector3(h,0,-h)};
@@ -61,7 +63,7 @@ namespace Splatoon.Editor
             if(referenceUV)mesh.uv=mesh.vertices.Select(v=>InkCoverage.DetailUV(v,Vector3.up,.034424f)).ToArray();
             mesh.uv2=mesh.uv;mesh.RecalculateNormals();mesh.RecalculateTangents();
             go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=material;
-            var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=1;surface.Resolution=resolution;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/GameResource/Effects/Ink/Textures/InkSplatAtlas-Reference.png");return surface;
+            var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=1;surface.Resolution=resolution;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath);return surface;
         }
         static void ValidateCpuGpu()
         {
@@ -98,8 +100,8 @@ namespace Splatoon.Editor
         {
             var go=GameObject.CreatePrimitive(PrimitiveType.Cube);var mesh=UnityEngine.Object.Instantiate(go.GetComponent<MeshFilter>().sharedMesh);
             mesh.vertices=mesh.vertices.Select(p=>Vector3.Scale(p,new Vector3(32,3,.5f))).ToArray();InkSurfaceAtlas.Rebuild(mesh,out int width,out int height);go.GetComponent<MeshFilter>().sharedMesh=mesh;
-            var surface=go.AddComponent<PaintSurface>();surface.Resolution=width;surface.ResolutionHeight=height;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/GameResource/Effects/Ink/Textures/InkSplatAtlas-Reference.png");
-            var stamp=new PaintStamp{Position=new Vector3(-16+32/3f,0,.25f),Normal=Vector3.forward,Radius=1.4f,Hardness=.01f,Strength=.8f,Team=1};surface.Apply(stamp);surface.FlushDisplay();
+            var surface=go.AddComponent<PaintSurface>();surface.Resolution=width;surface.ResolutionHeight=height;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath);
+            var stamp=new PaintStamp{Position=new Vector3(-16+32/3f,0,.25f),Normal=Vector3.forward,Radius=1.4f,Hardness=.55f,Strength=.8f,Team=1};surface.Apply(stamp);surface.FlushDisplay();
             var raw=Read(surface.Mask);var display=Read(surface.DisplayMask);var pixels=raw.GetPixels32();var uv=mesh.uv2;var verts=mesh.vertices;var t=mesh.triangles;int samples=0,painted=0;
             float Cross(Vector2 a,Vector2 b)=>a.x*b.y-a.y*b.x;
             for(int k=0;k<t.Length;k+=3)
@@ -111,8 +113,8 @@ namespace Splatoon.Editor
                 for(int y=y0;y<y1;y++)for(int x=x0;x<x1;x++)
                 {
                     Vector2 p=new((x+.5f)/width,(y+.5f)/height);Vector2 ap=p-uv[a];float v=Cross(ap,ac)/det,w=Cross(ab,ap)/det;if(v<.00001f||w<.00001f||v+w>.99999f)continue;
-                    Vector3 world=verts[a]+v*(verts[b]-verts[a])+w*(verts[c]-verts[a]);float f=Vector3.Dot(normal,stamp.Normal)<.5f?0:InkBrush.Coverage(Vector3.Distance(world,stamp.Position),stamp.Radius,stamp.Hardness,stamp.Strength);
-                    int expected=Mathf.FloorToInt(255*f+.5f);Check(Math.Abs(pixels[y*width+x].a-expected)<=1,"Atlas face leaked or missed paint");samples++;if(expected>100)painted++;
+                    Vector3 world=verts[a]+v*(verts[b]-verts[a])+w*(verts[c]-verts[a]);float f=Vector3.Dot(normal,stamp.Normal)<.5f?0:InkShapeAtlas.Coverage(world,stamp);
+                    int expected=Mathf.FloorToInt(255*f+.5f);Check(Math.Abs(pixels[y*width+x].a-expected)<=1,$"Atlas face leaked or missed paint: x={x} y={y} world={world:R} expected={expected} actual={pixels[y*width+x].a} normal={normal} shape={stamp.ShapeSeed}");samples++;if(expected>100)painted++;
                 }
             }
             // Two sides of the split must retain coverage through bilinear display padding.
@@ -132,7 +134,7 @@ namespace Splatoon.Editor
             Check(painted>100,"Atlas fixture missed seam brush");Debug.Log($"[INK-LOOK] Atlas seam/backface samples={samples} painted={painted} PASS");
             surface.ReleaseGraphics();UnityEngine.Object.DestroyImmediate(raw);UnityEngine.Object.DestroyImmediate(display);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(mesh);
         }
-        static Camera FixtureCamera()
+        internal static Camera FixtureCamera()
         {
             var camera=new GameObject("Comparison camera").AddComponent<Camera>();camera.transform.position=new Vector3(0,7,-9);camera.transform.LookAt(new Vector3(0,0,.5f));camera.fieldOfView=40;camera.clearFlags=CameraClearFlags.Skybox;camera.allowHDR=true;
             camera.GetUniversalAdditionalCameraData().renderPostProcessing=false;
@@ -188,7 +190,7 @@ namespace Splatoon.Editor
             var rt=new RenderTexture(1920,1080,24,RenderTextureFormat.ARGB32);rt.Create();
             var request=new UniversalRenderPipeline.SingleCameraRequest{destination=rt};RenderPipeline.SubmitRenderRequest(camera,request);RenderPipeline.SubmitRenderRequest(camera,request);
             Check(!ShaderUtil.ShaderHasError(Shader.Find("Splatoon/InkSurface")),"Ink surface shader compilation failed");
-            var image=Read(rt);File.WriteAllBytes(Output+"/"+name+".png",image.EncodeToPNG());UnityEngine.Object.DestroyImmediate(image);rt.Release();UnityEngine.Object.DestroyImmediate(rt);
+            var image=Read(rt);Check(image.GetPixels32().Count(p=>p.r>250&&p.b>250&&p.g<5)<image.width*image.height/20,"Capture contains shader error magenta: "+name);File.WriteAllBytes(Output+"/"+name+".png",image.EncodeToPNG());UnityEngine.Object.DestroyImmediate(image);rt.Release();UnityEngine.Object.DestroyImmediate(rt);
         }
         static void CaptureTrainingGround()
         {

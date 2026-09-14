@@ -181,6 +181,7 @@ namespace Splatoon.Tests
         }
         [Test] public void SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder()
         {
+            Splatoon.Painting.InkShapeAtlas.Configure(AssetDatabase.LoadAssetAtPath<Texture2D>(Splatoon.Painting.InkShapeAtlas.AssetPath));
             var player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab").GetComponent<PrototypePlayer>();
             var character = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPath)); _objects.Add(character); character.SetActive(false);
             var profile = UnityEngine.Object.Instantiate(character.GetComponent<InkCharacterView>().Profile); _objects.Add(profile); character.GetComponent<InkCharacterView>().Profile = profile;

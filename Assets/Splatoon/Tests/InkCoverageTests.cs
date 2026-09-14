@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using Splatoon.Painting;
@@ -8,6 +9,7 @@ namespace Splatoon.Tests
 {
     public sealed class InkCoverageTests
     {
+        [SetUp] public void LoadAtlas() => InkShapeAtlas.Configure(UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath));
         static readonly Matrix4x4 Identity=Matrix4x4.identity;
         static PaintStamp Stamp(byte team,float strength=1)=>new(){Team=team,Position=Vector3.zero,Normal=Vector3.up,Radius=1.5f,Hardness=.01f,Strength=strength};
         [Test] public void FaintPaintAccumulatesInsteadOfBeingDiscarded()
@@ -15,9 +17,12 @@ namespace Splatoon.Tests
             var grid=new SurfaceOwnershipGrid(new Vector2(4,4),.125f,null);
             grid.Apply(Stamp(1,.2f),Identity,.5f,.034424f,110);Assert.That(grid.PinkArea,Is.Zero);
             for(int i=0;i<12;i++)grid.Apply(Stamp(1,.2f),Identity,.5f,.034424f,110);
-            Assert.That(grid.PinkArea,Is.GreaterThan(1));
-            double area=grid.PinkArea;for(int i=0;i<12;i++)grid.Apply(Stamp(1,.2f),Identity,.5f,.034424f,110);
-            Assert.That(grid.PinkArea,Is.GreaterThan(area));
+            Assert.That(grid.PinkArea,Is.GreaterThan(0));
+            double area=grid.PinkArea;var before=(byte[])grid.State.Clone();
+            for(int i=0;i<12;i++)grid.Apply(Stamp(1,.2f),Identity,.5f,.034424f,110);
+            Assert.That(grid.PinkArea,Is.GreaterThanOrEqualTo(area));
+            Assert.That(grid.State.Where((v,i)=>i%4==0).Sum(v=>(int)v),
+                Is.GreaterThan(before.Where((v,i)=>i%4==0).Sum(v=>(int)v)), "Repeated faint paint must keep accumulating even when the occupied cells do not expand");
         }
         [Test] public void OpposingPaintErodesPreviousTeamAndTiesKeepPreviousOwner()
         {

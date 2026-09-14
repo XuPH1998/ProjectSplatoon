@@ -75,12 +75,14 @@ namespace Splatoon.Painting
         }
         public void Apply(PaintStamp stamp, Matrix4x4 localToWorld, float threshold, float worldScale, float noiseScale)
         {
-            Vector3 p = localToWorld.inverse.MultiplyPoint3x4(stamp.Position);
+            var inverse = localToWorld.inverse;
+            Vector3 p = inverse.MultiplyPoint3x4(stamp.Position);
+            Vector2 extent = InkShapeAtlas.LocalExtents(stamp, inverse);
             Vector3 normal = localToWorld.MultiplyVector(Vector3.up).normalized;
-            int minX = Mathf.Max(0, Mathf.FloorToInt((p.x - stamp.Radius + Size.x / 2) / CellSize));
-            int maxX = Mathf.Min(Columns - 1, Mathf.FloorToInt((p.x + stamp.Radius + Size.x / 2) / CellSize));
-            int minZ = Mathf.Max(0, Mathf.FloorToInt((p.z - stamp.Radius + Size.y / 2) / CellSize));
-            int maxZ = Mathf.Min(Rows - 1, Mathf.FloorToInt((p.z + stamp.Radius + Size.y / 2) / CellSize));
+            int minX = Mathf.Max(0, Mathf.FloorToInt((p.x - extent.x + Size.x / 2) / CellSize));
+            int maxX = Mathf.Min(Columns - 1, Mathf.FloorToInt((p.x + extent.x + Size.x / 2) / CellSize));
+            int minZ = Mathf.Max(0, Mathf.FloorToInt((p.z - extent.y + Size.y / 2) / CellSize));
+            int maxZ = Mathf.Min(Rows - 1, Mathf.FloorToInt((p.z + extent.y + Size.y / 2) / CellSize));
             for (int z = minZ; z <= maxZ; z++) for (int x = minX; x <= maxX; x++)
             {
                 int i = z * Columns + x; if (Cells[i] == 255) continue;
