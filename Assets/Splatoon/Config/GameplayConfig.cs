@@ -27,6 +27,7 @@ namespace Splatoon.Config
             {
                 Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.CharacterGravity > 0 && c.JumpSpeed > 0, "英雄角色数值无效");
                 Require(!string.IsNullOrWhiteSpace(c.CharacterPrefabAddress), "角色缺少外观地址");
+                Require(c.NeutralSwimSpeed > 0 && c.NeutralSwimSpeed < c.MoveSpeed, "无色地面潜墨速度必须大于零且小于普通移动速度");
                 Require(c.ShootMoveSpeed > 0 && c.MoveAcceleration > 0 && c.SwimAcceleration > 0 && c.WallSwimSpeed > 0 && c.WallProbeDistance > 0 && c.WallGraceSeconds <= .1f && c.MantleSeconds > 0 && c.EnemyInkHealthFloor <= c.MaxHealth, "移动与恢复配置无效");
             }
             foreach (var w in tables.TbHero.DataList)

@@ -11,6 +11,7 @@
     <var name="swimRecoverInk" type="float" comment="移动恢复：潜墨回墨（点/秒）" />
     <var name="moveSpeed" type="float" comment="移动恢复：移动速度（米/秒）" />
     <var name="swimSpeed" type="float" comment="移动恢复：潜墨速度（米/秒）" />
+    <var name="neutralSwimSpeed" type="float" comment="移动恢复：无色地面潜墨速度（米/秒，须小于普通移动速度）" />
     <var name="enemyInkMultiplier" type="float" comment="移动恢复：敌方墨水速度倍率" />
     <var name="jumpSpeed" type="float" comment="移动恢复：起跳速度（米/秒）" />
     <var name="characterGravity" type="float" comment="移动恢复：角色重力（米/秒²）" />

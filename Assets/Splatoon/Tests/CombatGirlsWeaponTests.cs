@@ -103,7 +103,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(11));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(12));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }

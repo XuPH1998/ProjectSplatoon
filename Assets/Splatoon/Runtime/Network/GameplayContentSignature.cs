@@ -21,6 +21,21 @@ namespace Splatoon.Networking
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);
             Write(w, c.center); w.Write(c.radius); w.Write(c.height); w.Write(c.skinWidth); w.Write(c.stepOffset); w.Write(c.slopeLimit); Write(w, player.transform.lossyScale);
             w.Write(c.minMoveDistance); w.Write(c.detectCollisions); w.Write(c.enableOverlapRecovery); w.Write(player.gameObject.layer);
+            w.Write(.7f); // Friendly ink movement/hit height.
+            w.Write(player.SwimBody != null);
+            if (player.SwimBody != null)
+            {
+                var body = player.SwimBody; var hit = body.HitVolume;
+                Write(w, body.transform.localPosition); Write(w, body.transform.localScale);
+                Write(w, hit.transform.localPosition); Write(w, hit.transform.localScale);
+                w.Write(hit.convex); w.Write(hit.isTrigger); w.Write(hit.gameObject.layer);
+                w.Write(hit.sharedMesh.vertexCount);
+                foreach (var vertex in hit.sharedMesh.vertices) Write(w, vertex);
+                foreach (var index in hit.sharedMesh.triangles) w.Write(index);
+                w.Write((int)hit.cookingOptions);
+                w.Write(body.CapsuleHitVolume.direction); w.Write(body.CapsuleHitVolume.isTrigger);
+                Write(w, body.CapsuleHitVolume.transform.localPosition); Write(w, body.CapsuleHitVolume.transform.localScale);
+            }
             for (int layer=0;layer<32;layer++) w.Write(Physics.GetIgnoreLayerCollision(player.gameObject.layer,layer));
             w.Write(p.StationarySpeed); w.Write(p.TurnThreshold); w.Write(p.MovingTurnSpeed); w.Write(p.TurnLeftDuration); w.Write(p.TurnRightDuration);
             Write(w, p.TurnLeftProgress); Write(w, p.TurnRightProgress);

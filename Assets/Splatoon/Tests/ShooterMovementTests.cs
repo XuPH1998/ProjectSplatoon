@@ -63,7 +63,7 @@ namespace Splatoon.Tests
         }
         [Test] public void SwimmingCannotBypassRecoveryLock()
         {
-            var s=Alive();s.Ink=40;s.Swimming=true;s.InkRecoverAt=20/60.0;
+            var s=Alive();s.Ink=40;s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.InkRecoverAt=20/60.0;
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,19/60.0);Assert.That(s.Ink,Is.EqualTo(40));
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,20/60.0);Assert.That(s.Ink,Is.EqualTo(40+100f/180).Within(.0001));
         }
@@ -79,7 +79,7 @@ namespace Splatoon.Tests
             var s=Alive();s.Health=30;s.LastDamageAt=2;
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,2.99);Assert.That(s.Health,Is.EqualTo(30));
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.5f));
-            s.Swimming=true;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
+            s.Swimming=true;s.SwimSource=SwimSurface.Friendly;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
         }
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void RenderRatesDoNotChangeFixedSimulationResults(int rate)
@@ -198,6 +198,11 @@ namespace Splatoon.Tests
                 for(int i=0;i<150;i++){motor.Step(ref s,input,1f/60,i/60.0,false);modes.Add(s.Movement);if(modes.Contains(MovementMode.Mantle)&&s.Grounded)break;}
                 Assert.That(modes.Contains(MovementMode.WallInk),Is.True,"wall entry");Assert.That(modes.Contains(MovementMode.Mantle),Is.True,"mantle");Assert.That(s.Position.y,Is.GreaterThan(2.9f));
                 s=Alive();s.Position=new Vector3(13.42f,.04f,0);motor.Restore(s);motor.Step(ref s,input,1f/60,4,false);Assert.That(s.Movement,Is.EqualTo(MovementMode.WallInk));
+                var wallState=s;var wallJump=input;wallJump.JumpSequence=s.ConsumedJump+1;
+                motor.Step(ref s,wallJump,1f/60,4+1.0/60,false);
+                Assert.That(s.Swimming,Is.True);Assert.That(s.SwimSource,Is.EqualTo(SwimSurface.Friendly));
+                Assert.That(s.Movement,Is.EqualTo(MovementMode.Air));Assert.That(s.VerticalSpeed,Is.GreaterThan(0));
+                s=wallState;motor.Restore(s);
                 for(int i=0;i<region.Grid.Cells.Length;i++)region.Grid.Set(i,2);
                 motor.Step(ref s,input,1f/60,4+1.0/60,false);Assert.That(s.Movement,Is.Not.EqualTo(MovementMode.WallInk));
                 float oldY=s.Position.y;s.Health=0;s.RespawnsAt=10;s.VerticalSpeed=0;s.Position=new Vector3(13.5f,2,0);motor.Restore(s);
@@ -302,7 +307,7 @@ namespace Splatoon.Tests
                 Assert.That(motor.CanStand(s.Position),Is.False);
                 input.Fire=true;input.FireSequence=1;motor.Step(ref s,input,1f/60,4,true);
                 Assert.That(WeaponSimulation.Step(ref s,input,W,4,true,!s.Swimming&&motor.CanStand(s.Position)),Is.False);
-                Assert.That(s.Ink,Is.EqualTo(100));Assert.That(s.Swimming,Is.True);
+                Assert.That(s.Ink,Is.EqualTo(100));Assert.That(s.Swimming,Is.False);Assert.That(s.CompactBody,Is.True);
             }
             finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(block);}
         }

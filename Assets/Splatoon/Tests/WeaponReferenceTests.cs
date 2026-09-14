@@ -73,7 +73,7 @@ namespace Splatoon.Tests
         {
             var common = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAudit/Common.1130.json"));
             Assert.That(common[swim ? "InkRecoverFrm_Stealth" : "InkRecoverFrm_Std"][2].AsInt, Is.EqualTo(frames));
-            var s = Player(1); s.Ink = 0; s.Swimming = swim;
+            var s = Player(1); s.Ink = 0; s.Swimming = swim; s.Grounded = true; s.SwimSource = swim ? SwimSurface.Friendly : SwimSurface.None;
             for (int tick = 1; tick < frames; tick++) ResourceSimulation.Step(ref s, GameplayConfig.DefaultHero, false, false, 1f / 60, tick / 60.0);
             Assert.That(s.Ink, Is.LessThan(100));
             ResourceSimulation.Step(ref s, GameplayConfig.DefaultHero, false, false, 1f / 60, frames / 60.0);

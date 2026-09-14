@@ -8,6 +8,7 @@ using Splatoon.Prototype;
 namespace Splatoon.Combat
 {
     public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead }
+    public enum SwimSurface : byte { None, Friendly, Neutral }
     public enum WeaponPhase : byte { Idle, Starting, Firing, Ending, Charging, BurstCooldown }
 
     public static class ResourceSimulation
@@ -15,15 +16,16 @@ namespace Splatoon.Combat
         public static void Step(ref PlayerSnapshot s, cfg.HeroConfig c, bool enemyInk, bool triggerHeld, float dt, double now)
         {
             if (s.Health <= 0) return;
+            bool inkRecovery = s.HasInkRecovery && !enemyInk;
             if (now + 1e-8 >= s.InkRecoverAt && (!triggerHeld || s.Swimming) && s.WeaponPhase == WeaponPhase.Idle)
-                s.Ink = PrototypeRules.Recover(s.Ink, c.MaxInk, s.Swimming ? c.SwimRecoverInk : c.RecoverInk, dt);
+                s.Ink = PrototypeRules.Recover(s.Ink, c.MaxInk, inkRecovery ? c.SwimRecoverInk : c.RecoverInk, dt);
             if (enemyInk)
             {
                 if (now >= s.ProtectedUntil) s.Health -= Mathf.Min(Mathf.Max(0, s.Health - c.EnemyInkHealthFloor), c.EnemyInkDamageRate * dt);
                 s.LastDamageAt = now;
             }
             else if (now - s.LastDamageAt + 1e-8 >= c.HealthRecoverDelay)
-                s.Health = Mathf.Min(c.MaxHealth, s.Health + (s.Swimming ? c.SwimHealthRecoverRate : c.HealthRecoverRate) * dt);
+                s.Health = Mathf.Min(c.MaxHealth, s.Health + (inkRecovery ? c.SwimHealthRecoverRate : c.HealthRecoverRate) * dt);
         }
     }
 
@@ -43,11 +45,18 @@ namespace Splatoon.Combat
         public void Restore(PlayerSnapshot s)
         {
             _controller.enabled = false; _root.position = s.Position;
-            SetShape(s.Swimming); _controller.enabled = s.Health > 0;
+            SetShape(s.Swimming || s.CompactBody); _controller.enabled = s.Health > 0;
+            _root.GetComponent<PrototypePlayer>()?.SwimBody?.ApplyCollision(s);
             Physics.SyncTransforms();
         }
         void SetShape(bool ink)
-        { _controller.height = ink ? .7f : _standingHeight; _controller.center = ink ? Vector3.up * .35f : _standingCenter; }
+        {
+            float height = ink ? .7f : _standingHeight;
+            Vector3 center = ink ? Vector3.up * .35f : _standingCenter;
+            if (_controller.height == height && _controller.center == center) return;
+            // Avoid rewriting unchanged controller geometry every simulation tick.
+            _controller.height = height; _controller.center = center;
+        }
         public bool CanStand(Vector3 position)
         {
             float r = Mathf.Max(.05f, _controller.radius - .025f);
@@ -72,8 +81,9 @@ namespace Splatoon.Combat
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
             bool jump = input.JumpSequence != s.ConsumedJump; s.ConsumedJump = input.JumpSequence;
-            var floor = Arena != null ? Arena.FloorOwner(s.Position) : (byte)255;
-            bool grounded = _controller.isGrounded || Physics.Raycast(s.Position + Vector3.up * .08f, Vector3.down, .15f, WorldMask);
+            bool groundContact = PrototypeArena.TryGetGround(s.Position, out byte floor, _controller.slopeLimit);
+            bool grounded = s.VerticalSpeed <= 0 && s.Grounded && (_controller.isGrounded || groundContact);
+            bool wasCompact = s.Swimming || s.CompactBody;
             bool canStand = CanStand(s.Position), detached = false;
             if (s.Movement == MovementMode.Mantle)
             {
@@ -85,11 +95,11 @@ namespace Splatoon.Combat
                     Vector3 target = t < .5f ? Vector3.Lerp(s.MantleFrom, apex, t * 2) : Vector3.Lerp(apex, s.MantleTo, (t - .5f) * 2);
                     SetShape(true); _controller.Move(target - _root.position);
                     s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Swimming = true;
+                    s.SwimSource = SwimSurface.Friendly; s.CompactBody = false;
                     s.Grounded = _controller.isGrounded; s.TurnDirection = 0;
                     if (t < 1) return;
                     s.Movement = MovementMode.Air; s.VerticalSpeed = -2;
-                    floor = Arena != null ? Arena.FloorOwner(s.Position) : (byte)255;
-                    grounded = Physics.Raycast(s.Position + Vector3.up * .08f, Vector3.down, .15f, WorldMask);
+                    grounded = PrototypeArena.TryGetGround(s.Position, out floor, _controller.slopeLimit);
                 }
             }
             if (s.Movement == MovementMode.WallInk)
@@ -107,6 +117,7 @@ namespace Splatoon.Combat
                         SetShape(true); _controller.Move(next - _root.position);
                         s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position;
                         s.Grounded = false; s.Swimming = true; s.TurnDirection = 0;
+                        s.SwimSource = SwimSurface.Friendly; s.CompactBody = false;
                         if (input.Move.y > 0) TryMantle(ref s, now);
                         return;
                     }
@@ -115,37 +126,55 @@ namespace Splatoon.Combat
                     if (!found && now - s.WallSeenAt < c.WallGraceSeconds && FriendlySeam(next, s.WallNormal, s.Team, c.WallProbeDistance))
                     {
                         SetShape(true); _controller.Move(delta);
-                        s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; return;
+                        s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position;
+                        s.SwimSource = SwimSurface.Friendly; s.CompactBody = false; return;
                     }
                 }
                 s.Movement = MovementMode.Air;
                 detached = true;
                 s.PlanarVelocity = s.WallNormal * (jump ? c.WallJumpSpeed : .8f);
                 s.VerticalSpeed = jump ? c.JumpSpeed : 0;
-                if (canStand) s.Swimming = false;
+                // Jumping preserves the ink form; a failed wall contact simply detaches.
+                s.SwimSource = SwimSurface.Friendly;
+                grounded = false;
             }
-            bool useInk = input.Swim && !wantsFire && floor == s.Team && grounded;
-            if (!canStand && s.Swimming) useInk = true;
-            s.Swimming = useInk; SetShape(useInk);
+            bool useInk = input.Swim && !wantsFire && (grounded ? !IsEnemy(floor, s.Team) : s.Swimming);
+            if (useInk && grounded) s.SwimSource = floor == s.Team ? SwimSurface.Friendly : SwimSurface.Neutral;
+            if (!useInk) s.SwimSource = SwimSurface.None;
+            s.Swimming = useInk;
+            s.CompactBody = !useInk && wasCompact && !canStand;
+            SetShape(useInk || s.CompactBody);
             var aim = Quaternion.Euler(0, s.Yaw, 0);
-            if (!detached && input.Swim && !wantsFire && !jump && input.Move.y > 0 &&
+            if (!detached && (grounded || useInk) && !(grounded && IsEnemy(floor, s.Team)) && input.Swim && !wantsFire && !jump && input.Move.y > 0 &&
                 Query(s.Position + Vector3.up * .35f, aim * Vector3.forward, c.WallProbeDistance, out var entry) && entry.Climbable && entry.Owner == s.Team)
             {
                 BindWall(ref s, entry); s.WallSeenAt = now; s.Movement = MovementMode.WallInk;
                 s.Swimming = true; s.Grounded = false; s.VerticalSpeed = 0; s.PlanarVelocity = Vector3.zero; s.Velocity = Vector3.zero;
+                s.SwimSource = SwimSurface.Friendly; s.CompactBody = false;
                 SetShape(true); return;
             }
-            float speed = useInk ? c.SwimSpeed : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
+            float speed = useInk ? (s.SwimSource == SwimSurface.Neutral ? c.NeutralSwimSpeed : c.SwimSpeed)
+                : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;
             if (jump && grounded) s.VerticalSpeed = c.JumpSpeed;
             s.VerticalSpeed -= c.CharacterGravity * dt;
-            _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
+            var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
+            if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
-            if (!s.Grounded && useInk && CanStand(s.Position)) { useInk = false; s.Swimming = false; SetShape(false); }
-            s.Movement = useInk ? MovementMode.GroundInk : s.Grounded ? MovementMode.Human : MovementMode.Air;
+            // Resolve the destination before resources/presentation, including landing and fresh enemy paint.
+            if (s.Grounded)
+            {
+                PrototypeArena.TryGetGround(s.Position, out floor, _controller.slopeLimit);
+                bool allowed = input.Swim && !wantsFire && !IsEnemy(floor, s.Team);
+                s.CompactBody = !allowed && (useInk || s.CompactBody) && !CanStand(s.Position);
+                useInk = s.Swimming = allowed;
+                s.SwimSource = allowed ? (floor == s.Team ? SwimSurface.Friendly : SwimSurface.Neutral) : SwimSurface.None;
+                SetShape(useInk || s.CompactBody);
+            }
+            s.Movement = !s.Grounded ? MovementMode.Air : useInk ? MovementMode.GroundInk : MovementMode.Human;
             if (!s.Grounded && !useInk) s.WallSurfaceId = s.WallRegionId = 0;
         }
         static void BindWall(ref PlayerSnapshot s, InkContact c)
@@ -173,6 +202,7 @@ namespace Splatoon.Combat
             if (!InkPathClear(s.Position, apex) || !InkPathClear(apex, target)) return false;
             s.MantleFrom = s.Position; s.MantleTo = target; s.MantleStartedAt = now;
             s.Movement = MovementMode.Mantle; s.Swimming = true; s.Velocity = Vector3.zero; s.TurnDirection = 0;
+            s.SwimSource = SwimSurface.Friendly; s.CompactBody = false;
             return true;
         }
         bool InkPathClear(Vector3 from, Vector3 to)
@@ -184,6 +214,7 @@ namespace Splatoon.Combat
         void StepDead(ref PlayerSnapshot s, float dt)
         {
             _controller.enabled = false; s.Movement = MovementMode.Dead; s.Swimming = s.Firing = false; s.WeaponPhase = WeaponPhase.Idle; s.TurnDirection = 0;
+            s.SwimSource = SwimSurface.None; s.CompactBody = false;
             s.VerticalSpeed -= GameplayConfig.GetHero(s.HeroId).CharacterGravity * dt;
             Vector3 direction = s.VerticalSpeed > 0 ? Vector3.up : Vector3.down;
             float distance = Mathf.Abs(s.VerticalSpeed * dt); s.Grounded = false;

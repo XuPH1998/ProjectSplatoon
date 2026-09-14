@@ -17,6 +17,7 @@ namespace Splatoon.Prototype
         public readonly NetworkVariable<PlayerSnapshot> Snapshot = new();
         public Transform Visual;
         public InkCharacterView CharacterView;
+        public SwimBody SwimBody;
         public Transform SimulationMuzzle;
         public Vector3 SimulationAimPivot;
         public GameObject BoundVisualPrefab;
@@ -79,6 +80,7 @@ namespace Splatoon.Prototype
             ByOwner[OwnerClientId] = this;
             if (IsServer) { Snapshot.Value = new PlayerSnapshot { Team = _initialTeam, Slot = _initialSlot }; Respawn(); }
             _predicted = Snapshot.Value; _controller.enabled = IsServer || IsOwner;
+            SwimBody?.ApplyCollision(_predicted);
             transform.position = _predicted.Position;
             EnsureHeroPresentation(_predicted.HeroId);
             _visualRest = Visual.localPosition; Visual.localRotation = Quaternion.Euler(0, _predicted.BodyYaw, 0);
@@ -195,6 +197,7 @@ namespace Splatoon.Prototype
             if (shot)
             {
                 if (IsOwner) PredictShotFeedback(s);
+                Physics.SyncTransforms();
                 PrototypeMatch.Current.Projectiles.Spawn(this, s, now, PrototypeMatch.Current.State.Value.Round);
             }
         }
@@ -203,7 +206,7 @@ namespace Splatoon.Prototype
             EnsureHeroPresentation(s.HeroId);
             s.SimulatedAt = now; s.SimulationTick++;
             if (phase == MatchPhase.Finished)
-            { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; return false; }
+            { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; SwimBody?.ApplyCollision(s); return false; }
             var w = GameplayConfig.GetHero(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
@@ -213,8 +216,9 @@ namespace Splatoon.Prototype
             _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed,
                 WeaponSimulation.IsSemi(w) && s.FireVisualUntil > now);
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
-            if (s.Health <= 0) return false;
+            if (s.Health <= 0) { SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
+            SwimBody?.ApplyCollision(s);
             float charge = WeaponSimulation.ChargeRatio(s, w);
             float groundSpread = WeaponSimulation.Spread(w, false, charge), airSpread = WeaponSimulation.Spread(w, true, charge);
             s.CurrentSpread = !s.Grounded ? airSpread : Mathf.MoveTowards(s.CurrentSpread, groundSpread,
@@ -228,6 +232,7 @@ namespace Splatoon.Prototype
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
         {
             EnsureHeroPresentation(authority.HeroId);
+            SwimBody?.ApplyCollision(authority);
             if (authority.Revision != before.Revision)
             {
                 _visualOffset = Vector3.zero;
@@ -241,7 +246,7 @@ namespace Splatoon.Prototype
             _predictionPaused = authority.InputTimedOut;
             if (_predictionPaused) _history.Clear();
             _predicted = authority; _motor.Restore(authority);
-            _waitingForPaint = authority.Swimming && PrototypeMatch.Current != null &&
+            _waitingForPaint = (authority.Swimming || authority.SwimWasHeld || authority.CompactBody) && PrototypeMatch.Current != null &&
                 (!PrototypeMatch.Current.InitialSyncComplete || PrototypeMatch.Current.AppliedPaintSequence < authority.RequiredPaintSequence);
             if (lifecycle)
             { _history.Clear(); _visualOffset = Vector3.zero; _look = new Vector2(authority.Yaw, authority.Pitch); }
@@ -266,6 +271,7 @@ namespace Splatoon.Prototype
                 s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.DiedAt = now;
                 s.DeathDirection = CharacterFacing.DeathDirection(s.BodyYaw, incomingVelocity);
                 s.Movement = MovementMode.Dead; s.Swimming = false; WeaponSimulation.Cancel(ref s, _lastInput, true);
+                s.SwimSource = SwimSurface.None; s.CompactBody = false;
                 s.TurnDirection = 0; s.PlanarVelocity = Vector3.zero; _controller.enabled = false;
             }
             Snapshot.Value = s;
@@ -333,6 +339,8 @@ namespace Splatoon.Prototype
             Visual.localRotation = IsOwner ? bodyRotation : Quaternion.Slerp(Visual.localRotation, bodyRotation, 1 - Mathf.Exp(-20 * Time.deltaTime));
             if (IsOwner && s.Health > 0) { s.Yaw = _look.x; s.Pitch = _look.y; }
             CharacterView.Present(s, Time.deltaTime, IsOwner && !IsServer ? s.SimulatedAt : NetworkManager.ServerTime.Time);
+            if (!IsServer && !IsOwner) SwimBody?.ApplyCollision(s);
+            SwimBody?.Present(s, Visual.localPosition, Visual.localRotation);
             if (!IsOwner || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 using Splatoon.Config;
+using Splatoon.Combat;
 using Splatoon.Painting;
 namespace Splatoon.Prototype
 {
@@ -95,6 +96,15 @@ namespace Splatoon.Prototype
             if (!Physics.Raycast(feet + Vector3.up * .2f, Vector3.down, out var hit, .55f, ~(1 << 8), QueryTriggerInteraction.Ignore)) return 255;
             var surface = hit.collider.GetComponent<PaintSurface>();
             return surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)255;
+        }
+        public static bool TryGetGround(Vector3 feet, out byte owner, float slopeLimit = 45)
+        {
+            owner = 255;
+            if (!Physics.Raycast(feet + Vector3.up * .08f, Vector3.down, out var hit, .16f,
+                PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < Mathf.Cos(slopeLimit * Mathf.Deg2Rad)) return false;
+            var surface = hit.collider.GetComponentInParent<PaintSurface>();
+            owner = surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)0;
+            return true;
         }
         public void Apply(PaintStamp stamp, bool updateOwnership)
         {

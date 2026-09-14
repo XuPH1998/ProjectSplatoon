@@ -94,8 +94,8 @@ namespace Splatoon.Combat
             do
             {
                 count = radius > 0
-                    ? Physics.SphereCastNonAlloc(origin, radius, direction, _hits, distance, ~0, QueryTriggerInteraction.Ignore)
-                    : Physics.RaycastNonAlloc(origin, direction, _hits, distance, ~0, QueryTriggerInteraction.Ignore);
+                    ? Physics.SphereCastNonAlloc(origin, radius, direction, _hits, distance, ~0, QueryTriggerInteraction.Collide)
+                    : Physics.RaycastNonAlloc(origin, direction, _hits, distance, ~0, QueryTriggerInteraction.Collide);
                 if (count < _hits.Length) break;
                 Array.Resize(ref _hits, _hits.Length * 2);
             } while (true);
@@ -115,7 +115,7 @@ namespace Splatoon.Combat
             int count;
             do
             {
-                count = Physics.OverlapSphereNonAlloc(origin, radius, _overlaps, ~0, QueryTriggerInteraction.Ignore);
+                count = Physics.OverlapSphereNonAlloc(origin, radius, _overlaps, ~0, QueryTriggerInteraction.Collide);
                 if (count < _overlaps.Length) break;
                 Array.Resize(ref _overlaps, _overlaps.Length * 2);
             } while (true);
@@ -135,7 +135,14 @@ namespace Splatoon.Combat
 
         public static bool Valid(Collider collider, ulong shooter)
         {
+            if (collider == null || !collider.enabled) return false;
+            if (collider.isTrigger)
+            {
+                var volume = collider.GetComponentInParent<SwimBody>();
+                if (volume == null || !volume.IsHitVolume(collider)) return false;
+            }
             var player = collider.GetComponentInParent<PrototypePlayer>();
+            if (player != null && collider is CharacterController && player.SwimBody != null && player.SwimBody.UsesHitProxy) return false;
             return player == null || (player.OwnerClientId != shooter && player.Snapshot.Value.Health > 0);
         }
     }

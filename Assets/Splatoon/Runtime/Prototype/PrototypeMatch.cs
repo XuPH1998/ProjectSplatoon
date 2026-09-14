@@ -100,6 +100,7 @@ namespace Splatoon.Prototype
             { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
+            Physics.SyncTransforms(); // Publish switched/rotated swim hit volumes before authoritative projectile sweeps.
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
         }
         private void ServerTick()

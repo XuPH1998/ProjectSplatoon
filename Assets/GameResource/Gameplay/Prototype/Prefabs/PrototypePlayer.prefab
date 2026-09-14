@@ -34,6 +34,7 @@ Transform:
   m_Children:
   - {fileID: 5378900327941381455}
   - {fileID: 6626380737184312219}
+  - {fileID: 6083721975651720774}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5953025771780987305
@@ -101,6 +102,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Visual: {fileID: 6626380737184312219}
   CharacterView: {fileID: 8484057936809556144}
+  SwimBody: {fileID: 5067093875620058653}
   SimulationMuzzle: {fileID: 5378900327941381455}
   SimulationAimPivot: {x: 0, y: 1.2651994, z: 0}
   BoundVisualPrefab: {fileID: 6697962589301915802, guid: dab96b2249b6abf4f8bc137a54dbc771, type: 3}
@@ -135,6 +137,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437443655603201957}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1063843608209484574
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1437443655603201957}
+    m_Modifications:
+    - target: {fileID: 1217845648734324857, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_Name
+      value: SwimBody
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+--- !u!114 &5067093875620058653 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5229355541108718851, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+  m_PrefabInstance: {fileID: 1063843608209484574}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06e968633bcc0464d9c2f4883bd37588, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Splatoon::Splatoon.Combat.SwimBody
+--- !u!4 &6083721975651720774 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6534213742447572312, guid: e2b22424bc5316a49a51b9cfb6f54927, type: 3}
+  m_PrefabInstance: {fileID: 1063843608209484574}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5170702512861840372
 PrefabInstance:
   m_ObjectHideFlags: 0

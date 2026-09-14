@@ -98,7 +98,7 @@ namespace Splatoon.Combat
         {
             if (Profile == null || Animator == null) return;
             _state = state;
-            bool alive = state.Health > 0, visible = !state.Swimming || !alive;
+            bool alive = state.Health > 0, visible = !(state.Swimming || state.CompactBody) || !alive;
             bool reset = !_presented || _revision != state.Revision || (alive && !_alive);
             bool restored = visible && !Animator.enabled;
             for (int i = 0; i < _renderers.Length; i++)
@@ -172,7 +172,7 @@ namespace Splatoon.Combat
             if (now < state.ProtectedUntil) color = Color.Lerp(color, Color.white, .35f + .2f * Mathf.Sin(Time.time * 12));
             if (TeamMarker != null)
             {
-                TeamMarker.enabled = alive && !state.Swimming;
+                TeamMarker.enabled = alive && !state.Swimming && !state.CompactBody;
                 TeamMarker.GetPropertyBlock(_block); _block.SetColor("_BaseColor", color); TeamMarker.SetPropertyBlock(_block);
             }
             if (SwimEffect != null)
@@ -181,9 +181,17 @@ namespace Splatoon.Combat
                 SwimEffect.transform.position = wall ? state.Position + Vector3.up * .35f - state.WallNormal * .25f : state.Position + Vector3.up * .05f;
                 SwimEffect.transform.rotation = Quaternion.FromToRotation(Vector3.forward, wall ? state.WallNormal : Vector3.up);
                 var main = SwimEffect.main; main.startColor = color;
-                if (state.Swimming && alive) { if (!SwimEffect.isPlaying) SwimEffect.Play(); }
+                if (ShouldEmitSwimEffect(state)) { if (!SwimEffect.isEmitting) SwimEffect.Play(); }
                 else if (SwimEffect.isPlaying) SwimEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
+        }
+
+        public static bool ShouldEmitSwimEffect(PlayerSnapshot state)
+        {
+            if (state.Health <= 0 || !state.HasInkRecovery) return false;
+            bool wall = state.Movement == MovementMode.WallInk || state.Movement == MovementMode.Mantle;
+            Vector3 normal = wall ? state.WallNormal : Vector3.up;
+            return Vector3.ProjectOnPlane(state.Velocity, normal).sqrMagnitude > .05f * .05f;
         }
 
         void ClearShootingLayers() { for (int i = 1; i < Animator.layerCount; i++) Animator.SetLayerWeight(i, 0); }
