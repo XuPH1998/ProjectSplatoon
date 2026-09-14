@@ -22,6 +22,7 @@ namespace Splatoon.Combat
     {
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
+        public static double FireInterval(cfg.HeroConfig w) => 1.0 / w.FireRate;
         public static bool IsCharge(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.Charge;
         public static bool IsSemi(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.SemiAutomatic;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now)
@@ -167,13 +168,13 @@ namespace Splatoon.Combat
             if (!PrototypeRules.Spend(ref s.Ink, InkCost(w, charge)))
             { s.WeaponPhase = WeaponPhase.Idle; s.BurstRemaining = s.ChargeTicks = 0; return false; }
             if (!s.Firing || IsSemi(w) || IsCharge(w)) s.FireStartedAt = now;
-            s.Firing = true; s.FireVisualUntil = now + Seconds(Math.Max(6, w.FireIntervalFrames));
+            s.Firing = true; s.FireVisualUntil = now + Math.Max(Seconds(6), FireInterval(w));
             s.ShotSequence++; s.BurstShotIndex++; s.LastShotCharge = charge;
             s.LastShotMuzzle = w.MuzzleMode == 1 ? s.NextMuzzle : (byte)0;
             if (s.LastShotMuzzle == 0) { s.RightShotAt = now; s.RightShotAction = s.ShotActionId; }
             else { s.LeftShotAt = now; s.LeftShotAction = s.ShotActionId; }
             if (w.MuzzleMode == 1) s.NextMuzzle = (byte)(1 - s.LastShotMuzzle);
-            s.NextShotAt = now + Seconds(w.FireIntervalFrames);
+            s.NextShotAt = now + FireInterval(w);
             s.InkRecoverAt = now + Seconds(w.InkRecoverLockFrames); s.ProtectedUntil = 0;
             result = new WeaponFireResult(w.Id, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);
             return true;

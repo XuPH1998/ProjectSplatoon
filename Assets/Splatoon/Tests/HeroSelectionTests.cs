@@ -70,7 +70,7 @@ namespace Splatoon.Tests
             var swimInput=Input(release+1,false);swimInput.Swim=true;
             Assert.That(WeaponSimulation.WantsFire(s,swimInput),Is.False,"a released charge must immediately allow swimming, including during cooldown");
             Assert.That(s.BurstRemaining,Is.Zero);
-            Assert.That(s.NextShotAt,Is.EqualTo((release+w.FireIntervalFrames)/60.0).Within(.000001));
+            Assert.That(s.NextShotAt,Is.EqualTo(release/60.0+1.0/w.FireRate).Within(.000001));
             Assert.That(s.InkRecoverAt,Is.EqualTo((release+w.InkRecoverLockFrames)/60.0).Within(.000001));
             for(int i=release+1;i<release+150;i++)
             {

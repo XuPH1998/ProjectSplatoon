@@ -42,13 +42,13 @@ namespace Splatoon.Networking
         public uint Tick, Round;
         public int PlayerCount;
         public double PinkArea, BlueArea, TotalArea;
-        public double EndsAt;
+        public double StartsAt, EndsAt;
         public MatchPhase Phase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Tick); s.SerializeValue(ref Round); s.SerializeValue(ref PlayerCount);
             s.SerializeValue(ref PinkArea); s.SerializeValue(ref BlueArea); s.SerializeValue(ref TotalArea);
-            s.SerializeValue(ref EndsAt); s.SerializeValue(ref Phase);
+            s.SerializeValue(ref StartsAt); s.SerializeValue(ref EndsAt); s.SerializeValue(ref Phase);
         }
     }
     public interface IMatchStateReplicator { void ApplySnapshot(MatchStateSnapshot snapshot); void SubmitInput(PlayerInputFrame input); }

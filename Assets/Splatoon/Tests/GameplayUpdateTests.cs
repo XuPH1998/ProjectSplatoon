@@ -26,7 +26,7 @@ namespace Splatoon.Tests
         public void ReleaseBeforeCooldownNeverQueuesAnAutomaticShot(int hero)
         {
             var s = Player(hero); var w = GameplayConfig.GetHero(hero);
-            for (int t = 0; t < 100; t++) Fire(ref s, t, t < w.StartFrames + w.FireIntervalFrames);
+            for (int t = 0; t < 100; t++) Fire(ref s, t, t / 60.0 < w.StartFrames / 60.0 + 1.0 / w.FireRate - 1e-8);
             Assert.That(s.ShotSequence, Is.EqualTo(1));
         }
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
@@ -70,7 +70,7 @@ namespace Splatoon.Tests
             var actions = new List<ulong>();
             for (int tick = 0; tick < 120; tick++)
                 if (WeaponSimulation.Step(ref s, input, w, tick / 60.0, false, true)) actions.Add(s.ShotActionId);
-            Assert.That(actions.Count, Is.EqualTo(1 + (119 - w.StartFrames) / w.FireIntervalFrames));
+            Assert.That(actions.Count, Is.EqualTo(1 + (119 - w.StartFrames) / (int)Math.Ceiling(60.0 / w.FireRate - 1e-6)));
             Assert.That(actions.Distinct().Count(), Is.EqualTo(actions.Count), "Repeated input packets must not deduplicate new shots");
         }
         [TestCase(0f, .5f)] [TestCase(-1f, .5f)] [TestCase(.6f, .5f)]
@@ -132,12 +132,13 @@ namespace Splatoon.Tests
             Assert.That(TeamSelectionRules.Validate(s, 2, 0, 0, 1, MatchPhase.Practice, new[] { s, other }, out byte slot), Is.Null);
             Assert.That(slot, Is.EqualTo(1));
             Assert.That(TeamSelectionRules.Validate(s, 2, 0, 0, 1, MatchPhase.Practice, new[] { s }, out slot), Is.Null);
-            Assert.That(slot, Is.Zero); Assert.That(PrototypeRules.CanStart(2, MatchPhase.Practice), Is.True);
+            Assert.That(slot, Is.Zero); Assert.That(PrototypeRules.CanStart(1, 1, MatchPhase.Practice), Is.True);
         }
         [Test] public void SequentialSwitchesCannotOverfillOrReuseAClaimedSpawn()
         {
             var first = Player(); var second = Player(); second.Slot = 1; var blue = Player(); blue.Team = 2;
-            var roster = new[] { first, second, blue };
+            var blue2 = blue; blue2.Slot = 1; var blue3 = blue; blue3.Slot = 2;
+            var roster = new[] { first, second, blue, blue2, blue3 };
             Assert.That(TeamSelectionRules.Validate(first, 2, 0, 0, 1, MatchPhase.Practice, roster, out byte slot), Is.Null);
             roster[0].Team = 2; roster[0].Slot = slot;
             Assert.That(TeamSelectionRules.Validate(second, 2, 0, 0, 1, MatchPhase.Practice, roster, out _), Does.Contain("已满"));

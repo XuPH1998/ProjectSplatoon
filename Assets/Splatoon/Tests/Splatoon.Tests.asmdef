@@ -8,6 +8,7 @@
     "Splatoon.Config",
     "Unity.Netcode.Runtime",
     "Unity.Collections",
+    "Unity.InputSystem",
     "UniTask",
     "Luban"
   ],

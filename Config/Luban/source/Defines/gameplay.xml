@@ -30,7 +30,6 @@
     <var name="fireMode" type="int" comment="发射：0全自动／1三连发／2蓄力松开发射／3半自动" />
     <var name="fireRate" type="float" comment="发射：权威射速（发/秒）" />
     <var name="shotInk" type="float" comment="发射：每次有效发射总耗墨（霰弹整组）" />
-    <var name="fireIntervalFrames" type="int" comment="发射：连发间隔（60Hz参考帧）" />
     <var name="startFrames" type="int" comment="发射：人形起手（60Hz参考帧）" />
     <var name="emergeStartFrames" type="int" comment="发射：出墨起手（60Hz参考帧）" />
     <var name="inkRecoverLockFrames" type="int" comment="发射：最后一发后回墨锁定（60Hz参考帧）" />
@@ -39,7 +38,7 @@
     <var name="burstRecoveryFrames" type="int" comment="发射：末发到下一组首发（60Hz参考帧）" />
     <var name="speedMin" type="float" comment="弹道：最低初速（米/秒）" />
     <var name="speedMax" type="float" comment="弹道：最高初速（米/秒）" />
-    <var name="projectileGravity" type="float" comment="弹道：墨弹重力（米/秒²）" />
+    <var name="projectileGravity" type="float" comment="弹道：墨弹重力（米/秒²，0为无重力）" />
     <var name="lifetime" type="float" comment="弹道：有效寿命（秒）" />
     <var name="collisionRadius" type="float" comment="弹道：扫掠半径（米）" />
     <var name="spreadDegrees" type="float" comment="弹道：散布半角（度）" />
@@ -61,7 +60,6 @@
     <var name="trailRadiusMin" type="float" comment="涂色：沿途落墨最小笔刷半径（米）" />
     <var name="trailRadiusMax" type="float" comment="涂色：沿途落墨最大笔刷半径（米）" />
     <var name="trailMaxDrop" type="float" comment="涂色：沿途落墨向下探测范围（米）" />
-    <var name="paintRange" type="float" comment="涂色：水平瞄准涂地射程目标（本项目米）" />
     <var name="chargeFrames" type="int" comment="蓄力：满蓄时间（60Hz参考帧，非蓄力为0）" />
     <var name="chargeMinDamage" type="float" comment="蓄力：点射伤害（HP）" />
     <var name="chargePartialMaxDamage" type="float" comment="蓄力：未满蓄伤害上限（HP）" />
@@ -70,7 +68,6 @@
     <var name="chargeMinSpeed" type="float" comment="蓄力：点射初速（米/秒）" />
     <var name="chargeMinSpread" type="float" comment="蓄力：点射地面散布半角（度）" />
     <var name="chargeMinJumpSpread" type="float" comment="蓄力：点射空中散布半角（度）" />
-    <var name="chargeMinPaintRange" type="float" comment="蓄力：点射水平涂地射程目标（米）" />
     <var name="pelletCount" type="int" comment="发射：每次有效发射的弹丸数量" />
     <var name="muzzleMode" type="int" comment="发射：枪口模式（0单枪／1右左交替）" />
     <var name="semiBufferFrames" type="int" comment="发射：半自动冷却末尾点击缓存（60Hz帧）" />
@@ -81,23 +78,19 @@
     <var name="name" type="string" comment="房间模式名称" />
     <var name="heroId" type="int" comment="默认英雄 ID" />
     <var name="mapId" type="int" comment="场地 ID" />
-    <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 4）" />
+    <var name="maxPlayers" type="int" comment="最大人数（当前场景上限 8，每队最多 4 人）" />
     <var name="minPlayers" type="int" comment="最低开局人数" />
     <var name="matchSeconds" type="float" comment="比赛时长（秒）" />
     <var name="respawnSeconds" type="float" comment="重生等待（秒）" />
     <var name="protectionSeconds" type="float" comment="重生保护（秒）" />
     <var name="friendlyFire" type="bool" comment="是否友伤" />
-    <var name="groundOnlyScore" type="bool" comment="仅可行走地面计分（含坡道、高台及桥面）" />
   </bean>
   <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id" />
   <bean name="MapConfig" comment="Map 强类型配置">
     <var name="id" type="int" comment="场地 ID" />
     <var name="name" type="string" comment="场地名称" />
     <var name="sceneAddress" type="string" comment="场景地址" />
-    <var name="width" type="float" comment="场地宽度 X（米）" />
-    <var name="length" type="float" comment="场地长度 Z（米）" />
     <var name="cellSize" type="float" comment="归属网格边长（米）" />
-    <var name="layoutVersion" type="int" comment="场地布局协议版本" />
   </bean>
   <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id" />
   <bean name="GlobalConfig" comment="Global 强类型配置">

@@ -91,14 +91,17 @@ namespace Splatoon.Tests
                 player.RequestTeamChange(); await Wait(() => !player.TeamChangePending && player.Snapshot.Value.Team == 1, "Switch creates 2:0");
                 Assert.That(match.Players.Count(p => p.Snapshot.Value.Team == 1), Is.EqualTo(2));
                 Assert.That(match.Players.Where(p => p.Snapshot.Value.Team == 1).Select(p => p.Snapshot.Value.Slot).Distinct().Count(), Is.EqualTo(2));
-                match.StartRound(); Assert.That(match.State.Value.Phase, Is.EqualTo(MatchPhase.Playing), "Total headcount still allows 2:0");
+                match.StartRound(); Assert.That(match.State.Value.Phase, Is.EqualTo(MatchPhase.Practice), "Single-team start rejected");
+                match.AddPlayer(43, prefab);
+                match.StartRound(); Assert.That(match.State.Value.Phase, Is.EqualTo(MatchPhase.Playing), "2:1 start allowed");
                 life = player.Snapshot.Value.Revision; player.RequestTeamChange();
                 Assert.That(player.TeamChangePending, Is.False); Assert.That(player.Snapshot.Value.Revision, Is.EqualTo(life));
-                var phase = match.State.Value; phase.Phase = MatchPhase.Practice; match.State.Value = phase;
-                match.AddPlayer(43, prefab); match.AddPlayer(44, prefab);
+                var phase = match.State.Value; phase.Phase = MatchPhase.Finished; match.State.Value = phase; match.ReturnToRoom();
+                for (ulong id=44;id<=48;id++) match.AddPlayer(id,prefab);
                 Assert.That(player.TeamChangeUnavailableReason, Does.Contain("已满")); player.RequestTeamChange();
                 Assert.That(player.TeamChangePending, Is.False); Assert.That(player.Snapshot.Value.Team, Is.EqualTo(1));
-                var departing = match.Players.First(p => p.OwnerClientId == 44); departing.NetworkObject.Despawn(); match.RemovePlayer(44);
+                var departing = match.Players.Last(p => p.Snapshot.Value.Team == 2); ulong departingId=departing.OwnerClientId;
+                departing.NetworkObject.Despawn(); match.RemovePlayer(departingId);
                 state = player.Snapshot.Value; state.Health = 0; state.RespawnsAt = player.NetworkManager.ServerTime.Time + 100; player.Snapshot.Value = state;
                 Assert.That(player.TeamChangeUnavailableReason, Does.Contain("重生")); player.RequestTeamChange();
                 Assert.That(player.TeamChangePending, Is.False);
@@ -112,7 +115,7 @@ namespace Splatoon.Tests
                 await Wait(() => !player.TeamChangePending, "Request arriving after start is rejected");
                 Assert.That(player.Snapshot.Value.Team, Is.EqualTo(1)); Assert.That(player.TeamChangeMessage, Does.Contain("热身"));
                 File.WriteAllText("Reports/GameplayUpdate/playmode-validation.txt",
-                    "PASS: warmup menu request entry; authority reply; selected hero retained; team spawn, health/ink, protection and camera yaw reset; no shot during menu; 2:0 start; full/dead/duplicate/stale/phase rejection. Additional roster members are server fixtures. Physical mouse interaction, remote client and physical LAN remain separate acceptance.\n");
+                    "PASS: warmup menu request entry; authority reply; selected hero retained; team spawn, health/ink, protection and camera yaw reset; no shot during menu; 2:0 rejected, 2:1 starts; full/dead/duplicate/stale/phase rejection. Additional roster members are server fixtures. Physical mouse interaction, remote client and physical LAN remain separate acceptance.\n");
             }
             finally
             {

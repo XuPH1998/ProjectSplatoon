@@ -27,7 +27,7 @@ namespace Splatoon.Tests
         {
             public int weapon, driverHz, shotCount, paintStamps, impacts, peakProjectiles;
             public string scenario, gridHash;
-            public float charge, targetPaintRange, lastPaintForward, maxOwnedForward, ownedWidth, ownedDepth, centerlineContinuous;
+            public float charge, lastPaintForward, maxOwnedForward, ownedWidth, ownedDepth, centerlineContinuous;
             public double ownedArea, simulationMilliseconds;
             public bool targetValidated; // No versioned original capture is bundled.
         }
@@ -53,9 +53,9 @@ namespace Splatoon.Tests
                 foreach (int rate in new[] { 30, 60, 144 })
                     results.Add(Capture(w.Id, WeaponSimulation.IsCharge(w) ? 1 : 0, "continuous", rate, 20, directory));
             }
-            var summary = new StringBuilder("weapon,charge,scenario,driverHz,shots,stamps,impacts,maxOwnedForwardM,ownedWidthM,ownedDepthM,ownedAreaM2,centerlineContinuousM,targetPaintRangeM,targetValidated,gridHash,peakProjectiles,simulationMilliseconds\n");
+            var summary = new StringBuilder("weapon,charge,scenario,driverHz,shots,stamps,impacts,maxOwnedForwardM,ownedWidthM,ownedDepthM,ownedAreaM2,centerlineContinuousM,gridHash,peakProjectiles,simulationMilliseconds\n");
             foreach (var r in results)
-                summary.AppendLine($"{r.weapon},{F(r.charge)},{r.scenario},{r.driverHz},{r.shotCount},{r.paintStamps},{r.impacts},{F(r.maxOwnedForward)},{F(r.ownedWidth)},{F(r.ownedDepth)},{F(r.ownedArea)},{F(r.centerlineContinuous)},{F(r.targetPaintRange)},false,{r.gridHash},{r.peakProjectiles},{F(r.simulationMilliseconds)}");
+                summary.AppendLine($"{r.weapon},{F(r.charge)},{r.scenario},{r.driverHz},{r.shotCount},{r.paintStamps},{r.impacts},{F(r.maxOwnedForward)},{F(r.ownedWidth)},{F(r.ownedDepth)},{F(r.ownedArea)},{F(r.centerlineContinuous)},{r.gridHash},{r.peakProjectiles},{F(r.simulationMilliseconds)}");
             File.WriteAllText(Path.Combine(directory, "summary.csv"), summary.ToString());
             File.WriteAllText(Path.Combine(directory, "conditions.txt"),
                 "Project simulation measurement, NOT original-game acceptance.\n" +
@@ -77,8 +77,7 @@ namespace Splatoon.Tests
             var trace = new StringBuilder("shot,ageSeconds,x,y,z\n");
             var stamps = new StringBuilder("surface,x,y,z,normalX,normalY,normalZ,radiusM,hardness,strength\n");
             var w = GameplayConfig.GetHero(weapon);
-            var result = new Result { weapon = weapon, charge = charge, scenario = scenario, driverHz = rate, shotCount = shotCount,
-                targetPaintRange = WeaponSimulation.IsCharge(w) ? Mathf.Lerp(w.ChargeMinPaintRange, w.PaintRange, charge) : w.PaintRange };
+            var result = new Result { weapon = weapon, charge = charge, scenario = scenario, driverHz = rate, shotCount = shotCount };
             PaintSurface Surface(int id, Vector3 position, Vector2 size, Quaternion rotation, bool floor)
             {
                 var go = new GameObject("Measurement " + id); roots.Add(go); go.SetActive(false);
@@ -123,7 +122,7 @@ namespace Splatoon.Tests
                     Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
                     CurrentSpread=WeaponSimulation.Spread(w,false,charge), BurstShotIndex=1 };
                 int launched = 0; double nextShot = 0;
-                double fullDuration = shotCount * (w.StartFrames + w.ChargeFrames + w.FireIntervalFrames + w.BurstRecoveryFrames) / 60.0 + w.Lifetime + 1;
+                double fullDuration = shotCount * ((w.StartFrames + w.ChargeFrames + w.BurstRecoveryFrames) / 60.0 + WeaponSimulation.FireInterval(w)) + w.Lifetime + 1;
                 for (int frame = 0; frame <= (int)Math.Ceiling(fullDuration * rate); frame++)
                 {
                     double now = frame / (double)rate;
@@ -133,9 +132,9 @@ namespace Splatoon.Tests
                         state.ShotSequence=(uint)launched; state.FireBurstSequence=(uint)launched;
                         state.LastShotMuzzle=(byte)(w.MuzzleMode==1?(launched-1)%2:0);
                         service.Spawn(player,state,nextShot,1);
-                        int gap = WeaponSimulation.IsCharge(w) ? w.StartFrames + w.ChargeFrames + w.FireIntervalFrames :
-                            w.FireMode == 1 && launched % w.BurstCount == 0 ? w.BurstRecoveryFrames : w.FireIntervalFrames;
-                        nextShot += gap / 60.0;
+                        double gap = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Seconds(w.StartFrames + w.ChargeFrames) + WeaponSimulation.FireInterval(w) :
+                            w.FireMode == 1 && launched % w.BurstCount == 0 ? WeaponSimulation.Seconds(w.BurstRecoveryFrames) : WeaponSimulation.FireInterval(w);
+                        nextShot += gap;
                     }
                     result.peakProjectiles = Math.Max(result.peakProjectiles, service.ActiveCount);
                     service.Simulate(now);
@@ -216,7 +215,7 @@ namespace Splatoon.Tests
             Assert.That(GameplayConfig.GetHero(2).ShotInk, Is.EqualTo(.7f));
             Assert.That(GameplayConfig.GetHero(2).InkRecoverLockFrames, Is.EqualTo(15));
             Assert.That(GameplayConfig.GetHero(3).ShotInk, Is.EqualTo(4));
-            Assert.That(GameplayConfig.GetHero(3).FireIntervalFrames, Is.EqualTo(24));
+            Assert.That(GameplayConfig.GetHero(3).FireRate, Is.EqualTo(2.5f));
             Assert.That(GameplayConfig.GetHero(3).PelletCount, Is.EqualTo(8));
             Assert.That(GameplayConfig.GetHero(4).ShotInk, Is.EqualTo(1.4f));
             Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(22));

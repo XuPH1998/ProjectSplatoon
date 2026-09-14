@@ -121,7 +121,7 @@ namespace Splatoon.Editor
             profile.SingleShot = true; profile.DualWield = p.id == 2;
             var tables = new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json")));
             var weaponConfig = tables.TbHero.Get(p.id);
-            profile.ShotPlaybackSeconds = weaponConfig.FireIntervalFrames / 60f * (p.id == 2 ? 2 : 1) * .9f;
+            profile.ShotPlaybackSeconds = 1f / weaponConfig.FireRate * (p.id == 2 ? 2 : 1) * .9f;
             profile.TurnLeftDuration = Clip(p, p.clips[4]).length; profile.TurnRightDuration = Clip(p, p.clips[5]).length;
             profile.TurnLeftProgress = CombatGirlsBuilder.ExtractTurnCurve(Clip(p, p.clips[4]), raw);
             profile.TurnRightProgress = CombatGirlsBuilder.ExtractTurnCurve(Clip(p, p.clips[5]), raw);

@@ -9,12 +9,19 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 12;
+        public const uint ProtocolVersion = 16;
+        public PaperPose PaperPose;
+        public Vector3 PaperCenter;
+        public Quaternion PaperRotation;
+        public double PaperChangedAt;
+        public float PaperAnimationTime;
+        public Vector2 PaperMove;
         public SwimSurface SwimSource;
+        public SwimSurface AirSwimSource;
         public bool CompactBody;
         public bool HasInkRecovery => Swimming && SwimSource == SwimSurface.Friendly &&
             (Grounded || Movement == MovementMode.WallInk || Movement == MovementMode.Mantle);
-        public bool ShowsSwimBody => Health > 0 && (CompactBody || (Swimming && SwimSource == SwimSurface.Neutral));
+        public bool ShowsSwimBody => Health > 0 && (CompactBody || Swimming);
         public byte NextMuzzle, LastShotMuzzle;
         public bool SwimWasHeld, SemiHoldStarted;
         public double RightShotAt, LeftShotAt;
@@ -46,7 +53,10 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
-            s.SerializeValue(ref SwimSource); s.SerializeValue(ref CompactBody);
+            s.SerializeValue(ref PaperPose); s.SerializeValue(ref PaperCenter);
+            s.SerializeValue(ref PaperRotation); s.SerializeValue(ref PaperChangedAt);
+            s.SerializeValue(ref PaperAnimationTime); s.SerializeValue(ref PaperMove);
+            s.SerializeValue(ref SwimSource); s.SerializeValue(ref AirSwimSource); s.SerializeValue(ref CompactBody);
             s.SerializeValue(ref NextMuzzle); s.SerializeValue(ref LastShotMuzzle); s.SerializeValue(ref SwimWasHeld); s.SerializeValue(ref SemiHoldStarted);
             s.SerializeValue(ref RightShotAt); s.SerializeValue(ref LeftShotAt);
             s.SerializeValue(ref RightShotAction); s.SerializeValue(ref LeftShotAction);

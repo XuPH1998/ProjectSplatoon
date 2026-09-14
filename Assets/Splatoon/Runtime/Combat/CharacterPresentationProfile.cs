@@ -5,6 +5,8 @@ namespace Splatoon.Combat
     [CreateAssetMenu(menuName = "喷墨对战/角色表现配置")]
     public sealed class CharacterPresentationProfile : ScriptableObject
     {
+        [Header("纸片潜墨")]
+        public PaperBodyProfile Paper;
         [Header("转身")]
         [Min(0)] public float StationarySpeed = .1f;
         [Range(1, 89)] public float TurnThreshold = 45;

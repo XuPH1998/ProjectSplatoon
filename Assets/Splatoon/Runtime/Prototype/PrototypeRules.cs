@@ -8,7 +8,9 @@ namespace Splatoon.Prototype
     public static class PrototypeRules
     {
         public static byte ChooseTeam(int pink, int blue) => (byte)(pink <= blue ? 1 : 2);
-        public static bool CanStart(int players, MatchPhase phase, int minimumPlayers = 2) => players >= minimumPlayers && phase != MatchPhase.Playing;
+        public static bool CanStart(int pink, int blue, MatchPhase phase, int minimumPlayers = 2) =>
+            phase == MatchPhase.Practice && pink > 0 && blue > 0 && pink <= Combat.TeamSelectionRules.Capacity &&
+            blue <= Combat.TeamSelectionRules.Capacity && pink + blue >= minimumPlayers;
         public static bool HasEnded(MatchPhase phase, double now, double end) => phase == MatchPhase.Playing && now >= end;
         public static int Winner(double pink, double blue) => Math.Abs(pink - blue) < .000001 ? 0 : pink > blue ? 1 : 2;
         public static float Recover(float ink, float maximum, float rate, float dt) => Mathf.Min(maximum, ink + rate * dt);

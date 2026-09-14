@@ -99,11 +99,11 @@ namespace Splatoon.Prototype
             {
                 await Wait(()=>PrototypeApp.Current!=null&&PrototypeApp.Current.Ready&&!PrototypeApp.Current.Busy);
                 var app=PrototypeApp.Current;ConfigureView();
-                Check(GameplayConfig.Map.Id==1&&GameplayConfig.Map.Width==32&&GameplayConfig.Map.Length==64,"TbMap initialized through Addressables with unchanged map");
+                Check(GameplayConfig.Map.Id==1&&GameplayConfig.Map.SceneAddress=="maps/TrainingGround","TbMap initialized through Addressables with unchanged map");
                 for(int i=0;i<10;i++)
                 {
                     var a=new LanRoomAdvertisement{RoomId=Guid.NewGuid(),GamePort=(ushort)(19300+i),ModeId=1,MapId=1,ModeName=GameplayConfig.Mode.Name,MapName=GameplayConfig.Map.Name,
-                        PlayerCount=i==0?4:1,MaxPlayers=4,Phase=i==2?MatchPhase.Playing:i==3?MatchPhase.Finished:MatchPhase.Practice,
+                        PlayerCount=i==0?8:1,MaxPlayers=8,Phase=i==2?MatchPhase.Playing:i==3?MatchPhase.Finished:MatchPhase.Practice,
                         PlayerProtocol=i==1?99:(int)PlayerSnapshot.ProtocolVersion,PaintProtocol=GameplayContentSignature.PaintProtocolVersion,
                         ConfigDigest=LanDiscoveryProtocol.Digest(LubanConfigService.Current.ContentSignature)};
                     var host=new UdpLanDiscoveryService();host.StartAdvertising(()=>a);_hosts.Add(host);_roomIds.Add(a.RoomId);
@@ -130,7 +130,7 @@ namespace Splatoon.Prototype
                 _observer=new UdpLanDiscoveryService();_observer.StartBrowsing();
                 await Wait(()=>_observer.Rooms.Count==1);
                 var live=_observer.Rooms[0].Advertisement;Guid firstId=live.RoomId;
-                Check(live.PlayerCount==1&&live.MaxPlayers==4&&live.GamePort==19477,"advertisement uses actual host count and game port");
+                Check(live.PlayerCount==1&&live.MaxPlayers==8&&live.GamePort==19477,"advertisement uses actual host count and game port");
                 Check(live.MapName==GameplayConfig.Map.Name&&live.Phase==MatchPhase.Practice,"advertisement identifies map and warmup");
                 var match=PrototypeMatch.Current;var state=match.State.Value;state.Phase=MatchPhase.Playing;state.EndsAt=app.Manager.ServerTime.Time+180;match.State.Value=state;
                 _observer.Refresh();await Wait(()=>_observer.Rooms[0].Advertisement.Phase==MatchPhase.Playing);Check(true,"playing phase is refreshed");

@@ -211,6 +211,7 @@ namespace Splatoon.Prototype
         {
             _discovery.Tick();
             UpdateOverlayInput();
+            UpdateMatchFeedback();
             if (!InRoom || Busy) return;
             if (Session.State == NetworkSessionState.Failed) { Leave(Session.LastError).Forget(); return; }
             var k = Keyboard.current;
@@ -232,6 +233,7 @@ namespace Splatoon.Prototype
             LubanConfigService.Current.Reset(); if (Current == this) Current = null;
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
             if (_chineseFont != null) Destroy(_chineseFont);
+            if (_startClip != null) Destroy(_startClip);
         }
         private static void Panel(Rect r, Color color) { var old = GUI.color; GUI.color = color; GUI.DrawTexture(r, Texture2D.whiteTexture); GUI.color = old; }
         private void Styles()
@@ -276,7 +278,7 @@ namespace Splatoon.Prototype
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
             GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(850,641,410,60),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 潜墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
+            GUI.Label(new Rect(820,625,440,82),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
                 if (equipped.FireMode == 2)
@@ -297,7 +299,7 @@ namespace Splatoon.Prototype
                 if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),state.PlayerCount<2?"H 选择英雄 · 等待另一名玩家加入。":"H 选择英雄 · 房主按回车开始比赛。",_small);
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),"H 选择英雄 · 双方各有人后，房主按回车开始。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
@@ -314,12 +316,15 @@ namespace Splatoon.Prototype
                     int count = PrototypePlayer.ByOwner.Values.Count(p => p != null && p.IsSpawned && p.Snapshot.Value.Team == target);
                     string reason = local.TeamChangeUnavailableReason;
                     GUI.enabled = !Busy && reason == null;
-                    string label = local.TeamChangePending ? "更换中…" : $"更换队伍 · {(target == 1 ? "粉队" : "蓝队")} {count}/2";
+                    string label = local.TeamChangePending ? "更换中…" : $"更换队伍 · {(target == 1 ? "粉队" : "蓝队")} {count}/{TeamSelectionRules.Capacity}";
                     if (GUI.Button(new Rect(465,top+126,350,44),label,_button)) local.RequestTeamChange();
                     GUI.Label(new Rect(463,top+304,360,50),reason ?? local.TeamChangeMessage,_small);
                 }
-                GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase,GameplayConfig.Mode.MinPlayers);
-                if(GUI.Button(new Rect(465,top+134+extra,350,44),state.Phase==MatchPhase.Finished?"再来一局":"开始比赛",_button)) {match.StartRound();CaptureMouse(true);}
+                bool finished = state.Phase == MatchPhase.Finished;
+                GUI.enabled = !Busy && Manager.IsServer && (finished || match.CanStartRound);
+                string roundAction = finished ? (Manager.IsServer ? "返回房间" : "等待房主返回房间") : "开始比赛";
+                if (GUI.Button(new Rect(465,top+134+extra,350,44),roundAction,_button))
+                { if (finished) match.ReturnToRoom(); else match.StartRound(); }
                 GUI.enabled=!Busy;
                 if(GUI.Button(new Rect(465,top+198+extra,350,44),"退出房间",_button)) Leave().Forget();
                 GUI.enabled=true;

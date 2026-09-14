@@ -23,10 +23,7 @@ public sealed partial class MapConfig : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["sceneAddress"].IsString) { throw new SerializationException(); }  SceneAddress = _buf["sceneAddress"]; }
-        { if(!_buf["width"].IsNumber) { throw new SerializationException(); }  Width = _buf["width"]; }
-        { if(!_buf["length"].IsNumber) { throw new SerializationException(); }  Length = _buf["length"]; }
         { if(!_buf["cellSize"].IsNumber) { throw new SerializationException(); }  CellSize = _buf["cellSize"]; }
-        { if(!_buf["layoutVersion"].IsNumber) { throw new SerializationException(); }  LayoutVersion = _buf["layoutVersion"]; }
     }
 
     public static MapConfig DeserializeMapConfig(JSONNode _buf)
@@ -47,21 +44,9 @@ public sealed partial class MapConfig : Luban.BeanBase
     /// </summary>
     public readonly string SceneAddress;
     /// <summary>
-    /// 场地宽度 X（米）
-    /// </summary>
-    public readonly float Width;
-    /// <summary>
-    /// 场地长度 Z（米）
-    /// </summary>
-    public readonly float Length;
-    /// <summary>
     /// 归属网格边长（米）
     /// </summary>
     public readonly float CellSize;
-    /// <summary>
-    /// 场地布局协议版本
-    /// </summary>
-    public readonly int LayoutVersion;
    
     public const int __ID__ = -1840922722;
     public override int GetTypeId() => __ID__;
@@ -76,10 +61,7 @@ public sealed partial class MapConfig : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "sceneAddress:" + SceneAddress + ","
-        + "width:" + Width + ","
-        + "length:" + Length + ","
         + "cellSize:" + CellSize + ","
-        + "layoutVersion:" + LayoutVersion + ","
         + "}";
     }
 }

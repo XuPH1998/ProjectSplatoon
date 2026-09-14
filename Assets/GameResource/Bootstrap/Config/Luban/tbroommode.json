@@ -4,12 +4,11 @@
     "name": "三分钟涂地赛",
     "heroId": 1,
     "mapId": 1,
-    "maxPlayers": 4,
+    "maxPlayers": 8,
     "minPlayers": 2,
     "matchSeconds": 180,
     "respawnSeconds": 3,
     "protectionSeconds": 2,
-    "friendlyFire": false,
-    "groundOnlyScore": true
+    "friendlyFire": false
   }
 ]

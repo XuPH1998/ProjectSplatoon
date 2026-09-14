@@ -21,7 +21,11 @@ namespace Splatoon.Networking
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);
             Write(w, c.center); w.Write(c.radius); w.Write(c.height); w.Write(c.skinWidth); w.Write(c.stepOffset); w.Write(c.slopeLimit); Write(w, player.transform.lossyScale);
             w.Write(c.minMoveDistance); w.Write(c.detectCollisions); w.Write(c.enableOverlapRecovery); w.Write(player.gameObject.layer);
-            w.Write(.7f); // Friendly ink movement/hit height.
+            w.Write(.7f); // Compact locomotion capsule; paper uses a separate hit mesh.
+            w.Write(6); // Airborne sheets stay horizontal, including wall takeoff.
+            w.Write(PlayerMotorSimulation.WorldMask); w.Write(SwimBody.HitProxyLayer);
+            for (int layer = 0; layer < 32; layer++) w.Write(Physics.GetIgnoreLayerCollision(SwimBody.HitProxyLayer, layer));
+            w.Write(PaperAnimation.FramesPerSecond); w.Write(PaperSilhouette.Columns); w.Write(PaperSilhouette.Rows);
             w.Write(player.SwimBody != null);
             if (player.SwimBody != null)
             {
@@ -29,11 +33,9 @@ namespace Splatoon.Networking
                 Write(w, body.transform.localPosition); Write(w, body.transform.localScale);
                 Write(w, hit.transform.localPosition); Write(w, hit.transform.localScale);
                 w.Write(hit.convex); w.Write(hit.isTrigger); w.Write(hit.gameObject.layer);
-                w.Write(hit.sharedMesh.vertexCount);
-                foreach (var vertex in hit.sharedMesh.vertices) Write(w, vertex);
-                foreach (var index in hit.sharedMesh.triangles) w.Write(index);
                 w.Write((int)hit.cookingOptions);
                 w.Write(body.CapsuleHitVolume.direction); w.Write(body.CapsuleHitVolume.isTrigger);
+                w.Write(body.CapsuleHitVolume.gameObject.layer);
                 Write(w, body.CapsuleHitVolume.transform.localPosition); Write(w, body.CapsuleHitVolume.transform.localScale);
             }
             for (int layer=0;layer<32;layer++) w.Write(Physics.GetIgnoreLayerCollision(player.gameObject.layer,layer));
@@ -46,6 +48,15 @@ namespace Splatoon.Networking
                 {
                     w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.Config.WeaponPrefabAddress);
                     var profile = hero.Profile;
+                    var paper = profile.Paper;
+                    w.Write(paper != null);
+                    if (paper != null)
+                    {
+                        w.Write(paper.ContentHash ?? ""); w.Write(paper.Size.x); w.Write(paper.Size.y);
+                        w.Write(paper.Thickness); w.Write(paper.SurfaceOffset); Write(w, paper.CameraOffset);
+                        Write(w, paper.CaptureCenter); w.Write(paper.CaptureHeight); w.Write(paper.AnimationReferenceSpeed);
+                        w.Write(paper.TextureWidth); w.Write(paper.TextureHeight);
+                    }
                     Write(w, profile.AimPivot); Write(w, profile.MuzzlePosition);
                     Write(w, profile.LeftMuzzlePosition); w.Write(profile.DualWield); w.Write(profile.SingleShot); w.Write(profile.ShotPlaybackSeconds);
                     w.Write(profile.BlendSeconds); w.Write(profile.AnimationReferenceSpeed);

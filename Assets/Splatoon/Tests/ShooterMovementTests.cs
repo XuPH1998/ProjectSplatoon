@@ -99,8 +99,7 @@ namespace Splatoon.Tests
             var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*W.SpeedMin,W,age);
             float straight=(float)WeaponSimulation.Seconds(W.StraightFrames),brake=(float)WeaponSimulation.Seconds(W.BrakeFrames);
             Assert.That(age,Is.GreaterThan(straight+brake));
-            // Integrate the three speed phases independently. PaintRange is a tuning target,
-            // and was not recalibrated when the live straight period changed from 4 to 10 frames.
+            // Integrate the three speed phases independently to derive horizontal paint range.
             float expected=W.SpeedMin*(straight+brake*(1+W.BrakeSpeedMultiplier)*.5f+(age-straight-brake)*W.BrakeSpeedMultiplier);
             Assert.That(hit.y,Is.Zero.Within(.0001));Assert.That(hit.z,Is.EqualTo(expected).Within(.0001));
             Assert.That(InkBallistics.Position(Vector3.zero,Vector3.forward*31,W,4/60.0).y,Is.Zero);
@@ -218,7 +217,7 @@ namespace Splatoon.Tests
             object boxed=new PlayerSnapshot();int index=1;
             foreach(var field in typeof(PlayerSnapshot).GetFields(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance))
             {
-                var type=field.FieldType;object value=type==typeof(Vector3)?new Vector3(index,index+.1f,index+.2f):type.IsEnum?Enum.ToObject(type,1):Convert.ChangeType(type==typeof(bool)?1:index,type);
+                var type=field.FieldType;object value=type==typeof(Vector2)?new Vector2(index,index+.1f):type==typeof(Vector3)?new Vector3(index,index+.1f,index+.2f):type==typeof(Quaternion)?Quaternion.Euler(index,index*2,index*3):type.IsEnum?Enum.ToObject(type,1):Convert.ChangeType(type==typeof(bool)?1:index,type);
                 field.SetValue(boxed,value);index++;
             }
             var expected=(PlayerSnapshot)boxed;
@@ -246,7 +245,7 @@ namespace Splatoon.Tests
                 var point=service.Impacts[0].Position;Assert.That(point.y,Is.Zero.Within(.04));
                 Assert.That(point.z,Is.EqualTo(expected.z).Within(.01));
                 Assert.That(point.x,Is.EqualTo(expected.x).Within(.01));
-                Debug.Log($"[SHOOTER-RANGE] RifleGirl corrected floor={point.z:F3}m; configured tuning target={W.PaintRange:F1}m");
+                Debug.Log($"[SHOOTER-RANGE] RifleGirl corrected floor={point.z:F3}m");
             }
             finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(floor);}
         }

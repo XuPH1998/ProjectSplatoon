@@ -10,19 +10,19 @@ namespace Splatoon.Combat
         public static string Damage(cfg.HeroConfig w) => WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinDamage:0}–{w.ChargePartialMaxDamage:0} / 满蓄 {w.Damage:0}" : w.PelletCount > 1 ? $"{w.PelletCount} × {w.Damage:0}→{w.DamageMin:0}" : $"{w.Damage:0} → {w.DamageMin:0}";
         public static string Cadence(cfg.HeroConfig w) => w.FireMode switch
         {
-            1 => $"组内 {w.FireIntervalFrames}F / 组间 {w.BurstRecoveryFrames}F",
-            2 => $"蓄力 {w.ChargeFrames}F / 冷却 {w.FireIntervalFrames}F",
-            _ => $"{w.FireIntervalFrames}F / {60f / w.FireIntervalFrames:0.##} 发/秒"
+            1 => $"组内 {w.FireRate:0.##} 发/秒 / 组间 {w.BurstRecoveryFrames}F",
+            2 => $"蓄力 {w.ChargeFrames}F / 冷却 {WeaponSimulation.FireInterval(w):0.###} 秒",
+            _ => $"{w.FireRate:0.##} 发/秒"
         };
-        public static float SustainedRate(cfg.HeroConfig w) => w.FireMode == 1 ? 60f * w.BurstCount / ((w.BurstCount - 1) * w.FireIntervalFrames + w.BurstRecoveryFrames) : 60f / w.FireIntervalFrames;
+        public static float SustainedRate(cfg.HeroConfig w) => w.FireMode == 1 ? (float)(w.BurstCount / ((w.BurstCount - 1) * WeaponSimulation.FireInterval(w) + WeaponSimulation.Seconds(w.BurstRecoveryFrames))) : w.FireRate;
         public static string Ink(cfg.HeroConfig w) => WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinInk:0.##} / 满蓄 {w.ShotInk:0.##}" : $"{w.ShotInk:0.##} / {(w.PelletCount > 1 ? "次齐射" : "发")}";
         public static string Range(cfg.HeroConfig w) => WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinRange:0.#}–{w.EffectiveRange:0.#} 米" : $"{w.EffectiveRange:0.#} 米";
         public static string ListSummary(cfg.HeroConfig w) => w.FireMode switch
         {
             3 => $"{Mechanism(w)} · {Damage(w)} 伤害\n{Range(w)} · {w.ShotInk:0.##} 墨/次 · 最快 {SustainedRate(w):0.#} 次/秒",
-            1 => $"三连发 · {w.Damage:0}→{w.DamageMin:0} 伤害 · {w.FireIntervalFrames}F/{w.BurstRecoveryFrames}F\n{Range(w)} · {w.ShotInk:0.##} 墨/发 · {SustainedRate(w):0.#} 发/秒",
-            2 => $"蓄力 {w.ChargeFrames}F · {w.ChargeMinDamage:0}–{w.ChargePartialMaxDamage:0}/满 {w.Damage:0} 伤害\n{Range(w)} · {w.ChargeMinInk:0.#}–{w.ShotInk:0.#} 墨 · 冷却 {w.FireIntervalFrames}F",
-            _ => $"全自动 · {w.Damage:0}→{w.DamageMin:0} 伤害 · {w.FireIntervalFrames}F\n{Range(w)} · {w.ShotInk:0.##} 墨/发 · {SustainedRate(w):0.#} 发/秒"
+            1 => $"三连发 · {w.Damage:0}→{w.DamageMin:0} 伤害 · 组内 {w.FireRate:0.##} 发/秒 / 组间 {w.BurstRecoveryFrames}F\n{Range(w)} · {w.ShotInk:0.##} 墨/发 · {SustainedRate(w):0.#} 发/秒",
+            2 => $"蓄力 {w.ChargeFrames}F · {w.ChargeMinDamage:0}–{w.ChargePartialMaxDamage:0}/满 {w.Damage:0} 伤害\n{Range(w)} · {w.ChargeMinInk:0.#}–{w.ShotInk:0.#} 墨 · 冷却 {WeaponSimulation.FireInterval(w):0.###} 秒",
+            _ => $"全自动 · {w.Damage:0}→{w.DamageMin:0} 伤害\n{Range(w)} · {w.ShotInk:0.##} 墨/发 · {SustainedRate(w):0.#} 发/秒"
         };
         public static List<(string label, string value)> Details(cfg.HeroConfig w) => new()
         {
@@ -35,8 +35,7 @@ namespace Splatoon.Combat
             ("有效伤害射程", Range(w)),
             ("地面／空中散布", WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinSpread:0.#}°/{w.ChargeMinJumpSpread:0.#}° → {w.SpreadDegrees:0.#}°/{w.JumpSpreadDegrees:0.#}°" : $"{w.SpreadDegrees:0.#}° / {w.JumpSpreadDegrees:0.#}°"),
             ("射击移动速度", $"{w.ShootMoveSpeed:0.#} 米/秒"), ("人形／出墨起手", $"{w.StartFrames}F / {w.EmergeStartFrames}F"),
-            ("回墨锁定", $"{w.InkRecoverLockFrames}F"),
-            ("水平涂地参考", WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinPaintRange:0.#}–{w.PaintRange:0.#} 米" : $"{w.PaintRange:0.#} 米")
+            ("回墨锁定", $"{w.InkRecoverLockFrames}F")
         };
     }
 }

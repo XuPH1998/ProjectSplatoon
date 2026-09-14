@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1cb642f289b23e44975504239363a0f, type: 3}
   m_Name: RifleGirlPresentation
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.CharacterPresentationProfile
+  Paper: {fileID: 11400000, guid: 614f7f4afbd6eee4d812baba455b1533, type: 2}
   StationarySpeed: 0.1
   TurnThreshold: 45
   MovingTurnSpeed: 540
@@ -1129,13 +1130,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   BlendSeconds: 0.1
   WalkPlayback: {x: 3.2826302, y: 3.4429488, z: 3.5795805, w: 3.5795805}
+  AnimationReferenceSpeed: 5
   ShootDuration: 0.9666667
   DieForwardDuration: 1.7333335
   DieBackwardDuration: 1.7333335
+  SingleShot: 0
+  DualWield: 0
+  ShotPlaybackSeconds: 0.3
   CameraPivot: {x: 0, y: 1.315198, z: 0}
   CameraOffset: {x: 0.65, y: 0.15, z: -3.8}
   AimPivot: {x: 0, y: 1.2651994, z: 0}
   MuzzlePosition: {x: 0.08368365, y: 1.2991499, z: 0.7684866}
+  LeftMuzzlePosition: {x: -0.25, y: 1.4, z: 0.7}
   CameraCollisionRadius: 0.2
   CameraCollisionPadding: 0.08
   SpineAimWeight: 0.55

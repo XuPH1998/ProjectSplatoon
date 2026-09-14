@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1cb642f289b23e44975504239363a0f, type: 3}
   m_Name: ShotgunGirlPresentation
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.CharacterPresentationProfile
+  Paper: {fileID: 11400000, guid: 61361cbc2f8c9224d8e7c10570b4ab8c, type: 2}
   StationarySpeed: 0.1
   TurnThreshold: 45
   MovingTurnSpeed: 540

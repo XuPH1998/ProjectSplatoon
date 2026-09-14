@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 740a1ede372318549a2c70d171ee14bf, type: 3}
+  m_Name: Paper
+  m_EditorClassIdentifier: Splatoon::Splatoon.Combat.PaperBodyProfile
+  CapturePrefab: {fileID: 663881411068794035, guid: 7844e6906749ddd429c9db52f25817d3, type: 3}
+  CaptureCenter: {x: 0.03653884, y: 0.79677397, z: 0.058339834}
+  CaptureHeight: 2.4642358
+  AnimationReferenceSpeed: 5
+  TextureWidth: 512
+  TextureHeight: 1024
+  Material: {fileID: 2100000, guid: ec2806ecc2e55df4da2fbbe8aea9cbd1, type: 2}
+  DisplayMesh: {fileID: 4300000, guid: 23ff5f69966d3e84aaa2903729adb92e, type: 2}
+  Size: {x: 0.9, y: 1.8}
+  Thickness: 0.04
+  SurfaceOffset: 0.03
+  CameraOffset: {x: 0, y: 0.9, z: 0}
+  ContentHash: 9c4e01a99a2a81f061e093e38faa5a6bc90a58fb6c66f109d862e48acf7e0500

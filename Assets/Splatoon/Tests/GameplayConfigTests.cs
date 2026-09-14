@@ -22,11 +22,11 @@ namespace Splatoon.Tests
         {
             var t = Tables(); GameplayConfig.Validate(t);
             Assert.That(t.TbHero.Get(1).MaxHealth, Is.EqualTo(100));
-            Assert.That(t.TbHero.Get(1).FireRate, Is.EqualTo(10));
+            Assert.That(t.TbHero.Get(1).FireRate, Is.EqualTo(15));
             Assert.That(t.TbHero.Get(1).Damage, Is.EqualTo(36));
             Assert.That(t.TbHero.Get(1).CharacterPrefabAddress, Is.EqualTo("Character/RifleGirl"));
             Assert.That(t.TbHero.Get(1).WeaponPrefabAddress, Is.EqualTo("Weapon/RifleGirlRifle"));
-            Assert.That(t.TbMap.Get(1).Width / t.TbMap.Get(1).CellSize, Is.EqualTo(256));
+            Assert.That(t.TbMap.Get(1).CellSize, Is.EqualTo(.125f));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
             Assert.That(t.TbGlobal.Get(1).AimCorrectionDistance, Is.EqualTo(6));
         }

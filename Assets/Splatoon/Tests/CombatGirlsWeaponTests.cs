@@ -30,7 +30,8 @@ namespace Splatoon.Tests
                 var s=Player(id);var shots=new List<int>();
                 for(int tick=0;tick<240;tick++)if(Step(ref s,tick,1,held))shots.Add(tick);
                 var w = GameplayConfig.GetHero(id);
-                var expected = held ? Enumerable.Range(0, 1 + (239 - w.StartFrames) / w.FireIntervalFrames).Select(n => w.StartFrames + n * w.FireIntervalFrames).ToArray() : new[] { w.StartFrames };
+                int intervalTicks = (int)Math.Ceiling(60.0 / w.FireRate - 1e-6);
+                var expected = held ? Enumerable.Range(0, 1 + (239 - w.StartFrames) / intervalTicks).Select(n => w.StartFrames + n * intervalTicks).ToArray() : new[] { w.StartFrames };
                 Assert.That(shots,Is.EqualTo(expected));Assert.That(s.Ink,Is.EqualTo(100-shots.Count*w.ShotInk).Within(.0002));
             }
         }
@@ -38,8 +39,9 @@ namespace Splatoon.Tests
         public void SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(int id)
         {
             var w=GameplayConfig.GetHero(id);var s=Player(id);uint press=1;var shots=new List<int>();
-            int next=2+w.FireIntervalFrames;
-            for(int tick=0;tick<next+w.FireIntervalFrames+10;tick++)
+            int intervalTicks=(int)Math.Ceiling(60.0/w.FireRate-1e-6);
+            int next=2+intervalTicks;
+            for(int tick=0;tick<next+intervalTicks+10;tick++)
             {
                 if(tick==next-7||tick==next-6||tick==next-4)press++;
                 if(Step(ref s,tick,press))shots.Add(tick);
@@ -103,7 +105,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(12));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(16));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }

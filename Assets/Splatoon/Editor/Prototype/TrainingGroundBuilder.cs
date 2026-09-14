@@ -71,11 +71,11 @@ namespace Splatoon.Editor
                 Material team = end<0 ? _pink : _blue;
                 Box("EndBoundary_"+end,new Vector3(0,1.5f,end*32.25f),new Vector3(32.5f,3,.5f),_wall,_cover,true);
                 Box("TeamHeader_"+end,new Vector3(0,3.2f,end*32.1f),new Vector3(14,.5f,.3f),team,_decor,false);
-                Cover("SpawnShield_"+end,new Vector3(0,1.2f,end*24),new Vector3(8,2.4f,1),team);
+                Cover("SpawnShield_"+end,new Vector3(0,1.2f,end*24),new Vector3(8,2.4f,1));
                 foreach(int side in new[]{-1,1})
                 {
-                    Cover("ForwardCover_"+side+"_"+end,new Vector3(side*7,1.1f,end*17),new Vector3(4,2.2f,2),team);
-                    Cover("CenterCover_"+side+"_"+end,new Vector3(side*4,1.1f,end*8),new Vector3(2,2.2f,3),team);
+                    Cover("ForwardCover_"+side+"_"+end,new Vector3(side*7,1.1f,end*17),new Vector3(4,2.2f,2));
+                    Cover("CenterCover_"+side+"_"+end,new Vector3(side*4,1.1f,end*8),new Vector3(2,2.2f,3));
                     Box("BridgeGuard_"+side+"_"+end,new Vector3(side*5.4f,3.4f,end*1.9f),new Vector3(3.2f,.8f,.2f),_dark,_cover,false);
                     Box("SpawnMarker_"+side+"_"+end,new Vector3(side*3,.008f,end*28),new Vector3(2,.01f,1),team,_decor,false,false);
                     Box("SideLaneStripe_"+side+"_"+end,new Vector3(side*15.4f,.008f,end*20),new Vector3(.15f,.01f,14),team,_decor,false,false);
@@ -83,11 +83,13 @@ namespace Splatoon.Editor
                     Box("ExteriorAccent_"+side+"_"+end,new Vector3(side*21,4.1f,end*22),new Vector3(5.2f,.2f,10.2f),team,_decor,false);
                 }
             }
-            var spawns = Group("04 出生点",root.transform); arena.SpawnPoints = new Transform[4];
-            for(int i=0;i<4;i++)
+            var spawns = Group("04 出生点",root.transform); arena.SpawnPoints = new Transform[2 * TeamSelectionRules.Capacity];
+            float[] spawnX = { -3, 3, -6, 6 };
+            for(int i=0;i<arena.SpawnPoints.Length;i++)
             {
-                var point=Group((i<2?"Pink_":"Blue_")+(i%2+1),spawns);
-                point.position=new Vector3(i%2==0?-3:3,.05f,i<2?-28:28); point.rotation=Quaternion.Euler(0,i<2?0:180,0);arena.SpawnPoints[i]=point;
+                bool pink = i < TeamSelectionRules.Capacity; int slot = i % TeamSelectionRules.Capacity;
+                var point=Group((pink?"Pink_":"Blue_")+(slot+1),spawns);
+                point.position=new Vector3(spawnX[slot],.05f,pink?-28:28); point.rotation=Quaternion.Euler(0,pink?0:180,0);arena.SpawnPoints[i]=point;
             }
             var lighting = Group("05 灯光与相机",root.transform);
             var sun=Group("Sun",lighting).gameObject.AddComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.8f;sun.color=new Color(1,.96f,.88f);sun.shadows=LightShadows.Soft;sun.transform.rotation=Quaternion.Euler(48,-35,0);sun.gameObject.AddComponent<UniversalAdditionalLightData>();
@@ -150,10 +152,10 @@ namespace Splatoon.Editor
             if(collision)go.GetComponent<BoxCollider>().size=size;else UnityEngine.Object.DestroyImmediate(go.GetComponent<BoxCollider>());
             if(paint)Bind(go,false,Vector2.zero,256);return go;
         }
-        static void Cover(string name,Vector3 pos,Vector3 size,Material team)
+        static void Cover(string name,Vector3 pos,Vector3 size)
         {
+            // Keep the paintable top exposed; a solid decorative cap would hide its ink.
             Box(name,pos,size,_wall,_cover,true);
-            Box(name+"_Stripe",pos+Vector3.up*(size.y/2+.025f),new Vector3(size.x+.06f,.05f,size.z+.06f),team,_decor,false,false);
         }
         static void Ramp(string name,Vector3 center,int end)
         {
@@ -198,7 +200,7 @@ namespace Splatoon.Editor
         {
             arena.RegisterSurfaces();
             if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=4)throw new InvalidOperationException("需要 32×64 米、版本 4 地图");
-            if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=4||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("出生点未完整绑定");
+            if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=2*TeamSelectionRules.Capacity||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("八个出生点未完整绑定");
             long bytes=0;var sizes=new HashSet<Vector2Int>();
             foreach(var s in arena.Surfaces.Values)
             {
@@ -213,6 +215,41 @@ namespace Splatoon.Editor
             foreach(var p in arena.SpawnPoints)
                 if(!Physics.Raycast(p.position+Vector3.up,Vector3.down,out var hit,2)||hit.collider.GetComponent<PaintSurface>()?.Scores!=true)throw new InvalidOperationException("出生点未落在可行走地面");
             Debug.Log("[MAP] Validation PASS dimensions=32x64 surfaces="+arena.Surfaces.Count+" area="+arena.TotalArea+" rtMiB="+bytes/1048576f+" topology="+arena.BakedTopology);
+        }
+        [MenuItem("喷墨对战/地图/增补四人队伍出生点")]
+        public static void UpgradeFourPlayerSpawns()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("请先退出运行模式");
+            var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(ScenePath);
+            bool opened = !scene.IsValid() || !scene.isLoaded;
+            if (!opened && scene.isDirty) throw new InvalidOperationException("请先保存地图中的未保存编辑");
+            if (opened) scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+            try
+            {
+                var arena = scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<PrototypeArena>()).Single();
+                var old = arena.SpawnPoints;
+                if (old == null || (old.Length != 4 && old.Length != 8) || old.Any(p => p == null)) throw new InvalidOperationException("原出生点绑定无效");
+                if (old.Length == 4)
+                {
+                    var points = new Transform[8];
+                    for (int team = 0; team < 2; team++)
+                    {
+                        points[team * 4] = old[team * 2]; points[team * 4 + 1] = old[team * 2 + 1];
+                        for (int slot = 2; slot < 4; slot++)
+                        {
+                            var point = Group((team == 0 ? "Pink_" : "Blue_") + (slot + 1), old[team * 2].parent);
+                            point.position = new Vector3(slot == 2 ? -6 : 6, old[team * 2].position.y, old[team * 2].position.z);
+                            point.rotation = old[team * 2].rotation; points[team * 4 + slot] = point;
+                        }
+                    }
+                    arena.SpawnPoints = points;
+                }
+                Physics.SyncTransforms(); arena.RegisterSurfaces();
+                // Only spawn transforms changed; retain the authored surfaces and their existing paint bake.
+                arena.BakedTopology = arena.ComputeTopology(); Validate(arena);
+                EditorUtility.SetDirty(arena); EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+            }
+            finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
         }
         public static void ValidateSavedScene()
         {

@@ -45,9 +45,13 @@ namespace Splatoon.Prototype
                 var phase = match.State.Value.Phase;
                 if (_overlayPhase != phase)
                 {
+                    var previous = _overlayPhase;
                     _overlayPhase = phase;
                     if (phase == MatchPhase.Finished) { _overlay = GameplayOverlay.RoomMenu; CaptureMouse(false); }
-                    else if (_overlay == GameplayOverlay.Heroes && _heroOrigin == HeroSelectionOrigin.Warmup && phase != MatchPhase.Practice) CaptureMouse(true);
+                    else if (phase == MatchPhase.Playing)
+                    { _overlay = GameplayOverlay.Game; CaptureMouse(Application.isFocused); }
+                    else if (phase == MatchPhase.Practice && previous == MatchPhase.Finished)
+                    { _overlay = GameplayOverlay.RoomMenu; CaptureMouse(false); }
                 }
                 if (k != null && k.hKey.wasPressedThisFrame && !Busy && match.State.Value.Phase == MatchPhase.Practice)
                 {
@@ -68,6 +72,8 @@ namespace Splatoon.Prototype
             if (!Ready) return;
             GUI.enabled = true;
             if (_overlay == GameplayOverlay.Heroes) DrawHeroSelection();
+            if (ScoreboardVisible) DrawScoreboard();
+            DrawStartNotice();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (_overlay == GameplayOverlay.Debug) DrawDebugWindow();
             if (GUI.Button(new Rect(24, 18, 118, 38), "DEBUG", _button))

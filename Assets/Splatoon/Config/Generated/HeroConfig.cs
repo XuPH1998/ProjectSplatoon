@@ -50,7 +50,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["fireMode"].IsNumber) { throw new SerializationException(); }  FireMode = _buf["fireMode"]; }
         { if(!_buf["fireRate"].IsNumber) { throw new SerializationException(); }  FireRate = _buf["fireRate"]; }
         { if(!_buf["shotInk"].IsNumber) { throw new SerializationException(); }  ShotInk = _buf["shotInk"]; }
-        { if(!_buf["fireIntervalFrames"].IsNumber) { throw new SerializationException(); }  FireIntervalFrames = _buf["fireIntervalFrames"]; }
         { if(!_buf["startFrames"].IsNumber) { throw new SerializationException(); }  StartFrames = _buf["startFrames"]; }
         { if(!_buf["emergeStartFrames"].IsNumber) { throw new SerializationException(); }  EmergeStartFrames = _buf["emergeStartFrames"]; }
         { if(!_buf["inkRecoverLockFrames"].IsNumber) { throw new SerializationException(); }  InkRecoverLockFrames = _buf["inkRecoverLockFrames"]; }
@@ -81,7 +80,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["trailRadiusMin"].IsNumber) { throw new SerializationException(); }  TrailRadiusMin = _buf["trailRadiusMin"]; }
         { if(!_buf["trailRadiusMax"].IsNumber) { throw new SerializationException(); }  TrailRadiusMax = _buf["trailRadiusMax"]; }
         { if(!_buf["trailMaxDrop"].IsNumber) { throw new SerializationException(); }  TrailMaxDrop = _buf["trailMaxDrop"]; }
-        { if(!_buf["paintRange"].IsNumber) { throw new SerializationException(); }  PaintRange = _buf["paintRange"]; }
         { if(!_buf["chargeFrames"].IsNumber) { throw new SerializationException(); }  ChargeFrames = _buf["chargeFrames"]; }
         { if(!_buf["chargeMinDamage"].IsNumber) { throw new SerializationException(); }  ChargeMinDamage = _buf["chargeMinDamage"]; }
         { if(!_buf["chargePartialMaxDamage"].IsNumber) { throw new SerializationException(); }  ChargePartialMaxDamage = _buf["chargePartialMaxDamage"]; }
@@ -90,7 +88,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["chargeMinSpeed"].IsNumber) { throw new SerializationException(); }  ChargeMinSpeed = _buf["chargeMinSpeed"]; }
         { if(!_buf["chargeMinSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinSpread = _buf["chargeMinSpread"]; }
         { if(!_buf["chargeMinJumpSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinJumpSpread = _buf["chargeMinJumpSpread"]; }
-        { if(!_buf["chargeMinPaintRange"].IsNumber) { throw new SerializationException(); }  ChargeMinPaintRange = _buf["chargeMinPaintRange"]; }
         { if(!_buf["pelletCount"].IsNumber) { throw new SerializationException(); }  PelletCount = _buf["pelletCount"]; }
         { if(!_buf["muzzleMode"].IsNumber) { throw new SerializationException(); }  MuzzleMode = _buf["muzzleMode"]; }
         { if(!_buf["semiBufferFrames"].IsNumber) { throw new SerializationException(); }  SemiBufferFrames = _buf["semiBufferFrames"]; }
@@ -222,10 +219,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float ShotInk;
     /// <summary>
-    /// 发射：连发间隔（60Hz参考帧）
-    /// </summary>
-    public readonly int FireIntervalFrames;
-    /// <summary>
     /// 发射：人形起手（60Hz参考帧）
     /// </summary>
     public readonly int StartFrames;
@@ -258,7 +251,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float SpeedMax;
     /// <summary>
-    /// 弹道：墨弹重力（米/秒&#178;）
+    /// 弹道：墨弹重力（米/秒&#178;，0为无重力）
     /// </summary>
     public readonly float ProjectileGravity;
     /// <summary>
@@ -346,10 +339,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float TrailMaxDrop;
     /// <summary>
-    /// 涂色：水平瞄准涂地射程目标（本项目米）
-    /// </summary>
-    public readonly float PaintRange;
-    /// <summary>
     /// 蓄力：满蓄时间（60Hz参考帧，非蓄力为0）
     /// </summary>
     public readonly int ChargeFrames;
@@ -381,10 +370,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 蓄力：点射空中散布半角（度）
     /// </summary>
     public readonly float ChargeMinJumpSpread;
-    /// <summary>
-    /// 蓄力：点射水平涂地射程目标（米）
-    /// </summary>
-    public readonly float ChargeMinPaintRange;
     /// <summary>
     /// 发射：每次有效发射的弹丸数量
     /// </summary>
@@ -438,7 +423,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "fireMode:" + FireMode + ","
         + "fireRate:" + FireRate + ","
         + "shotInk:" + ShotInk + ","
-        + "fireIntervalFrames:" + FireIntervalFrames + ","
         + "startFrames:" + StartFrames + ","
         + "emergeStartFrames:" + EmergeStartFrames + ","
         + "inkRecoverLockFrames:" + InkRecoverLockFrames + ","
@@ -469,7 +453,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "trailRadiusMin:" + TrailRadiusMin + ","
         + "trailRadiusMax:" + TrailRadiusMax + ","
         + "trailMaxDrop:" + TrailMaxDrop + ","
-        + "paintRange:" + PaintRange + ","
         + "chargeFrames:" + ChargeFrames + ","
         + "chargeMinDamage:" + ChargeMinDamage + ","
         + "chargePartialMaxDamage:" + ChargePartialMaxDamage + ","
@@ -478,7 +461,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "chargeMinSpeed:" + ChargeMinSpeed + ","
         + "chargeMinSpread:" + ChargeMinSpread + ","
         + "chargeMinJumpSpread:" + ChargeMinJumpSpread + ","
-        + "chargeMinPaintRange:" + ChargeMinPaintRange + ","
         + "pelletCount:" + PelletCount + ","
         + "muzzleMode:" + MuzzleMode + ","
         + "semiBufferFrames:" + SemiBufferFrames + ","

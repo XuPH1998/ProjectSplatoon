@@ -32,7 +32,7 @@ namespace Splatoon.Combat
         public TpsAimSolution Resolve(PrototypePlayer player, PlayerSnapshot state, byte muzzleIndex)
         {
             var rotation = Quaternion.Euler(state.Pitch, state.Yaw, 0);
-            Vector3 pivot = state.Position + (player.Presentation != null ? player.Presentation.CameraPivot : Vector3.up * 1.5f);
+            Vector3 pivot = state.Position + PrototypePlayer.CameraPivotOffset(state, player.Presentation);
             Vector3 camera = PrototypePlayer.CameraPosition(pivot, rotation, player.Presentation);
             Vector3 forward = rotation * Vector3.forward;
             bool hit = ClosestCast(camera, forward, ProbeDistance, 0, player.OwnerClientId, out var aimHit);
@@ -124,11 +124,26 @@ namespace Splatoon.Combat
             {
                 var collider = _overlaps[i];
                 if (!Valid(collider, shooter)) continue;
-                Vector3 point = collider.ClosestPoint(origin), delta = origin - point;
+                var paper = collider.GetComponentInParent<SwimBody>();
+                Vector3 point = paper != null && collider == paper.HitVolume && !paper.HitVolume.convex
+                    ? paper.ClosestHitPoint(origin) : collider.ClosestPoint(origin);
+                Vector3 delta = origin - point;
                 if (delta.sqrMagnitude >= nearest) continue;
                 nearest = delta.sqrMagnitude;
                 closest = new TpsCollision { Collider = collider, Point = point, Normal = nearest > Epsilon * Epsilon ? delta.normalized : fallbackNormal,
                     Distance = Mathf.Sqrt(nearest) };
+            }
+            // PhysX may omit a sphere fully contained inside a non-convex mesh.
+            // Test the same thin prism union analytically for embedded projectiles.
+            foreach (var paper in SwimBody.ActiveBodies)
+            {
+                if (!paper.FlatHitActive || !Valid(paper.HitVolume, shooter)) continue;
+                Vector3 point = paper.ClosestHitPoint(origin), delta = origin - point;
+                float squared = delta.sqrMagnitude;
+                if (squared > radius * radius || squared >= nearest) continue;
+                nearest = squared;
+                closest = new TpsCollision { Collider = paper.HitVolume, Point = point,
+                    Normal = squared > Epsilon * Epsilon ? delta.normalized : fallbackNormal, Distance = Mathf.Sqrt(squared) };
             }
             return nearest < float.PositiveInfinity;
         }

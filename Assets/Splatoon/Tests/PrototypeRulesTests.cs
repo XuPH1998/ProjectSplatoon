@@ -46,8 +46,8 @@ namespace Splatoon.Tests
         [Test] public void TeamsBalanceAndRoundTransitionsRequirePlayersAndDeadline()
         {
             Assert.That(PrototypeRules.ChooseTeam(0,0),Is.EqualTo(1));Assert.That(PrototypeRules.ChooseTeam(2,1),Is.EqualTo(2));
-            Assert.That(PrototypeRules.CanStart(1,MatchPhase.Practice),Is.False);Assert.That(PrototypeRules.CanStart(2,MatchPhase.Finished),Is.True);
-            Assert.That(PrototypeRules.CanStart(2,MatchPhase.Playing),Is.False);
+            Assert.That(PrototypeRules.CanStart(1,0,MatchPhase.Practice),Is.False);Assert.That(PrototypeRules.CanStart(1,1,MatchPhase.Finished),Is.False);
+            Assert.That(PrototypeRules.CanStart(1,1,MatchPhase.Playing),Is.False);
             Assert.That(PrototypeRules.HasEnded(MatchPhase.Playing,179.99,180),Is.False);Assert.That(PrototypeRules.HasEnded(MatchPhase.Playing,180,180),Is.True);
             Assert.That(PrototypeRules.Winner(50,50),Is.Zero);Assert.That(PrototypeRules.Winner(51,50),Is.EqualTo(1));
         }

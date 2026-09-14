@@ -65,7 +65,7 @@ namespace Splatoon.Prototype
             if(_host&&age>49&&!_killed){foreach(var other in match.Players)other.ReceiveDamage((byte)(other.Snapshot.Value.Team==1?2:1),200,Vector3.forward);_killed=true;}
             if(age>54&&state.Health>0&&state.Revision>_life)_respawnRetained|=state.HeroId==2;
             if(_host&&age>56&&!_roundReset)
-            {var m=match.State.Value;m.Phase=MatchPhase.Finished;match.State.Value=m;match.StartRound();_roundReset=true;}
+            {var m=match.State.Value;m.Phase=MatchPhase.Finished;match.State.Value=m;match.ReturnToRoom();match.StartRound();_roundReset=true;}
             if(!_host&&match.State.Value.Round>=2)_roundReset=true;
             if(!_host&&age>61&&Arg("-weaponReconnect","0")=="1"&&!_reconnected&&!_reconnecting)Reconnect().Forget();
             if(age>(_host?88:74))Finish(null);
@@ -77,7 +77,7 @@ namespace Splatoon.Prototype
             input.Move=Vector2.zero;input.Swim=false;input.JumpSequence=p.PresentedState.ConsumedJump;
             input.Look=new Vector2((p.PresentedState.Team==1?0:180)+(p.PresentedState.Slot==0?-25:25),5);
             var weapon=Splatoon.Config.GameplayConfig.GetHero(p.PresentedState.HeroId);
-            input.Fire=(WeaponSimulation.IsSemi(weapon) ? age%(.05+weapon.FireIntervalFrames/60.0)<.065 : age%3<1.9) && !p.HeroChangePending;
+            input.Fire=(WeaponSimulation.IsSemi(weapon) ? age%(.05+WeaponSimulation.FireInterval(weapon))<.065 : age%3<1.9) && !p.HeroChangePending;
             if(age>40&&age<48)input.Move=new Vector2(Mathf.Sin((float)age)*.2f,0);
         }
         async UniTask Reconnect()

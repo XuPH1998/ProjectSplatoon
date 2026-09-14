@@ -29,6 +29,7 @@ namespace Splatoon.Combat
             if (s.HeroId == heroId) return false;
             WeaponSimulation.Cancel(ref s, input, true);
             s.HeroId = heroId; s.HeroRevision++;
+            s.AirSwimSource = SwimSurface.None;
             WeaponSimulation.ResetPresentation(ref s);
             s.CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetHero(heroId), !s.Grounded, 0);
             var hero = GameplayConfig.GetHero(heroId);

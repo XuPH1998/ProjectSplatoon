@@ -12,7 +12,7 @@ namespace Splatoon.Prototype
     public sealed class PrototypeArena : MonoBehaviour
     {
         public static PrototypeArena Current { get; private set; }
-        [Tooltip("两队各两个出生点，粉队在前、蓝队在后")] public Transform[] SpawnPoints;
+        [Tooltip("两队各四个出生点，粉队在前、蓝队在后")] public Transform[] SpawnPoints;
         public int LayoutVersion = 4;
         public Vector2 Dimensions = new(32, 64);
         public float OwnershipCellSize = .125f;
@@ -33,10 +33,10 @@ namespace Splatoon.Prototype
         public void InitializeRuntime()
         {
             var config = GameplayConfig.Map;
-            if (LayoutVersion != config.LayoutVersion || Dimensions != new Vector2(config.Width, config.Length) || OwnershipCellSize != config.CellSize)
-                throw new InvalidOperationException("场景布局与配置不一致");
+            if (OwnershipCellSize != config.CellSize)
+                throw new InvalidOperationException("场景归属网格与配置不一致");
             RegisterSurfaces();
-            if (SpawnPoints == null || SpawnPoints.Length != 4 || SpawnPoints.Any(p => p == null)) throw new InvalidOperationException("场景需要四个出生点");
+            if (SpawnPoints == null || SpawnPoints.Length != 2 * TeamSelectionRules.Capacity || SpawnPoints.Any(p => p == null)) throw new InvalidOperationException("场景需要八个出生点，每队四个");
             if (string.IsNullOrEmpty(BakedTopology) || BakedTopology != ComputeTopology()) throw new InvalidOperationException("地图已修改，请先执行：喷墨对战/地图/校验并烘焙当前地图");
             foreach (var surface in Surfaces.Values) { InkShapeAtlas.Configure(surface.ShapeAtlas); surface.InitializeOwnership(config.CellSize); }
             if (TotalArea <= 0) throw new InvalidOperationException("地图缺少可计分区域");
@@ -88,12 +88,12 @@ namespace Splatoon.Prototype
         private string HierarchyPath(Transform value) => value == transform ? "" : HierarchyPath(value.parent) + "/" + value.name;
         public static Vector3 Spawn(byte team, int slot)
         {
-            if (Current == null || team < 1 || team > 2 || slot < 0 || slot > 1) throw new InvalidOperationException("出生点或队伍无效");
-            return Current.SpawnPoints[(team - 1) * 2 + slot].position;
+            if (Current == null || team < 1 || team > 2 || slot < 0 || slot >= TeamSelectionRules.Capacity) throw new InvalidOperationException("出生点或队伍无效");
+            return Current.SpawnPoints[(team - 1) * TeamSelectionRules.Capacity + slot].position;
         }
         public byte FloorOwner(Vector3 feet)
         {
-            if (!Physics.Raycast(feet + Vector3.up * .2f, Vector3.down, out var hit, .55f, ~(1 << 8), QueryTriggerInteraction.Ignore)) return 255;
+            if (!Physics.Raycast(feet + Vector3.up * .2f, Vector3.down, out var hit, .55f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return 255;
             var surface = hit.collider.GetComponent<PaintSurface>();
             return surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)255;
         }

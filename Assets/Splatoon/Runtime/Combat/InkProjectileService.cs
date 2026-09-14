@@ -275,7 +275,7 @@ namespace Splatoon.Combat
             {
                 float before = victim.Snapshot.Value.Health;
                 if (shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
-                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), InkBallistics.Velocity(shot, w, age));
+                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), InkBallistics.Velocity(shot, w, age), shot.Shooter);
                 actualDamage = before - victim.Snapshot.Value.Health; killed = actualDamage > 0 && victim.Snapshot.Value.Health <= 0;
             }
             else

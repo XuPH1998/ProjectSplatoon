@@ -51,19 +51,20 @@ namespace Splatoon.Tests
             Paint(team); Run(90);
             Assert.That(state.Swimming, Is.True); Assert.That(state.SwimSource, Is.EqualTo(source));
             Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(speed).Within(.002));
-            Assert.That(state.ShowsSwimBody, Is.EqualTo(team == 0)); Assert.That(state.HasInkRecovery, Is.EqualTo(team == 1));
+            Assert.That(state.ShowsSwimBody, Is.True); Assert.That(state.HasInkRecovery, Is.EqualTo(team == 1));
             state.Health = state.Ink = 30; state.LastDamageAt = -10;
             ResourceSimulation.Step(ref state, GameplayConfig.DefaultHero, false, false, Dt, now);
             Assert.That(state.Health, Is.EqualTo(30 + (team == 1 ? 60 : 30) * Dt).Within(.001));
             Assert.That(state.Ink, Is.EqualTo(30 + (team == 1 ? GameplayConfig.DefaultHero.SwimRecoverInk : 10) * Dt).Within(.001));
         }
-        [Test] public void NonPaintableGroundAllowsNeutralButAirDoesNot()
+        [Test] public void NonPaintableGroundAndFreshAirAllowNeutralSwimming()
         {
             Object.DestroyImmediate(floor); Run(60);
             Assert.That(state.Swimming, Is.True); Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
             Assert.That(PrototypeArena.TryGetGround(new Vector3(0, 10, 0), out _), Is.False);
             state.Position = Vector3.up * 10; state.Swimming = false; state.Grounded = false; state.VerticalSpeed = 0;
-            motor.Restore(state); Tick(); Assert.That(state.Swimming, Is.False);
+            motor.Restore(state); Tick(); Assert.That(state.Swimming, Is.True);
+            Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.Neutral));
         }
         [Test] public void EnemyPaintCancelsImmediatelyAndCannotBeEntered()
         {
@@ -81,16 +82,16 @@ namespace Splatoon.Tests
             for (int i = 0; i < 12; i++)
             {
                 Tick(); Assert.That(state.SwimSource, Is.EqualTo(origin)); Assert.That(state.Swimming, Is.True);
-                Assert.That(state.ShowsSwimBody, Is.EqualTo(source == 0)); Assert.That(state.HasInkRecovery, Is.False);
+                Assert.That(state.ShowsSwimBody, Is.True); Assert.That(state.HasInkRecovery, Is.False);
                 Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(source == 0 ? 3 : 8).Within(.002));
             }
             for (int i = 0; i < 120 && !state.Grounded; i++) Tick();
             Assert.That(state.Grounded, Is.True); Assert.That(state.SwimSource, Is.Not.EqualTo(origin));
         }
-        [Test] public void AirReleaseCannotReenterAndEnemyLandingExits()
+        [Test] public void AirReleaseCanReenterAndEnemyLandingExits()
         {
             Paint(1); Run(5); input.JumpSequence = 1; Tick(); input.Swim = false; Tick();
-            Assert.That(state.Swimming, Is.False); input.Swim = true; Run(5); Assert.That(state.Swimming, Is.False);
+            Assert.That(state.Swimming, Is.False); input.Swim = true; Run(5); Assert.That(state.Swimming, Is.True);
             Run(90); Assert.That(state.Swimming, Is.True); input.JumpSequence++; Tick(); Paint(2);
             for (int i = 0; i < 120 && !state.Grounded; i++) Tick();
             Assert.That(state.Grounded, Is.True); Assert.That(state.Swimming, Is.False);
@@ -105,6 +106,63 @@ namespace Splatoon.Tests
             Assert.That(state.HasInkRecovery, Is.False); Assert.That(controller.height, Is.EqualTo(.7f));
             input.Fire = true; Tick(true); Assert.That(state.CompactBody, Is.True);
             Object.DestroyImmediate(ceiling); Tick(); Assert.That(state.CompactBody, Is.False); Assert.That(controller.height, Is.EqualTo(1.8f));
+        }
+        [TestCase(0, false)] [TestCase(1, false)] [TestCase(0, true)] [TestCase(1, true)]
+        public void AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(byte owner, bool inkTakeoff)
+        {
+            Paint(owner); input.Swim=inkTakeoff; Run(12); input.JumpSequence++; Tick();
+            var source=inkTakeoff && owner==1 ? SwimSurface.Friendly : SwimSurface.Neutral;
+            Assert.That(state.AirSwimSource,Is.EqualTo(source));
+            for(int cycle=0;cycle<3;cycle++) foreach(bool swim in new[]{false,true})
+            {
+                input.Swim=swim; var before=state; Tick();
+                float target=swim ? source==SwimSurface.Friendly ? 8 : 3 : 5;
+                float acceleration=swim ? GameplayConfig.DefaultHero.SwimAcceleration : GameplayConfig.DefaultHero.MoveAcceleration;
+                var expected=Vector3.MoveTowards(before.PlanarVelocity,Vector3.forward*target,acceleration*Dt);
+                Assert.That(Vector3.Distance(state.PlanarVelocity,expected),Is.LessThan(.0001f));
+                Assert.That(state.VerticalSpeed,Is.EqualTo(before.VerticalSpeed-GameplayConfig.DefaultHero.CharacterGravity*Dt).Within(.0001f));
+                Assert.That(state.Position.y,Is.EqualTo(before.Position.y+state.VerticalSpeed*Dt).Within(.002f));
+                Assert.That(state.Swimming,Is.EqualTo(swim)); Assert.That(state.AirSwimSource,Is.EqualTo(source));
+                Assert.That(state.HasInkRecovery,Is.False);
+                Run(5); Assert.That(state.PlanarVelocity.magnitude,Is.EqualTo(target).Within(.002f));
+            }
+            // Landing starts a new source, irrespective of the preceding flight.
+            Paint(2); for(int i=0;i<100 && !state.Grounded;i++) Tick();
+            Assert.That(state.Swimming,Is.False); Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.None));
+        }
+        [Test] public void AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump()
+        {
+            state.Position=Vector3.up*10; state.Grounded=false; state.Movement=MovementMode.Air; motor.Restore(state);
+            input.Move=Vector2.zero; Tick();
+            var ceiling=new GameObject("air ceiling"); var box=ceiling.AddComponent<BoxCollider>();
+            box.center=state.Position+Vector3.up*1.3f; box.size=new Vector3(3,.2f,3); Physics.SyncTransforms();
+            input.Swim=false; input.JumpSequence++; float vertical=state.VerticalSpeed; Tick(true);
+            Assert.That(state.CompactBody,Is.True); Assert.That(state.Swimming,Is.False); Assert.That(motor.CanStand(state.Position),Is.False);
+            Assert.That(state.VerticalSpeed,Is.LessThan(vertical));
+            Object.DestroyImmediate(ceiling); Tick(); Assert.That(state.CompactBody,Is.False);
+            input.Swim=true; Tick(true); Assert.That(state.Swimming,Is.False,"fire priority");
+            Tick(); Assert.That(state.Swimming,Is.True); Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.Neutral));
+            state.Health=0; Tick(); Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.None));
+        }
+        [Test] public void AirSourceSurvivesSerializationAndHumanCheckpointReplay()
+        {
+            Paint(1); Run(10); input.JumpSequence++; Run(3); input.Swim=false; Tick();
+            PlayerSnapshot saved;
+            using(var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp))
+            {
+                writer.WriteNetworkSerializable(state);
+                using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);
+                reader.ReadNetworkSerializable(out saved);
+            }
+            Assert.That(saved.AirSwimSource,Is.EqualTo(SwimSurface.Friendly)); Assert.That(saved.SwimSource,Is.EqualTo(SwimSurface.None));
+            double checkpoint=now; input.Swim=true; input.Look=new Vector2(130,55); Run(6); var expected=state;
+            state=saved; now=checkpoint; motor.Restore(state); Run(6);
+            Assert.That(Vector3.Distance(state.Position,expected.Position),Is.LessThan(.001f));
+            Assert.That(Vector3.Distance(state.PaperCenter,expected.PaperCenter),Is.LessThan(.001f));
+            Assert.That(Quaternion.Angle(state.PaperRotation,expected.PaperRotation),Is.LessThan(.001f));
+            Assert.That(state.PaperAnimationTime,Is.EqualTo(expected.PaperAnimationTime).Within(.0001f));
+            HeroSelectionRules.Apply(ref state,2,false,input); Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.None));
+            Tick(); Assert.That(state.AirSwimSource,Is.EqualTo(SwimSurface.Neutral));
         }
         [TestCase(0)] [TestCase(1)]
         public void AirSnapshotReplaysSameMovement(byte source)
@@ -130,16 +188,20 @@ namespace Splatoon.Tests
             HeroMigrationTests.Load(rows => rows[0]["neutralSwimSpeed"] = value);
             Assert.Throws<System.InvalidOperationException>(() => GameplayConfig.Validate());
         }
-        [Test] public void SharedPrefabMatchesBoundsAndFriendlyModelIsHidden()
+        [Test] public void SharedPrefabUsesPaperAndFriendlyModelRemainsVisible()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var instance = Object.Instantiate(prefab); var player = instance.GetComponent<PrototypePlayer>();
             try
             {
                 var body = player.SwimBody; Assert.That(body, Is.Not.Null);
+                state.Swimming = true; state.SwimSource = SwimSurface.Neutral;
+                body.ApplyCollision(state);
                 var bounds = body.HitVolume.sharedMesh.bounds;
-                Assert.That(Vector3.Distance(bounds.size, new Vector3(.7f, .4f, 1)), Is.LessThan(.001));
-                Assert.That(body.HitVolume.sharedMesh, Is.SameAs(body.BodyRenderer.GetComponent<MeshFilter>().sharedMesh));
+                Assert.That(bounds.size.z, Is.EqualTo(.04f).Within(.001));
+                Assert.That(body.HitRects.Count, Is.GreaterThan(4));
+                Assert.That(body.HitVolume.sharedMesh, Is.SameAs(body.Capture.HitMesh));
+                Assert.That(body.BodyRenderer.GetComponent<MeshFilter>().sharedMesh, Is.SameAs(body.Profile.DisplayMesh));
                 state.Swimming = true; state.SwimSource = SwimSurface.Neutral;
                 body.ApplyCollision(state); body.Present(state, Vector3.zero, Quaternion.identity);
                 Assert.That(body.FlatHitActive && body.BodyRenderer.enabled, Is.True);
@@ -147,10 +209,10 @@ namespace Splatoon.Tests
                 body.Present(state, Vector3.right, Quaternion.Euler(0, 45, 0));
                 Assert.That(body.HitVolume.transform.position, Is.EqualTo(pose));
                 state.SwimSource = SwimSurface.Friendly; body.ApplyCollision(state); body.Present(state, Vector3.zero, Quaternion.identity);
-                Assert.That(body.FlatHitActive || body.BodyRenderer.enabled, Is.False);
+                Assert.That(body.FlatHitActive && body.BodyRenderer.enabled, Is.True);
                 state.Health = 0; body.ApplyCollision(state); Assert.That(body.CapsuleHitVolume.enabled || body.FlatHitActive, Is.False);
             }
-            finally { Object.DestroyImmediate(instance); }
+            finally { PaperBodyTests.ReleaseTestBody(player.SwimBody); Object.DestroyImmediate(instance); }
         }
     }
 }

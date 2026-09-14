@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1cb642f289b23e44975504239363a0f, type: 3}
   m_Name: DualPistolGirlPresentation
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.CharacterPresentationProfile
+  Paper: {fileID: 11400000, guid: d71d3963b3a1ee1449de4bef5fbbad60, type: 2}
   StationarySpeed: 0.1
   TurnThreshold: 45
   MovingTurnSpeed: 540

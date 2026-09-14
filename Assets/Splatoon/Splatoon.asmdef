@@ -14,7 +14,9 @@
     "Unity.InputSystem",
     "Unity.RenderPipelines.Universal.Runtime",
     "Unity.RenderPipelines.Core.Runtime",
-    "Unity.Animation.Rigging"
+    "Unity.Animation.Rigging",
+    "Unity.Burst",
+    "Unity.Collections"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

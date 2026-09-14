@@ -14,7 +14,7 @@
 | `EditorBuildSettings.scenes` | 唯一启动场景：Boot；玩法场景由 Addressables 加载 |
 | `NetworkConfig.TickRate` | 房主模拟频率：30 次/秒 |
 | `EnableSceneManagement` | 关闭 NGO 自动场景管理，使用现有异步加载器 |
-| `ConnectionApproval` | 启用连接审批，校验配置签名和最多 4 人的容量 |
+| `ConnectionApproval` | 启用连接审批，校验配置签名和最多 8 人的容量 |
 | `UnityTransport.SetConnectionData` | 房主监听所有网卡 0.0.0.0，默认 UDP 7777 |
 | `UdpLanDiscoveryService` | 独立 UDP 47777；2 秒刷新、6 秒未响应移除；发现失败保留直接连接入口 |
 | `TbMap / RoomMode.mapId` | 地图配置与模式引用；JSON/Addressables 地址为 `tbmap`，场景仍使用 `maps/TrainingGround` |

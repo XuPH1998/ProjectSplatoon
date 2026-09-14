@@ -30,7 +30,6 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         { if(!_buf["respawnSeconds"].IsNumber) { throw new SerializationException(); }  RespawnSeconds = _buf["respawnSeconds"]; }
         { if(!_buf["protectionSeconds"].IsNumber) { throw new SerializationException(); }  ProtectionSeconds = _buf["protectionSeconds"]; }
         { if(!_buf["friendlyFire"].IsBoolean) { throw new SerializationException(); }  FriendlyFire = _buf["friendlyFire"]; }
-        { if(!_buf["groundOnlyScore"].IsBoolean) { throw new SerializationException(); }  GroundOnlyScore = _buf["groundOnlyScore"]; }
     }
 
     public static RoomModeConfig DeserializeRoomModeConfig(JSONNode _buf)
@@ -55,7 +54,7 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// </summary>
     public readonly int MapId;
     /// <summary>
-    /// 最大人数（当前场景上限 4）
+    /// 最大人数（当前场景上限 8，每队最多 4 人）
     /// </summary>
     public readonly int MaxPlayers;
     /// <summary>
@@ -78,10 +77,6 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// 是否友伤
     /// </summary>
     public readonly bool FriendlyFire;
-    /// <summary>
-    /// 仅可行走地面计分（含坡道、高台及桥面）
-    /// </summary>
-    public readonly bool GroundOnlyScore;
    
     public const int __ID__ = 779335200;
     public override int GetTypeId() => __ID__;
@@ -103,7 +98,6 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         + "respawnSeconds:" + RespawnSeconds + ","
         + "protectionSeconds:" + ProtectionSeconds + ","
         + "friendlyFire:" + FriendlyFire + ","
-        + "groundOnlyScore:" + GroundOnlyScore + ","
         + "}";
     }
 }

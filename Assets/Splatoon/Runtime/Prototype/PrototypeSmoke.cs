@@ -144,7 +144,7 @@ namespace Splatoon.Prototype
             if(_host&&s.Phase==MatchPhase.Finished&&!_restarted)
             {
                 if(_finishedAt==0){_finishedAt=Time.realtimeSinceStartup;Debug.Log("[SMOKE] Three-minute round completed");}
-                if(Time.realtimeSinceStartup-_finishedAt>5){_restarted=true;match.StartRound();Debug.Log("[SMOKE] Restart requested");}
+                if(Time.realtimeSinceStartup-_finishedAt>5){_restarted=true;match.ReturnToRoom();match.StartRound();Debug.Log("[SMOKE] Returned to room and started next round");}
             }
         }
         private static void CaptureWorld(string path)
