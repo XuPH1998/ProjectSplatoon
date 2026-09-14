@@ -38,6 +38,78 @@ namespace Splatoon.Tests
             yield return Scenario();
             yield return new ExitPlayMode();
         }
+        [UnityTest] public IEnumerator RealHostRifleReleaseRecoversWhileSwimming()
+        {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
+            yield return new EnterPlayMode();
+            yield return RifleRecoveryScenario();
+            yield return new ExitPlayMode();
+        }
+
+        static IEnumerator RifleRecoveryScenario()
+        {
+            yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Recovery bootstrap");
+            ushort port;
+            using (var socket = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0))) port = (ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
+            yield return PrototypeApp.Current.Connect(true, "127.0.0.1", port).ToCoroutine();
+            yield return Wait(() => PrototypePlayer.Local != null && PrototypePlayer.Local.SwimBody != null, "Recovery host");
+            var player = PrototypePlayer.Local; var match = PrototypeMatch.Current; var arena = PrototypeArena.Current;
+            Assert.That(player.Snapshot.Value.HeroId, Is.EqualTo(1));
+            // Drive the production authority step explicitly so hardware input and
+            // the regular match tick cannot interleave with the regression sequence.
+            match.enabled = player.enabled = false;
+            var spawn = arena.SpawnPoints[0].position + Vector3.forward * 2;
+            Assert.That(Physics.Raycast(spawn + Vector3.up * .2f, Vector3.down, out var hit, 1, PlayerMotorSimulation.WorldMask), Is.True);
+            var surface = hit.collider.GetComponentInParent<PaintSurface>();
+            Assert.That(surface, Is.Not.Null);
+            match.Paint(surface, hit.point, hit.normal, 6, 1, 1, 1, 121);
+            var rows = new List<string>();
+            var w = GameplayConfig.GetHero(1);
+            foreach (bool moving in new[] { false, true }) foreach (int delay in new[] { 0, 1, 2 })
+            {
+                Reset(player, hit.point + Vector3.up * .04f, 1);
+                var start = player.Snapshot.Value;
+                WeaponSimulation.Cancel(ref start, default);
+                start.Ink = 20; start.SwimWasHeld = false;
+                player.Snapshot.Value = start;
+                for (int i = 0; i < 8; i++) Tick(player, false);
+                uint shotsBefore = player.Snapshot.Value.ShotSequence;
+                int firingTicks = w.StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(w) * 60) + 1;
+                for (int i = 0; i < firingTicks; i++) Tick(player, false, fire: true);
+                var fired = player.Snapshot.Value;
+                Assert.That(fired.ShotSequence, Is.GreaterThan(shotsBefore));
+                Assert.That(fired.WeaponPhase, Is.EqualTo(WeaponPhase.Firing));
+                int recoveryTicks = 0; float distance = 0;
+                for (int tick = 0; tick < 240; tick++)
+                {
+                    var before = player.Snapshot.Value;
+                    bool swim = tick >= delay;
+                    Tick(player, swim, move: moving ? Vector2.up : Vector2.zero, yaw: moving ? tick * 6 : 0);
+                    var s = player.Snapshot.Value;
+                    distance += Vector3.Distance(before.Position, s.Position);
+                    Assert.That(s.Grounded, Is.True, $"moving={moving}, delay={delay}, tick={tick}");
+                    if (swim) Assert.That(s.HasInkRecovery, Is.True, "Live ground must remain friendly");
+                    Assert.That(s.WeaponPhase, Is.EqualTo(tick == 0 ? WeaponPhase.Ending : WeaponPhase.Idle));
+                    Assert.That(s.ShotSequence, Is.EqualTo(fired.ShotSequence));
+                    Assert.That(s.NextShotAt, Is.EqualTo(fired.NextShotAt));
+                    Assert.That(s.InkRecoverAt, Is.EqualTo(fired.InkRecoverAt));
+                    bool recovering = tick > 0 && s.SimulatedAt + 1e-8 >= fired.InkRecoverAt;
+                    float rate = s.HasInkRecovery ? w.SwimRecoverInk : w.RecoverInk;
+                    float expected = recovering ? Mathf.Min(w.MaxInk, before.Ink + rate * Dt) : before.Ink;
+                    Assert.That(s.Ink, Is.EqualTo(expected).Within(.0001f), "Authoritative ink tick " + tick);
+                    if (recovering && before.Ink < w.MaxInk) recoveryTicks++;
+                }
+                Assert.That(recoveryTicks, Is.GreaterThan(0));
+                Assert.That(player.Snapshot.Value.Ink, Is.EqualTo(w.MaxInk));
+                if (moving) Assert.That(distance, Is.GreaterThan(10));
+                rows.Add($"moving={moving}, delayTicks={delay}, shots={fired.ShotSequence - shotsBefore}, inkAfterFire={fired.Ink}, inkAfter4s={player.Snapshot.Value.Ink}, recoveryTicks={recoveryTicks}, distance={distance}");
+                match.Projectiles.Clear();
+            }
+            const string output = "Reports/InkRecovery";
+            Directory.CreateDirectory(output);
+            File.WriteAllLines(output + "/host-recovery.txt", rows);
+            yield return PrototypeApp.Current.Leave().ToCoroutine();
+        }
         [UnityTearDown] public IEnumerator Cleanup()
         {
             if (Application.isPlaying) yield return new ExitPlayMode();

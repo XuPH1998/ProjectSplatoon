@@ -71,9 +71,13 @@ namespace Splatoon.Combat
             bool release = input.ReleaseSequence != s.ConsumedRelease;
             s.ConsumedRelease = input.ReleaseSequence;
             if (IsSemi(w)) return StepSemi(ref s, input, w, now, emerged, canShoot, edge, out result);
-            if (!canShoot) return false; // Preserve the press until human clearance is safe.
             bool chargeWeapon = IsCharge(w), burst = w.FireMode == (int)WeaponFireMode.Burst;
+            // Finishing a released shot must keep progressing while submerged or
+            // unable to stand. Only pending/new shots require shooting clearance.
             if (s.WeaponPhase == WeaponPhase.Ending) s.WeaponPhase = WeaponPhase.Idle;
+            if (!chargeWeapon && !burst && s.WeaponPhase == WeaponPhase.Firing && !input.Fire && s.BurstRemaining == 0)
+            { s.WeaponPhase = WeaponPhase.Ending; s.Firing = false; return false; }
+            if (!canShoot) return false; // Preserve the press until human clearance is safe.
             if (s.WeaponPhase == WeaponPhase.BurstCooldown)
             {
                 s.ConsumedFire = input.FireSequence;
@@ -107,8 +111,6 @@ namespace Splatoon.Combat
                 s.WeaponPhase = WeaponPhase.Idle; s.ChargeReleasePending = false; s.BurstRemaining = s.ChargeTicks = 0;
                 return true;
             }
-            if (!burst && s.WeaponPhase == WeaponPhase.Firing && !input.Fire && s.BurstRemaining == 0)
-            { s.WeaponPhase = WeaponPhase.Ending; s.Firing = false; return false; }
             if (now + 1e-8 < s.NextShotAt) return false;
             if (!Emit(ref s, w, now, 0, out result)) return false;
             s.BurstRemaining = Math.Max(0, s.BurstRemaining - 1);
