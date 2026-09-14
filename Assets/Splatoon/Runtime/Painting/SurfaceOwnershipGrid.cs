@@ -85,7 +85,7 @@ namespace Splatoon.Painting
             {
                 int i = z * Columns + x; if (Cells[i] == 255) continue;
                 Vector3 point = localToWorld.MultiplyPoint3x4(Center(i));
-                float f = InkBrush.Coverage(Vector3.Distance(point, stamp.Position), stamp.Radius, stamp.Hardness, stamp.Strength);
+                float f = InkShapeAtlas.Coverage(point, stamp);
                 if (f <= 0) continue;
                 int o = i * 4;
                 var value = InkCoverage.Accumulate(new Color32(State[o], State[o+1], State[o+2], State[o+3]), stamp.Team, f);

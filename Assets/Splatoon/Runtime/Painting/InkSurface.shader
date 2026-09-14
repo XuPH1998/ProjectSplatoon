@@ -83,6 +83,8 @@ Shader "Splatoon/InkSurface"
                 float3 n=normalize(i.normalWS),view=GetWorldSpaceNormalizeViewDir(i.positionWS);
                 float2 uv=InkDetailUV(i.positionWS,n,_InkWorldScale);
                 float4 mask=SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV);
+                // Mask alpha now includes the authored irregular splat silhouette; retain the
+                // existing wet edge/noise treatment on top of that silhouette.
                 float visible=InkVisible(mask.a,uv,_InkShapeNoiseScale,_InkThreshold);
                 float noise=InkNoise(uv,Vector1_b5cc7f6f25194a778cb438f45fbbce66);
                 float height=.3+mask.a*noise*noise;

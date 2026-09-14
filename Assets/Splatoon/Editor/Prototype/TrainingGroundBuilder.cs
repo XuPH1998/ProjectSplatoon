@@ -122,7 +122,9 @@ namespace Splatoon.Editor
         static PaintSurface Bind(GameObject go,bool scores,Vector2 size,int resolution)
         {
             var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=++_id;surface.Scores=scores;surface.WalkableSize=size;surface.Resolution=resolution;
-            surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");return surface;
+            surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");
+            surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/GameResource/Effects/Ink/Textures/InkSplatAtlas-Reference.png");
+            return surface;
         }
         static void Face(string name,Vector3 pos,Quaternion rotation,Vector2 size,int resolution)
         {

@@ -41,10 +41,11 @@ namespace Splatoon.Prototype
             else RequestSnapshotRpc();
             Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
         }
-        public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength)
+        public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint shapeSeed = 0)
         {
             if (!IsServer || State.Value.Phase == MatchPhase.Finished) return;
-            var stamp = new PaintStamp { Sequence = ++PaintSequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength };
+            var sequence = ++PaintSequence; if (shapeSeed == 0) shapeSeed = InkShapeAtlas.Hash(sequence ^ (uint)surface.SurfaceId * 0x9e3779b9u ^ team);
+            var stamp = new PaintStamp { Sequence = sequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength, ShapeSeed = shapeSeed };
             PrototypeArena.Current.Apply(stamp, true); _pending.Add(stamp); _journal.Add(stamp);
         }
         public void AddPlayer(ulong clientId, GameObject prefab)

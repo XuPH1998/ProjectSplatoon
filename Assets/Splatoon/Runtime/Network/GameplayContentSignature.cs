@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Splatoon.Painting;
 using Splatoon.Combat;
 using Splatoon.Prototype;
 
@@ -10,11 +11,11 @@ namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
-        public const int PaintProtocolVersion = 5;
+        public const int PaintProtocolVersion = 6;
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
-            w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion);
+            w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);

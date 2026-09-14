@@ -215,12 +215,13 @@ namespace Splatoon.Combat
         }
         private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w)
         {
+            uint shapeSeed = InkShapeAtlas.Hash(shot.Seed ^ shot.Id ^ shot.PelletIndex ^ (uint)surface.SurfaceId);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
-                Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength });
+                Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed });
 #endif
             if (PrototypeMatch.Current != null)
-                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength);
+                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed);
         }
         private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age)
         {

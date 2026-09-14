@@ -61,7 +61,7 @@ namespace Splatoon.Editor
             if(referenceUV)mesh.uv=mesh.vertices.Select(v=>InkCoverage.DetailUV(v,Vector3.up,.034424f)).ToArray();
             mesh.uv2=mesh.uv;mesh.RecalculateNormals();mesh.RecalculateTangents();
             go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=material;
-            var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=1;surface.Resolution=resolution;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");return surface;
+            var surface=go.AddComponent<PaintSurface>();surface.SurfaceId=1;surface.Resolution=resolution;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.ExtendShader=Shader.Find("TNTC/ExtendIslands");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/GameResource/Effects/Ink/Textures/InkSplatAtlas-Reference.png");return surface;
         }
         static void ValidateCpuGpu()
         {
@@ -98,7 +98,7 @@ namespace Splatoon.Editor
         {
             var go=GameObject.CreatePrimitive(PrimitiveType.Cube);var mesh=UnityEngine.Object.Instantiate(go.GetComponent<MeshFilter>().sharedMesh);
             mesh.vertices=mesh.vertices.Select(p=>Vector3.Scale(p,new Vector3(32,3,.5f))).ToArray();InkSurfaceAtlas.Rebuild(mesh,out int width,out int height);go.GetComponent<MeshFilter>().sharedMesh=mesh;
-            var surface=go.AddComponent<PaintSurface>();surface.Resolution=width;surface.ResolutionHeight=height;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");
+            var surface=go.AddComponent<PaintSurface>();surface.Resolution=width;surface.ResolutionHeight=height;surface.PainterShader=Shader.Find("Splatoon/InkTexturePainter");surface.DisplayShader=Shader.Find("Splatoon/InkDisplay");surface.ShapeAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/GameResource/Effects/Ink/Textures/InkSplatAtlas-Reference.png");
             var stamp=new PaintStamp{Position=new Vector3(-16+32/3f,0,.25f),Normal=Vector3.forward,Radius=1.4f,Hardness=.01f,Strength=.8f,Team=1};surface.Apply(stamp);surface.FlushDisplay();
             var raw=Read(surface.Mask);var display=Read(surface.DisplayMask);var pixels=raw.GetPixels32();var uv=mesh.uv2;var verts=mesh.vertices;var t=mesh.triangles;int samples=0,painted=0;
             float Cross(Vector2 a,Vector2 b)=>a.x*b.y-a.y*b.x;
