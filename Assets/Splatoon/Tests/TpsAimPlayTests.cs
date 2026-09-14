@@ -23,7 +23,7 @@ namespace Splatoon.Tests
 {
     public sealed class TpsAimPlayTests
     {
-        const string Output = "Reports/TpsAim/PlayMode";
+        const string Output = "Reports/TpsGravity/PlayMode";
         static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         static IEnumerator Wait(Func<bool> ready, string reason, double seconds = 20)
         {
@@ -62,6 +62,11 @@ namespace Splatoon.Tests
                 .GetType("Splatoon.Editor.CombatGirlsGraphicsValidation");
             type.GetMethod("Render", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { camera, name, Output });
         }
+        static void FlushPresentation(PrototypeMatch match)
+        {
+            typeof(PrototypeMatch).GetMethod("ServerTick", Private).Invoke(match, null);
+            typeof(InkPresentation).GetMethod("LateUpdate", Private).Invoke(InkPresentation.Current, null);
+        }
         static IEnumerator Scenario()
         {
             Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(UnityEngine.Rendering.GraphicsDeviceType.Null));
@@ -90,37 +95,57 @@ namespace Splatoon.Tests
                     var aim = solver.Resolve(player, state, state.LastShotMuzzle);
                     var target = Box("TPS target", aim.CameraOrigin + aim.Forward * distance, new Vector3(3, 3, .08f));
                     var impacts = new List<InkImpact>();
+                    var lastTrace = new Dictionary<uint, string>();
                     match.Projectiles.Clear(); InkPresentation.Current.Clear();
                     double born = player.NetworkManager.ServerTime.Time;
                     match.Projectiles.Spawn(player, state, born, match.State.Value.Round);
                     var shots = match.Projectiles.Spawned.ToArray();
+                    var resolved = solver.Resolve(player, state, state.LastShotMuzzle);
+                    Debug.Log($"[TPS-GRAVITY] hero={hero} distance={distance} muzzle={resolved.Muzzle:F4} blocked={resolved.MuzzleBlocked} aim={resolved.AimPoint:F4} target={target.transform.position:F4} immediateImpacts={match.Projectiles.Impacts.Count}");
                     Assert.That(shots.Length, Is.EqualTo(GameplayConfig.GetHero(hero).PelletCount));
                     Assert.That(shots.All(s => s.PostCorrectionVelocity.sqrMagnitude > 0), Is.True);
                     match.Projectiles.TraceObserved = (shot, age, point) =>
                     {
+                        lastTrace[shot.Id] = $"id={shot.Id} age={age:F4} point={point:F4}";
                         // Record the authority's actual terminal target position before ServerTick clears its events.
                         if (Mathf.Abs(point.z - (target.transform.position.z - .04f)) < .02f)
                             impacts.Add(new InkImpact { Position = point, Id = shot.Id });
                     };
-                    yield return Wait(() => impacts.Count >= shots.Length, "Authoritative target hit hero=" + hero + " distance=" + distance, 3);
+                    double hitDeadline = Time.realtimeSinceStartupAsDouble + 3;
+                    while (impacts.Count < shots.Length && Time.realtimeSinceStartupAsDouble < hitDeadline) yield return null;
+                    Assert.That(impacts.Count, Is.GreaterThanOrEqualTo(shots.Length), $"Authoritative target hit hero={hero} distance={distance}; last traces: {string.Join("; ", lastTrace.Values)}");
                     foreach (var impact in impacts)
                     {
-                        Assert.That(Mathf.Abs(impact.Position.x - aim.AimPoint.x), Is.LessThan(.03f));
-                        // Far shots can already be falling: reticle is not a gravity compensator.
-                        if (distance <= 6) Assert.That(Mathf.Abs(impact.Position.y - aim.AimPoint.y), Is.LessThan(.03f));
+                        var shot = shots.Single(s => s.Id == impact.Id);
+                        var weapon = GameplayConfig.GetHero(hero);
+                        float contactZ = target.transform.position.z - .04f;
+                        // Solve contact with the front plane, including the projectile radius and gravity.
+                        double low = 0, high = weapon.Lifetime;
+                        for (int i = 0; i < 40; i++)
+                        {
+                            double mid = (low + high) * .5;
+                            if (InkBallistics.Position(shot, weapon, mid).z < contactZ - weapon.CollisionRadius) low = mid;
+                            else high = mid;
+                        }
+                        Vector3 expected = InkBallistics.Position(shot, weapon, (low + high) * .5) + Vector3.forward * weapon.CollisionRadius;
+                        Assert.That(Vector3.Distance(impact.Position, expected), Is.LessThan(.003f), "Authority contact follows falling trajectory, not reticle height");
                     }
                     report.Add($"Hero {hero}: camera target {distance:F0}m, {shots.Length} authoritative projectiles hit; correction data present");
                     match.Projectiles.TraceObserved = null;
                     if (hero == 1 && distance == 12) Capture(Camera.main, "rifle-far-target");
-                    Object.Destroy(target); yield return null;
+                    // EnterPlayMode tests may resume before deferred Destroy is processed.
+                    // Remove the old target from physics before resolving the next shot.
+                    target.SetActive(false); Physics.SyncTransforms(); Object.Destroy(target); yield return null;
                 }
                 // Show real RPC-delivered particles in clear air, at configured speed/spread and gravity.
                 SetPose(player, feet + Vector3.up * 4);
                 var live = player.Snapshot.Value; live.LastShotCharge = 1;
                 match.Projectiles.Clear(); InkPresentation.Current.Clear();
-                match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
+                match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time - .05, match.State.Value.Round);
                 var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetHero(hero);
-                yield return Wait(() => streams[live.Team - 1].particleCount >= w.PelletCount, "RPC flying particles hero " + hero, 2);
+                // GPU captures can take longer than a projectile's lifetime on an importing editor.
+                // Sample a fixed live age without yielding between host RPC dispatch and capture.
+                FlushPresentation(match);
                 var stream = streams[live.Team - 1]; var particles = new ParticleSystem.Particle[1024]; int count = stream.GetParticles(particles);
                 Assert.That(count, Is.GreaterThanOrEqualTo(w.PelletCount));
                 var camera = new GameObject("Flight evidence camera").AddComponent<Camera>(); camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1;
@@ -134,45 +159,87 @@ namespace Splatoon.Tests
                 int changed = shown.GetPixels32().Zip(hidden.GetPixels32(), (a, b) => Math.Abs(a.r-b.r)+Math.Abs(a.g-b.g)+Math.Abs(a.b-b.b)).Count(d => d > 30);
                 Assert.That(changed, Is.GreaterThan(25), "Corrected particles contribute visible GPU pixels"); visiblePixels += changed;
                 Object.Destroy(shown); Object.Destroy(hidden); Object.Destroy(camera.gameObject);
-                // Compare the old aim-at-hit/far-point formula to a zero-spread corrected center shot.
+                // Compare the prior delayed gravity with the same converging baseline.
                 var solution = solver.Resolve(player, live, live.LastShotMuzzle);
                 var centerShot = flight; centerShot.Velocity = solution.InitialDirection * flight.Velocity.magnitude;
                 InkBallistics.ApplyCorrection(ref centerShot, solution, w);
-                Vector3 oldVelocity = (solution.AimPoint - solution.Muzzle).normalized * flight.Velocity.magnitude;
+                var priorShot = centerShot;
+                priorShot.GravityStartAge = (float)Math.Max(WeaponSimulation.Seconds(w.StraightFrames), InkBallistics.CorrectionAge(priorShot, w));
                 for (int i = 0; i <= 120; i++)
                 {
                     double age = i / 120.0;
-                    var oldPoint = InkBallistics.Position(solution.Muzzle, oldVelocity, w, age) - feet;
+                    var oldPoint = InkBallistics.Position(priorShot, w, age) - feet;
                     var newPoint = InkBallistics.Position(centerShot, w, age) - feet;
                     csv.Add(string.Join(",", new[] { hero.ToString(), age.ToString("F6", CultureInfo.InvariantCulture), oldPoint.x.ToString("F6", CultureInfo.InvariantCulture), oldPoint.y.ToString("F6", CultureInfo.InvariantCulture), oldPoint.z.ToString("F6", CultureInfo.InvariantCulture), newPoint.x.ToString("F6", CultureInfo.InvariantCulture), newPoint.y.ToString("F6", CultureInfo.InvariantCulture), newPoint.z.ToString("F6", CultureInfo.InvariantCulture) }));
                 }
                 report.Add($"Hero {hero}: host RPC + GPU particles={count}, visiblePixels={changed}, fallStart={flight.GravityStartAge:F5}s");
             }
+            // Sample a six-metre correction after the straight period but before its bend.
+            // Flush the real host RPC and render in this frame so clock scheduling cannot skip the interval.
+            match.Projectiles.Clear(); InkPresentation.Current.Clear();
+            var gravityWeapon = GameplayConfig.GetHero(3);
+            var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, float.PositiveInfinity);
+            var gravityShot = new InkShot { Id = uint.MaxValue, HeroId = 3, Team = player.Snapshot.Value.Team,
+                Shooter = ulong.MaxValue, Round = match.State.Value.Round, Seed = 71, Origin = gravityAim.Muzzle,
+                Velocity = gravityAim.InitialDirection * gravityWeapon.SpeedMin };
+            InkBallistics.ApplyCorrection(ref gravityShot, gravityAim, gravityWeapon);
+            double gravityBend = InkBallistics.CorrectionAge(gravityShot, gravityWeapon);
+            double gravityAge = (gravityShot.GravityStartAge + gravityBend) * .5;
+            Assert.That(gravityAge, Is.GreaterThan(gravityShot.GravityStartAge).And.LessThan(gravityBend));
+            gravityShot.Born = player.NetworkManager.ServerTime.Time - gravityAge;
+            match.Projectiles.SpawnForMeasurement(gravityShot);
+            FlushPresentation(match);
+            var gravityStream = streams[gravityShot.Team - 1];
+            var gravityParticles = new ParticleSystem.Particle[32];
+            Assert.That(gravityStream.GetParticles(gravityParticles), Is.GreaterThan(0), "Host RPC delivered pre-bend shot");
+            var expectedPosition = InkBallistics.Position(gravityShot, gravityWeapon, gravityAge);
+            Assert.That(Vector3.Distance(gravityParticles[0].position, expectedPosition), Is.LessThan(.0001f), "GPU stream uses complete authority trajectory");
+            var noGravity = gravityShot; noGravity.GravityStartAge = 100;
+            float drop = InkBallistics.Position(noGravity, gravityWeapon, gravityAge).y - gravityParticles[0].position.y;
+            Assert.That(drop, Is.GreaterThan(.001f), "Actual rendered particle falls before convergence");
+            var gravityCamera = new GameObject("Pre-bend gravity evidence camera").AddComponent<Camera>();
+            gravityCamera.CopyFrom(Camera.main); gravityCamera.enabled = false; gravityCamera.aspect = 1;
+            gravityCamera.transform.position = expectedPosition + new Vector3(.6f, .15f, -.6f); gravityCamera.transform.LookAt(expectedPosition);
+            Capture(gravityCamera, "gravity-before-bend");
+            Object.Destroy(gravityCamera.gameObject);
+            report.Add($"Pre-bend GPU particle: age={gravityAge:F6}s, bend={gravityBend:F6}s, gravityStart={gravityShot.GravityStartAge:F6}s, drop={drop:F6}m; RPC and authority position agree");
+            match.Projectiles.Clear(); InkPresentation.Current.Clear();
             player.RequestHeroChange(1, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 1, "Return to rifle");
             SetPose(player, feet);
             var before = player.Snapshot.Value;
-            var input = new PlayerInputFrame { Fire = true, FireSequence = before.ConsumedFire + 1, Revision = before.Revision,
+            var input = new PlayerInputFrame { Fire = false, FireSequence = before.ConsumedFire, Revision = before.Revision,
                 HeroRevision = before.HeroRevision, Look = Vector2.zero, Move = Vector2.right };
             ((SortedDictionary<uint, PlayerInputFrame>)typeof(PrototypePlayer).GetField("_serverInputs", Private).GetValue(player)).Clear();
             typeof(PrototypePlayer).GetField("_lastInput", Private).SetValue(player, input);
             typeof(PrototypePlayer).GetField("_lastReceivedAt", Private).SetValue(player, player.NetworkManager.ServerTime.Time);
             double now = player.NetworkManager.ServerTime.Time;
-            for (int tick = 0; tick < 4; tick++) player.Simulate(1f / 60, now + tick / 60.0, match.State.Value.Phase);
+            // Switching heroes requires a released input before accepting the next press.
+            player.Simulate(1f / 60, now, match.State.Value.Phase);
+            input.Fire = true; input.FireSequence++;
+            typeof(PrototypePlayer).GetField("_lastInput", Private).SetValue(player, input);
+            for (int tick = 1; tick <= GameplayConfig.GetHero(1).StartFrames + 3; tick++)
+                player.Simulate(1f / 60, now + tick / 60.0, match.State.Value.Phase);
             Assert.That(player.Snapshot.Value.ShotSequence, Is.GreaterThan(before.ShotSequence));
             Assert.That(player.Snapshot.Value.Position.x, Is.GreaterThan(before.Position.x));
-            player.CharacterView.Shot(0); yield return null;
+            player.CharacterView.Shot(0);
+            typeof(PrototypePlayer).GetMethod("LateUpdate", Private).Invoke(player, null);
             Assert.That(player.CharacterView.CameraKick.sqrMagnitude, Is.GreaterThan(0));
             var current = player.PresentedState; current.Yaw = player.Look.x; current.Pitch = player.Look.y;
             var expectedAim = solver.Resolve(player, current, current.NextMuzzle);
-            Assert.That(Vector2.Distance(player.ReticleViewport, TpsAimSolver.ReticleViewport(Camera.main, expectedAim.AimPoint)), Is.LessThan(.0001));
-            Assert.That(Vector2.Distance(player.ReticleViewport, Vector2.one * .5f), Is.GreaterThan(.00001));
+            var projectedAim = TpsAimSolver.ReticleViewport(Camera.main, expectedAim.AimPoint);
+            float kickOffset = Vector2.Distance(projectedAim, Vector2.one * .5f);
+            Assert.That(kickOffset, Is.GreaterThan(1e-7f), "Camera kick has a measurable projection offset");
+            // Test tracking relative to the actual shake, which decays with editor frame time.
+            // A fixed centre reticle must fail even when the remaining kick is very small.
+            Assert.That(Vector2.Distance(player.ReticleViewport, projectedAim), Is.LessThan(kickOffset * .1f));
             report.Add("Moving real input fires; camera kick retained; live reticle follows logical target projection");
             var blocker = Box("Muzzle blocker", expectedAim.Muzzle, Vector3.one * .1f);
-            yield return null; yield return null;
+            typeof(PrototypePlayer).GetMethod("LateUpdate", Private).Invoke(player, null);
             Assert.That(player.MuzzleBlocked, Is.True, "Live HUD obstruction state");
             report.Add("Embedded muzzle updates live HUD obstruction state");
             Capture(Camera.main, "rifle-moving-obstruction");
+            blocker.SetActive(false); platform.SetActive(false); Physics.SyncTransforms();
             Object.Destroy(blocker); Object.Destroy(platform);
             yield return null;
             SetPose(player, PrototypeArena.Spawn(player.Snapshot.Value.Team, player.Snapshot.Value.Slot));

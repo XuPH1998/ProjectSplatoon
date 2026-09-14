@@ -82,19 +82,67 @@ namespace Splatoon.Tests
             Assert.That(Vector3.Distance(InkBallistics.Position(shot, w, bend - 1e-6), InkBallistics.Position(shot, w, bend + 1e-6)), Is.LessThan(.001));
         }
         [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)]
-        public void GravityWaitsForCorrectionAndOriginalStraightPeriod(int hero)
+        public void GravityStartsDuringLongCorrectionAndPersistsAcrossBend(int hero)
         {
             var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, Vector3.left * .6f, 14, float.PositiveInfinity);
             var shot = Shot(aim, hero); var w = GameplayConfig.GetHero(hero);
             double bend = InkBallistics.CorrectionAge(shot, w);
-            Assert.That(bend, Is.GreaterThan(WeaponSimulation.Seconds(w.StraightFrames)));
-            Assert.That(InkBallistics.Position(shot, w, bend * .99).y, Is.Zero.Within(.00001));
-            Assert.That(InkBallistics.Position(shot, w, bend + .2).y, Is.EqualTo(-.5f * w.ProjectileGravity * .2f * .2f).Within(.00001));
+            double straight = WeaponSimulation.Seconds(w.StraightFrames);
+            Assert.That(bend, Is.GreaterThan(straight));
+            Assert.That(shot.GravityStartAge, Is.EqualTo(straight).Within(1e-7));
+            Assert.That(InkBallistics.Position(shot, w, straight).y, Is.Zero.Within(.00001));
+            double middle = (straight + bend) * .5;
+            Assert.That(InkBallistics.Position(shot, w, middle).y, Is.EqualTo(-.5 * w.ProjectileGravity * Math.Pow(middle - straight, 2)).Within(.00001));
+            Equal(InkBallistics.Position(shot, w, bend), aim.CorrectionPoint + Vector3.down * (float)(.5 * w.ProjectileGravity * Math.Pow(bend - straight, 2)));
+            Assert.That(InkBallistics.Position(shot, w, bend + .2).y, Is.EqualTo(-.5 * w.ProjectileGravity * Math.Pow(bend + .2 - straight, 2)).Within(.00001));
+            Equal(InkBallistics.Position(shot, w, bend - 1e-6), InkBallistics.Position(shot, w, bend + 1e-6));
+            Assert.That(InkBallistics.Velocity(shot, w, bend - 1e-6).y, Is.EqualTo(-w.ProjectileGravity * (bend - straight)).Within(.0001));
+            Assert.That(InkBallistics.Velocity(shot, w, bend + 1e-6).y, Is.EqualTo(-w.ProjectileGravity * (bend - straight)).Within(.0001));
             Equal(InkBallistics.Velocity(shot, w, bend + .2), (InkBallistics.Position(shot, w, bend + .2001) - InkBallistics.Position(shot, w, bend + .1999)) / .0002f, .02f);
-            // Near target moves away: straight direction remains, and falling starts at the saved target distance.
+            // A vanished near target does not postpone gravity or change the straight baseline.
             var near = Shot(TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, Vector3.left * .6f, 20, 14), hero);
             Equal(near.Velocity, near.PostCorrectionVelocity);
             Assert.That(near.GravityStartAge, Is.EqualTo(shot.GravityStartAge));
+            Assert.That(InkBallistics.Position(near, w, middle).y, Is.EqualTo(InkBallistics.Position(shot, w, middle).y).Within(.00001));
+        }
+        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)]
+        public void ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(int hero)
+        {
+            var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, new Vector3(-.6f, 0, 4.5f), 6, float.PositiveInfinity);
+            var shot = Shot(aim, hero); var w = GameplayConfig.GetHero(hero);
+            double straight = WeaponSimulation.Seconds(w.StraightFrames), bend = InkBallistics.CorrectionAge(shot, w);
+            Assert.That(bend, Is.LessThan(straight));
+            Assert.That(InkBallistics.Position(shot, w, (straight + bend) * .5).y, Is.Zero.Within(.00001));
+            Assert.That(InkBallistics.Position(shot, w, straight + .1).y, Is.EqualTo(-.5f * w.ProjectileGravity * .01f).Within(.00001));
+        }
+        [TestCase(-45f)] [TestCase(35f)]
+        public void PitchedCorrectionPreservesGravityDisplacementAndVelocity(float pitch)
+        {
+            var rotation = Quaternion.Euler(pitch, 17, 0);
+            var aim = TpsAimSolver.Geometry(Vector3.zero, rotation * Vector3.forward, rotation * new Vector3(-.6f, -.1f, 0), 14, float.PositiveInfinity);
+            var shot = Shot(aim); var baseline = shot; baseline.GravityStartAge = 100;
+            var w = GameplayConfig.GetHero(1); double bend = InkBallistics.CorrectionAge(shot, w);
+            foreach (double age in new[] { bend - .01, bend, bend + .01 })
+            {
+                float fall = (float)age - shot.GravityStartAge;
+                Equal(InkBallistics.Position(shot, w, age) - InkBallistics.Position(baseline, w, age), Vector3.down * (.5f * w.ProjectileGravity * fall * fall));
+                Equal(InkBallistics.Velocity(shot, w, age) - InkBallistics.Velocity(baseline, w, age), Vector3.down * (w.ProjectileGravity * fall));
+            }
+            Equal(InkBallistics.Position(shot, w, bend - 1e-6), InkBallistics.Position(shot, w, bend + 1e-6));
+        }
+        [TestCase(30)] [TestCase(60)] [TestCase(144)]
+        public void GravityCanHitFloorBeforeCorrectionCompletes(int frameRate)
+        {
+            Box(new Vector3(0, -.25f, 0), new Vector3(100, .5f, 100));
+            var aim = TpsAimSolver.Geometry(Vector3.up * .3f, Vector3.forward, new Vector3(-.6f, .3f, 0), 30, float.PositiveInfinity);
+            var shot = Shot(aim); var w = GameplayConfig.GetHero(1);
+            var service = new InkProjectileService(); service.SpawnForMeasurement(shot);
+            for (int i = 1; i <= frameRate; i++) service.Simulate((double)i / frameRate);
+            Assert.That(service.ActiveCount, Is.Zero); Assert.That(service.Impacts.Count, Is.EqualTo(1));
+            Assert.That(service.Impacts[0].Hit, Is.True); Assert.That(service.Impacts[0].Position.y, Is.Zero.Within(.001));
+            double age = shot.GravityStartAge + Math.Sqrt(2 * (.3f - w.CollisionRadius) / w.ProjectileGravity);
+            Assert.That(age, Is.LessThan(InkBallistics.CorrectionAge(shot, w)));
+            Assert.That(service.Impacts[0].Position.z, Is.EqualTo(InkBallistics.Position(shot, w, age).z).Within(.01));
         }
         [TestCase(0f)] [TestCase(.1f)] [TestCase(4f)] [TestCase(12f)] [TestCase(100f)]
         public void DistanceInverseIncludesBraking(float distance)
@@ -205,8 +253,9 @@ namespace Splatoon.Tests
                     Vector3 muzzle = player.MuzzleOffset(0);
                     var aim = TpsAimSolver.Geometry(camera, Vector3.forward, muzzle, 6, float.PositiveInfinity);
                     var corrected = Shot(aim, hero);
-                    var legacy = new InkShot { Id = 2, HeroId = hero, Shooter = ulong.MaxValue, Team = 1, Seed = 71,
-                        Origin = muzzle, Velocity = (camera + Vector3.forward * 100 - muzzle).normalized * w.SpeedMin };
+                    // Previous convergence implementation delayed gravity until the bend.
+                    var legacy = corrected; legacy.Id = 2;
+                    legacy.GravityStartAge = (float)Math.Max(WeaponSimulation.Seconds(w.StraightFrames), InkBallistics.CorrectionAge(legacy, w));
                     Vector3 Land(InkShot shot, string kind)
                     {
                         var simulation = new InkProjectileService();
@@ -217,12 +266,12 @@ namespace Splatoon.Tests
                         return simulation.Impacts[0].Position;
                     }
                     var oldPoint = Land(legacy, "old"); var newPoint = Land(corrected, "corrected");
-                    csv.Add(string.Join(",", hero, mode, N(oldPoint.x), N(oldPoint.z), N(newPoint.x), N(newPoint.z), N(newPoint.z - oldPoint.z), N(WeaponSimulation.Seconds(w.StraightFrames)), N(corrected.GravityStartAge)));
+                    csv.Add(string.Join(",", hero, mode, N(oldPoint.x), N(oldPoint.z), N(newPoint.x), N(newPoint.z), N(newPoint.z - oldPoint.z), N(legacy.GravityStartAge), N(corrected.GravityStartAge)));
                 }
             }
-            Directory.CreateDirectory("Reports/TpsAim");
-            File.WriteAllLines("Reports/TpsAim/floor-comparison.csv", csv);
-            File.WriteAllLines("Reports/TpsAim/floor-trajectories.csv", traces);
+            Directory.CreateDirectory("Reports/TpsGravity");
+            File.WriteAllLines("Reports/TpsGravity/floor-comparison.csv", csv);
+            File.WriteAllLines("Reports/TpsGravity/floor-trajectories.csv", traces);
         }
     }
 }

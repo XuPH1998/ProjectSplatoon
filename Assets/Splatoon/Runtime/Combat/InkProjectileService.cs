@@ -89,7 +89,9 @@ namespace Splatoon.Combat
             Vector3 localSpread = Quaternion.Inverse(Quaternion.LookRotation(aim.InitialDirection)) * shot.Velocity;
             shot.PostCorrectionVelocity = Quaternion.LookRotation(aim.ExitDirection) * localSpread;
             shot.FirstSegmentLength = aim.FirstSegmentLength;
-            shot.GravityStartAge = (float)Math.Max(WeaponSimulation.Seconds(w.StraightFrames), CorrectionAge(shot, w));
+            // Gravity follows weapon time, independently of convergence along the two-leg baseline.
+            // Position and Velocity keep accumulating it across the bend without a reset or snap.
+            shot.GravityStartAge = (float)WeaponSimulation.Seconds(w.StraightFrames);
         }
         public static Vector3 Position(InkShot shot, cfg.HeroConfig w, double age)
         {
