@@ -57,7 +57,8 @@
     <var name="paintHardness" type="float" comment="涂色：笔刷硬度（0 到 1）" />
     <var name="paintStrength" type="float" comment="涂色：笔刷强度（0 到 1）" />
     <var name="trailSpacing" type="float" comment="涂色：沿途落墨间隔（米）" />
-    <var name="trailRadius" type="float" comment="涂色：沿途落墨笔刷半径（米）" />
+    <var name="trailRadiusMin" type="float" comment="涂色：沿途落墨最小笔刷半径（米）" />
+    <var name="trailRadiusMax" type="float" comment="涂色：沿途落墨最大笔刷半径（米）" />
     <var name="trailMaxDrop" type="float" comment="涂色：沿途落墨向下探测范围（米）" />
     <var name="paintRange" type="float" comment="涂色：水平瞄准涂地射程目标（本项目米）" />
     <var name="chargeFrames" type="int" comment="蓄力：满蓄时间（60Hz参考帧，非蓄力为0）" />

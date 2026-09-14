@@ -30,7 +30,7 @@
 | trailSpacing / trailRadius / trailMaxDrop | 0.7 / 0.58 / 2.4 m | `PaintTrail` 向下射线命中立即涂色；无独立墨滴运动 | 当前的简化落墨模型，非已验证原作复刻 |
 | paintRange / chargeMinPaintRange | 见逐枪表 | `WeaponDisplay` 展示、`GameplayConfig.Validate` 校验 | 未进入弹道或涂地裁剪；不是当前有效的涂地上限 |
 
-源码：[`InkProjectileService`](../../Assets/Splatoon/Runtime/Combat/InkProjectileService.cs)、[`WeaponSimulation`](../../Assets/Splatoon/Runtime/Combat/WeaponSimulation.cs)、[`PaintSurface / InkBrush`](../../Assets/Splatoon/Runtime/Painting/PaintSurface.cs)、[`InkTexturePainter`](../../Assets/Splatoon/Runtime/Painting/InkTexturePainter.shader)、[`WeaponDisplay`](../../Assets/Splatoon/Runtime/Combat/WeaponDisplay.cs)。
+源码：[`InkProjectileService`](../../../../../Assets/Splatoon/Runtime/Combat/InkProjectileService.cs)、[`WeaponSimulation`](../../../../../Assets/Splatoon/Runtime/Combat/WeaponSimulation.cs)、[`PaintSurface / InkBrush`](../../../../../Assets/Splatoon/Runtime/Painting/PaintSurface.cs)、[`InkTexturePainter`](../../../../../Assets/Splatoon/Runtime/Painting/InkTexturePainter.shader)、[`WeaponDisplay`](../../../../../Assets/Splatoon/Runtime/Combat/WeaponDisplay.cs)。
 
 ### 笔刷覆盖与沿途落墨的实际含义
 

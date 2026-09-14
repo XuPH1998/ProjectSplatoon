@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'Docs/CombatGirls/FourHeroes'
+OUT=ROOT/'Reports/CombatGirls/FourHeroes'
 packs=json.loads((Path(__file__).with_name('hero-packs.json')).read_text('utf-8'))
 rows=[]
 for pack in packs:
@@ -26,7 +26,7 @@ page='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="view
 <p class="note">对照图均为 800 × 800。部分正式图额外显示脚下队伍标记。原工程文件保持不变；演示脚本和布料未运行。</p>
 <nav><label>训练场检查 <select id="pose"><option value="front">亮处正面</option><option value="side">亮处侧面</option><option value="back">亮处背面</option><option value="face">脸部近景</option><option value="shot">射击</option><option value="shadow">阴影处</option><option value="aim-up">上仰瞄准</option><option value="aim-down">下俯瞄准</option><option value="death-forward">向前死亡</option><option value="death-backward">向后死亡</option><option value="respawn">重生恢复</option></select></label></nav>
 <figure id="train"><figcaption>实际训练场灯光和喷墨 Renderer · 960 × 960</figcaption><img id="training" alt="训练场角色表现"></figure>
-<p><a href="Implementation.md">实现说明</a> · <a href="Acceptance.md">验收记录与未完成项</a> · <a href="static-validation.json">静态检查</a> · <a href="visual-comparison.json">像素差异记录</a></p></main>
+<p><a href="../../Archive/2026-09-14/Docs/CombatGirls/FourHeroes/Implementation.md">实现说明</a> · <a href="../../Archive/2026-09-14/Docs/CombatGirls/FourHeroes/Acceptance.md">验收记录与未完成项</a> · <a href="static-validation.json">静态检查</a> · <a href="visual-comparison.json">像素差异记录</a></p></main>
 <script>const packs=PACKS;const hero=document.querySelector('#hero'),angle=document.querySelector('#angle'),pose=document.querySelector('#pose');for(const p of packs){const o=document.createElement('option');o.value=p.name;o.textContent=p.name;hero.append(o)}function update(){document.querySelector('#source').src=`Screenshots/${hero.value}-source-${angle.value}.png`;document.querySelector('#target').src=`Screenshots/${hero.value}-target-${angle.value}.png`;document.querySelector('#training').src=`Screenshots/${hero.value}-training-${pose.value}.png`}for(const e of [hero,angle,pose])e.addEventListener('change',update);update();</script></html>'''
 (OUT/'review.html').write_text(page.replace('PACKS',json.dumps(packs)),encoding='utf-8')
 print(f'Created review.html and metrics for {len(rows)} paired views; screenshots unchanged.')

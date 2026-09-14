@@ -49,9 +49,9 @@ namespace Splatoon.Tests
             if (EditorApplication.isPlayingOrWillChangePlaymode || SessionState.GetBool(Running, false)) return;
             for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
                 if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty) { Debug.LogError("请先保存场景，再运行武器验证。"); return; }
-            Directory.CreateDirectory("Logs/WeaponReference");
+            Directory.CreateDirectory("Reports/WeaponReference");
             SessionState.SetString("WeaponReference.TestMode", mode); SessionState.SetBool(Running, true);
-            File.WriteAllText("Logs/WeaponReference/started.txt", mode + " " + System.DateTime.UtcNow.ToString("O"));
+            File.WriteAllText("Reports/WeaponReference/started.txt", mode + " " + System.DateTime.UtcNow.ToString("O"));
             Api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = names }));
         }
         sealed class Results : ICallbacks
@@ -63,7 +63,7 @@ namespace Splatoon.Tests
             {
                 if (!SessionState.GetBool(Running, false)) return;
                 string mode = SessionState.GetString("WeaponReference.TestMode", "EditMode");
-                TestRunnerApi.SaveResultToFile(result, "Logs/WeaponReference/" + mode + "-tests.xml");
+                TestRunnerApi.SaveResultToFile(result, "Reports/WeaponReference/" + mode + "-tests.xml");
                 SessionState.SetBool(Running, false);
                 Debug.Log($"[WeaponReference] {mode} passed={result.PassCount}, failed={result.FailCount}");
             }

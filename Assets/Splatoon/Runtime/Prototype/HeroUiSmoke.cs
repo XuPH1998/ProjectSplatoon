@@ -119,7 +119,7 @@ namespace Splatoon.Prototype
         }
         async UniTask<string> Run()
         {
-            _output=_manual?"Logs/HeroMigration/ui-validation.txt":HeroSelectionSmoke.Arg("-weaponOutput","Temp/HeroUi.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_output)));
+            _output=_manual?"Reports/HeroMigration/ui-validation.txt":HeroSelectionSmoke.Arg("-weaponOutput","Reports/HeroSelection/hero-ui.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_output)));
             string error=null;
             try
             {

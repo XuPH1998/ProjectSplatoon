@@ -43,7 +43,7 @@ namespace Splatoon.Config
                 Require(w.PaintRadiusMin > 0 && w.PaintRadiusMax >= w.PaintRadiusMin && w.PaintHardness <= 1 && w.PaintStrength <= 1 && w.PaintStrength > 0 && w.SpreadDegrees <= 45, "笔刷或散布配置无效");
                 Require(!string.IsNullOrWhiteSpace(w.WeaponPrefabAddress), "武器缺少资源地址");
                 Require(w.FireIntervalFrames > 0 && Math.Abs(w.FireRate * w.FireIntervalFrames - 60) < .001 && w.StartFrames >= 0 && w.EmergeStartFrames >= w.StartFrames && w.InkRecoverLockFrames >= 0, "武器时间参数以 60Hz 参考帧配置");
-                Require(w.DamageMin > 0 && w.DamageMin <= w.Damage && w.DamageReduceStartFrames >= 0 && w.DamageReduceEndFrames > w.DamageReduceStartFrames && w.StraightFrames >= 0 && w.BrakeFrames > 0 && w.BrakeSpeedMultiplier > 0 && w.BrakeSpeedMultiplier <= 1 && w.SpreadRecoverFrames > 0 && w.JumpSpreadDegrees <= 45 && w.TrailSpacing > 0 && w.TrailRadius > 0 && w.EffectiveRange > 0 && w.PaintRange >= w.EffectiveRange, "武器弹道或落墨配置无效");
+                Require(w.DamageMin > 0 && w.DamageMin <= w.Damage && w.DamageReduceStartFrames >= 0 && w.DamageReduceEndFrames > w.DamageReduceStartFrames && w.StraightFrames >= 0 && w.BrakeFrames > 0 && w.BrakeSpeedMultiplier > 0 && w.BrakeSpeedMultiplier <= 1 && w.SpreadRecoverFrames > 0 && w.JumpSpreadDegrees <= 45 && w.TrailSpacing > 0 && w.TrailRadiusMin > 0 && !float.IsInfinity(w.TrailRadiusMin) && w.TrailRadiusMax >= w.TrailRadiusMin && !float.IsInfinity(w.TrailRadiusMax) && w.EffectiveRange > 0 && w.PaintRange >= w.EffectiveRange, "武器弹道或落墨配置无效");
             }
             foreach (var m in tables.TbRoomMode.DataList)
             {

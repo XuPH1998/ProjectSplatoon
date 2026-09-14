@@ -102,7 +102,7 @@ namespace Splatoon.Prototype
             using(var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp))
             {if(p!=null)writer.WriteNetworkSerializable(p.Snapshot.Value);snapshotBytes=writer.Length;}
             string report=$"passed={pass}\nrole={Arg("-weaponRole","host")}\nerror={error}\nequipped={string.Join(",",_equipped)}\nfired={string.Join(",",_fired)}\nfullCharge={_fullCharge}\nremoteMixed={_remoteMixed}\nmaxPlayers={_maxPlayers}\nrespawnRetained={_respawnRetained}\nroundReset={_roundReset}\nreconnected={_reconnected}\npeakProjectiles={_peakProjectiles}\npeakPaintMiB={_peakPaint/1048576.0}\nmaxCorrection={_maxCorrection}\nsnapshotBytes={snapshotBytes}\np95FrameMs={(_frames.Count>0?_frames[(int)((_frames.Count-1)*.95)]:0)}\nruntimeErrors={string.Join(" | ",_errors)}";
-            string output=Arg("-weaponOutput","Temp/WeaponSmoke.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));File.WriteAllText(output,report);Debug.Log("[WEAPON-SMOKE] "+report);
+            string output=Arg("-weaponOutput","Reports/HeroSelection/weapon-smoke.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));File.WriteAllText(output,report);Debug.Log("[WEAPON-SMOKE] "+report);
             if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom)await PrototypeApp.Current.Leave();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.Exit(pass?0:1);

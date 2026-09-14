@@ -181,7 +181,7 @@ namespace Splatoon.Tests
     {
         [Test] public void CaptureAllFiveWeaponsWithRealProjectileAndOwnershipCode()
         {
-            var results = WeaponReferenceMeasurements.CaptureAll("Logs/WeaponReference/EditMode");
+            var results = WeaponReferenceMeasurements.CaptureAll("Reports/WeaponReference/EditMode");
             Assert.That(results.Count, Is.EqualTo(87));
             foreach (var r in results)
             {
@@ -189,8 +189,8 @@ namespace Splatoon.Tests
                 Assert.That(double.IsFinite(r.ownedArea), Is.True); Assert.That(r.targetValidated, Is.False);
             }
             Assert.That(results.Where(r => r.scenario == "flat").All(r => r.paintStamps > 0), Is.True);
-            Directory.CreateDirectory("Docs/CombatGirls/FourHeroes");
-            File.WriteAllText("Docs/CombatGirls/FourHeroes/paint-measurements.json", "["+string.Join(",",results.Where(r=>r.weapon>=2&&r.weapon<=4&&r.scenario=="flat").Select(r=>$"{{\"id\":{r.weapon},\"range\":{r.maxOwnedForward.ToString("R",CultureInfo.InvariantCulture)},\"method\":\"Physics Spawn + 0.125m ownership grid, fixed seeded volley\"}}"))+"]");
+            Directory.CreateDirectory("Reports/CombatGirls/FourHeroes");
+            File.WriteAllText("Reports/CombatGirls/FourHeroes/paint-measurements.json", "["+string.Join(",",results.Where(r=>r.weapon>=2&&r.weapon<=4&&r.scenario=="flat").Select(r=>$"{{\"id\":{r.weapon},\"range\":{r.maxOwnedForward.ToString("R",CultureInfo.InvariantCulture)},\"method\":\"Physics Spawn + 0.125m ownership grid, fixed seeded volley\"}}"))+"]");
         }
         [Test] public void RepeatingMeasurementUsesIdenticalSeededTrajectoryAndCoverage()
         {
@@ -221,14 +221,14 @@ namespace Splatoon.Tests
             Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(22));
             Assert.That(GameplayConfig.GetHero(5).Damage, Is.EqualTo(160));
             Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
-            Directory.CreateDirectory("Logs/WeaponReference/PlayMode");
-            File.WriteAllText("Logs/WeaponReference/PlayMode/addressables.txt",
+            Directory.CreateDirectory("Reports/WeaponReference/PlayMode");
+            File.WriteAllText("Reports/WeaponReference/PlayMode/addressables.txt",
                 "Real PrototypeApp initialization reached Ready; all 9 changed scalar cells verified before measurement LoadTables().\n" +
                 "ContentSignature=" + BitConverter.ToString(LubanConfigService.Current.ContentSignature).Replace("-", "").ToLowerInvariant() + "\n");
-            var results = WeaponReferenceMeasurements.CaptureAll("Logs/WeaponReference/PlayMode");
+            var results = WeaponReferenceMeasurements.CaptureAll("Reports/WeaponReference/PlayMode");
             foreach (var r in results)
             {
-                string file = $"Logs/WeaponReference/EditMode/w{r.weapon}-q{Mathf.RoundToInt(r.charge * 60)}-{r.scenario}-{r.driverHz}.json";
+                string file = $"Reports/WeaponReference/EditMode/w{r.weapon}-q{Mathf.RoundToInt(r.charge * 60)}-{r.scenario}-{r.driverHz}.json";
                 Assert.That(File.Exists(file), Is.True, "Run the EditMode measurement first: " + file);
                 Assert.That(r.gridHash, Is.EqualTo(JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText(file)).gridHash));
                 Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetHero(r.weapon).PelletCount));

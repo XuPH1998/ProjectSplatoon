@@ -167,8 +167,9 @@ namespace Splatoon.Tests
             s.Health=0;Assert.That(HeroSelectionRules.Validate(s,2,0,0,0,1,0,true),Is.Not.Null);
         }
         [TestCase(1,0,13.6f)] [TestCase(5,0,11.2f)] [TestCase(5,1,20.4f)]
-        public void ActualMuzzleAndProjectileReachEachPaintTargetAndRetainLaunchWeapon(int id,float charge,float target)
+        public void HistoricalMuzzleAndProjectileRetainPinnedRangeAndLaunchWeapon(int id,float charge,float target)
         {
+            HeroMigrationTests.LoadHistoricalWeapons();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.position=new Vector3(0,-.25f,0);floor.transform.localScale=new Vector3(100,.5f,100);
             var go=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));

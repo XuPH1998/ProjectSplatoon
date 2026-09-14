@@ -54,7 +54,9 @@ namespace Splatoon.Prototype
             string result=FormattableString.Invariant($"{{\"frames\":{times.Length},\"p50Ms\":{At(.5f):F3},\"p95Ms\":{At(.95f):F3},\"p99Ms\":{At(.99f):F3},\"maxMs\":{times[^1]:F3},\"gcRecorderValid\":{valid.ToString().ToLowerInvariant()},\"gcTotalBytes\":{_gcBytes},\"gcMaxFrameBytes\":{_gcPeak},\"paintRtBytes\":{Painting.PaintSurface.AllocatedBytes}}}");
             result=result.TrimEnd('}')+FormattableString.Invariant($",\"pendingPeak\":{_pendingPeak},\"bufferedPeak\":{_bufferedPeak},\"journalPeak\":{_journalPeak},\"transferPeak\":{_transferPeak},\"finalSequence\":{match.AppliedPaintSequence}}}");
             string label=match.IsServer?"host":"client-"+match.NetworkManager.LocalClientId;
-            File.WriteAllText(Path.Combine(Application.dataPath,"..","ink-performance-"+label+".json"),result);Debug.Log("[INK-PERF] "+result);
+            string output = Path.Combine(Application.dataPath, "..", "Reports", "InkPerformance");
+            Directory.CreateDirectory(output);
+            File.WriteAllText(Path.Combine(output,"ink-performance-"+label+".json"),result);Debug.Log("[INK-PERF] "+result);
         }
         static void ReleaseTarget(){if(_target==null)return;_target.Release();UnityEngine.Object.Destroy(_target);_target=null;RenderRequest.destination=null;}
         public static void Reset(){_allocations.Dispose();ReleaseTarget();_match=null;Frames.Clear();}

@@ -1,0 +1,1422 @@
+{
+  "clips": [
+    "R_AimWalk_F",
+    "R_AimWalk_B",
+    "R_AimWalk_FL",
+    "R_AimWalk_BR",
+    "R_AimTurn_L90",
+    "R_AimTurn_R90",
+    "R_AimIdle",
+    "R_AimIdle_AutoShoot",
+    "R_Die_F",
+    "R_Die_B"
+  ],
+  "files": [
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Biperworks_Tools\\CombatGirls_Weapon_Control\\Character_Weapon_Controller.cs",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Biperworks_Tools/CombatGirls_Weapon_Control/Character_Weapon_Controller.cs",
+      "sourceSha256": "a65c045510ab021ff8f8cafeb56a1ba3155188ddb4809b71d8094dc98fe1574c",
+      "importSha256": "a65c045510ab021ff8f8cafeb56a1ba3155188ddb4809b71d8094dc98fe1574c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Biperworks_Tools\\CombatGirls_Weapon_Control\\Character_Weapon_Controller.cs.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Biperworks_Tools/CombatGirls_Weapon_Control/Character_Weapon_Controller.cs.meta",
+      "sourceSha256": "8d86e596ec71fc12be39fbd0380e805eed6bf00d29a6bf7ef0c4a3187ca6ff22",
+      "importSha256": "8d86e596ec71fc12be39fbd0380e805eed6bf00d29a6bf7ef0c4a3187ca6ff22",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticW.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Body_PlasticW.mat",
+      "sourceSha256": "e1071e369290bd331bbf8a09242bb55627565567d635e473518746460d48483e",
+      "importSha256": "e1071e369290bd331bbf8a09242bb55627565567d635e473518746460d48483e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticW.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Body_PlasticW.mat.meta",
+      "sourceSha256": "e324d38a92d8c8c369908e7d5209089e084316310a4a1f134ad4a35eda9a8e45",
+      "importSha256": "e324d38a92d8c8c369908e7d5209089e084316310a4a1f134ad4a35eda9a8e45",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticY.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Body_PlasticY.mat",
+      "sourceSha256": "ec256bb88294765c962352f6e69d79a119d5df564322a720a570ed910d924969",
+      "importSha256": "ec256bb88294765c962352f6e69d79a119d5df564322a720a570ed910d924969",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticY.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Body_PlasticY.mat.meta",
+      "sourceSha256": "dc37ab0110d84b6e8e58c2a25aa107d11ed51c860a2dfa38f7c484274d34f434",
+      "importSha256": "dc37ab0110d84b6e8e58c2a25aa107d11ed51c860a2dfa38f7c484274d34f434",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Face.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Face.mat",
+      "sourceSha256": "e775d8aac30a94eb9b842e053a0ccb5278940d686a70a32dc3b3c9b413700ccd",
+      "importSha256": "e775d8aac30a94eb9b842e053a0ccb5278940d686a70a32dc3b3c9b413700ccd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Face.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Materials/Humanoid_Face.mat.meta",
+      "sourceSha256": "368f87fcba7efbd511e7c2881767beb647615831c0458db2313e9c3544377c67",
+      "importSha256": "368f87fcba7efbd511e7c2881767beb647615831c0458db2313e9c3544377c67",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Models\\Humanoid_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Models/Humanoid_F.fbx",
+      "sourceSha256": "56f752843397cc50ca0291254538e33c1d28a73724c347ac72481b0901b41273",
+      "importSha256": "56f752843397cc50ca0291254538e33c1d28a73724c347ac72481b0901b41273",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Models\\Humanoid_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Models/Humanoid_F.fbx.meta",
+      "sourceSha256": "f1a6aa10f5fc17a6270bf032ab28f5d76ec27d012f79a01848d48fc0fefacf39",
+      "importSha256": "f1a6aa10f5fc17a6270bf032ab28f5d76ec27d012f79a01848d48fc0fefacf39",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Albedo.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_Albedo.png",
+      "sourceSha256": "400d838b024bab7d2b35ac4948f36269006a9bcf4a3aa9541c8a3cfc1878aeef",
+      "importSha256": "400d838b024bab7d2b35ac4948f36269006a9bcf4a3aa9541c8a3cfc1878aeef",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Albedo.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_Albedo.png.meta",
+      "sourceSha256": "fcb4bfe2ab696c8976d07354d7a524b02dc4e80d36c4ecbaf523e5cc45ad318e",
+      "importSha256": "fcb4bfe2ab696c8976d07354d7a524b02dc4e80d36c4ecbaf523e5cc45ad318e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_MetallicSmoothness.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_MetallicSmoothness.png",
+      "sourceSha256": "e8ae18c3b7af2827de5c6184001fd086d436799b6754a62018a86f16ed5ab5a7",
+      "importSha256": "e8ae18c3b7af2827de5c6184001fd086d436799b6754a62018a86f16ed5ab5a7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_MetallicSmoothness.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_MetallicSmoothness.png.meta",
+      "sourceSha256": "4fee241a0b4a21e858c9fb42ee502e2b0a4547708b9032ac15c55d883f4552c0",
+      "importSha256": "4fee241a0b4a21e858c9fb42ee502e2b0a4547708b9032ac15c55d883f4552c0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Normal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_Normal.png",
+      "sourceSha256": "fda20329aed82bc440e63affb1ac5fce3cc9be243b33f3c21bd1c691f16527b8",
+      "importSha256": "fda20329aed82bc440e63affb1ac5fce3cc9be243b33f3c21bd1c691f16527b8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Normal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Body_Normal.png.meta",
+      "sourceSha256": "9b62bda5ac75452ae50c140ae280fdb9536573a6b26b4223cd8854c5e63a0a9c",
+      "importSha256": "9b62bda5ac75452ae50c140ae280fdb9536573a6b26b4223cd8854c5e63a0a9c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Head_Albedo.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Head_Albedo.png",
+      "sourceSha256": "9abf38b960a984098d7523f2061d064ae1e4b0d0164b77045ee39a4a9682287d",
+      "importSha256": "9abf38b960a984098d7523f2061d064ae1e4b0d0164b77045ee39a4a9682287d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Head_Albedo.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Head_Albedo.png.meta",
+      "sourceSha256": "62c9ecb9298a30ff7f0c5f471cb5c0c46b467824d667d86e081636b8ab37ee40",
+      "importSha256": "62c9ecb9298a30ff7f0c5f471cb5c0c46b467824d667d86e081636b8ab37ee40",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Head_Normal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Head_Normal.png",
+      "sourceSha256": "fe7d530dcef44fc4e06f6d6d78bcff2da66f629c86a047ac1947dcbeb9c3067d",
+      "importSha256": "fe7d530dcef44fc4e06f6d6d78bcff2da66f629c86a047ac1947dcbeb9c3067d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Head_Normal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Humanoid_Bot/Texture/Humanoid_Head_Normal.png.meta",
+      "sourceSha256": "b449a41ac19620f0bb657ab113c5ace9ff4677c0557b58c6cbdc209f3d95a86a",
+      "importSha256": "b449a41ac19620f0bb657ab113c5ace9ff4677c0557b58c6cbdc209f3d95a86a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimIdle.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimIdle.fbx",
+      "sourceSha256": "0e02bfdb58c42615ea461ec074fb35ed602492c9a3091cbc710cd6962569c001",
+      "importSha256": "0e02bfdb58c42615ea461ec074fb35ed602492c9a3091cbc710cd6962569c001",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimIdle.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimIdle.fbx.meta",
+      "sourceSha256": "08ea3462be3bdefb6d0fdd34b6a68a48b6dc6a2f93852376a5df09da67db0398",
+      "importSha256": "27789e1fff90b6c9447f29873ff98e62ddb2ffa9aa63027d076e785d3636713b",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimIdle_AutoShoot.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimIdle_AutoShoot.fbx",
+      "sourceSha256": "ff529444c303443d1a12cea336e843fad05a897b9b0af55d8d065e67fe4db4d6",
+      "importSha256": "ff529444c303443d1a12cea336e843fad05a897b9b0af55d8d065e67fe4db4d6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimIdle_AutoShoot.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimIdle_AutoShoot.fbx.meta",
+      "sourceSha256": "6672095e57bd1a7cffbb9055b798ff27522034509dfa4fddb05babd25d6f7377",
+      "importSha256": "6672095e57bd1a7cffbb9055b798ff27522034509dfa4fddb05babd25d6f7377",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimTurn_L90.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimTurn_L90.fbx",
+      "sourceSha256": "ced47b1dfa8066349e9af083f7d3fa8769c4b71ff679134bfcabf0715adb12b5",
+      "importSha256": "ced47b1dfa8066349e9af083f7d3fa8769c4b71ff679134bfcabf0715adb12b5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimTurn_L90.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimTurn_L90.fbx.meta",
+      "sourceSha256": "fb7a8e0fa680501979af3c403f0c3141b0761a562956ab455467699e9b14da72",
+      "importSha256": "2fa12a826f2bf05bed450b27f3de4abb9236bd7e4ea2d956f561e879000b0005",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimTurn_R90.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimTurn_R90.fbx",
+      "sourceSha256": "498f81e8d456ea7e0d75a01154f96f0d4fe8380056e99acf92684df7b198f919",
+      "importSha256": "498f81e8d456ea7e0d75a01154f96f0d4fe8380056e99acf92684df7b198f919",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimTurn_R90.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimTurn_R90.fbx.meta",
+      "sourceSha256": "e6fa6c4bdb350a61260904de0b16445c3a6423e98d87a077b5d2754811210497",
+      "importSha256": "ab157572d0bf3e11855a6c8aee9bf49b73202ad4440240f4edb65845b51edbc0",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_B.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_B.fbx",
+      "sourceSha256": "3207cfd63b40d46495714d3749b69f44119b0720e9f1018158d62eb57d5980ba",
+      "importSha256": "3207cfd63b40d46495714d3749b69f44119b0720e9f1018158d62eb57d5980ba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_B.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_B.fbx.meta",
+      "sourceSha256": "e5d002f80405ba4f804935122ec5ba5902eabdf879627f85038e77238b79c756",
+      "importSha256": "7a41898d124b5825c66bcd6eced08d6ed4e1d0c6a902f537511ce92bc439939d",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_BR.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_BR.fbx",
+      "sourceSha256": "07f12bdd9aa4fe4ef122c827fbff420c3ee69adfe9d13ef04ad51b7dac36d4fd",
+      "importSha256": "07f12bdd9aa4fe4ef122c827fbff420c3ee69adfe9d13ef04ad51b7dac36d4fd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_BR.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_BR.fbx.meta",
+      "sourceSha256": "89808c6c6f5fb873893854eb8b21a8f2fd972b16d287d94ede13d16919b47284",
+      "importSha256": "685e240d2593683edeb2126f546f6117909fbb11ab5513e0856a91d0ee0bc9c5",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_F.fbx",
+      "sourceSha256": "b6e5c14056ec6f5a1d9d7c0bb905bb4680e8a9437db98d69fece58fee792d49f",
+      "importSha256": "b6e5c14056ec6f5a1d9d7c0bb905bb4680e8a9437db98d69fece58fee792d49f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_F.fbx.meta",
+      "sourceSha256": "9b4b06288517e0b3975c7c51668bde6a36357bff8977e07e882f4c30e5cc0aee",
+      "importSha256": "a4d860e143afd807346d194d7f763690c3201331bd27289dbc68a7fbd4dc2ef6",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_FL.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_FL.fbx",
+      "sourceSha256": "e142be90b42c4360d4d4e2122c87d17831b3bccedd0012ba5b4aadc483b58f7e",
+      "importSha256": "e142be90b42c4360d4d4e2122c87d17831b3bccedd0012ba5b4aadc483b58f7e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Aiming\\R_AimWalk_FL.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Aiming/R_AimWalk_FL.fbx.meta",
+      "sourceSha256": "205e35dfc64e9707271552e44bf98227003248fc9c351c7d490fbd139bd1b548",
+      "importSha256": "103515f57c7378124ef1e32087bd81bc923e42bcaf63b22c65859b6204c140dc",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Normal\\R_Die_B.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/R_Die_B.fbx",
+      "sourceSha256": "12e3aa7d7192525d2ea2a8febb5a1347541fea1f657ea7a4708a87ccb88224ef",
+      "importSha256": "12e3aa7d7192525d2ea2a8febb5a1347541fea1f657ea7a4708a87ccb88224ef",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Normal\\R_Die_B.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/R_Die_B.fbx.meta",
+      "sourceSha256": "b19bddd1257d070bcf6554e5cdfc430d0c525260788bb7095644491f807626ee",
+      "importSha256": "c19b2cd56b22b0036572a36f3bb51c2d66b9b84d0ef34d86eedecf3f74a54479",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Normal\\R_Die_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/R_Die_F.fbx",
+      "sourceSha256": "f0bf06118cfc02bd81eb229468790fc99aec31aee97558acbbb9fb615f42fa0d",
+      "importSha256": "f0bf06118cfc02bd81eb229468790fc99aec31aee97558acbbb9fb615f42fa0d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Animations\\Normal\\R_Die_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/R_Die_F.fbx.meta",
+      "sourceSha256": "c4b5c6ea72df8d9592f412f7751eeb16def55a08406306440fb6c75c9f3b7aaf",
+      "importSha256": "c2f04644cbc035eed07f515633e75c66d3710f2d1e7671baa8b60adbcee974f0",
+      "changes": [
+        "Repair missing Humanoid Avatar source"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Body.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Body.mat",
+      "sourceSha256": "5fc22d3cf8b2d9ebe987a9aa5430c7c2242baec4e138a01301302f7d17a72c84",
+      "importSha256": "5fc22d3cf8b2d9ebe987a9aa5430c7c2242baec4e138a01301302f7d17a72c84",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Body.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Body.mat.meta",
+      "sourceSha256": "731ba3c497ef698a587f5ee5045c91a02253c90b35ccd8ad6c08452d9f098fab",
+      "importSha256": "731ba3c497ef698a587f5ee5045c91a02253c90b35ccd8ad6c08452d9f098fab",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Eye.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Eye.mat",
+      "sourceSha256": "f73ff9c7acf19e1c3ca2c04497da3760dcdb95f3ad901ea8524444541b049bbd",
+      "importSha256": "f73ff9c7acf19e1c3ca2c04497da3760dcdb95f3ad901ea8524444541b049bbd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Eye.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Eye.mat.meta",
+      "sourceSha256": "ca73d55f94afbf052d503af875c2a30ec3a285b12485db9e3827dfd1ac4e6337",
+      "importSha256": "ca73d55f94afbf052d503af875c2a30ec3a285b12485db9e3827dfd1ac4e6337",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Face.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Face.mat",
+      "sourceSha256": "d1cdb9d57acd6a66ffce455af53e1cbb42d95d90c9c85df162bee3a05fccef15",
+      "importSha256": "d1cdb9d57acd6a66ffce455af53e1cbb42d95d90c9c85df162bee3a05fccef15",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Body\\Face.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Body/Face.mat.meta",
+      "sourceSha256": "e680da37516c2bd3fb3c8ff3b95f241c1725ec5aac21e725f5b55c2d460b4757",
+      "importSha256": "e680da37516c2bd3fb3c8ff3b95f241c1725ec5aac21e725f5b55c2d460b4757",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 1.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 1.mat",
+      "sourceSha256": "c6c11bd9b6d84fe61dda35c7097b5ab9dd2e66b1540f4c08604e05fa4f0e1efb",
+      "importSha256": "c6c11bd9b6d84fe61dda35c7097b5ab9dd2e66b1540f4c08604e05fa4f0e1efb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 1.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 1.mat.meta",
+      "sourceSha256": "5205e985849e117ea6bfe078386e2de4047c52b6d3b0ba25ca6712e995f2a62b",
+      "importSha256": "5205e985849e117ea6bfe078386e2de4047c52b6d3b0ba25ca6712e995f2a62b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 2.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 2.mat",
+      "sourceSha256": "176a2758e685937c184db4b77210fea11f608e1c0d9daddc7c4b64c97b0cf559",
+      "importSha256": "176a2758e685937c184db4b77210fea11f608e1c0d9daddc7c4b64c97b0cf559",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 2.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 2.mat.meta",
+      "sourceSha256": "3c2bb006cd26259ba3a0c48816a4c31ea630839962eb133588f760921fb14722",
+      "importSha256": "3c2bb006cd26259ba3a0c48816a4c31ea630839962eb133588f760921fb14722",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 3.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 3.mat",
+      "sourceSha256": "6a2e441643957aa7ae479165093153f8b9bdc92f05fc744266c2fab12f3985f7",
+      "importSha256": "6a2e441643957aa7ae479165093153f8b9bdc92f05fc744266c2fab12f3985f7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 3.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 3.mat.meta",
+      "sourceSha256": "f43492c5ef316023710cb9bc85c0af1023555ebfd8395622295482821ca61b35",
+      "importSha256": "f43492c5ef316023710cb9bc85c0af1023555ebfd8395622295482821ca61b35",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 4.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 4.mat",
+      "sourceSha256": "84e25d3011dd20a8cd17def8074d663409e02c68575f22f6848350def6563f5b",
+      "importSha256": "84e25d3011dd20a8cd17def8074d663409e02c68575f22f6848350def6563f5b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 4.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 4.mat.meta",
+      "sourceSha256": "d4da248637e8ab9412a8294164541ad0cb700501fc7da12311feba80eacf33b1",
+      "importSha256": "d4da248637e8ab9412a8294164541ad0cb700501fc7da12311feba80eacf33b1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 5.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 5.mat",
+      "sourceSha256": "2c3c3f40fae370ca66fd662705d6858d4ce8360c3362d6e7e98ee2dfb7df3490",
+      "importSha256": "2c3c3f40fae370ca66fd662705d6858d4ce8360c3362d6e7e98ee2dfb7df3490",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Cloth\\Rifle_Cloth 5.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Cloth/Rifle_Cloth 5.mat.meta",
+      "sourceSha256": "dcfd768c48e0fd5a68b282c4f4d995127698c282d464ee3c310b8fb8689956c7",
+      "importSha256": "dcfd768c48e0fd5a68b282c4f4d995127698c282d464ee3c310b8fb8689956c7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 1.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 1.mat",
+      "sourceSha256": "b60b77a559817646a5faf9572fd4bc0d63f983bee4750b20342f5963d51a79b4",
+      "importSha256": "b60b77a559817646a5faf9572fd4bc0d63f983bee4750b20342f5963d51a79b4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 1.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 1.mat.meta",
+      "sourceSha256": "c440619652450942ac22aee80ef9c03f7f56ff683e0ad849b201c3a7b0b615c5",
+      "importSha256": "c440619652450942ac22aee80ef9c03f7f56ff683e0ad849b201c3a7b0b615c5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 2.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 2.mat",
+      "sourceSha256": "a3bd0e619dd802a9c9edcfdfd5cd97a8f949c309703b2c503ddefc0dab358e92",
+      "importSha256": "a3bd0e619dd802a9c9edcfdfd5cd97a8f949c309703b2c503ddefc0dab358e92",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 2.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 2.mat.meta",
+      "sourceSha256": "0d596c740e49700dfc67be516521d7632849a2fcbab2ff001492b0381d5441f1",
+      "importSha256": "0d596c740e49700dfc67be516521d7632849a2fcbab2ff001492b0381d5441f1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 3.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 3.mat",
+      "sourceSha256": "1f9f3a791fd5720ee4939cc665abd818c8e66a368c22e55d5f104dc31decf452",
+      "importSha256": "1f9f3a791fd5720ee4939cc665abd818c8e66a368c22e55d5f104dc31decf452",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 3.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 3.mat.meta",
+      "sourceSha256": "51b1887f8dfacfad5fcc510312a40a23d6243a4684f6928250af3748885613b8",
+      "importSha256": "51b1887f8dfacfad5fcc510312a40a23d6243a4684f6928250af3748885613b8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 4.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 4.mat",
+      "sourceSha256": "579f0d6e194836a2c47d242a113e20df8110cbdf8fd9dd0a47ed6a4e6d6b4fe2",
+      "importSha256": "579f0d6e194836a2c47d242a113e20df8110cbdf8fd9dd0a47ed6a4e6d6b4fe2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Hair\\Rifle_Hair 4.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Hair/Rifle_Hair 4.mat.meta",
+      "sourceSha256": "857a6fb9d969a8395e7eb3cc011ece0eee40835e9438851c779a8fcda1077fd1",
+      "importSha256": "857a6fb9d969a8395e7eb3cc011ece0eee40835e9438851c779a8fcda1077fd1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Sportswear\\Sportswear.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Sportswear/Sportswear.mat",
+      "sourceSha256": "fff2103d3a29ba2c51f48c809fdfc2fc3d8622366fd487e3ef2e86fd4f3c44ab",
+      "importSha256": "fff2103d3a29ba2c51f48c809fdfc2fc3d8622366fd487e3ef2e86fd4f3c44ab",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Sportswear\\Sportswear.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Sportswear/Sportswear.mat.meta",
+      "sourceSha256": "e57cabbe11e048ad8068d7291e73810fdf616030a2419557d2edecad17338e22",
+      "importSha256": "e57cabbe11e048ad8068d7291e73810fdf616030a2419557d2edecad17338e22",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Real_Metal.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Real_Metal.mat",
+      "sourceSha256": "19b0757bccdbac92427ec9659c6f044208cea3690f60b85cfaa048ff545ba516",
+      "importSha256": "19b0757bccdbac92427ec9659c6f044208cea3690f60b85cfaa048ff545ba516",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Real_Metal.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Real_Metal.mat.meta",
+      "sourceSha256": "89982e81c20eb9abf59a29ddf24b62b8f4346d9a873c2b9158fa9ce47f1959cb",
+      "importSha256": "89982e81c20eb9abf59a29ddf24b62b8f4346d9a873c2b9158fa9ce47f1959cb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Real_Wood.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Real_Wood.mat",
+      "sourceSha256": "67554cb6664387598f9d625418d0b6a7eb2b9fedf6d834d453e23973548b1697",
+      "importSha256": "67554cb6664387598f9d625418d0b6a7eb2b9fedf6d834d453e23973548b1697",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Real_Wood.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Real_Wood.mat.meta",
+      "sourceSha256": "36a105c6a14ffcd996c5e060bd60edd5bc2174ad258c973c2a940d07dd53893a",
+      "importSha256": "36a105c6a14ffcd996c5e060bd60edd5bc2174ad258c973c2a940d07dd53893a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Style_Meatl.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Style_Meatl.mat",
+      "sourceSha256": "3b8c892fe5ce124b84e38f4158f6759c56315b361d3dcb4f3666898c551d55ba",
+      "importSha256": "3b8c892fe5ce124b84e38f4158f6759c56315b361d3dcb4f3666898c551d55ba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Style_Meatl.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Style_Meatl.mat.meta",
+      "sourceSha256": "6f6cee4e89b3df4ad3b925e63c6064303d570bd99082cef323a835938609def2",
+      "importSha256": "6f6cee4e89b3df4ad3b925e63c6064303d570bd99082cef323a835938609def2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Style_Wood.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Style_Wood.mat",
+      "sourceSha256": "6eadc2b1f7a31ae0bbdb64b3cae8d574e94c85f81bb54c12b4a1af0356100a0e",
+      "importSha256": "6eadc2b1f7a31ae0bbdb64b3cae8d574e94c85f81bb54c12b4a1af0356100a0e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Materials\\Weapon\\Rifle_Weapon_Style_Wood.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Materials/Weapon/Rifle_Weapon_Style_Wood.mat.meta",
+      "sourceSha256": "31a915b9457c87a425272f1c1519a2d7ffa14d550d0b7a59e590d49316096242",
+      "importSha256": "31a915b9457c87a425272f1c1519a2d7ffa14d550d0b7a59e590d49316096242",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Put_Socket.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Put_Socket.fbx",
+      "sourceSha256": "f2c330d69aa6897d675eb2af722abe44fa64aa415f95dbea512d49f00b596094",
+      "importSha256": "f2c330d69aa6897d675eb2af722abe44fa64aa415f95dbea512d49f00b596094",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Put_Socket.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Put_Socket.fbx.meta",
+      "sourceSha256": "d8544b8be80653595807c03d69f09cf1769718a4332d0e4081064afc888ba6a1",
+      "importSha256": "d8544b8be80653595807c03d69f09cf1769718a4332d0e4081064afc888ba6a1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Acc01.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Acc01.fbx",
+      "sourceSha256": "01a11c8815bd342b36476b3833acd84ef1107111f01d00f902de372d45aaf2ac",
+      "importSha256": "01a11c8815bd342b36476b3833acd84ef1107111f01d00f902de372d45aaf2ac",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Acc01.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Acc01.fbx.meta",
+      "sourceSha256": "536859139a6b0183bd872f79cd0a2e46f3c68ce12b60a5e0803037f380fdedb1",
+      "importSha256": "536859139a6b0183bd872f79cd0a2e46f3c68ce12b60a5e0803037f380fdedb1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Acc02.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Acc02.fbx",
+      "sourceSha256": "93f88add2320d494b823758c10da1f35e77be69aebe1eb34708f90ff8f6e4505",
+      "importSha256": "93f88add2320d494b823758c10da1f35e77be69aebe1eb34708f90ff8f6e4505",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Acc02.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Acc02.fbx.meta",
+      "sourceSha256": "02330de550459fb2968e881117a98fd3b703484a5f71f829ba1518a1e4be8c02",
+      "importSha256": "02330de550459fb2968e881117a98fd3b703484a5f71f829ba1518a1e4be8c02",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Belt.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Belt.fbx",
+      "sourceSha256": "e14ec5e851c5054bd98499bfcb17501fa91b8883fa5de07a8a62b53cf656466c",
+      "importSha256": "e14ec5e851c5054bd98499bfcb17501fa91b8883fa5de07a8a62b53cf656466c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Belt.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Belt.fbx.meta",
+      "sourceSha256": "af0b0308d9bfe385d1d4313b6a4e09ba2688af3c5331eb3e834ff3bb7e74be89",
+      "importSha256": "af0b0308d9bfe385d1d4313b6a4e09ba2688af3c5331eb3e834ff3bb7e74be89",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Body.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Body.fbx",
+      "sourceSha256": "b90303fbd5875f8ac5201d5e805542f88782141c211c718955f17756a2019c02",
+      "importSha256": "b90303fbd5875f8ac5201d5e805542f88782141c211c718955f17756a2019c02",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Body.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Body.fbx.meta",
+      "sourceSha256": "26a9cbca6d6290c63887677b92d2551d09166b7bd205733dbbed489b3a2b6383",
+      "importSha256": "26a9cbca6d6290c63887677b92d2551d09166b7bd205733dbbed489b3a2b6383",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Boots.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Boots.FBX",
+      "sourceSha256": "1e31ab261711622d9e36ab69c41455575e79b9608e3611ae68f6777e0700c97f",
+      "importSha256": "1e31ab261711622d9e36ab69c41455575e79b9608e3611ae68f6777e0700c97f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Boots.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Boots.FBX.meta",
+      "sourceSha256": "8ac5182b6239f24f12cf5b981bec32f1deca7c41a0624e50cc4109125c4a53f3",
+      "importSha256": "8ac5182b6239f24f12cf5b981bec32f1deca7c41a0624e50cc4109125c4a53f3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Dress.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Dress.FBX",
+      "sourceSha256": "98ce4dace0cd05f183b1815c4936eeb82ef392de07ea3ee92c7e9eb8065328c3",
+      "importSha256": "98ce4dace0cd05f183b1815c4936eeb82ef392de07ea3ee92c7e9eb8065328c3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Dress.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Dress.FBX.meta",
+      "sourceSha256": "9e6bad5938132ae08231a72c6bd250574c1060a03d78e641f36b4e3c9bcf5599",
+      "importSha256": "9e6bad5938132ae08231a72c6bd250574c1060a03d78e641f36b4e3c9bcf5599",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Face.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Face.FBX",
+      "sourceSha256": "4a9eff27929fc536212f15513541e4a7b0c47fe12a9f59ba5a1df3fdcbec4910",
+      "importSha256": "4a9eff27929fc536212f15513541e4a7b0c47fe12a9f59ba5a1df3fdcbec4910",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Face.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Face.FBX.meta",
+      "sourceSha256": "9f907387484039c660078071d190558a60f59efa6ebf37fd848322be7f080ec6",
+      "importSha256": "9f907387484039c660078071d190558a60f59efa6ebf37fd848322be7f080ec6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Hair.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Hair.fbx",
+      "sourceSha256": "3f642bd1a4f587cd687f486761991aa825a42d165344ccae2ae874c2b76688d0",
+      "importSha256": "3f642bd1a4f587cd687f486761991aa825a42d165344ccae2ae874c2b76688d0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Hair.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Hair.fbx.meta",
+      "sourceSha256": "9988d8b21651c88b21dd7e3039095d6c73b5decf67252ab7118611c9816a9e67",
+      "importSha256": "9988d8b21651c88b21dd7e3039095d6c73b5decf67252ab7118611c9816a9e67",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Hat.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Hat.FBX",
+      "sourceSha256": "94570dd938a4341d53e3338844479b4c7de1a20e43fa4099499705ee8ec0c4c1",
+      "importSha256": "94570dd938a4341d53e3338844479b4c7de1a20e43fa4099499705ee8ec0c4c1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Hat.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Hat.FBX.meta",
+      "sourceSha256": "ca841b4362c2ddc34c092c4d341977db17578fa1b208e6412029059d2efab5fd",
+      "importSha256": "ca841b4362c2ddc34c092c4d341977db17578fa1b208e6412029059d2efab5fd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Jacket.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Jacket.FBX",
+      "sourceSha256": "078df43db40beec9215c902b5f8cf50f13a5f9b5cb7dfa69744f4197982343cb",
+      "importSha256": "078df43db40beec9215c902b5f8cf50f13a5f9b5cb7dfa69744f4197982343cb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_Jacket.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_Jacket.FBX.meta",
+      "sourceSha256": "6f3252c62c97fdee290df7fc5ae3b7eb8cbbfd363a6a7e70f283e7966d6c8d47",
+      "importSha256": "6f3252c62c97fdee290df7fc5ae3b7eb8cbbfd363a6a7e70f283e7966d6c8d47",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_knee.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_knee.fbx",
+      "sourceSha256": "892154599f8180f751deb6e3958119a2a923e57fb3159b7d2e96cb1a0a3237db",
+      "importSha256": "892154599f8180f751deb6e3958119a2a923e57fb3159b7d2e96cb1a0a3237db",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Rifle_knee.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Rifle_knee.fbx.meta",
+      "sourceSha256": "f727f50afa947a588ff0338744b331d8bdd08991967f15689a2f641330cbd0ba",
+      "importSha256": "f727f50afa947a588ff0338744b331d8bdd08991967f15689a2f641330cbd0ba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Pants.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Pants.FBX",
+      "sourceSha256": "a79f4b24a3c6c9fd0e19403fd5590df4c4fe26a800ea6d670d41f0b46edc1b5e",
+      "importSha256": "a79f4b24a3c6c9fd0e19403fd5590df4c4fe26a800ea6d670d41f0b46edc1b5e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Pants.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Pants.FBX.meta",
+      "sourceSha256": "f9b4f67a6248f2c3e6872a401fbff7b04b7c8b91d7825dbac89a5ea803525399",
+      "importSha256": "f9b4f67a6248f2c3e6872a401fbff7b04b7c8b91d7825dbac89a5ea803525399",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Shoes.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Shoes.FBX",
+      "sourceSha256": "7d39ebaa63f8644be4ab4be9f70a81f3ae00d121ac6087d24e9550e8255af407",
+      "importSha256": "7d39ebaa63f8644be4ab4be9f70a81f3ae00d121ac6087d24e9550e8255af407",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Shoes.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Shoes.FBX.meta",
+      "sourceSha256": "c412e994aa782daf70fc09614100705c420212c089ee38ae80db737b3d1d3b10",
+      "importSha256": "c412e994aa782daf70fc09614100705c420212c089ee38ae80db737b3d1d3b10",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Top.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Top.FBX",
+      "sourceSha256": "ba8400dcf0d8cea90046248033f7cad00c0c6e7c4048b7d462bbb1fef5249443",
+      "importSha256": "ba8400dcf0d8cea90046248033f7cad00c0c6e7c4048b7d462bbb1fef5249443",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Sportswear_Top.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Sportswear_Top.FBX.meta",
+      "sourceSha256": "f591d568fe13666dd560a37b531b710bdec54d47a805ef6a2c32794473287b16",
+      "importSha256": "f591d568fe13666dd560a37b531b710bdec54d47a805ef6a2c32794473287b16",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Weapon_Rifle.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Weapon_Rifle.fbx",
+      "sourceSha256": "974fe9a0d4184877635716916dc8122a23dbbdcfd2e70f267c85d17971b4ad6d",
+      "importSha256": "974fe9a0d4184877635716916dc8122a23dbbdcfd2e70f267c85d17971b4ad6d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Parts\\Weapon_Rifle.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Parts/Weapon_Rifle.fbx.meta",
+      "sourceSha256": "02823eb03b14c951268f193d1918f8576d693deca27279386cac8beeb6446201",
+      "importSha256": "02823eb03b14c951268f193d1918f8576d693deca27279386cac8beeb6446201",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Rifle_Full_Body.FBX",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Rifle_Full_Body.FBX",
+      "sourceSha256": "961b2e2843a48b27eacf3838b86a5cb7a34d8e52d68c7115648a218f6ccb7988",
+      "importSha256": "961b2e2843a48b27eacf3838b86a5cb7a34d8e52d68c7115648a218f6ccb7988",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Models\\Rifle_Full_Body.FBX.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Models/Rifle_Full_Body.FBX.meta",
+      "sourceSha256": "1b157fda7735c3244d074f2f9d1d6908a14e6da4560bb0dc5608b4965ddd9ca1",
+      "importSha256": "1b157fda7735c3244d074f2f9d1d6908a14e6da4560bb0dc5608b4965ddd9ca1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Left_Handle.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Left_Handle.prefab",
+      "sourceSha256": "6a54be7d9f3d12788e04cf11bc86412b6c0818a3d24844f71c8ebe9c82094bb5",
+      "importSha256": "6a54be7d9f3d12788e04cf11bc86412b6c0818a3d24844f71c8ebe9c82094bb5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Left_Handle.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Left_Handle.prefab.meta",
+      "sourceSha256": "7687f492b7847e2147470e752566240122b90a13ad3eb7bd21d9e8b6f96d9c04",
+      "importSha256": "7687f492b7847e2147470e752566240122b90a13ad3eb7bd21d9e8b6f96d9c04",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Acc01.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Acc01.prefab",
+      "sourceSha256": "e1db8091022cd913907ae82a35fd1f282c06f9b3790b55c7621ad7e491bc8a20",
+      "importSha256": "e1db8091022cd913907ae82a35fd1f282c06f9b3790b55c7621ad7e491bc8a20",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Acc01.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Acc01.prefab.meta",
+      "sourceSha256": "3e93f5e79fd2b9c2acbaa107498cde940d9fe519d104b93dc074d1e50568a412",
+      "importSha256": "3e93f5e79fd2b9c2acbaa107498cde940d9fe519d104b93dc074d1e50568a412",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Acc02.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Acc02.prefab",
+      "sourceSha256": "9b54a747ebd364921c812b34e2a14f9216965524aba72dc994b8d170eb4c1957",
+      "importSha256": "9b54a747ebd364921c812b34e2a14f9216965524aba72dc994b8d170eb4c1957",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Acc02.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Acc02.prefab.meta",
+      "sourceSha256": "85e5581e8101e7c150374e508454de5a8080be3908110b0d1c30cde2e0a0a251",
+      "importSha256": "85e5581e8101e7c150374e508454de5a8080be3908110b0d1c30cde2e0a0a251",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Belt.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Belt.prefab",
+      "sourceSha256": "341b2706a39ca22e97af1107844e721e42c1020f72595c8cefb4ff776c75bc80",
+      "importSha256": "341b2706a39ca22e97af1107844e721e42c1020f72595c8cefb4ff776c75bc80",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Belt.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Belt.prefab.meta",
+      "sourceSha256": "0ef0d233a736b5d0c31fa709838b573ac4510d17c66101b6efad7ae715e16ef1",
+      "importSha256": "0ef0d233a736b5d0c31fa709838b573ac4510d17c66101b6efad7ae715e16ef1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Body.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Body.prefab",
+      "sourceSha256": "a7eff5c79e3fc3368b09a215febba9b349993a43b9cb19308772db6aef67f450",
+      "importSha256": "a7eff5c79e3fc3368b09a215febba9b349993a43b9cb19308772db6aef67f450",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Body.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Body.prefab.meta",
+      "sourceSha256": "bfbffde30b18fa3e45605eb6d7443555d7a0614ea8e12debc7e0eb1a4afdea2c",
+      "importSha256": "bfbffde30b18fa3e45605eb6d7443555d7a0614ea8e12debc7e0eb1a4afdea2c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Boots.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Boots.prefab",
+      "sourceSha256": "c85bdca56f3bbe721c61033f0f5bbaccfb92539cf5392caba62b0967be68b29b",
+      "importSha256": "c85bdca56f3bbe721c61033f0f5bbaccfb92539cf5392caba62b0967be68b29b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Boots.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Boots.prefab.meta",
+      "sourceSha256": "43d4a1f8512bdbd34fc1e76807eb257dcf4bb3e83c251636e39930cd3076686a",
+      "importSha256": "43d4a1f8512bdbd34fc1e76807eb257dcf4bb3e83c251636e39930cd3076686a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Dress.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Dress.prefab",
+      "sourceSha256": "ce2ce88e3249e1935bd859af3f2a88f1ceb55ae26b8da01bb0e4bffd1a2a4bc3",
+      "importSha256": "ce2ce88e3249e1935bd859af3f2a88f1ceb55ae26b8da01bb0e4bffd1a2a4bc3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Dress.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Dress.prefab.meta",
+      "sourceSha256": "dad52de21acee05264d706810ef3a83fa550adabed25913cfddf21f7d0f7ccf8",
+      "importSha256": "dad52de21acee05264d706810ef3a83fa550adabed25913cfddf21f7d0f7ccf8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Face.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Face.prefab",
+      "sourceSha256": "33808f2a1545098d659f4e697e891795b630a908eb16a6b290d4e9e8574b4afb",
+      "importSha256": "33808f2a1545098d659f4e697e891795b630a908eb16a6b290d4e9e8574b4afb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Face.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Face.prefab.meta",
+      "sourceSha256": "7f0f69f2a2fe2f72cb68c989465a138be80e8ee81b6c1e99f7b62c8d30838ebe",
+      "importSha256": "7f0f69f2a2fe2f72cb68c989465a138be80e8ee81b6c1e99f7b62c8d30838ebe",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Hair.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Hair.prefab",
+      "sourceSha256": "6d2a80eab3c087f5b0a0ed45bc19c0c5e9590e224daa3df472d54aa919451aba",
+      "importSha256": "6d2a80eab3c087f5b0a0ed45bc19c0c5e9590e224daa3df472d54aa919451aba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Hair.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Hair.prefab.meta",
+      "sourceSha256": "223dadc85048cfaf45caa4345b1e5f5b2b7e83eb90bc12d85519fbdab712eeca",
+      "importSha256": "223dadc85048cfaf45caa4345b1e5f5b2b7e83eb90bc12d85519fbdab712eeca",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Hat.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Hat.prefab",
+      "sourceSha256": "430b6e6979c25212975b401a16e6bfaeca5fe58a482b1c1ce762c1c52ff6d20e",
+      "importSha256": "430b6e6979c25212975b401a16e6bfaeca5fe58a482b1c1ce762c1c52ff6d20e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Hat.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Hat.prefab.meta",
+      "sourceSha256": "17512ca1b565173a53051dc7e7dca50b2b87b129ddd33603d4921f258de6d2ab",
+      "importSha256": "17512ca1b565173a53051dc7e7dca50b2b87b129ddd33603d4921f258de6d2ab",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Jacket.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Jacket.prefab",
+      "sourceSha256": "456f89d49e77df6260b4df89efabb1e221eb3db980780448312bcc92d40a5019",
+      "importSha256": "456f89d49e77df6260b4df89efabb1e221eb3db980780448312bcc92d40a5019",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_Jacket.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_Jacket.prefab.meta",
+      "sourceSha256": "f94adbe0c605d6f60f184538de300dfec7fec7d33a3a1315d24b43808761971e",
+      "importSha256": "f94adbe0c605d6f60f184538de300dfec7fec7d33a3a1315d24b43808761971e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_knee.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_knee.prefab",
+      "sourceSha256": "a5d4078bd729a07375260fb14e373dd369943c4b272ecab9659664b7e3135e13",
+      "importSha256": "a5d4078bd729a07375260fb14e373dd369943c4b272ecab9659664b7e3135e13",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Rifle_knee.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Rifle_knee.prefab.meta",
+      "sourceSha256": "3d59d775fc4287f5d7023bc480811d8945ac9a99d72e429519e6dd855f6dcfa3",
+      "importSha256": "3d59d775fc4287f5d7023bc480811d8945ac9a99d72e429519e6dd855f6dcfa3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Pants.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Pants.prefab",
+      "sourceSha256": "f78dc2f1d6dfa63c43d08a20351254cb3cd5c4b8cfebdd0fdd499c8c8820c3d4",
+      "importSha256": "f78dc2f1d6dfa63c43d08a20351254cb3cd5c4b8cfebdd0fdd499c8c8820c3d4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Pants.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Pants.prefab.meta",
+      "sourceSha256": "bf0a8166df28dfa26d0331e621da7967d25fb2ce28c9e0477dc30928981e587a",
+      "importSha256": "bf0a8166df28dfa26d0331e621da7967d25fb2ce28c9e0477dc30928981e587a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Shoes.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Shoes.prefab",
+      "sourceSha256": "9299456219c54db18871beec1871ec61e8638c74606a4244d42e137e2dfadd48",
+      "importSha256": "9299456219c54db18871beec1871ec61e8638c74606a4244d42e137e2dfadd48",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Shoes.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Shoes.prefab.meta",
+      "sourceSha256": "3102f60ad0b7039dbebbbea165ea0d709a7dad7bb5e7decd15275c1e17260af4",
+      "importSha256": "3102f60ad0b7039dbebbbea165ea0d709a7dad7bb5e7decd15275c1e17260af4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Top.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Top.prefab",
+      "sourceSha256": "5f3e94d6db56e0224ccaa17bd7e845157a6908afa2d77d71f3082a8ea100a83f",
+      "importSha256": "5f3e94d6db56e0224ccaa17bd7e845157a6908afa2d77d71f3082a8ea100a83f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Sportswear_Top.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Sportswear_Top.prefab.meta",
+      "sourceSha256": "c4b021166f7e393d5a4fd1126f8f48af907af6c9f9c72a0fc5e204e413d08e15",
+      "importSha256": "c4b021166f7e393d5a4fd1126f8f48af907af6c9f9c72a0fc5e204e413d08e15",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Weapon_Rifle.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Weapon_Rifle.prefab",
+      "sourceSha256": "34adfd0973aed98f5128eb96bcedcb58966f1becdb2b07a37be00c5b7382c191",
+      "importSha256": "34adfd0973aed98f5128eb96bcedcb58966f1becdb2b07a37be00c5b7382c191",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Prefab_Parts\\Weapon_Rifle.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Prefab_Parts/Weapon_Rifle.prefab.meta",
+      "sourceSha256": "2807674a035ec1148c1c1c78b29f4f772ec8d891daa065dec13c3709cae01ba9",
+      "importSha256": "2807674a035ec1148c1c1c78b29f4f772ec8d891daa065dec13c3709cae01ba9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Rifle_Full_Body.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Rifle_Full_Body.prefab",
+      "sourceSha256": "fbcd6eb9f8ed9a6549093842a697f0c8b74af6f191bd8450501ce9564e2e6c93",
+      "importSha256": "6834f8867a12da7dae4d3aa6303d8380a28a70f70c52aba66cfb36b0c219abbe",
+      "changes": [
+        "Remove demo animator controller dependency"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Prefab\\Rifle_Full_Body.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Prefab/Rifle_Full_Body.prefab.meta",
+      "sourceSha256": "078a59bbae9a6c66d1fab3d509203a8df37a2f32f118f8c0d750fc19e257d262",
+      "importSha256": "078a59bbae9a6c66d1fab3d509203a8df37a2f32f118f8c0d750fc19e257d262",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Body.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Body.png",
+      "sourceSha256": "e59894b7c185c2465ab223fa90649290e3dd33b244cfeaec95339f35aedeb75d",
+      "importSha256": "e59894b7c185c2465ab223fa90649290e3dd33b244cfeaec95339f35aedeb75d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Body.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Body.png.meta",
+      "sourceSha256": "e4ad9d83e7ac198c3fb9a363ffc397429b6171f0abdad529ab4cd2d804c57dbf",
+      "importSha256": "e4ad9d83e7ac198c3fb9a363ffc397429b6171f0abdad529ab4cd2d804c57dbf",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Eye.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Eye.png",
+      "sourceSha256": "4e3e5d93a32ad086b93cc21d06728b9d1b4ca8e92cbb62336603f24fa7251374",
+      "importSha256": "4e3e5d93a32ad086b93cc21d06728b9d1b4ca8e92cbb62336603f24fa7251374",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Eye.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Eye.png.meta",
+      "sourceSha256": "f0962d483e21440d0e9af9eea87ec5b3a094c8b60c7c08699cd3a68353473523",
+      "importSha256": "f0962d483e21440d0e9af9eea87ec5b3a094c8b60c7c08699cd3a68353473523",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Face.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Face.png",
+      "sourceSha256": "576dc86e427028287fa1532d774a5c89a0a189a0a119f1f2e103a018416e9021",
+      "importSha256": "576dc86e427028287fa1532d774a5c89a0a189a0a119f1f2e103a018416e9021",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Face.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Face.png.meta",
+      "sourceSha256": "13ceff3ae053051618b0052b224a395067647ff13ba2786fc3d1d9668c0b9984",
+      "importSha256": "13ceff3ae053051618b0052b224a395067647ff13ba2786fc3d1d9668c0b9984",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Face_mask.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Face_mask.png",
+      "sourceSha256": "06e40706e127c8f59932b58f02fe41fac5e0b3bddd7230f924b97d4825b2bf96",
+      "importSha256": "06e40706e127c8f59932b58f02fe41fac5e0b3bddd7230f924b97d4825b2bf96",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Body\\Face_mask.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Body/Face_mask.png.meta",
+      "sourceSha256": "98ae877a6272e73ba2e932094cd4a5cc8ade7e251df99b1de3d5f6322208c8fe",
+      "importSha256": "98ae877a6272e73ba2e932094cd4a5cc8ade7e251df99b1de3d5f6322208c8fe",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_01.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_01.png",
+      "sourceSha256": "7de660a29659da6f86562cb43cecfef049fc319b1dcdd06de2db24fffbced3fd",
+      "importSha256": "7de660a29659da6f86562cb43cecfef049fc319b1dcdd06de2db24fffbced3fd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_01.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_01.png.meta",
+      "sourceSha256": "442a81f496787cd2603ee7a9bd7b4e5d126ad7cd3c69caec594f18ac67a2e567",
+      "importSha256": "442a81f496787cd2603ee7a9bd7b4e5d126ad7cd3c69caec594f18ac67a2e567",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_02.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_02.png",
+      "sourceSha256": "5326a7f2c9b39a5103f22a4fef17b622c9272c58992be9272fca4292e734b10e",
+      "importSha256": "5326a7f2c9b39a5103f22a4fef17b622c9272c58992be9272fca4292e734b10e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_02.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_02.png.meta",
+      "sourceSha256": "9bb59ac531e1fa616b87a9c72cbfc2db8c51e2137e98af33141a492427a3a86d",
+      "importSha256": "9bb59ac531e1fa616b87a9c72cbfc2db8c51e2137e98af33141a492427a3a86d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_03.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_03.png",
+      "sourceSha256": "d3cbbe295c0e7953ddd10b987d22293040d59c2992cadbee5d59dc988acc38a6",
+      "importSha256": "d3cbbe295c0e7953ddd10b987d22293040d59c2992cadbee5d59dc988acc38a6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_03.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_03.png.meta",
+      "sourceSha256": "0d2b2964de8d80fb3e9cf2a1d2c8ca0b1d55a72ea6d92d1012d2f2fab935539d",
+      "importSha256": "0d2b2964de8d80fb3e9cf2a1d2c8ca0b1d55a72ea6d92d1012d2f2fab935539d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_04.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_04.png",
+      "sourceSha256": "2ea2041e4cc02947c7ccf1651111e8f8c8da23f0acf8fe3d8bd5a763e8324293",
+      "importSha256": "2ea2041e4cc02947c7ccf1651111e8f8c8da23f0acf8fe3d8bd5a763e8324293",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_04.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_04.png.meta",
+      "sourceSha256": "319ae06d8accf9458861e27dd07e6e87e6339f52c610e1f9c8a0b06603deed28",
+      "importSha256": "319ae06d8accf9458861e27dd07e6e87e6339f52c610e1f9c8a0b06603deed28",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_05.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_05.png",
+      "sourceSha256": "6e73154c4645664d1281bfa8fa42ac2737ddf8729a531a8d94babd2bfb49f1e4",
+      "importSha256": "6e73154c4645664d1281bfa8fa42ac2737ddf8729a531a8d94babd2bfb49f1e4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_05.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_05.png.meta",
+      "sourceSha256": "9cfd7fd9e8e96cd1d94dac5cabf838b76b30d7c12d06c42c8a6509d52ce5a43f",
+      "importSha256": "9cfd7fd9e8e96cd1d94dac5cabf838b76b30d7c12d06c42c8a6509d52ce5a43f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_Matcap_Mask.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_Matcap_Mask.png",
+      "sourceSha256": "f782c810b7cf67937516a321afdfca224009197d74857cd879f89cf03bbd5e88",
+      "importSha256": "f782c810b7cf67937516a321afdfca224009197d74857cd879f89cf03bbd5e88",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_Matcap_Mask.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_Matcap_Mask.png.meta",
+      "sourceSha256": "c822dcaabd473ec3386ed6ba8b00f94a4884f625d512de1a2fb12d95a1668eba",
+      "importSha256": "c822dcaabd473ec3386ed6ba8b00f94a4884f625d512de1a2fb12d95a1668eba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_Spacular.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_Spacular.png",
+      "sourceSha256": "886dd8c62a0fe54c2281a0ceae82d46398c5b02b268709fb22a5912ed1cac5b4",
+      "importSha256": "886dd8c62a0fe54c2281a0ceae82d46398c5b02b268709fb22a5912ed1cac5b4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Cloth\\Rifle_Cloth_Spacular.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Cloth/Rifle_Cloth_Spacular.png.meta",
+      "sourceSha256": "b2fceb826cde0c9757932c9c0447d312be39ff8611a0747cf99bfe8303a5ff17",
+      "importSha256": "b2fceb826cde0c9757932c9c0447d312be39ff8611a0747cf99bfe8303a5ff17",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_01.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_01.png",
+      "sourceSha256": "562d1f55c08e1427041870310b023b448e1d63159a088e7181094f365351f6ea",
+      "importSha256": "562d1f55c08e1427041870310b023b448e1d63159a088e7181094f365351f6ea",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_01.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_01.png.meta",
+      "sourceSha256": "1f0396c20e5797d88abd92b90a035294e8ec96613fd9d67aadd780358f0ac18e",
+      "importSha256": "1f0396c20e5797d88abd92b90a035294e8ec96613fd9d67aadd780358f0ac18e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_02.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_02.png",
+      "sourceSha256": "e00d2db58f7aaab302bcf268c89dcbe7a4d786cdae9237c2d6128a92dc774291",
+      "importSha256": "e00d2db58f7aaab302bcf268c89dcbe7a4d786cdae9237c2d6128a92dc774291",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_02.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_02.png.meta",
+      "sourceSha256": "f6c4d3b756b2a301aeabc69b7f3ffaeff8a59c522255f7076776a79a5339920e",
+      "importSha256": "f6c4d3b756b2a301aeabc69b7f3ffaeff8a59c522255f7076776a79a5339920e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_03.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_03.png",
+      "sourceSha256": "1296495f3472b694085197aee5cf773dd03354886dd26fc7bb1c0fa1c8509f9e",
+      "importSha256": "1296495f3472b694085197aee5cf773dd03354886dd26fc7bb1c0fa1c8509f9e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_03.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_03.png.meta",
+      "sourceSha256": "5af0788f14ca1c72f1a2aa872c71ef16927aa8de6dd860e1679be28d4b8f0660",
+      "importSha256": "5af0788f14ca1c72f1a2aa872c71ef16927aa8de6dd860e1679be28d4b8f0660",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_mask.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_mask.png",
+      "sourceSha256": "795917d4d9174fb5bc31ef5a2f9d2fc28b1de5d66794659aba7c44384e041eec",
+      "importSha256": "795917d4d9174fb5bc31ef5a2f9d2fc28b1de5d66794659aba7c44384e041eec",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_mask.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_mask.png.meta",
+      "sourceSha256": "085b537b3609a8f4c32e50f80260316c69651e8591b24815e48adba54ec159a0",
+      "importSha256": "085b537b3609a8f4c32e50f80260316c69651e8591b24815e48adba54ec159a0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_Spacular.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_Spacular.png",
+      "sourceSha256": "143050fe2756430f5ef8a4f3ae5ba9c819b428ce50891ad4bc75c916065624ab",
+      "importSha256": "143050fe2756430f5ef8a4f3ae5ba9c819b428ce50891ad4bc75c916065624ab",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Hair\\Rifle_Hair_Spacular.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Hair/Rifle_Hair_Spacular.png.meta",
+      "sourceSha256": "e28dc65b41c7a643ad63ea61b4cd276fd47e2a19571d4543312009042194abfa",
+      "importSha256": "e28dc65b41c7a643ad63ea61b4cd276fd47e2a19571d4543312009042194abfa",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Metal_MatCap.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Metal_MatCap.png",
+      "sourceSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "importSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Metal_MatCap.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Metal_MatCap.png.meta",
+      "sourceSha256": "bb44cc522abe7a86fa6cc05d247e3c5cc578921e655d0fd4a52a62625572a599",
+      "importSha256": "bb44cc522abe7a86fa6cc05d247e3c5cc578921e655d0fd4a52a62625572a599",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Sportswear\\Sportswear.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Sportswear/Sportswear.png",
+      "sourceSha256": "c06e9c1395c5bfd91cec7d4b389b10889645c04d1712422c2369163fb1a21695",
+      "importSha256": "c06e9c1395c5bfd91cec7d4b389b10889645c04d1712422c2369163fb1a21695",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Sportswear\\Sportswear.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Sportswear/Sportswear.png.meta",
+      "sourceSha256": "630d09b3f64b127afc382f3b349bb96c9215b00b8fb1294184b08ee29c43802a",
+      "importSha256": "630d09b3f64b127afc382f3b349bb96c9215b00b8fb1294184b08ee29c43802a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal.png",
+      "sourceSha256": "ae18191ec13733a40d86cf04d8668efb1a7c725b988ce0ef0e0216f063fed2c9",
+      "importSha256": "ae18191ec13733a40d86cf04d8668efb1a7c725b988ce0ef0e0216f063fed2c9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal.png.meta",
+      "sourceSha256": "e8ffaef18d10f0c5eeb634e87a675e8b67852300597e08576e062ce22c580416",
+      "importSha256": "e8ffaef18d10f0c5eeb634e87a675e8b67852300597e08576e062ce22c580416",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal_MetallicSmoothness.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal_MetallicSmoothness.png",
+      "sourceSha256": "7168db357806a3e9f0d530b3fd286441aa09fefb1f7e4d546e2f98f58e6cb002",
+      "importSha256": "7168db357806a3e9f0d530b3fd286441aa09fefb1f7e4d546e2f98f58e6cb002",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal_MetallicSmoothness.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal_MetallicSmoothness.png.meta",
+      "sourceSha256": "4dd60d088ceb0054b8896959edff1f638afda1b71512d20f7d64100e21eebaad",
+      "importSha256": "4dd60d088ceb0054b8896959edff1f638afda1b71512d20f7d64100e21eebaad",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal_Normal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal_Normal.png",
+      "sourceSha256": "de6c510d3b42077a6a99b32f466f080785953c4ef071110d51993921a3c03ff3",
+      "importSha256": "de6c510d3b42077a6a99b32f466f080785953c4ef071110d51993921a3c03ff3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Metal\\Rifle_Weapon_Real_Metal_Normal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Metal/Rifle_Weapon_Real_Metal_Normal.png.meta",
+      "sourceSha256": "ab50846c5a96aac37666f48804a185b9a5174061f422eba5c3d951ae10230e21",
+      "importSha256": "ab50846c5a96aac37666f48804a185b9a5174061f422eba5c3d951ae10230e21",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood.png",
+      "sourceSha256": "e720549451ff2b9e420a7f5a50efb17109eb9110563b0cda9a136e3c9b1c6bd9",
+      "importSha256": "e720549451ff2b9e420a7f5a50efb17109eb9110563b0cda9a136e3c9b1c6bd9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood.png.meta",
+      "sourceSha256": "32edfd86db93cb5709284ae6e66d00be38d4521c7e1a3cb1027419cbc4f42223",
+      "importSha256": "32edfd86db93cb5709284ae6e66d00be38d4521c7e1a3cb1027419cbc4f42223",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood_MetallicSmoothness.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood_MetallicSmoothness.png",
+      "sourceSha256": "53d52a9b93ccbbe8d81693814f6378b35f1d5b7bad7276a230b7aa3056e7034a",
+      "importSha256": "53d52a9b93ccbbe8d81693814f6378b35f1d5b7bad7276a230b7aa3056e7034a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood_MetallicSmoothness.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood_MetallicSmoothness.png.meta",
+      "sourceSha256": "8d7d7a595128a14914c7be6683bf79ede9e2ad37702fba3b5aa6cef616f1bda5",
+      "importSha256": "8d7d7a595128a14914c7be6683bf79ede9e2ad37702fba3b5aa6cef616f1bda5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood_Normal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood_Normal.png",
+      "sourceSha256": "a75311b8ff95991a5a13809f54d05d54733ace3fc26cc0a3b9549ca189ea37ee",
+      "importSha256": "a75311b8ff95991a5a13809f54d05d54733ace3fc26cc0a3b9549ca189ea37ee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Real_Wood\\Rifle_Weapon_Real_Wood_Normal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Real_Wood/Rifle_Weapon_Real_Wood_Normal.png.meta",
+      "sourceSha256": "3edc570d6917aabce01affe5d7865f17b37d1db057274a8f8af0d86453b9d29c",
+      "importSha256": "3edc570d6917aabce01affe5d7865f17b37d1db057274a8f8af0d86453b9d29c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Meatl\\Rifle_Weapon_Style_Meatl.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Meatl/Rifle_Weapon_Style_Meatl.png",
+      "sourceSha256": "ea1850b065e0c2678abdd423cbfcadb8067b946ce49925755ea1ca8fd3569dc7",
+      "importSha256": "ea1850b065e0c2678abdd423cbfcadb8067b946ce49925755ea1ca8fd3569dc7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Meatl\\Rifle_Weapon_Style_Meatl.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Meatl/Rifle_Weapon_Style_Meatl.png.meta",
+      "sourceSha256": "73e5b5f9a8fe30da75e12603bdec8dc53b4dec8ea2299b21e71982c6f197be1c",
+      "importSha256": "73e5b5f9a8fe30da75e12603bdec8dc53b4dec8ea2299b21e71982c6f197be1c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Meatl\\Rifle_Weapon_Style_Meatl_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Meatl/Rifle_Weapon_Style_Meatl_Spec.png",
+      "sourceSha256": "84a8639ed27d8425805c5d2638ce1e5497f6cb83484c474c876254285e235785",
+      "importSha256": "84a8639ed27d8425805c5d2638ce1e5497f6cb83484c474c876254285e235785",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Meatl\\Rifle_Weapon_Style_Meatl_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Meatl/Rifle_Weapon_Style_Meatl_Spec.png.meta",
+      "sourceSha256": "a2aeac6068d91c8ef5bff965ab5265a01d5d62fb071d0f97743c1e24f75e8282",
+      "importSha256": "a2aeac6068d91c8ef5bff965ab5265a01d5d62fb071d0f97743c1e24f75e8282",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Wood\\Rifle_Weapon_Style_Wood.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Wood/Rifle_Weapon_Style_Wood.png",
+      "sourceSha256": "5d06a9629c19d6ca27f494f0cbace496ce2835da596aee01a851451346b09c98",
+      "importSha256": "5d06a9629c19d6ca27f494f0cbace496ce2835da596aee01a851451346b09c98",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Wood\\Rifle_Weapon_Style_Wood.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Wood/Rifle_Weapon_Style_Wood.png.meta",
+      "sourceSha256": "ce6ed8453b1c1a4ab4fee50450b6f8eb4208163462fd6d9841284b7d078c8bd3",
+      "importSha256": "ce6ed8453b1c1a4ab4fee50450b6f8eb4208163462fd6d9841284b7d078c8bd3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Wood\\Rifle_Weapon_Style_Wood_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Wood/Rifle_Weapon_Style_Wood_Spec.png",
+      "sourceSha256": "173858ef1fe2e43c7ab46318fb11b24ac9e21cbf8067224039a98d3a257e68fa",
+      "importSha256": "173858ef1fe2e43c7ab46318fb11b24ac9e21cbf8067224039a98d3a257e68fa",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Weapon\\Rifle_Weapon_Style_Wood\\Rifle_Weapon_Style_Wood_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/RifleGirl/Texture/Weapon/Rifle_Weapon_Style_Wood/Rifle_Weapon_Style_Wood_Spec.png.meta",
+      "sourceSha256": "b4eafee2e20a0096e53308cc4c2cdaf185bfb55864e882659faf3f51b81b73cd",
+      "importSha256": "b4eafee2e20a0096e53308cc4c2cdaf185bfb55864e882659faf3f51b81b73cd",
+      "changes": []
+    }
+  ]
+}

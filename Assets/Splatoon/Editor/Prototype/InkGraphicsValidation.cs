@@ -22,7 +22,7 @@ namespace Splatoon.Editor
             typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current, tables);
             GameplayConfig.Validate();
             EditorSceneManager.OpenScene(TrainingGroundBuilder.ScenePath);
-            Directory.CreateDirectory("Logs/InkGraphics");
+            Directory.CreateDirectory("Reports/InkGraphics");
             foreach (var surface in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None))
             {
                 var mesh = surface.GetComponent<MeshFilter>().sharedMesh;
@@ -33,7 +33,7 @@ namespace Splatoon.Editor
                 surface.Apply(new PaintStamp { Position = hit, Normal = normal, Radius = 1.5f, Hardness = .01f, Strength = 1, Team = 1 });
                 var painted = Read(surface.Mask);
                 int pixels = painted.GetPixels32().Count(c => c.a > 128 && c.r > 128);
-                File.WriteAllBytes("Logs/InkGraphics/mask-" + surface.SurfaceId + ".png", painted.EncodeToPNG());
+                File.WriteAllBytes("Reports/InkGraphics/mask-" + surface.SurfaceId + ".png", painted.EncodeToPNG());
                 if (pixels < 10) throw new InvalidOperationException("Empty painted mask: " + surface.name + " pixels=" + pixels);
                 var bytes = painted.GetRawTextureData<byte>().ToArray();
                 surface.Clear();

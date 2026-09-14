@@ -34,7 +34,7 @@ namespace Splatoon.Editor
         [Serializable] sealed class Packs { public Pack[] items; }
         [Serializable] sealed class PaintMeasurement { public int id; public float range; }
         public static Pack[] Definitions => JsonUtility.FromJson<Packs>("{\"items\":" + File.ReadAllText("Tools/CombatGirls/hero-packs.json") + "}").items;
-        const string ReportRoot = "Docs/CombatGirls/FourHeroes";
+        const string ReportRoot = "Reports/CombatGirls/FourHeroes";
         static readonly List<string> Report = new();
         static readonly Dictionary<Material, Material> Materials = new();
         static AnimationClip Clip(Pack p, string name) => AssetDatabase.LoadAllAssetsAtPath(p.ClipPath(name)).OfType<AnimationClip>().Single(c => !c.name.StartsWith("__preview__"));

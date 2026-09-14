@@ -28,8 +28,8 @@ namespace Splatoon.Tests
         public static void Run()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || _api != null) return;
-            Directory.CreateDirectory("Logs");
-            File.WriteAllText("Logs/room-discovery-editor-started.txt",System.DateTime.UtcNow.ToString("O"));
+            Directory.CreateDirectory("Reports/LanDiscovery");
+            File.WriteAllText("Reports/LanDiscovery/room-discovery-editor-started.txt",System.DateTime.UtcNow.ToString("O"));
             _api = ScriptableObject.CreateInstance<TestRunnerApi>();
             _api.RegisterCallbacks(new Results());
             _api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode,
@@ -52,7 +52,7 @@ namespace Splatoon.Tests
             public void TestFinished(ITestResultAdaptor result) { }
             public void RunFinished(ITestResultAdaptor result)
             {
-                TestRunnerApi.SaveResultToFile(result, "Logs/room-discovery-editor.xml");
+                TestRunnerApi.SaveResultToFile(result, "Reports/LanDiscovery/room-discovery-editor.xml");
                 Debug.Log($"[RoomDiscovery] EditMode passed={result.PassCount}, failed={result.FailCount}");
                 Object.DestroyImmediate(_api); _api = null;
             }

@@ -23,13 +23,15 @@ namespace Splatoon.Tests
             => WeaponSimulation.Step(ref s,new PlayerInputFrame { Sequence=(uint)tick+1,FireSequence=press,Fire=held,CancelFire=cancel },GameplayConfig.GetHero(s.HeroId),tick/60.0,false,clearance);
 
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
-        public void HeldTriggerEmitsOnceAndReleasedQuickTapCompletesStartup(int id)
+        public void HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(int id)
         {
             foreach(bool held in new[]{true,false})
             {
                 var s=Player(id);var shots=new List<int>();
                 for(int tick=0;tick<240;tick++)if(Step(ref s,tick,1,held))shots.Add(tick);
-                Assert.That(shots,Is.EqualTo(new[]{2}));Assert.That(s.Ink,Is.EqualTo(100-GameplayConfig.GetHero(id).ShotInk).Within(.0001));
+                var w = GameplayConfig.GetHero(id);
+                var expected = held ? Enumerable.Range(0, 1 + (239 - w.StartFrames) / w.FireIntervalFrames).Select(n => w.StartFrames + n * w.FireIntervalFrames).ToArray() : new[] { w.StartFrames };
+                Assert.That(shots,Is.EqualTo(expected));Assert.That(s.Ink,Is.EqualTo(100-shots.Count*w.ShotInk).Within(.0002));
             }
         }
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
@@ -49,7 +51,7 @@ namespace Splatoon.Tests
             var s=Player(2);s.Ink=0;
             for(int i=0;i<5;i++)Step(ref s,i,1,true);
             Assert.That(s.NextMuzzle,Is.Zero);s.Ink=100;
-            for(int i=5;i<25;i++)Assert.That(Step(ref s,i,1,true),Is.False);
+            for(int i=5;i<25;i++)Assert.That(Step(ref s,i,1,false),Is.False);
             Assert.That(s.ShotSequence,Is.Zero);
             Step(ref s,25,2);Step(ref s,26,2);Assert.That(Step(ref s,27,2),Is.True);
             Assert.That(s.LastShotMuzzle,Is.Zero);Assert.That(s.NextMuzzle,Is.EqualTo(1));
@@ -79,11 +81,11 @@ namespace Splatoon.Tests
             Step(ref s,13,2,false,true);for(int tick=14;tick<90;tick++)Assert.That(Step(ref s,tick,2),Is.False);
             Assert.That(s.ShotSequence,Is.EqualTo(1));
         }
-        [Test] public void SemiHoldDoesNotRequestMovementLockAndRecoversAfterConfiguredDelay()
+        [Test] public void SemiHoldRequestsShootingAndKeepsConfiguredRecoveryRule()
         {
             var s=Player(2);var w=GameplayConfig.GetHero(2);for(int tick=0;tick<40;tick++)Step(ref s,tick,1,true);
             var input=new PlayerInputFrame{Fire=true,FireSequence=1};
-            Assert.That(WeaponSimulation.WantsFire(s,input,w,1),Is.False);
+            Assert.That(WeaponSimulation.WantsFire(s,input,w,1),Is.True);
             float before=s.Ink;ResourceSimulation.Step(ref s,w,false,input.Fire&&!WeaponSimulation.IsSemi(w),1f/60,1);
             Assert.That(s.Ink,Is.GreaterThan(before));
         }
@@ -101,7 +103,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(9));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(10));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }

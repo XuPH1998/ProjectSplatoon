@@ -4,11 +4,12 @@ Use the bundled Python (openpyxl is used only to read the authoritative workbook
 --check verifies source/generated agreement and the approved scalar change set.
 """
 from pathlib import Path
-import argparse, csv, hashlib, json, math, subprocess
+import argparse, csv, hashlib, json, math
 import openpyxl
 
 ROOT = Path(__file__).resolve().parents[2]
-DOC = ROOT / 'Docs/WeaponAudit'
+DOC = ROOT / 'Reports/WeaponAudit'
+REFERENCE = ROOT / 'Tools/ValidationData/WeaponAudit'
 BASE = '00be31ff3662c77cb2b62d1f6f61ce3c62492d19'
 LEAN = '7280ff9cde8bb1c5dcef46c700c326471584d2e6'
 SENDOU = '55889eccc7c18f24569098959ae28f4a7034ce4e'
@@ -31,7 +32,7 @@ FIELDS = {
 }
 GROUPS = {
     'metadata': ('id','name','displayName','prefabAddress'),
-    'paint': ('paintRadiusMin','paintRadiusMax','paintHardness','paintStrength','trailSpacing','trailRadius','trailMaxDrop','paintRange','chargeMinPaintRange'),
+    'paint': ('paintRadiusMin','paintRadiusMax','paintHardness','paintStrength','trailSpacing','trailRadiusMin','trailRadiusMax','trailMaxDrop','paintRange','chargeMinPaintRange'),
     'ballistics': ('speedMin','speedMax','gravity','lifetime','collisionRadius','straightFrames','brakeFrames','brakeSpeedMultiplier','effectiveRange','chargeMinRange','chargeMinSpeed'),
     'damage': ('damage','damageMin','damageReduceStartFrames','damageReduceEndFrames','chargeMinDamage','chargePartialMaxDamage'),
     'dispersion': ('spreadDegrees','jumpSpreadDegrees','spreadRecoverFrames','chargeMinSpread','chargeMinJumpSpread'),
@@ -60,10 +61,12 @@ CONSUMERS = {
 }
 def load(path): return json.loads(path.read_text(encoding='utf-8-sig'))
 def base(table):
-    path=f'Assets/GameResource/Bootstrap/Config/Luban/tb{table.lower()}.json'
-    return json.loads(subprocess.check_output(['git','show',f'{BASE}:{path}'],cwd=ROOT))
+    baseline=load(REFERENCE/'Project-Baseline.json')
+    assert baseline['commit']==BASE
+    return baseline['tables'][table]
 def hero_field(table, field):
-    mapping=load(ROOT/'Docs/HeroMigration/Field-Mapping.json')
+    if table=='Weapon' and field in ('trailRadiusMin','trailRadiusMax'): return field
+    mapping=load(ROOT/'Tools/ValidationData/HeroMigration/Field-Mapping.json')
     return next((m['heroField'] for m in mapping if m['sourceTable']==table and m['sourceField']==field),None)
 
 def project_legacy(table, rows):
@@ -72,7 +75,9 @@ def project_legacy(table, rows):
         before=base(table); projected=[]
         for i,row in enumerate(rows if table=='Weapon' else rows[:1]):
             template=before[i] if table=='Weapon' else before[0]
-            projected.append({field:row[hero_field(table,field)] if hero_field(table,field) else value for field,value in template.items()})
+            record={field:row[hero_field(table,field)] if hero_field(table,field) in row else value for field,value in template.items() if field!='trailRadius'}
+            if table=='Weapon': record.update(trailRadiusMin=row['trailRadiusMin'],trailRadiusMax=row['trailRadiusMax'])
+            projected.append(record)
         return projected
     if table=='RoomMode':
         previous={r['id']:r for r in base(table)}
@@ -97,7 +102,8 @@ def text(value): return '待核实（覆盖中缺失，不等于零）' if value
 def source(table):
     if table in ('Character','Weapon'):
         rows,labels=source('Hero')
-        return project_legacy(table,rows),{k:labels.get(hero_field(table,k),'历史角色标识，已并入英雄身份') for k in base(table)[0]}
+        projected=project_legacy(table,rows)
+        return projected,{k:labels.get(hero_field(table,k),'历史角色标识，已并入英雄身份') for k in projected[0]}
     wb=openpyxl.load_workbook(ROOT/f'Config/Luban/source/Tb{table}.xlsx',data_only=False)
     sheet=wb[table]; headers=[c.value for c in sheet[1]][1:]
     rows=[dict(zip(headers,[c.value for c in row][1:])) for row in sheet.iter_rows(min_row=4) if row[1].value is not None]
@@ -107,39 +113,44 @@ def source(table):
         rows=project_legacy(table,rows);labels['weaponId']=labels.pop('heroId');labels['characterId']='旧版角色引用（合表前）'
     return rows,labels
 def verify():
+    # Check the live source/generated contract and the approved change against the
+    # pre-change live table, independently of the old original-game reference ledger.
     changes=[]
-    for table in ['Weapon','Character','Global','Map','RoomMode']:
-        rows,_=source(table); generated=current(table); before={row['id']:row for row in base(table)}
+    baseline={row['id']:row for row in load(ROOT/'Tools/ValidationData/GameplayUpdate/Hero-Before.json')}
+    for table in ['Hero','Global','Map','RoomMode']:
+        rows,_=source(table); generated=current(table)
         assert len(rows)==len(generated),(table,'row count')
         for row,saved in zip(rows,generated):
             assert set(row)==set(saved),(table,'schema')
             for key,value in row.items():
                 assert equal(value,saved[key]),(table,row['id'],key,'source/generated mismatch')
-                signature=(table,row['id'],key)
-                if signature in CHANGES:
-                    assert equal(value,CHANGES[signature]),(signature,'verified scalar changed')
-                elif not equal(value,before[row['id']][key]): raise AssertionError((signature,'unapproved change to gated baseline'))
-                if not equal(value,before[row['id']][key]): changes.append({'table':table,'id':row['id'],'field':key,'before':before[row['id']][key],'after':value})
-    assert len(changes)==len(CHANGES)
+                if table!='Hero': continue
+                before=baseline[row['id']]
+                if key in ('trailRadiusMin','trailRadiusMax'):
+                    assert equal(value,before['trailRadius']*(.8 if key.endswith('Min') else 1.2)),(row['id'],key,'radius range')
+                    changes.append({'table':table,'id':row['id'],'field':key,'before':before['trailRadius'],'after':value})
+                else: assert equal(value,before[key]),(row['id'],key,'unapproved change to live table')
+    assert len(changes)==10
     return changes
 def write_csv(path,columns,rows):
     with path.open('w',encoding='utf-8-sig',newline='') as stream:
         writer=csv.DictWriter(stream,fieldnames=columns); writer.writeheader(); writer.writerows(rows)
 def verify_snapshots():
-    manifest=load(DOC/'Implementation-Manifest.json')
+    manifest=load(REFERENCE/'Implementation-Manifest.json')
     assert manifest['referenceVersion']=='11.3.0' and manifest['leanCommit']==LEAN
     expected={f'{name}.1130.json' for name in NAMES.values()} | {'Common.1130.json'}
     assert set(manifest['referenceSha256'])==expected
     for name,digest in manifest['referenceSha256'].items():
-        assert hashlib.sha256((DOC/name).read_bytes()).hexdigest()==digest,(name,'pinned reference hash mismatch')
+        assert hashlib.sha256((REFERENCE/name).read_bytes()).hexdigest()==digest,(name,'pinned reference hash mismatch')
 
 def generate():
-    if (DOC/'Implementation-Manifest.json').exists(): verify_snapshots()
+    DOC.mkdir(parents=True,exist_ok=True)
+    verify_snapshots()
     changes=verify(); ledger=[]; originals=[]
     _,labels=source('Weapon')
     before={row['id']:row for row in base('Weapon')}
     for weapon in current('Weapon'):
-        id=weapon['id']; name=NAMES[id]; raw=load(DOC/f'{name}.1130.json')['GameParameters']
+        id=weapon['id']; name=NAMES[id]; raw=load(REFERENCE/f'{name}.1130.json')['GameParameters']
         refs={}
         for field,value in weapon.items():
             group=next((g for g,keys in GROUPS.items() if field in keys),'firing')
@@ -167,13 +178,15 @@ def generate():
             if field in ('paintRange','chargeMinPaintRange'): consumer='GameplayConfig.Validate; WeaponDisplay.Details; 编辑器测量目标（不参与实际涂色）'
             if field=='fireRate': consumer='GameplayConfig.Validate（不直接参与发射和 HUD 射速）'
             if id==5 and field=='damageMin': consumer='GameplayConfig.Validate；蓄力伤害分支不消费'
-            ledger.append(dict(weapon=id,name=weapon['displayName'],group=group,field=field,heroField=hero_field('Weapon',field),meaning=labels[field],baseline=text(before[id][field]),current=text(value),referencePath='GameParameters.'+path if path else '无直接字段',referenceValue=text(raw_value),conversion=conversion,consumer=consumer,status=status,reason=reason,source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/weapon/{name}.game__GameParameterTable.json'))
+            if field in ('trailRadiusMin','trailRadiusMax'):
+                status='项目随机落墨范围'; reason='房主逐次均匀采样，以实际半径同步；不是原作参数复刻'
+            ledger.append(dict(weapon=id,name=weapon['displayName'],group=group,field=field,heroField=hero_field('Weapon',field),meaning=labels[field],baseline=text(before[id].get(field)),current=text(value),referencePath='GameParameters.'+path if path else '无直接字段',referenceValue=text(raw_value),conversion=conversion,consumer=consumer,status=status,reason=reason,source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/weapon/{name}.game__GameParameterTable.json'))
         for path,value in flatten(raw):
             if path.endswith('$type'): continue
             originals.append(dict(weapon=id,path='GameParameters.'+path,value=text(value),projectFields=','.join(refs.get(path,[])) or '未建模/无直接对应',status='原始覆盖；不包含缺失的类型默认值'))
     write_csv(DOC/'Full-Parameter-Coverage.csv',list(ledger[0]),ledger)
     write_csv(DOC/'Raw-Parameter-Coverage.csv',list(originals[0]),originals)
-    common=[]; common_raw=load(DOC/'Common.1130.json')
+    common=[]; common_raw=load(REFERENCE/'Common.1130.json')
     common_refs={'recoverInk':'InkRecoverFrm_Std','swimRecoverInk':'InkRecoverFrm_Stealth',
                  'moveSpeed':'MoveVel_Human','swimSpeed':'MoveVel_Stealth'}
     for table in ['Character','Global']:
@@ -209,7 +222,7 @@ def generate():
                     consumer=consumer,status=status,reason=reason,
                     source=f'https://raw.githubusercontent.com/Leanny/splat3/{LEAN}/data/parameter/1130/misc/params.json' if reference else ''))
     write_csv(DOC/'Common-Parameter-Coverage.csv',list(common[0]),common)
-    hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [*(DOC/f'{name}.1130.json' for name in NAMES.values()),DOC/'Common.1130.json']}
+    hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [*(REFERENCE/f'{name}.1130.json' for name in NAMES.values()),REFERENCE/'Common.1130.json']}
     manifest={'referenceVersion':'11.3.0','baselineCommit':BASE,'leanCommit':LEAN,'sendouReferenceCommit':SENDOU,'completeReplica':False,'runtimeTable':'TbHero','ledgerFieldNames':'Historical projection; heroField names the live merged field.',
               'changes':changes,'referenceSha256':hashes,'gatedMechanisms':REASONS,
               'sourceCounts':{'projectWeaponFields':len(ledger),'rawReferenceFields':len(originals),'commonFields':len(common)}}
@@ -219,5 +232,5 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(); parser.add_argument('--check',action='store_true'); args=parser.parse_args()
     if args.check:
         verify_snapshots()
-        print(f'PASS: source/generated data agree; {len(verify())} approved cells; gated values unchanged; 6 pinned reference hashes match.')
+        print(f'PASS: source/generated data agree; {len(verify())} approved radius bounds; other live hero values unchanged; 6 pinned reference hashes match.')
     else: generate()

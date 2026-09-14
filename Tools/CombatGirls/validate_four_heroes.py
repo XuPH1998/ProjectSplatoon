@@ -8,12 +8,13 @@ import subprocess
 import openpyxl
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'Docs/CombatGirls/FourHeroes'
+OUT = ROOT / 'Reports/CombatGirls/FourHeroes'
+OUT.mkdir(parents=True,exist_ok=True)
 load = lambda p: json.loads(p.read_text('utf-8-sig'))
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 equal = lambda a,b: math.isclose(a,b,rel_tol=1e-6,abs_tol=1e-6) if isinstance(a,(int,float)) and isinstance(b,(int,float)) else a==b
 errors=[]
-manifest=load(OUT/'source-assets.json')
+manifest=load(ROOT/'Tools/ValidationData/CombatGirls/FourHeroes/source-assets.json')
 for item in manifest['files']:
     src,dst=Path(item['source']),ROOT/item['target']
     if not src.exists() or sha(src)!=item['sourceSha256']: errors.append('Source changed: '+str(src))
@@ -31,11 +32,9 @@ for row,hero in zip(rows,heroes):
     for field in fields:
         if not equal(row[field],hero[field]):errors.append(f'Source/generated mismatch: {hero["id"]}/{field}')
 book.close()
-baseline=json.loads(subprocess.check_output(['git','show','HEAD:Assets/GameResource/Bootstrap/Config/Luban/tbhero.json'],cwd=ROOT))
-numeric_changes={2:{'fireMode':3,'pelletCount':1,'muzzleMode':1,'semiBufferFrames':6,'fireIntervalFrames':10,'damage':32,'damageMin':16,'shotInk':.7,'effectiveRange':8.4,'speedMin':26,'speedMax':26,'spreadDegrees':3.5,'jumpSpreadDegrees':8,'damageReduceStartFrames':8,'damageReduceEndFrames':40,'shootMoveSpeed':4.2,'inkRecoverLockFrames':15,'paintRadiusMin':.55,'paintRadiusMax':.7,'trailRadius':.45,'fireRate':6,'burstCount':1,'burstRecoveryFrames':0},
-3:{'fireMode':3,'pelletCount':8,'muzzleMode':0,'semiBufferFrames':6,'fireIntervalFrames':24,'damage':10,'damageMin':4,'shotInk':4,'effectiveRange':6.5,'speedMin':22,'speedMax':22,'spreadDegrees':7,'jumpSpreadDegrees':11,'damageReduceStartFrames':4,'damageReduceEndFrames':18,'shootMoveSpeed':3.2,'inkRecoverLockFrames':30,'paintRadiusMin':.24,'paintRadiusMax':.32,'trailRadius':.18,'fireRate':2.5,'burstCount':1,'burstRecoveryFrames':0},
-4:{'fireMode':3,'pelletCount':1,'muzzleMode':0,'semiBufferFrames':6,'fireIntervalFrames':16,'damage':52,'damageMin':26,'shotInk':1.4,'effectiveRange':12,'speedMin':33,'speedMax':33,'spreadDegrees':1.5,'jumpSpreadDegrees':6,'damageReduceStartFrames':18,'damageReduceEndFrames':42,'shootMoveSpeed':3.4,'inkRecoverLockFrames':22,'paintRadiusMin':.4,'paintRadiusMax':.55,'trailRadius':.28,'fireRate':3.75,'burstCount':1,'burstRecoveryFrames':0}}
-measurements={x['id']:x for x in load(OUT/'paint-measurements.json')}
+baseline=load(ROOT/'Tools/ValidationData/GameplayUpdate/Hero-Before.json')
+numeric_changes={old['id']:{'trailRadiusMin':round(old['trailRadius']*.8,6),'trailRadiusMax':round(old['trailRadius']*1.2,6)} for old in baseline}
+measurements={x['id']:x for x in load(ROOT/'Tools/ValidationData/CombatGirls/FourHeroes/paint-measurements.json')}
 for hero,old in zip(heroes,baseline):
     changes=numeric_changes.get(hero['id'],{})
     for key,value in changes.items():
@@ -43,7 +42,7 @@ for hero,old in zip(heroes,baseline):
     if hero['id'] in measurements:
         if not equal(hero['paintRange'],round(measurements[hero['id']]['range'],2)):errors.append('Paint measurement not regenerated')
     for key,value in old.items():
-        if key in changes or hero['id']!=1 and key in {'name','displayName','characterPrefabAddress','weaponPrefabAddress'} or hero['id'] in measurements and key=='paintRange':continue
+        if key=='trailRadius' or key in changes or hero['id']!=1 and key in {'name','displayName','characterPrefabAddress','weaponPrefabAddress'} or hero['id'] in measurements and key=='paintRange':continue
         if not equal(hero[key],value):errors.append(f'Unapproved change: {hero["id"]}/{key}')
 
 guids={};duplicates=[]
@@ -71,7 +70,7 @@ for pack in manifest['packs']:
     for guid in re.findall(r'guid: ([a-f0-9]{32})',text):
         if guid not in guids:errors.append('Unresolved controller GUID: '+guid)
 
-legacy=load(ROOT/'Docs/CombatGirls/legacy-cleanup.json');legacy_guids=set(legacy['guids']);legacy_refs=[]
+legacy=load(ROOT/'Tools/ValidationData/CombatGirls/legacy-cleanup.json');legacy_guids=set(legacy['guids']);legacy_refs=[]
 for path in (ROOT/'Assets').rglob('*'):
     if not path.is_file() or path.suffix not in {'.prefab','.unity','.asset','.controller','.mask','.mat','.meta'}:continue
     text=path.read_text('utf-8-sig',errors='ignore')

@@ -85,7 +85,7 @@ namespace Splatoon.Combat
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
     public sealed class InkProjectileService
     {
-        private struct Active { public InkShot Shot; public double SimulatedUntil; public Vector3 LastTrail; }
+        private struct Active { public InkShot Shot; public double SimulatedUntil; public Vector3 LastTrail; public uint TrailSeed; }
         private readonly List<Active> _active = new(256);
         private readonly RaycastHit[] _hits = new RaycastHit[64];
         private readonly Collider[] _overlaps = new Collider[64];
@@ -138,8 +138,10 @@ namespace Splatoon.Combat
         }
         private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
         {
-            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId));
-            _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle });
+            uint trailSeed = shot.Seed ^ 0x9E3779B9u;
+            if (trailSeed == 0) trailSeed = 1;
+            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId), ref trailSeed);
+            _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed });
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, 0, muzzle);
 #endif
@@ -166,7 +168,10 @@ namespace Splatoon.Combat
                 double end = Math.Min(until, a.Shot.Born + w.Lifetime); bool hit = false;
                 while (a.SimulatedUntil < end - 1e-8)
                 {
-                    double next = Math.Min(a.SimulatedUntil + step, end);
+                    // External callers may run at 30/60/144 Hz. Only integrate complete
+                    // configured projectile steps, so trail positions and random draws agree.
+                    double next = Math.Min(a.SimulatedUntil + step, a.Shot.Born + w.Lifetime);
+                    if (next > end + 1e-8) break;
                     Vector3 from = InkBallistics.Position(a.Shot.Origin, a.Shot.Velocity, w, a.SimulatedUntil - a.Shot.Born);
                     Vector3 to = InkBallistics.Position(a.Shot.Origin, a.Shot.Velocity, w, next - a.Shot.Born);
                     int overlaps = Physics.OverlapSphereNonAlloc(from, w.CollisionRadius, _overlaps, ~0, QueryTriggerInteraction.Ignore);
@@ -187,7 +192,7 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
                     TraceObserved?.Invoke(a.Shot, next - a.Shot.Born, to);
 #endif
-                    if (Vector3.Distance(a.LastTrail, to) >= w.TrailSpacing) { PaintTrail(to, a.Shot, w); a.LastTrail = to; }
+                    if (Vector3.Distance(a.LastTrail, to) >= w.TrailSpacing) { PaintTrail(to, a.Shot, w, ref a.TrailSeed); a.LastTrail = to; }
                     a.SimulatedUntil = next;
                 }
                 if (hit || end >= a.Shot.Born + w.Lifetime - 1e-8)
@@ -198,7 +203,7 @@ namespace Splatoon.Combat
                 else _active[i] = a;
             }
         }
-        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w)
+        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w, ref uint seed)
         {
             bool enabled = PrototypeMatch.Current != null;
 #if UNITY_EDITOR
@@ -206,7 +211,7 @@ namespace Splatoon.Combat
 #endif
             if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, w.TrailRadius, w);
+            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w);
         }
         private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w)
         {

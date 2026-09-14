@@ -17,7 +17,7 @@ namespace Splatoon.Editor
 {
     public static class CombatGirlsGraphicsValidation
     {
-        const string Output = "Docs/CombatGirls/Screenshots";
+        const string Output = "Reports/CombatGirls/Screenshots";
         static readonly List<string> Report = new();
         public static void CaptureTrainingAndExit()
         {
@@ -44,7 +44,7 @@ namespace Splatoon.Editor
                     camera.transform.position = center + Quaternion.Euler(0, pose.Item4, 0) * new Vector3(0, pose.Item5 ? .015f : .15f, pose.Item5 ? 1.1f : 3.4f);
                     camera.transform.LookAt(center); Render(camera, "training-" + pose.Item1);
                 }
-                File.WriteAllText("Docs/CombatGirls/training-graphics-validation.txt", $"Final gameplay materials: bright front/back/face, occluder shadow, pitch -65/+75; actual TrainingGround lights and ink renderer. Captured in Editor using evaluated Animator and baked per-pose skinning.\nBright floor={bright:R}; shadow floor={shadow:R}; shadow classification uses a ray towards the scene sun.\n");
+                File.WriteAllText("Reports/CombatGirls/training-graphics-validation.txt", $"Final gameplay materials: bright front/back/face, occluder shadow, pitch -65/+75; actual TrainingGround lights and ink renderer. Captured in Editor using evaluated Animator and baked per-pose skinning.\nBright floor={bright:R}; shadow floor={shadow:R}; shadow classification uses a ray towards the scene sun.\n");
                 Debug.Log("[CombatGirls-GPU] Training light/shadow/pitch captures complete"); EditorApplication.Exit(0);
             }
             catch (Exception ex) { Debug.LogException(ex); EditorApplication.Exit(1); }
@@ -124,7 +124,7 @@ namespace Splatoon.Editor
                 state.DiedAt = 14; state.DeathDirection = 1; Advance(target, state, 14, 100); Render(camera, "runtime-die-forward");
                 state.Health = 100; state.DiedAt = 0; state.Revision++; Advance(target, state, 17, 30); Render(camera, "runtime-respawn"); CheckAim(target, state, "respawn");
                 Require(target.Animator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"), "Respawn did not restore locomotion");
-                File.WriteAllLines("Docs/CombatGirls/graphics-validation.txt", Report);
+                File.WriteAllLines("Reports/CombatGirls/graphics-validation.txt", Report);
                 Debug.Log("[CombatGirls-GPU] Source/target captures, directional poses, continuous fire, aim/IK, death/respawn PASS");
                 EditorApplication.Exit(0);
             }

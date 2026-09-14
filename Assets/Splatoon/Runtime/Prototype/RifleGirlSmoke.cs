@@ -192,7 +192,7 @@ namespace Splatoon.Prototype
             _result.passed = true; Save(); Debug.Log("[RIFLE-SMOKE] PASS role=" + _result.role); Exit(0);
         }
         void Fail(Exception ex) { _ending = true; _result.error = ex.ToString(); _result.passed = false; Save(); Debug.LogException(ex); Exit(1); }
-        void Save() { Directory.CreateDirectory("Docs/CombatGirls"); File.WriteAllText("Docs/CombatGirls/" + (_visualOnly ? "playmode-visual-final" : "playmode-" + _result.role) + ".json", JsonUtility.ToJson(_result, true)); }
+        void Save() { Directory.CreateDirectory("Reports/CombatGirls"); File.WriteAllText("Reports/CombatGirls/" + (_visualOnly ? "playmode-visual-final" : "playmode-" + _result.role) + ".json", JsonUtility.ToJson(_result, true)); }
         static void Exit(int code)
         {
 #if UNITY_EDITOR
@@ -211,7 +211,7 @@ namespace Splatoon.Prototype
                 RenderPipeline.SubmitRenderRequest(Camera.main, new UniversalRenderPipeline.SingleCameraRequest { destination = rt });
                 RenderTexture.active = rt; var texture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
                 texture.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); texture.Apply();
-                Directory.CreateDirectory("Docs/CombatGirls/Screenshots"); File.WriteAllBytes("Docs/CombatGirls/Screenshots/" + name + ".png", texture.EncodeToPNG()); Destroy(texture);
+                Directory.CreateDirectory("Reports/CombatGirls/Screenshots"); File.WriteAllBytes("Reports/CombatGirls/Screenshots/" + name + ".png", texture.EncodeToPNG()); Destroy(texture);
             }
             finally { RenderTexture.active = old; RenderTexture.ReleaseTemporary(rt); }
         }

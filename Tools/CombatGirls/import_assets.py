@@ -117,7 +117,7 @@ def main():
                 dst_file.write_bytes(data)
             records.append({"source": str(src_file), "target": str(dst_file.relative_to(project)).replace("\\", "/"),
                             "sourceSha256": original_hash, "importSha256": hashlib.sha256(data).hexdigest(), "changes": changes})
-    manifest = project / ("Docs/CombatGirls/FourHeroes/source-assets.json" if args.heroes else "Docs/CombatGirls/source-assets.json")
+    manifest = project / ("Reports/CombatGirls/FourHeroes/source-assets.json" if args.heroes else "Reports/CombatGirls/source-assets.json")
     manifest.parent.mkdir(parents=True, exist_ok=True)
     manifest.write_text(json.dumps({"packs": definitions, "files": records}, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({"assets": len(selected), "files": len(records), "clips": sum(len(d['clips']) for d in definitions)}))

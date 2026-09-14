@@ -44,3 +44,9 @@ crashlytics-build.properties
 *.jks
 .DS_Store
 Thumbs.db
+
+# Reports: retain historical tracked evidence; new run outputs and former Logs stay local.
+/Reports/*/
+!/Reports/Archive/
+/Reports/Archive/*/Logs/
+/Reports/Archive/*/Temp/

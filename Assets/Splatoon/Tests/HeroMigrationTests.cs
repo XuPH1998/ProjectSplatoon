@@ -31,13 +31,16 @@ namespace Splatoon.Tests
         // independently of the new custom-hero balance in the live table.
         public static void LoadHistoricalWeapons() => Load(rows =>
         {
-            var baseline=JSONNode.Parse(File.ReadAllText("Docs/HeroMigration/Migration-Baseline.json"));
-            var mapping=JSONNode.Parse(File.ReadAllText("Docs/HeroMigration/Field-Mapping.json"));
-            for(int i=1;i<4;i++)
+            var baseline=JSONNode.Parse(File.ReadAllText("Tools/ValidationData/HeroMigration/Migration-Baseline.json"));
+            var mapping=JSONNode.Parse(File.ReadAllText("Tools/ValidationData/HeroMigration/Field-Mapping.json"));
+            for(int i=0;i<rows.Count;i++)
             {
-                foreach(var item in mapping.Children) if(item["sourceTable"].Value=="Weapon") rows[i][item["heroField"].Value]=baseline["Weapon"][i][item["sourceField"].Value];
+                foreach(var item in mapping.Children) if(item["sourceTable"].Value=="Weapon" && item["heroField"].Value != "trailRadius") rows[i][item["heroField"].Value]=baseline["Weapon"][i][item["sourceField"].Value];
                 rows[i]["pelletCount"]=1;rows[i]["muzzleMode"]=0;rows[i]["semiBufferFrames"]=0;
             }
+            // Pinned historical mechanics use their original fixed radius, only in this loader.
+            for (int i = 0; i < rows.Count; i++)
+                rows[i]["trailRadiusMin"] = rows[i]["trailRadiusMax"] = baseline["Weapon"][i]["trailRadius"];
         });
         static readonly string[] CharacterNames={"","RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl"};
         static readonly string[] WeaponNames={"","RifleGirlRifle","DualPistols","Shotgun","Pistol","RocketLauncher"};
@@ -53,19 +56,22 @@ namespace Splatoon.Tests
         HeroContent Content(int id, GameObject character = null, GameObject weapon = null) => new(GameplayConfig.GetHero(id), character ?? Character(id), weapon ?? Weapon(id));
         static PlayerSnapshot State(int hero) => new() { HeroId = hero, Health = 100, Ink = 100, Team = 1, Grounded = true, Revision = 4 };
 
-        [Test] public void RetainedCharacterAndRifleChargerNumbersMatchPreMigrationRecords()
+        [Test] public void CurrentHeroValuesOnlyChangeTheTwoTrailRadiusFields()
         {
-            var baseline = JSONNode.Parse(File.ReadAllText("Docs/HeroMigration/Migration-Baseline.json"));
-            var mapping = JSONNode.Parse(File.ReadAllText("Docs/HeroMigration/Field-Mapping.json"));
+            var before = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/GameplayUpdate/Hero-Before.json"));
             var actual = JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/tbhero.json"));
-            Assert.That(actual.Count, Is.EqualTo(5));
-            for (int i = 0; i < 5; i++) foreach (var item in mapping.Children)
+            Assert.That(actual.Count, Is.EqualTo(before.Count));
+            for (int i = 0; i < before.Count; i++)
             {
-                if(item["sourceTable"].Value=="Weapon" && i>=1 && i<=3)continue;
-                var record = baseline[item["sourceTable"].Value][item["sourceTable"].Value == "Weapon" ? i : 0];
-                var expected = record[item["sourceField"].Value]; var value = actual[i][item["heroField"].Value];
-                if (expected.IsNumber) Assert.That(value.AsDouble, Is.EqualTo(expected.AsDouble).Within(.00001), item.ToString());
-                else if(i==0) Assert.That(value.Value, Is.EqualTo(expected.Value));
+                foreach (var field in before[i].Keys)
+                {
+                    if (field == "trailRadius") continue;
+                    Assert.That(actual[i][field].ToString(), Is.EqualTo(before[i][field].ToString()), $"{i + 1}/{field}");
+                }
+                float radius = before[i]["trailRadius"].AsFloat;
+                Assert.That(actual[i]["trailRadiusMin"].AsFloat, Is.EqualTo(radius * .8f).Within(.00001));
+                Assert.That(actual[i]["trailRadiusMax"].AsFloat, Is.EqualTo(radius * 1.2f).Within(.00001));
+                Assert.That(actual[i].HasKey("trailRadius"), Is.False);
             }
         }
         [Test] public void SelectedHeroDrivesMovementRecoveryAndDisplay()

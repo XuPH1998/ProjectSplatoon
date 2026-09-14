@@ -134,7 +134,7 @@ namespace Splatoon.Editor
             PrototypeBuilder.ConfigureAddressables();
             CreatePreviewScene();
             ValidateInstalled();
-            Directory.CreateDirectory("Docs/CombatGirls"); File.WriteAllLines("Docs/CombatGirls/import-validation.txt", Report);
+            Directory.CreateDirectory("Reports/CombatGirls"); File.WriteAllLines("Reports/CombatGirls/import-validation.txt", Report);
             AssetDatabase.SaveAssets();
             Debug.Log("[CombatGirls] Install and asset validation PASS");
         }

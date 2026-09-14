@@ -15,7 +15,7 @@ namespace Splatoon.Tests
         static readonly string[] Names = { "", "WeaponShooterNormal", "WeaponShooterBlaze", "WeaponShooterGravity", "WeaponShooterTripleQuick", "WeaponChargerNormal" };
         [SetUp] public void Load() => HeroMigrationTests.LoadHistoricalWeapons();
         [TearDown] public void Reset() => LubanConfigService.Current.Reset();
-        static JSONNode Reference(int id) => JSONNode.Parse(File.ReadAllText("Docs/WeaponAudit/" + Names[id] + ".1130.json"))["GameParameters"];
+        static JSONNode Reference(int id) => JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAudit/" + Names[id] + ".1130.json"))["GameParameters"];
         static PlayerSnapshot Player(int id) => new() { HeroId = id, Health = 100, Ink = 100, Team = 1 };
 
         [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)]
@@ -71,7 +71,7 @@ namespace Splatoon.Tests
         [TestCase(false, 600)] [TestCase(true, 180)]
         public void ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(bool swim, int frames)
         {
-            var common = JSONNode.Parse(File.ReadAllText("Docs/WeaponAudit/Common.1130.json"));
+            var common = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAudit/Common.1130.json"));
             Assert.That(common[swim ? "InkRecoverFrm_Stealth" : "InkRecoverFrm_Std"][2].AsInt, Is.EqualTo(frames));
             var s = Player(1); s.Ink = 0; s.Swimming = swim;
             for (int tick = 1; tick < frames; tick++) ResourceSimulation.Step(ref s, GameplayConfig.DefaultHero, false, false, 1f / 60, tick / 60.0);
@@ -87,7 +87,7 @@ namespace Splatoon.Tests
                 Assert.That(w.BrakeFrames, Is.EqualTo(8)); Assert.That(w.BrakeSpeedMultiplier, Is.EqualTo(.66f));
                 Assert.That(w.PaintRadiusMin, Is.EqualTo(.65f)); Assert.That(w.PaintRadiusMax, Is.EqualTo(.8f));
                 Assert.That(w.PaintHardness, Is.EqualTo(.55f)); Assert.That(w.PaintStrength, Is.EqualTo(1));
-                Assert.That(w.TrailSpacing, Is.EqualTo(.7f)); Assert.That(w.TrailRadius, Is.EqualTo(.58f)); Assert.That(w.TrailMaxDrop, Is.EqualTo(2.4f));
+                Assert.That(w.TrailSpacing, Is.EqualTo(.7f)); Assert.That(w.TrailRadiusMin, Is.EqualTo(.58f)); Assert.That(w.TrailRadiusMax, Is.EqualTo(.58f)); Assert.That(w.TrailMaxDrop, Is.EqualTo(2.4f));
             }
             Assert.That(GameplayConfig.Global.PaintThreshold, Is.EqualTo(.5f));
         }

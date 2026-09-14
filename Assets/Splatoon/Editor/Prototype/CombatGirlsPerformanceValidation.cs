@@ -51,6 +51,7 @@ namespace Splatoon.Editor
             try
             {
                 if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) throw new InvalidOperationException("GPU required");
+                Directory.CreateDirectory("Reports/CombatGirls/FourHeroes/Screenshots");
                 typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current,
                     new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json"))));
                 EditorSceneManager.OpenScene("Assets/GameResource/Gameplay/maps/TrainingGround.unity");
@@ -119,7 +120,7 @@ namespace Splatoon.Editor
                 UnityEngine.Object.DestroyImmediate(_placements);
                 if (++_pass < HeroNames.Length) { Begin(); return; }
                 EditorApplication.update -= Tick; _target.Release(); UnityEngine.Object.DestroyImmediate(_target);
-                File.WriteAllText("Docs/CombatGirls/FourHeroes/four-visual-editor-comparison.json", JsonUtility.ToJson(Output, true));
+                File.WriteAllText("Reports/CombatGirls/FourHeroes/four-visual-editor-comparison.json", JsonUtility.ToJson(Output, true));
                 UnityEngine.Debug.Log("[CombatGirls-PERF] Matched four-visual Editor comparison complete"); EditorApplication.Exit(0);
             }
             catch (Exception ex) { EditorApplication.update -= Tick; UnityEngine.Debug.LogException(ex); EditorApplication.Exit(1); }
@@ -160,7 +161,7 @@ namespace Splatoon.Editor
             var old = RenderTexture.active; RenderTexture.active = _target;
             var texture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); texture.Apply();
-            File.WriteAllBytes("Docs/CombatGirls/FourHeroes/Screenshots/" + name + ".png", texture.EncodeToPNG());
+            File.WriteAllBytes("Reports/CombatGirls/FourHeroes/Screenshots/" + name + ".png", texture.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(texture); RenderTexture.active = old;
             foreach (var mesh in meshes) UnityEngine.Object.DestroyImmediate(mesh);
         }

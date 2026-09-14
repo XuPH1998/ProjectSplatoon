@@ -136,7 +136,9 @@ namespace Splatoon.Prototype
             if(!_captured&&t>_captureAfter&&!Application.isBatchMode)
             {
                 _captured=true;
-                var path=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..","smoke-"+_label+".png"));
+                var output=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..","Reports","PrototypeSmoke"));
+                System.IO.Directory.CreateDirectory(output);
+                var path=System.IO.Path.Combine(output,"smoke-"+_label+".png");
                 CaptureWorld(path);Debug.Log("[SMOKE] Screenshot: "+path);
             }
             if(_host&&s.Phase==MatchPhase.Finished&&!_restarted)

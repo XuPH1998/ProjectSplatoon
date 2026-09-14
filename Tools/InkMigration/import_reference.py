@@ -36,7 +36,7 @@ for src, dst in [
     ('Assets/Metaballs/RendererFeatures/RenderMetaballsScreenSpace.cs', 'Assets/Splatoon/Runtime/Rendering/RenderMetaballsScreenSpace.cs'),
     ('Assets/Materials/ParticleMaterial 1.mat', 'Assets/GameResource/Effects/Ink/Materials/InkParticle.mat'),
     ('LICENSE', 'Assets/GameResource/ThirdPartyNotices/MixAndJam-LICENSE.txt')]: copy(src, dst)
-out = project / 'Docs/InkMigration'; out.mkdir(parents=True, exist_ok=True)
+out = project / 'Reports/InkMigration'; out.mkdir(parents=True, exist_ok=True)
 commit = subprocess.check_output(['git', '-C', str(reference), 'rev-parse', 'HEAD'], text=True).strip()
 (out / 'reference-assets.json').write_text(json.dumps(dict(referenceCommit=commit, baseline='current working copy including local URP 17 adaptations', assets=manifest), ensure_ascii=False, indent=2), encoding='utf-8')
 print(f'Copied {len(manifest)} reference assets; recorded GUIDs and SHA-256.')

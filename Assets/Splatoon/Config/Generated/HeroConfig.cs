@@ -77,7 +77,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["paintHardness"].IsNumber) { throw new SerializationException(); }  PaintHardness = _buf["paintHardness"]; }
         { if(!_buf["paintStrength"].IsNumber) { throw new SerializationException(); }  PaintStrength = _buf["paintStrength"]; }
         { if(!_buf["trailSpacing"].IsNumber) { throw new SerializationException(); }  TrailSpacing = _buf["trailSpacing"]; }
-        { if(!_buf["trailRadius"].IsNumber) { throw new SerializationException(); }  TrailRadius = _buf["trailRadius"]; }
+        { if(!_buf["trailRadiusMin"].IsNumber) { throw new SerializationException(); }  TrailRadiusMin = _buf["trailRadiusMin"]; }
+        { if(!_buf["trailRadiusMax"].IsNumber) { throw new SerializationException(); }  TrailRadiusMax = _buf["trailRadiusMax"]; }
         { if(!_buf["trailMaxDrop"].IsNumber) { throw new SerializationException(); }  TrailMaxDrop = _buf["trailMaxDrop"]; }
         { if(!_buf["paintRange"].IsNumber) { throw new SerializationException(); }  PaintRange = _buf["paintRange"]; }
         { if(!_buf["chargeFrames"].IsNumber) { throw new SerializationException(); }  ChargeFrames = _buf["chargeFrames"]; }
@@ -328,9 +329,13 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float TrailSpacing;
     /// <summary>
-    /// 涂色：沿途落墨笔刷半径（米）
+    /// 涂色：沿途落墨最小笔刷半径（米）
     /// </summary>
-    public readonly float TrailRadius;
+    public readonly float TrailRadiusMin;
+    /// <summary>
+    /// 涂色：沿途落墨最大笔刷半径（米）
+    /// </summary>
+    public readonly float TrailRadiusMax;
     /// <summary>
     /// 涂色：沿途落墨向下探测范围（米）
     /// </summary>
@@ -455,7 +460,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "paintHardness:" + PaintHardness + ","
         + "paintStrength:" + PaintStrength + ","
         + "trailSpacing:" + TrailSpacing + ","
-        + "trailRadius:" + TrailRadius + ","
+        + "trailRadiusMin:" + TrailRadiusMin + ","
+        + "trailRadiusMax:" + TrailRadiusMax + ","
         + "trailMaxDrop:" + TrailMaxDrop + ","
         + "paintRange:" + PaintRange + ","
         + "chargeFrames:" + ChargeFrames + ","

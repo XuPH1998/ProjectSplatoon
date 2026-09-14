@@ -71,7 +71,7 @@ namespace Splatoon.Tests
                 }
                 yield return VerifyDeathAndRespawn(player, hero);
             }
-            Directory.CreateDirectory("Logs/HeroMigration");
+            Directory.CreateDirectory("Reports/HeroMigration");
             var phase = match.State.Value; phase.Phase = MatchPhase.Playing; phase.EndsAt = player.NetworkManager.ServerTime.Time + 100; match.State.Value = phase;
             var state = player.Snapshot.Value; state.Ink = 20; state.Health = 70; state.LastDamageAt = player.NetworkManager.ServerTime.Time; state.InkRecoverAt = player.NetworkManager.ServerTime.Time + 100;
             uint life = state.Revision; player.Snapshot.Value = state;
@@ -93,7 +93,7 @@ namespace Splatoon.Tests
             yield return Wait(() => PrototypePlayer.Local != null, "Reconnected host local player spawn");
             Assert.That(PrototypePlayer.Local.Snapshot.Value.HeroId, Is.EqualTo(1));
             yield return app.Leave().ToCoroutine();
-            File.WriteAllText("Logs/HeroMigration/play-validation.txt", "PASS: real Addressables + NGO host; 5 hero models; dual hand assembly; each new hero swim-death and 3s respawn; shotgun 8 independent Physics hits reduce 100HP to 20HP; warmup/DEBUG/invalid selection; selected-hero respawn; leave/reenter default; resource release.\nRemote client and physical LAN are separate acceptance items.\n");
+            File.WriteAllText("Reports/HeroMigration/play-validation.txt", "PASS: real Addressables + NGO host; 5 hero models; dual hand assembly; each new hero swim-death and 3s respawn; shotgun 8 independent Physics hits reduce 100HP to 20HP; warmup/DEBUG/invalid selection; selected-hero respawn; leave/reenter default; resource release.\nRemote client and physical LAN are separate acceptance items.\n");
             yield return HeroUiSmoke.RunInEditorAsync(port).ToCoroutine();
         }
         static IEnumerator VerifyDeathAndRespawn(PrototypePlayer player, int hero)

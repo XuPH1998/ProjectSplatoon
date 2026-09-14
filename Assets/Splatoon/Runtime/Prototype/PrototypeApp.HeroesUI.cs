@@ -37,6 +37,7 @@ namespace Splatoon.Prototype
         {
             if (Mouse.current == null || !Mouse.current.leftButton.isPressed) _fireInputBlocked = false;
             PrototypePlayer.Local?.RefreshHeroChangeStatus();
+            PrototypePlayer.Local?.RefreshTeamChangeStatus();
             var k = Keyboard.current;
             var match = PrototypeMatch.Current;
             if (InRoom && match != null)
@@ -124,7 +125,7 @@ namespace Splatoon.Prototype
             }
             GUI.EndScrollView();
             GUI.Label(new Rect(498, 551, 630, 45), "蓝色表示与当前英雄不同。涂地距离为水平射击参考。\nF 按 60Hz 计时；打开列表不会暂停比赛。", _small);
-            GUI.enabled = !player.HeroChangePending && player.Snapshot.Value.Health > 0 && selected.Id != current.Id;
+            GUI.enabled = !player.HeroChangePending && !player.TeamChangePending && player.Snapshot.Value.Health > 0 && selected.Id != current.Id;
             if (GUI.Button(new Rect(895, 604, 232, 40), player.HeroChangePending ? "切换中…" : selected.Id == current.Id ? "当前英雄" : "选择英雄", _button)) player.RequestHeroChange(selected.Id, _heroOrigin);
             GUI.enabled = true;
             GUI.Label(new Rect(150, 596, 725, 55), player.Snapshot.Value.Health <= 0 ? "重生后才能切换英雄" : player.HeroChangePending || !string.IsNullOrEmpty(player.HeroChangeMessage) ? player.HeroChangeMessage : match.State.Value.Phase == MatchPhase.Practice ? "热身切换英雄补满墨量。H / Esc 关闭列表后试射。" : "对局切换英雄保留墨量。Esc 返回 DEBUG。", _small);

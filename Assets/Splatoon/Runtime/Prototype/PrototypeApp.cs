@@ -275,8 +275,8 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 等待回墨" : "墨量不足 / 松开射击回墨") : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(850,641,410,60),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点射（长按不连发）" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 潜墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(850,641,410,60),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 潜墨\nEsc 菜单 / 房间码　回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
                 if (equipped.FireMode == 2)
@@ -300,14 +300,27 @@ namespace Splatoon.Prototype
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
-                Panel(new Rect(430,222,420,295),new Color(.055f,.075f,.1f,.97f));
+                bool practice = state.Phase == MatchPhase.Practice;
+                float top = practice ? 158 : 222;
+                Panel(new Rect(430,top,420,practice ? 360 : 295),new Color(.055f,.075f,.1f,.97f));
                 string winner=PrototypeRules.Winner(state.PinkArea,state.BlueArea) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};
-                GUI.Label(new Rect(463,242,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
-                if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,303,350,48),"继续游戏",_button)) CaptureMouse(true);
+                GUI.Label(new Rect(463,top+20,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
+                if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,top+70,350,44),"继续游戏",_button)) CaptureMouse(true);
+                float extra = practice ? 56 : 0;
+                if (practice)
+                {
+                    byte target = (byte)(3 - local.Snapshot.Value.Team);
+                    int count = PrototypePlayer.ByOwner.Values.Count(p => p != null && p.IsSpawned && p.Snapshot.Value.Team == target);
+                    string reason = local.TeamChangeUnavailableReason;
+                    GUI.enabled = !Busy && reason == null;
+                    string label = local.TeamChangePending ? "更换中…" : $"更换队伍 · {(target == 1 ? "粉队" : "蓝队")} {count}/2";
+                    if (GUI.Button(new Rect(465,top+126,350,44),label,_button)) local.RequestTeamChange();
+                    GUI.Label(new Rect(463,top+304,360,50),reason ?? local.TeamChangeMessage,_small);
+                }
                 GUI.enabled=Manager.IsServer&&PrototypeRules.CanStart(state.PlayerCount,state.Phase,GameplayConfig.Mode.MinPlayers);
-                if(GUI.Button(new Rect(465,367,350,48),state.Phase==MatchPhase.Finished?"再来一局":"开始比赛",_button)) {match.StartRound();CaptureMouse(true);}
+                if(GUI.Button(new Rect(465,top+134+extra,350,44),state.Phase==MatchPhase.Finished?"再来一局":"开始比赛",_button)) {match.StartRound();CaptureMouse(true);}
                 GUI.enabled=!Busy;
-                if(GUI.Button(new Rect(465,432,350,48),"退出房间",_button)) Leave().Forget();
+                if(GUI.Button(new Rect(465,top+198+extra,350,44),"退出房间",_button)) Leave().Forget();
                 GUI.enabled=true;
                 DrawRoomCode();
             }

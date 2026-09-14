@@ -151,7 +151,7 @@ namespace Splatoon.Prototype
                 "\nregionBytes="+(arena!=null?arena.RegionGrids().Values.Sum(g=>(long)g.SnapshotBytes):0)+"\nscoreArea="+(arena!=null?arena.TotalArea:0)+
                 "\nfullRound="+_fullRound+"\nroundFinished="+_roundFinished+"\nroundReset="+_roundReset+"\nreconnected="+_reconnected+"\nownershipVerified="+(p!=null&&p.DiagnosticOwnershipVerified)+
                 "\nwallPredictionLead="+_wallPredictionLead+"\nmovePredictionLead="+_movePredictionLead+"\ninputTimeout="+_timeoutObserved+"\ntimeoutRecovered="+_timeoutRecovered+"\nruntimeErrors="+string.Join(" | ",_errors);
-            string output=Arg("-shooterOutput","Temp/ShooterSmoke.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));File.WriteAllText(output,report);Debug.Log("[SHOOTER-SMOKE] "+report);
+            string output=Arg("-shooterOutput","Reports/ShooterMovement/smoke.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));File.WriteAllText(output,report);Debug.Log("[SHOOTER-SMOKE] "+report);
             if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom)await PrototypeApp.Current.Leave();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.Exit(pass?0:1);
@@ -181,7 +181,7 @@ namespace Splatoon.Prototype
             var request=new UnityEngine.Rendering.Universal.UniversalRenderPipeline.SingleCameraRequest{destination=rt};
             UnityEngine.Rendering.RenderPipeline.SubmitRenderRequest(camera,request);RenderTexture.active=rt;
             var texture=new Texture2D(1280,720,TextureFormat.RGB24,false);texture.ReadPixels(new Rect(0,0,1280,720),0,0);texture.Apply();
-            File.WriteAllBytes(Path.ChangeExtension(Arg("-shooterOutput","Temp/ShooterSmoke.txt"),null)+"-"+stage+".png",texture.EncodeToPNG());
+            File.WriteAllBytes(Path.ChangeExtension(Arg("-shooterOutput","Reports/ShooterMovement/smoke.txt"),null)+"-"+stage+".png",texture.EncodeToPNG());
             RenderTexture.active=prior;rt.Release();Destroy(rt);Destroy(texture);
         }
     }

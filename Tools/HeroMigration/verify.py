@@ -7,17 +7,16 @@ ROOT=Path(__file__).resolve().parents[2]
 def load(path):return json.loads(path.read_text(encoding='utf-8-sig'))
 def equal(a,b):return math.isclose(a,b,rel_tol=1e-6,abs_tol=1e-6) if isinstance(a,(int,float)) and isinstance(b,(int,float)) else a==b
 def verify():
-    docs=ROOT/'Docs/HeroMigration';baseline=load(docs/'Migration-Baseline.json');mapping=load(docs/'Field-Mapping.json')
+    docs=ROOT/'Tools/ValidationData/HeroMigration';baseline=load(docs/'Migration-Baseline.json');mapping=load(docs/'Field-Mapping.json')
     path=ROOT/'Assets/GameResource/Bootstrap/Config/Luban'
-    heroes=load(path/'tbhero.json');weapons={r['id']:r for r in baseline['Weapon']}
-    assert len(heroes)==5 and {h['id'] for h in heroes}==set(weapons)
-    for h in heroes:
-        assert set(h)=={m['heroField'] for m in mapping}|{'pelletCount','muzzleMode','semiBufferFrames'}
-        for m in mapping:
-            if m['sourceTable']=='Weapon' and h['id'] in (2,3,4):continue # Explicitly retired balance lives in the historical fixture.
-            if h['id']!=1 and m['heroField'] in ('name','displayName','characterPrefabAddress','weaponPrefabAddress'):continue
-            previous=weapons[h['id']] if m['sourceTable']=='Weapon' else baseline['Character'][0]
-            assert equal(h[m['heroField']],previous[m['sourceField']]),(h['id'],m['heroField'],'baseline changed')
+    heroes=load(path/'tbhero.json');before=load(ROOT/'Tools/ValidationData/GameplayUpdate/Hero-Before.json')
+    assert len(heroes)==len(before)==5
+    for h,old in zip(heroes,before):
+        assert set(h)==(set(old)-{'trailRadius'})|{'trailRadiusMin','trailRadiusMax'}
+        for field,value in old.items():
+            if field!='trailRadius':assert equal(h[field],value),(h['id'],field,'pre-change live value changed')
+        assert equal(h['trailRadiusMin'],old['trailRadius']*.8)
+        assert equal(h['trailRadiusMax'],old['trailRadius']*1.2)
     mode=load(path/'tbroommode.json');expected=[{('heroId' if k=='weaponId' else k):v for k,v in r.items() if k!='characterId'} for r in baseline['RoomMode']]
     assert mode==expected
     for table in ['Hero','RoomMode','Map','Global']:
@@ -36,7 +35,7 @@ def verify():
     assert 'm_Address: tbhero\n' in group and 'm_Address: tbweapon\n' not in group and 'm_Address: tbcharacter\n' not in group
     return {'heroes':len(heroes),'fieldsPerHero':len(heroes[0]),'sourceGeneratedValues':len(heroes)*len(heroes[0]),'baselineCommit':baseline['commit']}
 def verify_measurements(directory):
-    records=list(csv.DictReader((ROOT/'Docs/HeroMigration/Measurement-Comparison.csv').open(encoding='utf-8-sig')))
+    records=list(csv.DictReader((ROOT/'Tools/ValidationData/HeroMigration/Measurement-Comparison.csv').open(encoding='utf-8-sig')))
     assert len(records)==87
     for record in records:
         name=record['scenario']

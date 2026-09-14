@@ -21,7 +21,7 @@ namespace Splatoon.Tests
 {
     public sealed class WeaponPresentationPlayTests
     {
-        const string Output = "Logs/WeaponPresentationRepair/PlayMode";
+        const string Output = "Reports/WeaponPresentationRepair/PlayMode";
         static IEnumerator Wait(Func<bool> condition, string message, double seconds = 20)
         {
             double end = Time.realtimeSinceStartupAsDouble + seconds;

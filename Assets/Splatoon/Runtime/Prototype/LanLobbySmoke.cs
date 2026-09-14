@@ -83,7 +83,7 @@ namespace Splatoon.Prototype
         }
         async UniTask Capture(string name)
         {
-            string path=Path.GetFullPath("Logs/room-lobby-"+name+".png");
+            string path=Path.GetFullPath("Reports/LanDiscovery/room-lobby-"+name+".png");
             if(File.Exists(path))File.Delete(path);
             ScreenCapture.CaptureScreenshot(path);
             await UniTask.Delay(600);
@@ -93,7 +93,7 @@ namespace Splatoon.Prototype
         static UniTask Wait(Func<bool> condition)=>UniTask.WaitUntil(condition).Timeout(TimeSpan.FromSeconds(45));
         async UniTaskVoid Start()
         {
-            Directory.CreateDirectory("Logs");
+            Directory.CreateDirectory("Reports/LanDiscovery");
             GetCursorPos(out _previousCursor);
             try
             {
@@ -158,7 +158,7 @@ namespace Splatoon.Prototype
             {
                 foreach(var host in _hosts)host.Dispose();_hosts.Clear();_observer?.Dispose();_observer=null;
                 if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom&&!PrototypeApp.Current.Busy)await PrototypeApp.Current.Leave();
-                File.WriteAllText("Logs/room-lobby-playmode.txt","passed="+(_error==null)+"\n"+string.Join("\n",_checks)+"\nerror="+_error);
+                File.WriteAllText("Reports/LanDiscovery/room-lobby-playmode.txt","passed="+(_error==null)+"\n"+string.Join("\n",_checks)+"\nerror="+_error);
                 RestoreView();SetCursorPos(_previousCursor.X,_previousCursor.Y);EditorApplication.ExitPlaymode();
             }
         }

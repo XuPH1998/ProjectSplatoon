@@ -53,14 +53,17 @@ namespace Splatoon.Prototype
         bool _fireWasHeld, _waitingForPaint, _predictionPaused;
         void Awake() { _controller = GetComponent<CharacterController>(); _motor = new PlayerMotorSimulation(_controller); }
         public void Initialize(byte team, byte slot) { _initialTeam = team; _initialSlot = slot; }
-        public void Respawn()
+        public void Respawn() => Respawn(Snapshot.Value.Team, Snapshot.Value.Slot, false);
+        void Respawn(byte team, byte slot, bool requireRelease)
         {
+            if (!IsServer) return;
             var old = Snapshot.Value;
             var hero = GameplayConfig.GetHero(old.HeroId);
-            var s = new PlayerSnapshot { Team = old.Team, Slot = old.Slot, Revision = old.Revision + 1,
+            var s = new PlayerSnapshot { Team = team, Slot = slot, Revision = old.Revision + 1,
                 HeroId = old.HeroId == 0 ? GameplayConfig.Mode.HeroId : old.HeroId, HeroRevision = old.HeroRevision, ConsumedRelease = old.ConsumedRelease,
                 Health = hero.MaxHealth, Ink = hero.MaxInk,
-                Position = PrototypeArena.Spawn(old.Team, old.Slot), Yaw = old.Team == 1 ? 0 : 180, Pitch = 12,
+                Position = PrototypeArena.Spawn(team, slot), Yaw = team == 1 ? 0 : 180, Pitch = 12,
+                AttackNeedsRelease = requireRelease,
                 ProtectedUntil = NetworkManager.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds,
                 Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetHero(old.HeroId), false, 0),
                 SimulatedAt = NetworkManager.ServerTime.Time, AcknowledgedInput = old.AcknowledgedInput,
@@ -167,6 +170,7 @@ namespace Splatoon.Prototype
         public void Simulate(float dt, double now, MatchPhase phase)
         {
             if (!IsServer) return;
+            if (ApplyTeamRequest(phase)) return;
             var s = Snapshot.Value;
             ApplyHeroRequest(ref s, phase);
             if (s.Health <= 0 && now >= s.RespawnsAt && phase != MatchPhase.Finished) { Respawn(); return; }
@@ -202,7 +206,7 @@ namespace Splatoon.Prototype
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
             bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
-            if (WeaponSimulation.IsSemi(w) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input);
+            if (WeaponSimulation.IsSemi(w) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
             bool fire = WeaponSimulation.WantsFire(s, input, w, now);
             _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed,
                 WeaponSimulation.IsSemi(w) && s.FireVisualUntil > now);
@@ -225,6 +229,7 @@ namespace Splatoon.Prototype
             if (authority.Revision != before.Revision)
             {
                 _visualOffset = Vector3.zero;
+                if (IsOwner) { _look = new Vector2(authority.Yaw, authority.Pitch); _history.Clear(); }
                 if (!IsOwner && !IsServer) transform.position = authority.Position;
                 if (Visual != null) Visual.localRotation = Quaternion.Euler(0, authority.BodyYaw, 0);
             }
@@ -336,6 +341,7 @@ namespace Splatoon.Prototype
         }
         public override void OnNetworkDespawn()
         {
+            _teamRequest = null; _heroRequest = null; TeamChangePending = HeroChangePending = false;
             _heroView?.Dispose(); _heroView = null;
             Snapshot.OnValueChanged -= Reconcile; ByOwner.Remove(OwnerClientId);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= SendInput;

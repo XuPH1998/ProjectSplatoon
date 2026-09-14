@@ -1,0 +1,2 @@
+Pre-change live hero table at commit b20a7de4bed3e89a5f8da4a6da8c32e7c13727cf
+Used to verify only the two trail-radius fields change in this migration.

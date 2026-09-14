@@ -15,7 +15,7 @@ namespace Splatoon.Editor
 {
     public static class InkLookValidation
     {
-        const string Output="Docs/Screenshots/InkLook";
+        const string Output="Reports/InkLook/Screenshots";
         public static void Run()
         {
             InkLookUpgrade.LoadConfig();Directory.CreateDirectory(Output);

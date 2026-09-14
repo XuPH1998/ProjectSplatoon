@@ -1,0 +1,514 @@
+{
+  "path": "Assets/GameResource/Characters/Jammo",
+  "files": [
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations.meta",
+      "bytes": 172,
+      "sha256": "51d582b38d2cf254bf9a18e1ab298863d2f43d39be0dba092c80695cf7aa67bc"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials.meta",
+      "bytes": 172,
+      "sha256": "c3caeb1ad61e8fd87af3b5a2259418eaa10355fe67b40a24766cb1ca53315c38"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models.meta",
+      "bytes": 172,
+      "sha256": "b6a8e127f3e1e78951e276edfbc9db3999a4679b068a031e7981a270b148cc68"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Prefabs.meta",
+      "bytes": 172,
+      "sha256": "63ff7a2946f16be1292b04f93b8fa4572b8122a4fad3cbe372a61edaeef1fae8"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures.meta",
+      "bytes": 172,
+      "sha256": "bc3c17d4cd6a069bd37836e0d2f8e176608dcd7ac1262f04245d9e06af92ef4c"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/AnimatorController_Jamo.controller",
+      "bytes": 11047,
+      "sha256": "e22a62130e0bb03e5fae3f1ab156045de85bb1a0f5624ce7f30a65e7dcbe6f5a"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/AnimatorController_Jamo.controller.meta",
+      "bytes": 196,
+      "sha256": "8753643ccb78dc6ae4e1c7e397266675de52c4b64119f07a22fcee3066bad6a7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default.meta",
+      "bytes": 172,
+      "sha256": "1798466e038e76dc7813926cc1f23b5450165667119a2fb7fdc42ec2b68b7f81"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Falling To Landing.anim",
+      "bytes": 219644,
+      "sha256": "26e5239a07b020f01cf6ace7c40a42579a5274b95a9f1cc5ea71f9a21a370350"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Falling To Landing.anim.meta",
+      "bytes": 196,
+      "sha256": "dd66a0cab6859fe209c543e57b811188767e7099c3f296e6da2b777c8cd45b5d"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Fist Pump.anim",
+      "bytes": 1554300,
+      "sha256": "e52d16da8eba0b2f73264c17b20a7a2c62982962dc7d005b137a30e54c0dc921"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Fist Pump.anim.meta",
+      "bytes": 196,
+      "sha256": "9327f47257050b39c53b467103e8a4ed98a5ee75ec6f40b44240226efdd83b03"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoCombat.controller",
+      "bytes": 7976,
+      "sha256": "a18f54fbb8ed9a42825c0ab6b749cbc6e08f470a6b40509a59214e8d42ec2059"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoCombat.controller.meta",
+      "bytes": 188,
+      "sha256": "f2ca33f117bb6bfced032e2311cb1a37e304475c67de713ad6ac7b1d29dfb63a"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoJump.anim",
+      "bytes": 2134270,
+      "sha256": "52486d5267c777fb551df6a27eaa9f4b308b477defb7378b57a560a16797f36d"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoJump.anim.meta",
+      "bytes": 188,
+      "sha256": "04aca20732a5da8281649ff5991d3d2dfcc8d682f3957386f4f50f0e61e713ad"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoLand.anim",
+      "bytes": 1022669,
+      "sha256": "9e6b3a5c3c122f22949fc9855a8c3a382b77ace6b04ccc2d1d338525ff032046"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/JammoLand.anim.meta",
+      "bytes": 188,
+      "sha256": "bcc7be38814cbc7d162abef958ea94cb92fa17249ebd3f31f7eed279fd712746"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Jump.anim",
+      "bytes": 478139,
+      "sha256": "2dc82ec9361d18a2b8fcd41cdd7318f6fc63f671a8918f39106ededc6c865616"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Jump.anim.meta",
+      "bytes": 196,
+      "sha256": "a2f35047179037510fd193cfced1fc8f604645d4f8d263100be75d63d0eb2ec9"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun.meta",
+      "bytes": 172,
+      "sha256": "3c16eef3bc5d5b65d31bfc6b72989f6448b36b4d238b336fc190a30f6e776ec0"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Standing.anim",
+      "bytes": 511725,
+      "sha256": "1099fe688befe705d1aff0712c632e7b0716c4fcb891d362bfc2d25f12e6f5ca"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Standing.anim.meta",
+      "bytes": 196,
+      "sha256": "a082277ce9c9a3d03f5b231903f5bc9717a5a4768a3caf355ff68311b78b18d3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Victory Idle.anim",
+      "bytes": 2086388,
+      "sha256": "3a6353f61c94ac9c1367d9af31efeeb96057bb6223bab8e3f6ed59a4c72f77f3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Victory Idle.anim.meta",
+      "bytes": 196,
+      "sha256": "5043cc08c8d0b5b134106163c2126fe1da60e55d058612c3679628102d0fb9a4"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_ground.mat",
+      "bytes": 3911,
+      "sha256": "d5257d4af9712c15a5a2302b82f497fb85f575961cf42786bade41f04872e5d0"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_ground.mat.meta",
+      "bytes": 196,
+      "sha256": "27e1ca9d52fa756cbb584d26e293f1c26ca71191d132b52e3bc69d8605cd302c"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_eyes.mat",
+      "bytes": 4002,
+      "sha256": "98423364426ecc6b1992d27dacb421f537350e39bc0975e34fa9d21e32e5d960"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_eyes.mat.meta",
+      "bytes": 196,
+      "sha256": "4c1cc1875826ad624c200061b96e2bb940cb32a412242a31d261872a33bd4aab"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_metal.mat",
+      "bytes": 4086,
+      "sha256": "ac8053c21b03c0566c4547ddb7d4654c334c222f5766516d86ff6407d1d5cda9"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/m_jammo_metal.mat.meta",
+      "bytes": 196,
+      "sha256": "d658a8b424d05bae56eedcf7ca146723db14d8601948d0fc163614e58de16158"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/Skybox.mat",
+      "bytes": 2313,
+      "sha256": "a71cd4c3b4df165c427e8bafaf25aba683eebe0795df5d150f85e56e55bc1eee"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Materials/Skybox.mat.meta",
+      "bytes": 196,
+      "sha256": "c82969212f987556c2cf336ce6bd032d34a59eb8b15b85674497e8035244843a"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/JammoAvatar.asset",
+      "bytes": 60966,
+      "sha256": "fa0f31c8b889a91424e4326960502476b3ba3c24038932246a36f3f3e800565f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/JammoAvatar.asset.meta",
+      "bytes": 188,
+      "sha256": "8b4612c9603a6d4a7415e4e5313dea5cf0fa28f4cb5f6e9da65e7fa9e3ababe3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/Jammo_LowPoly.fbx",
+      "bytes": 2345164,
+      "sha256": "92a1f6ed5835b8f1ca3305e9bc5f72d366b7be0f1879dc929032bea8dfa5899b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Models/Jammo_LowPoly.fbx.meta",
+      "bytes": 3162,
+      "sha256": "3cd8d48b6e4b592ac6b8599a2d4ea72a490601e0e84f456c6a79ed35ddecfa04"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab",
+      "bytes": 337278,
+      "sha256": "c0659b260aa7d92e60533e0592abf89205987667d2645cfde7dca3c32ffd6c8f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Prefabs/JammoVisual.prefab.meta",
+      "bytes": 154,
+      "sha256": "7aa6fe39133af20161132c5aedfa877d03e3f8661a604704cb47778c3cdcb66b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates.meta",
+      "bytes": 172,
+      "sha256": "439dca92194362b253425d435daa639a3cde90fa160bc9aadec90daebba05bae"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/jammo_eyes.png",
+      "bytes": 2774,
+      "sha256": "62069ee075780c1152d64b7f3abe492a0216a935a0a185a56e6dc1c504d49373"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/jammo_eyes.png.meta",
+      "bytes": 2801,
+      "sha256": "05c287bd9273972529a214ef96fad6c3afcbd8bb822f7bfcbf3e2d9ea03503d7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot1.json",
+      "bytes": 839,
+      "sha256": "1e15bf1083de4d590bc0876ef1417cbc1106235ad949ac3ec9814b4fd043db64"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot1.json.meta",
+      "bytes": 165,
+      "sha256": "cf1cba8da2ec281e160f56c30e42616f3218063e3a9a506798d03790230751fa"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AlbedoTransparency.png",
+      "bytes": 5103073,
+      "sha256": "0bf4ff46f7a168acbc915fc503c01ba1b13b4993a1cac9c2bdf2db4716582ee7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AlbedoTransparency.png.meta",
+      "bytes": 2120,
+      "sha256": "094f3f02d57676ba8495f670f752433b937aba540d24c76a233866845e4a278f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AO.png",
+      "bytes": 2025231,
+      "sha256": "c63aba48b321dc487b7a2795cb2bcb5e71145c1bac0a3f8300208994f56945a4"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_AO.png.meta",
+      "bytes": 2120,
+      "sha256": "09b5e20451deed337a0c2a770e1a6c984da62fe3a63ff05daf1d5a2b3e33264e"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_MetallicSmoothness.png",
+      "bytes": 7405946,
+      "sha256": "67717922390cc5e6d1802f4eb6c9b5e36b45fd203f46ee7b34b680cb2e26edf7"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_MetallicSmoothness.png.meta",
+      "bytes": 2120,
+      "sha256": "19114c3a00bda43c47e734868b0db5d216ad5d453d8e3636bdfc6796f0a9e06f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_Normal.png",
+      "bytes": 13068853,
+      "sha256": "2754edf42b7041f6b6efb4a726cd8e1a9e401406be48a6a0077c71d637df74b6"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/mixbot_low_mixamo_edit1_Normal.png.meta",
+      "bytes": 2801,
+      "sha256": "9229477806ccb16914ba1aa6f98196846f8083f69a0eca2ae6c3e8d6c3fb1d33"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle.anim",
+      "bytes": 120552,
+      "sha256": "5d3eaf8150f6fe7cc32ae90c9c827ad1d486614a513575806ea66d6bf1c54834"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle.anim.meta",
+      "bytes": 196,
+      "sha256": "43ad688d0246379c2aa1fc67014abde7fa34fddb61361e04768a5f185e686585"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Battle.anim",
+      "bytes": 269042,
+      "sha256": "ce2ca34a2e0316a20415a7e4740e60915cf39afdb09ffbef082cdcc2316d915b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Battle.anim.meta",
+      "bytes": 196,
+      "sha256": "d4e6a3267713e746ecc2233a016ad0c1db9ce176e3b69ae80ba0bd28992a9095"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Happy.anim",
+      "bytes": 545581,
+      "sha256": "9f32bd17fdd3c7322fa1f483849ff140d325238c2fa1a3364be4b50aa1c85a72"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Happy.anim.meta",
+      "bytes": 196,
+      "sha256": "3f9df5b03241798c0fb06c97cc23f33b09f86d5357fbebf0f21633cf9e93293b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Relaxed.anim",
+      "bytes": 167505,
+      "sha256": "7b41d51253695a437ed3ef655d09c6c87406dd11481668da2c341e3e42478950"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Relaxed.anim.meta",
+      "bytes": 196,
+      "sha256": "611e1289e66578f624e06deb20e572d2b5b7532f1559b6dd521c0faf6ff8cfbd"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Scared.anim",
+      "bytes": 212642,
+      "sha256": "722c357cee8d88c937e0c9a365ed6c1b21c68f75356ca97425fe4856c53dc808"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Idle_Scared.anim.meta",
+      "bytes": 196,
+      "sha256": "68a9baad8e9c7d26de46440dd238b0b92537e2c6d985f17db53fce72f293d663"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Running.anim",
+      "bytes": 363395,
+      "sha256": "da31fde6892fdefc85462cd649410ea01a3d5a8bbf62df00baa4f284aa7f69e3"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Running.anim.meta",
+      "bytes": 196,
+      "sha256": "27ce0ac3c12b41b704eabccd73eb4236163148d0fa822b78545c270a499ace84"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Walking.anim",
+      "bytes": 284465,
+      "sha256": "8e5fab20d9a351a183b0c48667c2ff0f4856de6a1f33c76662bb7c17a1ca9f78"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/a_Walking.anim.meta",
+      "bytes": 196,
+      "sha256": "df468b729e6e69bd5d161329f4c4f1ede546670c5b6cedefb54183b4102162d2"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Idle.fbx",
+      "bytes": 2877888,
+      "sha256": "6572393904cc4eb76b0cb7e86c0a084a8b86f8477e38514aa7d2181e95a46709"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Idle.fbx.meta",
+      "bytes": 4030,
+      "sha256": "3cd99ea73ee298b5e6267f5d0dbfb9c0311574c73201f401db53e482c79ba854"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Running.fbx",
+      "bytes": 2741904,
+      "sha256": "0085d7be3d09719abdbebcf5f1f6e176a2c1130c309e3c76a3bea4833dd85335"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Default/Jammo_LowPoly@Running.fbx.meta",
+      "bytes": 4033,
+      "sha256": "d6e8e566f1ef7cc5c31d75ef9d7f1edd7eb4361b6ddf3b0a347d6add4a3a1483"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Aim Idle.anim",
+      "bytes": 515071,
+      "sha256": "0c9137b147bdbe13c916e4aa4e6c2738d1d0cb75359275ccaf4a9c78809f9a97"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Aim Idle.anim.meta",
+      "bytes": 196,
+      "sha256": "2b2348cdb2f3fa53d8f449c3d0e2dec5979ac2f2f449e99d4cae463cdb49e1dd"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Idle.anim",
+      "bytes": 794016,
+      "sha256": "13780b21baa01f7445afb5567f0eba63d4b2d4e986a1f9e9630f3e2d1e741117"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Idle.anim.meta",
+      "bytes": 196,
+      "sha256": "8cb5c082d89d10fca194769b23979b3b78ddd402df1fbb6ba1b629b8bcf7b513"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Backwards.anim",
+      "bytes": 961324,
+      "sha256": "e715fac6be91166f4e6b0bdfca130b76659ee23fe5766582c359cda51c40137f"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Backwards.anim.meta",
+      "bytes": 196,
+      "sha256": "8d23f6c9cdfc679e6b72f36e21ec27524c3474eae26bb9181165e81f87b90ffc"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Forward.anim",
+      "bytes": 952750,
+      "sha256": "a412c5946c310f43efa6b458870298a1b41883163bfc5d9e02f3d186bc6e3dc1"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Forward.anim.meta",
+      "bytes": 196,
+      "sha256": "ca1a61bb76b48476d8e615c64029401fde7c0f9d018897dd5586c4a8ab953f3b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Left.anim",
+      "bytes": 980110,
+      "sha256": "4b83eb71397e8a18bce89d691eef079bfcb70738d0fcea57c983c5a31c4551a0"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Left.anim.meta",
+      "bytes": 196,
+      "sha256": "f7c0ef4af0173ed88f78fcbface96daa6727652c05e80d7458854d6b76bc4465"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Right.anim",
+      "bytes": 977824,
+      "sha256": "7b7758320a00429c6d052d62cbcc228135fc4fc31640a32fad7567b2f41f93cc"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Run Right.anim.meta",
+      "bytes": 196,
+      "sha256": "960d8c016f6d2c37475a12f92bc7088c2cb47a0b4112c1b75c13613162d83c7b"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Walk Forward.anim",
+      "bytes": 1132058,
+      "sha256": "625ded44ee4469d285dfe4607294d581c376cd221358368329ed1e18dbf96276"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Animations/Mixamo-Gun/Rifle Walk Forward.anim.meta",
+      "bytes": 196,
+      "sha256": "5467bafc0aeba4c8e50222624a13965beaf08736c9ad250794694ef41f9fbfe5"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_black.psd",
+      "bytes": 28013772,
+      "sha256": "6d865fbff058187f59a9758db2877e076693445a3429c89c5a6ea2c409572258"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_black.psd.meta",
+      "bytes": 2120,
+      "sha256": "6f0015b8be788a572b10f3d03992026eda9ff51c90e513fe885800be29ca6bad"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_blue.psd",
+      "bytes": 25960199,
+      "sha256": "e7a03641d642c7bf03c72e989d52c238bcc728beb273cdb46727f9601a7899a9"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_blue.psd.meta",
+      "bytes": 2120,
+      "sha256": "1bc37ac642df411c851bf9df99503b0b1554f4d8050b9b0dba4ac83eabe03334"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_yellow.psd",
+      "bytes": 25679034,
+      "sha256": "d136388000ffde5ee745b5777ab3ee1c9c6829297d4d4d7f50a7ecdd622e69d4"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo/Textures/Alternates/t_jammo_yellow.psd.meta",
+      "bytes": 2120,
+      "sha256": "0e05e484bc321d64287f96411948cb63d4c32d1b6be2ad5a082b3936e0ac54a2"
+    },
+    {
+      "path": "Assets/GameResource/Characters/Jammo.meta",
+      "bytes": 172,
+      "sha256": "94c61e7daeff1612ef37ea341856bfae9ea1095009bcc0aedccd78740b9311bc"
+    }
+  ],
+  "guids": [
+    "00b24869f517dc24396da8583751fccf",
+    "09beef63c41c25b458d2f95fdfd9e0e5",
+    "0ddcdea3ff2a6504cafcc0b8093e1fbf",
+    "0e4379ec703573a468f125e0864544b3",
+    "10c532508a2453a48aa766e69193d105",
+    "13a6028bbfeabbe4a91cb3339acabfa4",
+    "1c3c3a80fd8c1b64188dd0b3a690d321",
+    "23c0d86c9ee13b14e989e8dbcb08489a",
+    "2e5cbd52f3af8384fafcc9a73ad2f1e0",
+    "3a5a871d579c2da4094f823d674595eb",
+    "3b4759869974d6646bb3982804fb7eea",
+    "535d24752e3d6444da644e79e90ec2ca",
+    "5b2e2ea8f6509ae4a8abe18c200ed7d3",
+    "60c2f0e0aaa8f8d4e9d23d7e3768653b",
+    "60eb7c85d36416943b8138849b6f2d84",
+    "63782ac87f3562240b8b3fe8cb9acab5",
+    "674000df06d273e4790df2652b111789",
+    "6a0fb4aa4de843c45a776e5a4ac9dd69",
+    "6b64f85c5ee58984a8e4d87ffdce9b5d",
+    "6bb3f56b719796048bfe0af7dda91336",
+    "6bd646364b2a3db42bcd783601e3d363",
+    "6fd7082454b5e8f4eaef795e9a384dfa",
+    "8086bf483fcb5224191109120cd0dc03",
+    "82a2914d8f86c62488456950c8330e38",
+    "89baf42b923fcdc46a1cfb77aef335d9",
+    "9045b628a2e38a246a988d3abea05c36",
+    "90e795bd8e6d0eb45b6f74049ed87262",
+    "9320442ecbaf905429dac366ee003323",
+    "9382319d17d4353478986eec64682830",
+    "9deabb6dc381e4443aaf668bd5bce0b1",
+    "a66fb6b9165ee0b4888459b9b6425923",
+    "aa2bb98b035ff55448dc2b05f2e04251",
+    "ac02e0546055b854f8600e1708139ff8",
+    "b2cad9ba00286364bad6feeb3b9d5b8c",
+    "bd66bd1e564e11b4a8c6fed735b5aa10",
+    "c3a8ef644c409ed4697012135caec542",
+    "c4cc47503f3d29242b6272c114ba822e",
+    "c9fd4ccfc3404b04eae3cd87e40a8e2e",
+    "d19e758bb93175945a76f03c6e803137",
+    "d5c0dc78f40c06c4e9356a3218da955b",
+    "d5fee5ac347826e4798c8eb83aed2291",
+    "d69071256986a1c4bb4872d222c6ae6e",
+    "d85664db4b473f64fb198bcc5a3c7099",
+    "e7fa3aa78b48c584fbee583a7c532655",
+    "f0c83a65bca6f58488978e065a82d0e5",
+    "f61e83171850a834788a4664dbb54eae",
+    "f6c18262b3c0eba4bb830f3d91682a4f",
+    "fb6e06c953f0d8045bc58e0f5a640f07",
+    "fd9bc4dd94e80564d9f34ce925fd6c47",
+    "ffc1eed61b21d914a80b4d45178e7583"
+  ],
+  "removed": true,
+  "externalReferences": []
+}

@@ -12,8 +12,9 @@ parser.add_argument('--project', default=str(Path(__file__).resolve().parents[2]
 parser.add_argument('--validated-project')
 args = parser.parse_args()
 root = Path(args.project).resolve()
-out = root / 'Docs/CombatGirls'
-manifest = json.loads((out / 'source-assets.json').read_text(encoding='utf-8'))
+out = root / 'Reports/CombatGirls'
+out.mkdir(parents=True,exist_ok=True)
+manifest = json.loads((root / 'Tools/ValidationData/CombatGirls/source-assets.json').read_text(encoding='utf-8'))
 report = {'sourceUnchanged': True, 'artUnchanged': True, 'workbookChanges': {}, 'legacyExternalReferences': [], 'errors': []}
 for record in manifest['files']:
     original, target = Path(record['source']), root / record['target']
@@ -25,8 +26,8 @@ for record in manifest['files']:
             report['artUnchanged'] = False
             report['errors'].append('Art changed: ' + str(target))
 for name in ('TbCharacter', 'TbWeapon'):
-    backup = root / 'Logs/CombatGirls' / (name + '.before.xlsx')
-    if not backup.exists():
+    backup = root / 'Reports/CombatGirls' / (name + '.before.xlsx')
+    if not backup.exists() or not (root / 'Config/Luban/source' / (name + '.xlsx')).exists():
         continue
     def cells(path):
         book = openpyxl.load_workbook(path)
@@ -48,7 +49,7 @@ if legacy.exists():
              for p in files if p.is_file() and p.suffix == '.meta'}
     cleanup = {'path': legacy.relative_to(root).as_posix(), 'files': records, 'guids': sorted(guids)}
 else:
-    cleanup = json.loads(cleanup_file.read_text(encoding='utf-8'))
+    cleanup = json.loads((root/'Tools/ValidationData/CombatGirls/legacy-cleanup.json').read_text(encoding='utf-8'))
     guids = set(cleanup['guids'])
 for path in (root / 'Assets').rglob('*'):
     if not path.is_file() or legacy in path.parents or path == Path(str(legacy) + '.meta'):

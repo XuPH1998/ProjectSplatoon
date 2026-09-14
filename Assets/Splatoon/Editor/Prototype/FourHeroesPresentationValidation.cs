@@ -14,7 +14,7 @@ namespace Splatoon.Editor
 {
     public static class FourHeroesPresentationValidation
     {
-        const string Output="Docs/CombatGirls/FourHeroes";
+        const string Output="Reports/CombatGirls/FourHeroes";
         static readonly List<string> Report=new();
         static void Require(bool ok,string message){if(!ok)throw new InvalidOperationException(message);}
         public static void Run()

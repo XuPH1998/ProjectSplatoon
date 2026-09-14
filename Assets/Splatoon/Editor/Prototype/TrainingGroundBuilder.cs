@@ -260,7 +260,7 @@ namespace Splatoon.Editor
         }
         public static void Capture()
         {
-            Directory.CreateDirectory("Docs/Screenshots/TrainingGround");
+            Directory.CreateDirectory("Reports/TrainingGround/Screenshots");
             var camera=UnityEngine.Object.FindFirstObjectByType<Camera>();var oldPos=camera.transform.position;var oldRot=camera.transform.rotation;bool ortho=camera.orthographic;
             camera.orthographic=true;camera.orthographicSize=38;camera.transform.position=new Vector3(44,58,-60);camera.transform.LookAt(Vector3.zero);
             Render(camera,"birdseye");
@@ -272,7 +272,7 @@ namespace Splatoon.Editor
         {
             var rt=new RenderTexture(1600,1000,24);rt.Create();var prior=RenderTexture.active;
             var request=new UniversalRenderPipeline.SingleCameraRequest{destination=rt};RenderPipeline.SubmitRenderRequest(camera,request);RenderPipeline.SubmitRenderRequest(camera,request);
-            RenderTexture.active=rt;var texture=new Texture2D(rt.width,rt.height,TextureFormat.RGB24,false);texture.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);texture.Apply();File.WriteAllBytes("Docs/Screenshots/TrainingGround/"+name+".png",texture.EncodeToPNG());
+            RenderTexture.active=rt;var texture=new Texture2D(rt.width,rt.height,TextureFormat.RGB24,false);texture.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);texture.Apply();File.WriteAllBytes("Reports/TrainingGround/Screenshots/"+name+".png",texture.EncodeToPNG());
             RenderTexture.active=prior;rt.Release();UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(texture);
         }
     }

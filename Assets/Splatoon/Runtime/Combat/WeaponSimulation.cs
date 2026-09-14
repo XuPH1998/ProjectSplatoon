@@ -26,8 +26,8 @@ namespace Splatoon.Combat
         public static bool IsSemi(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.SemiAutomatic;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now)
             => !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
-                (s.WeaponPhase == WeaponPhase.Starting || (input.FireSequence != s.ConsumedFire &&
-                now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt && s.Ink + .00001f >= w.ShotInk));
+                (s.WeaponPhase == WeaponPhase.Starting || (s.Ink + .00001f >= w.ShotInk &&
+                (input.Fire || (input.FireSequence != s.ConsumedFire && now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt))));
         public static void ResetPresentation(ref PlayerSnapshot s)
         { s.NextMuzzle = s.LastShotMuzzle = 0; s.RightShotAt = s.LeftShotAt = 0; s.RightShotAction = s.LeftShotAction = 0; }
         public static float Damage(cfg.HeroConfig w, double age, float charge = 1) => IsCharge(w)
@@ -48,7 +48,7 @@ namespace Splatoon.Combat
             s.NextShotAt = Math.Max(s.NextShotAt, s.BurstReadyAt);
             s.WeaponPhase = WeaponPhase.Idle; s.Firing = false; s.FireVisualUntil = 0; s.BurstRemaining = s.ChargeTicks = 0;
             s.ChargeReleasePending = false; s.ConsumedFire = input.FireSequence; s.ConsumedRelease = input.ReleaseSequence;
-            s.AttackNeedsRelease |= requireRelease;
+            s.AttackNeedsRelease |= requireRelease; s.SemiHoldStarted = false;
         }
 
         // Kept for existing deterministic simulation callers; runtime also consumes the immutable fire result.
@@ -122,16 +122,35 @@ namespace Splatoon.Combat
             bool emerged, bool canShoot, bool edge, out WeaponFireResult result)
         {
             result = default;
-            if (!canShoot || s.Ink + .00001f < w.ShotInk) { Cancel(ref s, input); return false; }
-            // A committed click survives button release, but there is never a queue behind it.
+            if (!input.Fire || edge) s.SemiHoldStarted = false;
+            if (!canShoot) { Cancel(ref s, input); return false; }
+            if (s.Ink + .00001f < w.ShotInk)
+            {
+                bool held = s.SemiHoldStarted && input.Fire;
+                Cancel(ref s, input); s.SemiHoldStarted = held;
+                return false;
+            }
+            // A real click commits one shot, including a quick tap released during startup.
             if (edge)
             {
                 s.ConsumedFire = input.FireSequence;
                 if (s.WeaponPhase != WeaponPhase.Starting && now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt)
                     Begin(ref s, input, w, now, emerged ? w.EmergeStartFrames : w.StartFrames);
             }
+            // Held repetitions are created at the cooldown boundary, never buffered.
+            if (s.WeaponPhase != WeaponPhase.Starting && input.Fire && now + 1e-8 >= s.NextShotAt)
+            {
+                if (s.SemiHoldStarted)
+                {
+                    // Keep the hold's action group and advance its shot index. The server
+                    // can reuse one input frame between packets without reusing an action ID.
+                    s.WeaponPhase = WeaponPhase.Starting; s.WeaponReadyAt = s.NextShotAt;
+                }
+                else Begin(ref s, input, w, now, emerged ? w.EmergeStartFrames : w.StartFrames);
+            }
             if (s.WeaponPhase != WeaponPhase.Starting || now + 1e-8 < s.WeaponReadyAt) return false;
             bool emitted = Emit(ref s, w, now, 0, out result);
+            if (emitted) s.SemiHoldStarted = input.Fire;
             s.WeaponPhase = WeaponPhase.Idle; s.BurstRemaining = 0;
             return emitted;
         }

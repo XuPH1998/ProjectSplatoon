@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 parser = argparse.ArgumentParser()
 parser.add_argument('--project', default=str(Path(__file__).resolve().parents[2]))
 args = parser.parse_args()
-root = Path(args.project) / 'Docs/CombatGirls'
+root = Path(args.project) / 'Reports/CombatGirls'
 folder = root / 'Screenshots'
 font = ImageFont.truetype('C:/Windows/Fonts/arial.ttf', 20)
 montage = Image.new('RGB', (960, 4 * 512), '#20242c')

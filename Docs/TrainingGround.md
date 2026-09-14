@@ -34,7 +34,7 @@
 
 ## 地图版本 3 的历史验证记录（2026-09-11）
 
-以下为地图落地时的验证；墨水修复版本 4 的最新验证见 [墨水修复报告](InkLook/Implementation.md)。
+以下为地图落地时的验证；墨水修复版本 4 的最新验证见 [墨水修复报告](../Reports/Archive/2026-09-14/Docs/InkLook/Implementation.md)。
 
 验证使用 Unity 6000.3.9f1，在独立副本中执行。交付 Scene、运行时代码和测试所用副本已核对一致；没有启动或关闭用户当前编辑器中的场景。
 
@@ -54,13 +54,13 @@
 
 同机自动化测试不代替两台实体电脑的局域网验证；人工键鼠手感、长期对战平衡与两台实体电脑验收仍待进行。
 
-可复查的本地证据位于 `Logs/TrainingGround/`：`complete-tests.xml`、`gpu.log`、`acceptance-build.log`、`accepted-host.log`、`accepted-client.log`、`round-host.log`、`round-client.log`、`cycles.log`、`cancel.log`、`mismatch.log`。自动化涂地/通行诊断仅在开发构建显式传入 `-inkSmokeCase map` 和 `-lanSmokeHost/-lanSmokeClient` 时启用。
+可复查的本地证据位于 `Reports/Archive/2026-09-14/Logs/TrainingGround/`：`complete-tests.xml`、`gpu.log`、`acceptance-build.log`、`accepted-host.log`、`accepted-client.log`、`round-host.log`、`round-client.log`、`cycles.log`、`cancel.log`、`mismatch.log`。自动化涂地/通行诊断仅在开发构建显式传入 `-inkSmokeCase map` 和 `-lanSmokeHost/-lanSmokeClient` 时启用。
 
 ## 场景截图
 
-![训练场鸟瞰](Screenshots/TrainingGround/birdseye.png)
+![训练场鸟瞰](../Reports/Archive/2026-09-14/Docs/Screenshots/TrainingGround/birdseye.png)
 
-![桥面与两侧高台](Screenshots/TrainingGround/bridge.png)
+![桥面与两侧高台](../Reports/Archive/2026-09-14/Docs/Screenshots/TrainingGround/bridge.png)
 
-![出生区玩家高度视角](Screenshots/TrainingGround/spawn.png)
+![出生区玩家高度视角](../Reports/Archive/2026-09-14/Docs/Screenshots/TrainingGround/spawn.png)
 

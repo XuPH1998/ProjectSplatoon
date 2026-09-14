@@ -14,7 +14,7 @@ namespace Splatoon.Prototype
         public string HeroChangeMessage { get; private set; } = "";
         public void RequestHeroChange(int heroId, HeroSelectionOrigin origin)
         {
-            if (!IsOwner || !IsSpawned || HeroChangePending || PrototypeMatch.Current == null) return;
+            if (!IsOwner || !IsSpawned || HeroChangePending || TeamChangePending || PrototypeMatch.Current == null) return;
             HeroChangePending = true; _heroReplyReceived = false; HeroChangeMessage = "切换中…";
             ChangeHeroRpc(heroId, origin, ++_heroRequestId, PrototypeMatch.Current.State.Value.Round, Snapshot.Value.Revision);
         }
@@ -23,6 +23,8 @@ namespace Splatoon.Prototype
         {
             if (rpc.Receive.SenderClientId != OwnerClientId || request <= _lastHeroRequest) return;
             _lastHeroRequest = request;
+            if (_heroRequest.HasValue || _teamRequest.HasValue)
+            { HeroChangeReplyRpc(request, Snapshot.Value.HeroRevision, "正在处理切换请求"); return; }
             _heroRequest = new HeroRequest { Id = request, Hero = heroId, Origin = origin, Round = round, Life = life };
         }
         void ApplyHeroRequest(ref PlayerSnapshot s, MatchPhase phase)

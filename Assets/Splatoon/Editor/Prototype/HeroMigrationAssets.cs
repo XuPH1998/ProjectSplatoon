@@ -17,8 +17,8 @@ namespace Splatoon.Editor
             if (EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
             if (!File.Exists("Temp/HeroMigration/install-assets")) return;
             File.Delete("Temp/HeroMigration/install-assets");
-            try { Install(); File.WriteAllText("Temp/HeroMigration/assets-result.txt", "PASS"); }
-            catch (Exception e) { File.WriteAllText("Temp/HeroMigration/assets-result.txt", e.ToString()); Debug.LogException(e); }
+            try { Directory.CreateDirectory("Reports/HeroMigration"); Install(); File.WriteAllText("Reports/HeroMigration/assets-result.txt", "PASS"); }
+            catch (Exception e) { File.WriteAllText("Reports/HeroMigration/assets-result.txt", e.ToString()); Debug.LogException(e); }
         }
         [MenuItem("喷墨对战/内容/安装英雄模型绑定")]
         public static void Install()

@@ -1,0 +1,416 @@
+[
+  {
+    "heroField": "id",
+    "sourceTable": "Weapon",
+    "sourceField": "id",
+    "group": "身份"
+  },
+  {
+    "heroField": "name",
+    "sourceTable": "Weapon",
+    "sourceField": "name",
+    "group": "身份"
+  },
+  {
+    "heroField": "displayName",
+    "sourceTable": "Weapon",
+    "sourceField": "displayName",
+    "group": "身份"
+  },
+  {
+    "heroField": "characterPrefabAddress",
+    "sourceTable": "Character",
+    "sourceField": "visualAddress",
+    "group": "模型"
+  },
+  {
+    "heroField": "weaponPrefabAddress",
+    "sourceTable": "Weapon",
+    "sourceField": "prefabAddress",
+    "group": "模型"
+  },
+  {
+    "heroField": "maxHealth",
+    "sourceTable": "Character",
+    "sourceField": "maxHealth",
+    "group": "角色属性"
+  },
+  {
+    "heroField": "maxInk",
+    "sourceTable": "Character",
+    "sourceField": "maxInk",
+    "group": "角色属性"
+  },
+  {
+    "heroField": "recoverInk",
+    "sourceTable": "Character",
+    "sourceField": "recoverInk",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "swimRecoverInk",
+    "sourceTable": "Character",
+    "sourceField": "swimRecoverInk",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "moveSpeed",
+    "sourceTable": "Character",
+    "sourceField": "moveSpeed",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "swimSpeed",
+    "sourceTable": "Character",
+    "sourceField": "swimSpeed",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "enemyInkMultiplier",
+    "sourceTable": "Character",
+    "sourceField": "enemyInkMultiplier",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "jumpSpeed",
+    "sourceTable": "Character",
+    "sourceField": "jumpSpeed",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "characterGravity",
+    "sourceTable": "Character",
+    "sourceField": "gravity",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "moveAcceleration",
+    "sourceTable": "Character",
+    "sourceField": "moveAcceleration",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "swimAcceleration",
+    "sourceTable": "Character",
+    "sourceField": "swimAcceleration",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "wallSwimSpeed",
+    "sourceTable": "Character",
+    "sourceField": "wallSwimSpeed",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "wallGraceSeconds",
+    "sourceTable": "Character",
+    "sourceField": "wallGraceSeconds",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "wallProbeDistance",
+    "sourceTable": "Character",
+    "sourceField": "wallProbeDistance",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "wallJumpSpeed",
+    "sourceTable": "Character",
+    "sourceField": "wallJumpSpeed",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "mantleSeconds",
+    "sourceTable": "Character",
+    "sourceField": "mantleSeconds",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "healthRecoverDelay",
+    "sourceTable": "Character",
+    "sourceField": "healthRecoverDelay",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "healthRecoverRate",
+    "sourceTable": "Character",
+    "sourceField": "healthRecoverRate",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "swimHealthRecoverRate",
+    "sourceTable": "Character",
+    "sourceField": "swimHealthRecoverRate",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "enemyInkDamageRate",
+    "sourceTable": "Character",
+    "sourceField": "enemyInkDamageRate",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "enemyInkHealthFloor",
+    "sourceTable": "Character",
+    "sourceField": "enemyInkHealthFloor",
+    "group": "移动恢复"
+  },
+  {
+    "heroField": "fireMode",
+    "sourceTable": "Weapon",
+    "sourceField": "fireMode",
+    "group": "发射"
+  },
+  {
+    "heroField": "fireRate",
+    "sourceTable": "Weapon",
+    "sourceField": "fireRate",
+    "group": "发射"
+  },
+  {
+    "heroField": "shotInk",
+    "sourceTable": "Weapon",
+    "sourceField": "shotInk",
+    "group": "发射"
+  },
+  {
+    "heroField": "fireIntervalFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "fireIntervalFrames",
+    "group": "发射"
+  },
+  {
+    "heroField": "startFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "startFrames",
+    "group": "发射"
+  },
+  {
+    "heroField": "emergeStartFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "emergeStartFrames",
+    "group": "发射"
+  },
+  {
+    "heroField": "inkRecoverLockFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "inkRecoverLockFrames",
+    "group": "发射"
+  },
+  {
+    "heroField": "shootMoveSpeed",
+    "sourceTable": "Weapon",
+    "sourceField": "shootMoveSpeed",
+    "group": "发射"
+  },
+  {
+    "heroField": "burstCount",
+    "sourceTable": "Weapon",
+    "sourceField": "burstCount",
+    "group": "发射"
+  },
+  {
+    "heroField": "burstRecoveryFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "burstRecoveryFrames",
+    "group": "发射"
+  },
+  {
+    "heroField": "speedMin",
+    "sourceTable": "Weapon",
+    "sourceField": "speedMin",
+    "group": "弹道"
+  },
+  {
+    "heroField": "speedMax",
+    "sourceTable": "Weapon",
+    "sourceField": "speedMax",
+    "group": "弹道"
+  },
+  {
+    "heroField": "projectileGravity",
+    "sourceTable": "Weapon",
+    "sourceField": "gravity",
+    "group": "弹道"
+  },
+  {
+    "heroField": "lifetime",
+    "sourceTable": "Weapon",
+    "sourceField": "lifetime",
+    "group": "弹道"
+  },
+  {
+    "heroField": "collisionRadius",
+    "sourceTable": "Weapon",
+    "sourceField": "collisionRadius",
+    "group": "弹道"
+  },
+  {
+    "heroField": "spreadDegrees",
+    "sourceTable": "Weapon",
+    "sourceField": "spreadDegrees",
+    "group": "弹道"
+  },
+  {
+    "heroField": "straightFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "straightFrames",
+    "group": "弹道"
+  },
+  {
+    "heroField": "brakeFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "brakeFrames",
+    "group": "弹道"
+  },
+  {
+    "heroField": "brakeSpeedMultiplier",
+    "sourceTable": "Weapon",
+    "sourceField": "brakeSpeedMultiplier",
+    "group": "弹道"
+  },
+  {
+    "heroField": "jumpSpreadDegrees",
+    "sourceTable": "Weapon",
+    "sourceField": "jumpSpreadDegrees",
+    "group": "弹道"
+  },
+  {
+    "heroField": "spreadRecoverFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "spreadRecoverFrames",
+    "group": "弹道"
+  },
+  {
+    "heroField": "effectiveRange",
+    "sourceTable": "Weapon",
+    "sourceField": "effectiveRange",
+    "group": "弹道"
+  },
+  {
+    "heroField": "damage",
+    "sourceTable": "Weapon",
+    "sourceField": "damage",
+    "group": "伤害"
+  },
+  {
+    "heroField": "damageMin",
+    "sourceTable": "Weapon",
+    "sourceField": "damageMin",
+    "group": "伤害"
+  },
+  {
+    "heroField": "damageReduceStartFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "damageReduceStartFrames",
+    "group": "伤害"
+  },
+  {
+    "heroField": "damageReduceEndFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "damageReduceEndFrames",
+    "group": "伤害"
+  },
+  {
+    "heroField": "paintRadiusMin",
+    "sourceTable": "Weapon",
+    "sourceField": "paintRadiusMin",
+    "group": "涂色"
+  },
+  {
+    "heroField": "paintRadiusMax",
+    "sourceTable": "Weapon",
+    "sourceField": "paintRadiusMax",
+    "group": "涂色"
+  },
+  {
+    "heroField": "paintHardness",
+    "sourceTable": "Weapon",
+    "sourceField": "paintHardness",
+    "group": "涂色"
+  },
+  {
+    "heroField": "paintStrength",
+    "sourceTable": "Weapon",
+    "sourceField": "paintStrength",
+    "group": "涂色"
+  },
+  {
+    "heroField": "trailSpacing",
+    "sourceTable": "Weapon",
+    "sourceField": "trailSpacing",
+    "group": "涂色"
+  },
+  {
+    "heroField": "trailRadius",
+    "sourceTable": "Weapon",
+    "sourceField": "trailRadius",
+    "group": "涂色"
+  },
+  {
+    "heroField": "trailMaxDrop",
+    "sourceTable": "Weapon",
+    "sourceField": "trailMaxDrop",
+    "group": "涂色"
+  },
+  {
+    "heroField": "paintRange",
+    "sourceTable": "Weapon",
+    "sourceField": "paintRange",
+    "group": "涂色"
+  },
+  {
+    "heroField": "chargeFrames",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeFrames",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinDamage",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinDamage",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargePartialMaxDamage",
+    "sourceTable": "Weapon",
+    "sourceField": "chargePartialMaxDamage",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinInk",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinInk",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinRange",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinRange",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinSpeed",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinSpeed",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinSpread",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinSpread",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinJumpSpread",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinJumpSpread",
+    "group": "蓄力"
+  },
+  {
+    "heroField": "chargeMinPaintRange",
+    "sourceTable": "Weapon",
+    "sourceField": "chargeMinPaintRange",
+    "group": "蓄力"
+  }
+]
