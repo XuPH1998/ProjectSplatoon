@@ -84,13 +84,11 @@ namespace Splatoon.Combat
             AgeAtDistance(w, shot.Velocity.magnitude, shot.FirstSegmentLength);
         public static void ApplyCorrection(ref InkShot shot, TpsAimSolution aim, cfg.HeroConfig w)
         {
-            // Reuse the already sampled spread, including the shotgun's disk pattern.
-            // Rotate both legs equally; pellets never reconverge at the correction point.
-            Vector3 localSpread = Quaternion.Inverse(Quaternion.LookRotation(aim.InitialDirection)) * shot.Velocity;
-            shot.PostCorrectionVelocity = Quaternion.LookRotation(aim.ExitDirection) * localSpread;
+            // Preserve the sampled muzzle-to-target direction and spread for the entire flight.
+            // Keep the serialized trajectory layout; passing the target never rotates a projectile.
+            shot.PostCorrectionVelocity = shot.Velocity;
             shot.FirstSegmentLength = aim.FirstSegmentLength;
-            // Gravity follows weapon time, independently of convergence along the two-leg baseline.
-            // Position and Velocity keep accumulating it across the bend without a reset or snap.
+            // Convergence distance does not change the weapon's gravity clock.
             shot.GravityStartAge = (float)WeaponSimulation.Seconds(w.StraightFrames);
         }
         public static Vector3 Position(InkShot shot, cfg.HeroConfig w, double age)

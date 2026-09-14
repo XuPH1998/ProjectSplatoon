@@ -236,9 +236,16 @@ namespace Splatoon.Tests
                 var state=Alive();state.Position=Vector3.up*.04f;state.CurrentSpread=.000001f;go.transform.position=state.Position;Physics.SyncTransforms();
                 var service=new InkProjectileService();service.Spawn(player,state,0,0);
                 var shot=service.Spawned[0];
-                var fallStart=InkBallistics.Position(shot,W,shot.GravityStartAge);
-                Assert.That(shot.PostCorrectionVelocity.y,Is.Zero.Within(.00001));
-                double impactAge=shot.GravityStartAge+Math.Sqrt(2*(fallStart.y-W.CollisionRadius)/W.ProjectileGravity);
+                Assert.That(Vector3.Distance(shot.PostCorrectionVelocity,shot.Velocity),Is.LessThan(.00001));
+                // New muzzle-to-target direction can retain a vertical component during braking.
+                double low=shot.GravityStartAge,high=W.Lifetime;
+                for(int i=0;i<50;i++)
+                {
+                    double mid=(low+high)*.5;
+                    if(InkBallistics.Position(shot,W,mid).y>W.CollisionRadius) low=mid;
+                    else high=mid;
+                }
+                double impactAge=(low+high)*.5;
                 var expected=InkBallistics.Position(shot,W,impactAge);
                 service.Simulate(W.Lifetime+.01);
                 Assert.That(service.Impacts.Count,Is.EqualTo(1));Assert.That(service.Impacts[0].Hit,Is.True);

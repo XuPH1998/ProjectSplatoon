@@ -36,6 +36,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["maxPaintMemoryMiB"].IsNumber) { throw new SerializationException(); }  MaxPaintMemoryMiB = _buf["maxPaintMemoryMiB"]; }
         { if(!_buf["simulationRate"].IsNumber) { throw new SerializationException(); }  SimulationRate = _buf["simulationRate"]; }
         { if(!_buf["aimCorrectionDistance"].IsNumber) { throw new SerializationException(); }  AimCorrectionDistance = _buf["aimCorrectionDistance"]; }
+        { if(!_buf["aimFarCorrectionDistance"].IsNumber) { throw new SerializationException(); }  AimFarCorrectionDistance = _buf["aimFarCorrectionDistance"]; }
     }
 
     public static GlobalConfig DeserializeGlobalConfig(JSONNode _buf)
@@ -104,9 +105,13 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// </summary>
     public readonly int SimulationRate;
     /// <summary>
-    /// 瞄准：修正点距逻辑摄像机的距离（米，必须大于0）
+    /// 瞄准：近端收敛点距逻辑摄像机的距离（米，必须大于0）
     /// </summary>
     public readonly float AimCorrectionDistance;
+    /// <summary>
+    /// 瞄准：无命中时远端收敛距离（米，不小于近端距离）
+    /// </summary>
+    public readonly float AimFarCorrectionDistance;
    
     public const int __ID__ = -958250779;
     public override int GetTypeId() => __ID__;
@@ -134,6 +139,7 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "maxPaintMemoryMiB:" + MaxPaintMemoryMiB + ","
         + "simulationRate:" + SimulationRate + ","
         + "aimCorrectionDistance:" + AimCorrectionDistance + ","
+        + "aimFarCorrectionDistance:" + AimFarCorrectionDistance + ","
         + "}";
     }
 }

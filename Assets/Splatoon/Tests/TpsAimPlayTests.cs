@@ -23,7 +23,7 @@ namespace Splatoon.Tests
 {
     public sealed class TpsAimPlayTests
     {
-        const string Output = "Reports/TpsGravity/PlayMode";
+        const string Output = "Reports/TpsConvergence/PlayMode";
         static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         static IEnumerator Wait(Func<bool> ready, string reason, double seconds = 20)
         {
@@ -101,9 +101,12 @@ namespace Splatoon.Tests
                     match.Projectiles.Spawn(player, state, born, match.State.Value.Round);
                     var shots = match.Projectiles.Spawned.ToArray();
                     var resolved = solver.Resolve(player, state, state.LastShotMuzzle);
-                    Debug.Log($"[TPS-GRAVITY] hero={hero} distance={distance} muzzle={resolved.Muzzle:F4} blocked={resolved.MuzzleBlocked} aim={resolved.AimPoint:F4} target={target.transform.position:F4} immediateImpacts={match.Projectiles.Impacts.Count}");
+                    Debug.Log($"[TPS-CONVERGENCE] hero={hero} distance={distance} muzzle={resolved.Muzzle:F4} blocked={resolved.MuzzleBlocked} aim={resolved.AimPoint:F4} target={target.transform.position:F4} immediateImpacts={match.Projectiles.Impacts.Count}");
                     Assert.That(shots.Length, Is.EqualTo(GameplayConfig.GetHero(hero).PelletCount));
-                    Assert.That(shots.All(s => s.PostCorrectionVelocity.sqrMagnitude > 0), Is.True);
+                    Assert.That(shots.All(s => s.PostCorrectionVelocity == s.Velocity), Is.True, "No projectile turns after convergence");
+                    var expectedTarget = distance <= 6 ? resolved.CameraOrigin + resolved.Forward * 6 : resolved.AimHit.Point;
+                    Assert.That(Vector3.Distance(resolved.CorrectionPoint, expectedTarget), Is.LessThan(.0001f));
+                    Assert.That(Vector3.Angle(shots[0].Velocity, expectedTarget - resolved.Muzzle), Is.LessThan(.03f));
                     match.Projectiles.TraceObserved = (shot, age, point) =>
                     {
                         lastTrace[shot.Id] = $"id={shot.Id} age={age:F4} point={point:F4}";
@@ -130,9 +133,9 @@ namespace Splatoon.Tests
                         Vector3 expected = InkBallistics.Position(shot, weapon, (low + high) * .5) + Vector3.forward * weapon.CollisionRadius;
                         Assert.That(Vector3.Distance(impact.Position, expected), Is.LessThan(.003f), "Authority contact follows falling trajectory, not reticle height");
                     }
-                    report.Add($"Hero {hero}: camera target {distance:F0}m, {shots.Length} authoritative projectiles hit; correction data present");
+                    report.Add($"Hero {hero}: camera target {distance:F0}m, {shots.Length} authoritative projectiles hit; single launch direction verified");
                     match.Projectiles.TraceObserved = null;
-                    if (hero == 1 && distance == 12) Capture(Camera.main, "rifle-far-target");
+                    if (hero == 1) Capture(Camera.main, distance <= 6 ? "rifle-near-target" : "rifle-far-target");
                     // EnterPlayMode tests may resume before deferred Destroy is processed.
                     // Remove the old target from physics before resolving the next shot.
                     target.SetActive(false); Physics.SyncTransforms(); Object.Destroy(target); yield return null;
@@ -140,6 +143,9 @@ namespace Splatoon.Tests
                 // Show real RPC-delivered particles in clear air, at configured speed/spread and gravity.
                 SetPose(player, feet + Vector3.up * 4);
                 var live = player.Snapshot.Value; live.LastShotCharge = 1;
+                var miss = solver.Resolve(player, live, live.LastShotMuzzle);
+                Assert.That(miss.AimHit.Collider, Is.Null, "Clear-air case has no hit within 100 metres");
+                Assert.That(Vector3.Distance(miss.CorrectionPoint, miss.CameraOrigin + miss.Forward * 50), Is.LessThan(.0001f));
                 match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time - .05, match.State.Value.Round);
                 var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetHero(hero);
@@ -159,12 +165,15 @@ namespace Splatoon.Tests
                 int changed = shown.GetPixels32().Zip(hidden.GetPixels32(), (a, b) => Math.Abs(a.r-b.r)+Math.Abs(a.g-b.g)+Math.Abs(a.b-b.b)).Count(d => d > 30);
                 Assert.That(changed, Is.GreaterThan(25), "Corrected particles contribute visible GPU pixels"); visiblePixels += changed;
                 Object.Destroy(shown); Object.Destroy(hidden); Object.Destroy(camera.gameObject);
-                // Compare the prior delayed gravity with the same converging baseline.
+                // Compare the previous six-metre bend with the new fixed launch direction.
                 var solution = solver.Resolve(player, live, live.LastShotMuzzle);
                 var centerShot = flight; centerShot.Velocity = solution.InitialDirection * flight.Velocity.magnitude;
                 InkBallistics.ApplyCorrection(ref centerShot, solution, w);
                 var priorShot = centerShot;
-                priorShot.GravityStartAge = (float)Math.Max(WeaponSimulation.Seconds(w.StraightFrames), InkBallistics.CorrectionAge(priorShot, w));
+                Vector3 oldDelta = solution.CameraOrigin + solution.Forward * 6 - solution.Muzzle;
+                priorShot.Velocity = oldDelta.normalized * centerShot.Velocity.magnitude;
+                priorShot.FirstSegmentLength = oldDelta.magnitude;
+                priorShot.PostCorrectionVelocity = solution.Forward * centerShot.Velocity.magnitude;
                 for (int i = 0; i <= 120; i++)
                 {
                     double age = i / 120.0;
@@ -174,35 +183,35 @@ namespace Splatoon.Tests
                 }
                 report.Add($"Hero {hero}: host RPC + GPU particles={count}, visiblePixels={changed}, fallStart={flight.GravityStartAge:F5}s");
             }
-            // Sample a six-metre correction after the straight period but before its bend.
+            // Sample before a six-metre convergence point, after the weapon straight period.
             // Flush the real host RPC and render in this frame so clock scheduling cannot skip the interval.
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
             var gravityWeapon = GameplayConfig.GetHero(3);
-            var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, float.PositiveInfinity);
+            var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, 6, float.PositiveInfinity);
             var gravityShot = new InkShot { Id = uint.MaxValue, HeroId = 3, Team = player.Snapshot.Value.Team,
                 Shooter = ulong.MaxValue, Round = match.State.Value.Round, Seed = 71, Origin = gravityAim.Muzzle,
                 Velocity = gravityAim.InitialDirection * gravityWeapon.SpeedMin };
             InkBallistics.ApplyCorrection(ref gravityShot, gravityAim, gravityWeapon);
-            double gravityBend = InkBallistics.CorrectionAge(gravityShot, gravityWeapon);
-            double gravityAge = (gravityShot.GravityStartAge + gravityBend) * .5;
-            Assert.That(gravityAge, Is.GreaterThan(gravityShot.GravityStartAge).And.LessThan(gravityBend));
+            double convergenceAge = InkBallistics.CorrectionAge(gravityShot, gravityWeapon);
+            double gravityAge = (gravityShot.GravityStartAge + convergenceAge) * .5;
+            Assert.That(gravityAge, Is.GreaterThan(gravityShot.GravityStartAge).And.LessThan(convergenceAge));
             gravityShot.Born = player.NetworkManager.ServerTime.Time - gravityAge;
             match.Projectiles.SpawnForMeasurement(gravityShot);
             FlushPresentation(match);
             var gravityStream = streams[gravityShot.Team - 1];
             var gravityParticles = new ParticleSystem.Particle[32];
-            Assert.That(gravityStream.GetParticles(gravityParticles), Is.GreaterThan(0), "Host RPC delivered pre-bend shot");
+            Assert.That(gravityStream.GetParticles(gravityParticles), Is.GreaterThan(0), "Host RPC delivered shot before convergence");
             var expectedPosition = InkBallistics.Position(gravityShot, gravityWeapon, gravityAge);
             Assert.That(Vector3.Distance(gravityParticles[0].position, expectedPosition), Is.LessThan(.0001f), "GPU stream uses complete authority trajectory");
             var noGravity = gravityShot; noGravity.GravityStartAge = 100;
             float drop = InkBallistics.Position(noGravity, gravityWeapon, gravityAge).y - gravityParticles[0].position.y;
             Assert.That(drop, Is.GreaterThan(.001f), "Actual rendered particle falls before convergence");
-            var gravityCamera = new GameObject("Pre-bend gravity evidence camera").AddComponent<Camera>();
+            var gravityCamera = new GameObject("Before-convergence gravity evidence camera").AddComponent<Camera>();
             gravityCamera.CopyFrom(Camera.main); gravityCamera.enabled = false; gravityCamera.aspect = 1;
             gravityCamera.transform.position = expectedPosition + new Vector3(.6f, .15f, -.6f); gravityCamera.transform.LookAt(expectedPosition);
-            Capture(gravityCamera, "gravity-before-bend");
+            Capture(gravityCamera, "gravity-before-convergence");
             Object.Destroy(gravityCamera.gameObject);
-            report.Add($"Pre-bend GPU particle: age={gravityAge:F6}s, bend={gravityBend:F6}s, gravityStart={gravityShot.GravityStartAge:F6}s, drop={drop:F6}m; RPC and authority position agree");
+            report.Add($"GPU particle before convergence: age={gravityAge:F6}s, targetAge={convergenceAge:F6}s, gravityStart={gravityShot.GravityStartAge:F6}s, drop={drop:F6}m; RPC and authority position agree");
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
             player.RequestHeroChange(1, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 1, "Return to rifle");

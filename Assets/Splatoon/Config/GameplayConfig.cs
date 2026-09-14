@@ -55,7 +55,9 @@ namespace Splatoon.Config
                 Require(a.CellSize >= .0625f && a.CellSize <= .5f && !string.IsNullOrWhiteSpace(a.SceneAddress), "地图网格或场景地址配置无效");
             Require(global.NetworkTickRate >= 10 && global.NetworkTickRate <= 120 && global.ProjectileStepRate >= global.NetworkTickRate && global.ProjectileStepRate % global.NetworkTickRate == 0 && global.ProjectileStepRate <= 480, "网络频率与子步频率必须整除");
             Require(global.SimulationRate == 60 && global.SimulationRate % global.NetworkTickRate == 0 && global.ProjectileStepRate % global.SimulationRate == 0, "玩法固定 60Hz，输入发送与弹道子步必须整除");
-            Require(global.AimCorrectionDistance > 0, "瞄准修正距离必须为有限正数（米）");
+            Require(global.AimCorrectionDistance > 0, "瞄准近端收敛距离必须为有限正数（米）");
+            Require(global.AimFarCorrectionDistance > 0 && global.AimFarCorrectionDistance >= global.AimCorrectionDistance,
+                "瞄准远端收敛距离必须为有限正数且不小于近端距离（米）");
             Require(global.DefaultPort > 0 && global.DefaultPort <= 65535 && global.ConnectionTimeout > 0 && global.InputTimeout > 0, "网络超时或端口无效");
             Require(global.SnapshotChunkBytes >= 512 && global.SnapshotChunkBytes <= 8192 && global.ChunksPerFrame > 0 && global.ChunksPerFrame <= 32 && global.CheckpointStamps >= 32, "同步预算无效");
             Require(global.PaintThreshold > 0 && global.PaintThreshold <= 1 && global.MaxPaintMemoryMiB > 0 && global.PaintWorldUvScale > 0 && global.PaintWorldUvScale <= 1 && global.PaintShapeNoiseScale > 0 && global.PaintShapeNoiseScale <= 512, "涂色阈值或内存预算无效");

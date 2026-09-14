@@ -29,6 +29,7 @@ namespace Splatoon.Tests
             Assert.That(t.TbMap.Get(1).CellSize, Is.EqualTo(.125f));
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
             Assert.That(t.TbGlobal.Get(1).AimCorrectionDistance, Is.EqualTo(6));
+            Assert.That(t.TbGlobal.Get(1).AimFarCorrectionDistance, Is.EqualTo(50));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()
         {
@@ -42,6 +43,22 @@ namespace Splatoon.Tests
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["speedMax"] = 10)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimCorrectionDistance"] = 0)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimCorrectionDistance"] = -1)));
+        }
+        [TestCase(0f)] [TestCase(-1f)] [TestCase(5.99f)]
+        [TestCase(float.NaN)] [TestCase(float.PositiveInfinity)]
+        public void InvalidFarConvergenceIsRejected(float distance)
+        {
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimFarCorrectionDistance"] = distance)));
+        }
+        [TestCase(float.NaN)] [TestCase(float.PositiveInfinity)]
+        public void NonFiniteNearConvergenceIsRejected(float distance)
+        {
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimCorrectionDistance"] = distance)));
+        }
+        [TestCase(6f)] [TestCase(50f)] [TestCase(150f)]
+        public void FarConvergenceIsIndependentOfProbeRange(float distance)
+        {
+            Assert.DoesNotThrow(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["aimFarCorrectionDistance"] = distance)));
         }
     }
 }

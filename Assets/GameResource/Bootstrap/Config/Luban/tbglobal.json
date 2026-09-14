@@ -15,6 +15,7 @@
     "paintShapeNoiseScale": 110,
     "maxPaintMemoryMiB": 128,
     "simulationRate": 60,
-    "aimCorrectionDistance": 6
+    "aimCorrectionDistance": 6,
+    "aimFarCorrectionDistance": 50
   }
 ]

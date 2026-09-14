@@ -38,7 +38,7 @@ namespace Splatoon.Combat
             bool hit = ClosestCast(camera, forward, ProbeDistance, 0, player.OwnerClientId, out var aimHit);
             Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch, muzzleIndex);
             var result = Geometry(camera, forward, muzzle, GameplayConfig.Global.AimCorrectionDistance,
-                hit ? aimHit.Distance : float.PositiveInfinity);
+                GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
             result.Pivot = pivot;
             result.AimHit = aimHit;
             float radius = GameplayConfig.GetHero(state.HeroId).CollisionRadius;
@@ -49,13 +49,14 @@ namespace Splatoon.Combat
             return result;
         }
 
-        public static TpsAimSolution Geometry(Vector3 camera, Vector3 forward, Vector3 muzzle, float correctionDistance, float hitDistance)
+        public static TpsAimSolution Geometry(Vector3 camera, Vector3 forward, Vector3 muzzle,
+            float correctionDistance, float farCorrectionDistance, float hitDistance)
         {
             forward.Normalize();
+            bool hit = float.IsFinite(hitDistance) && hitDistance <= ProbeDistance;
             var r = new TpsAimSolution { CameraOrigin = camera, Forward = forward, Muzzle = muzzle,
-                AimPoint = camera + forward * Mathf.Min(hitDistance, ProbeDistance) };
-            bool near = hitDistance <= correctionDistance;
-            r.CorrectionPoint = camera + forward * (near ? hitDistance : correctionDistance);
+                AimPoint = camera + forward * (hit ? hitDistance : farCorrectionDistance) };
+            r.CorrectionPoint = camera + forward * (hit ? Mathf.Max(hitDistance, correctionDistance) : farCorrectionDistance);
             Vector3 delta = r.CorrectionPoint - muzzle;
             if (delta.sqrMagnitude <= Epsilon * Epsilon || Vector3.Dot(delta, forward) <= Epsilon)
             {
@@ -65,18 +66,19 @@ namespace Splatoon.Combat
             }
             r.FirstSegmentLength = delta.magnitude;
             r.InitialDirection = delta / r.FirstSegmentLength;
-            r.ExitDirection = near ? r.InitialDirection : forward;
+            r.ExitDirection = r.InitialDirection;
             return r;
         }
 
         public bool IsObstructed(TpsAimSolution aim, float radius, ulong shooter)
         {
             if (aim.MuzzleBlocked) return true;
-            if (ClosestCast(aim.Muzzle, aim.InitialDirection, aim.FirstSegmentLength, radius, shooter, out var first))
-                return first.Collider != aim.AimHit.Collider;
-            float remaining = Mathf.Max(0, Vector3.Dot(aim.AimPoint - aim.CorrectionPoint, aim.ExitDirection));
-            return ClosestCast(aim.CorrectionPoint, aim.ExitDirection, remaining, radius, shooter, out var second)
-                && second.Collider != aim.AimHit.Collider;
+            // End at the camera aim depth, not at the near convergence point beyond a close target.
+            float forward = Vector3.Dot(aim.InitialDirection, aim.Forward);
+            if (forward <= Epsilon) return false;
+            float distance = Mathf.Max(0, Vector3.Dot(aim.AimPoint - aim.Muzzle, aim.Forward) / forward);
+            return ClosestCast(aim.Muzzle, aim.InitialDirection, distance, radius, shooter, out var hit)
+                && hit.Collider != aim.AimHit.Collider;
         }
 
         public static Vector2 ReticleViewport(Camera camera, Vector3 aimPoint)
