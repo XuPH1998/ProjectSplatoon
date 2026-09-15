@@ -15,7 +15,7 @@ namespace Splatoon.Tests
         [TearDown] public void Reset() => LubanConfigService.Current.Reset();
         static PlayerSnapshot Player(int hero) => new() { HeroId = hero, Health = 100, Ink = 100, Grounded = true };
         static bool Fire(ref PlayerSnapshot s, double now, bool held = true, uint press = 1)
-            => WeaponSimulation.Step(ref s, new PlayerInputFrame { Fire = held, FireSequence = press }, GameplayConfig.GetHero(s.HeroId), now, false, true);
+            => WeaponSimulation.Step(ref s, new PlayerInputFrame { Fire = held, FireSequence = press }, GameplayConfig.GetWeapon(s.HeroId), now, false, true);
 
         [TestCase(1, 15f)] [TestCase(1, 7f)] [TestCase(1, 7.5f)]
         [TestCase(2, 10f)] [TestCase(3, 2.5f)] [TestCase(4, 5f)]
@@ -23,7 +23,7 @@ namespace Splatoon.Tests
         {
             HeroMigrationTests.Load(rows => rows[hero - 1]["fireRate"] = rate);
             GameplayConfig.Validate();
-            var w = GameplayConfig.GetHero(hero); var s = Player(hero);
+            var w = GameplayConfig.GetWeapon(hero); var s = Player(hero);
             double startup = w.StartFrames / 60.0, interval = 1.0 / rate;
             Assert.That(Fire(ref s, 0), Is.False);
             Assert.That(Fire(ref s, startup), Is.True);
@@ -38,7 +38,7 @@ namespace Splatoon.Tests
         [Test] public void BurstUsesConfiguredRateWithinTheGroupAndPreservesGroupRecovery()
         {
             HeroMigrationTests.Load(rows => { rows[0]["fireMode"] = 1; rows[0]["burstCount"] = 3; rows[0]["burstRecoveryFrames"] = 30; rows[0]["fireRate"] = 12; });
-            GameplayConfig.Validate(); var s = Player(1); double first = GameplayConfig.GetHero(1).StartFrames / 60.0;
+            GameplayConfig.Validate(); var s = Player(1); double first = GameplayConfig.GetWeapon(1).StartFrames / 60.0;
             Fire(ref s, 0);
             Assert.That(Fire(ref s, first), Is.True);
             Assert.That(Fire(ref s, first + 1.0 / 12), Is.True);
@@ -63,7 +63,7 @@ namespace Splatoon.Tests
         [Test] public void ZeroGravityKeepsBothBallisticPathsLevelAfterTheStraightPhase()
         {
             HeroMigrationTests.Load(rows => rows[0]["projectileGravity"] = 0);
-            GameplayConfig.Validate(); var w = GameplayConfig.GetHero(1);
+            GameplayConfig.Validate(); var w = GameplayConfig.GetWeapon(1);
             var origin = new Vector3(0, 3, 0); var velocity = new Vector3(0, 0, 30);
             Assert.That(InkBallistics.Position(origin, velocity, w, 1).y, Is.EqualTo(3));
             var shot = new InkShot { Origin = origin, Velocity = velocity, FirstSegmentLength = 2, PostCorrectionVelocity = velocity, GravityStartAge = .2f };

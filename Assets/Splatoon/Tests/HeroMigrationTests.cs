@@ -24,8 +24,36 @@ namespace Splatoon.Tests
         public static void Load(Action<JSONNode> edit = null)
         {
             var data = Directory.GetFiles("Assets/GameResource/Bootstrap/Config/Luban", "*.json").ToDictionary(Path.GetFileNameWithoutExtension, f => JSONNode.Parse(File.ReadAllText(f)));
+            data["tbhero"] = CombinedHeroes();
             edit?.Invoke(data["tbhero"]);
+            InstallWeapons(data["tbhero"]);
             typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current, new cfg.Tables(n => data[n]));
+        }
+        public static JSONNode CombinedHeroes()
+        {
+            var rows = JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/tbhero.json"));
+            foreach (var row in rows.Children)
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(row["weaponConfigPath"].Value);
+                Assert.That(asset, Is.Not.Null, row["weaponConfigPath"].Value);
+                var weapon = JSONNode.Parse(JsonUtility.ToJson(asset));
+                foreach (string key in weapon.Keys) if (key != "name") row[key] = weapon[key];
+            }
+            return rows;
+        }
+        public static void InstallWeapons(JSONNode rows)
+        {
+            WeaponConfigService.Current.Clear();
+            foreach (var row in rows.Children)
+            {
+                var copy = ScriptableObject.CreateInstance<WeaponConfigAsset>();
+                try
+                {
+                    JsonUtility.FromJsonOverwrite(row.ToString(), copy);
+                    WeaponConfigService.Current.SetForEditor(row["id"].AsInt, copy.Snapshot());
+                }
+                finally { UnityEngine.Object.DestroyImmediate(copy); }
+            }
         }
         // Retired shooter/burst mechanics remain covered using the pinned historical fixture,
         // independently of the new custom-hero balance in the live table.
@@ -59,7 +87,7 @@ namespace Splatoon.Tests
         [Test] public void MachineGunAdditionPreservesTheExistingFiveHeroes()
         {
             var before = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/MachineGun/Heroes-Before.json"));
-            var actual = JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/tbhero.json"));
+            var actual = CombinedHeroes();
             Assert.That(actual.Count, Is.EqualTo(before.Count + 1));
             for (int i = 0; i < before.Count; i++)
                 foreach (var field in before[i].Keys)

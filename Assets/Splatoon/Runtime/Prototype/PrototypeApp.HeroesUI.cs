@@ -114,7 +114,7 @@ namespace Splatoon.Prototype
                 Panel(rect, active ? new Color(.13f, .25f, .32f) : new Color(.10f, .13f, .17f));
                 if (GUI.Button(rect, "", GUIStyle.none)) _previewHeroId = w.Id;
                 GUI.Label(new Rect(rect.x + 12, rect.y + 2, 300, 32), w.DisplayName + (w.Id == current.Id ? "  当前英雄" : ""), _label);
-                HeroText(new Rect(rect.x + 12, rect.y + 30, 305, 47), WeaponDisplay.ListSummary(w));
+                HeroText(new Rect(rect.x + 12, rect.y + 30, 305, 47), WeaponDisplay.ListSummary(GameplayConfig.GetWeapon(w.Id)));
             }
             GUI.Label(new Rect(498, 159, 150, 30), "性能参数", _small);
             GUI.Label(new Rect(656, 159, 230, 30), "所选：" + selected.DisplayName, _small);

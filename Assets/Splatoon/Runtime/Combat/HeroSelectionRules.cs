@@ -31,7 +31,7 @@ namespace Splatoon.Combat
             s.HeroId = heroId; s.HeroRevision++;
             s.AirSwimSource = SwimSurface.None;
             WeaponSimulation.ResetPresentation(ref s);
-            s.CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetHero(heroId), !s.Grounded, 0);
+            SpreadSimulation.Reset(ref s, GameplayConfig.GetWeapon(heroId));
             var hero = GameplayConfig.GetHero(heroId);
             s.Ink = refillInk ? hero.MaxInk : UnityEngine.Mathf.Min(s.Ink, hero.MaxInk);
             s.Health = UnityEngine.Mathf.Min(s.Health, hero.MaxHealth);

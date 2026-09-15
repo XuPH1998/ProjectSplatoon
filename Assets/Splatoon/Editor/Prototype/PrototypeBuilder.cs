@@ -52,6 +52,11 @@ namespace Splatoon.Editor
                 AddAddress(settings,group,pack.CharacterPath,"Character/"+pack.name);
                 AddAddress(settings,group,pack.WeaponPath,"Weapon/"+pack.weapon);
             }
+            foreach (string guid in AssetDatabase.FindAssets("t:WeaponConfigAsset", new[] { "Assets/GameResource/Weapons" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                AddAddress(settings, group, path, path);
+            }
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab","Effects/InkStream");
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab","Effects/InkImpact");
             settings.BuildAddressablesWithPlayerBuild=AddressableAssetSettings.PlayerBuildOption.DoNotBuildWithPlayer;

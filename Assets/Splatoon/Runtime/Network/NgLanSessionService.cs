@@ -35,7 +35,7 @@ namespace Splatoon.Networking
             SetState(NetworkSessionState.Starting);
             try
             {
-                ((UnityTransport)_manager.NetworkConfig.NetworkTransport).SetConnectionData("127.0.0.1", options.Port, "0.0.0.0");
+                ((UnityTransport)_manager.NetworkConfig.NetworkTransport).SetConnectionData("127.0.0.1", options.Port, options.LoopbackOnly ? "127.0.0.1" : "0.0.0.0");
                 if (!_manager.StartHost()) throw new InvalidOperationException("创建房间失败，请检查 UDP 端口是否被占用。");
                 SetState(NetworkSessionState.Hosting);
                 await UniTask.CompletedTask;

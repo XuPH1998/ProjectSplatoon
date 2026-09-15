@@ -17,7 +17,8 @@ namespace Splatoon.Tests
 {
     public sealed class MachineGunTests
     {
-        cfg.HeroConfig W => GameplayConfig.GetHero(6);
+        WeaponRuntimeConfig W => GameplayConfig.GetWeapon(6);
+        cfg.HeroConfig Hero => GameplayConfig.GetHero(6);
         static PlayerSnapshot Player(float ink = 100, bool ground = true) => new() { HeroId=6, Health=100, Ink=ink, Grounded=ground, Team=1, Revision=1 };
         [SetUp] public void Setup() => HeroMigrationTests.Load();
         [TearDown] public void Cleanup() => LubanConfigService.Current.Reset();
@@ -42,7 +43,7 @@ namespace Splatoon.Tests
         [Test] public void FullHoldKeepsItsMagazineWithoutFiringOrOrdinaryRecovery()
         {
             var s=Player();
-            for(int t=0;t<=300;t++) { Assert.That(Step(ref s,t,true),Is.False); ResourceSimulation.Step(ref s,W,false,false,1f/60,t/60.0); }
+            for(int t=0;t<=300;t++) { Assert.That(Step(ref s,t,true),Is.False); ResourceSimulation.Step(ref s,Hero,false,false,1f/60,t/60.0); }
             Assert.That(s.SplatlingCharge,Is.EqualTo(150));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
             Assert.That(s.Ink,Is.EqualTo(65).Within(.0003));Assert.That(s.SplatlingReservedInk,Is.EqualTo(35).Within(.0003));
             Assert.That(Step(ref s,301,false),Is.True);Assert.That(s.LastShotCharge,Is.EqualTo(1));
@@ -152,8 +153,8 @@ namespace Splatoon.Tests
             var horizontal=new List<float>();var vertical=new List<float>();
             for(uint i=1;i<=2048;i++)
             {
-                uint a=i,b=i;var v=InkBallistics.SplatlingVelocity(Vector3.forward,W,1,3,ref a);
-                Assert.That(v,Is.EqualTo(InkBallistics.SplatlingVelocity(Vector3.forward,W,1,3,ref b)));
+                uint a=i,b=i;var v=InkBallistics.SplatlingVelocity(Vector3.forward,W,1,3,2,ref a);
+                Assert.That(v,Is.EqualTo(InkBallistics.SplatlingVelocity(Vector3.forward,W,1,3,2,ref b)));
                 float x=Mathf.Abs(Mathf.Atan2(v.x,v.z)*Mathf.Rad2Deg),y=Mathf.Abs(Mathf.Atan2(v.y,v.z)*Mathf.Rad2Deg);
                 Assert.That(x,Is.LessThanOrEqualTo(3.001));Assert.That(y,Is.LessThanOrEqualTo(2.001));
                 horizontal.Add(x);vertical.Add(y);
@@ -206,11 +207,11 @@ namespace Splatoon.Tests
                     motor.Restore(s);Physics.SyncTransforms();
                     bool firing=phase!=WeaponPhase.Idle;
                     for(int t=0;t<60;t++)motor.Step(ref s,new PlayerInputFrame{Move=Vector2.up},1f/60,t/60.0,firing,SplatlingSimulation.MovementSpeed(s,W));
-                    float expected=phase==WeaponPhase.Idle?W.MoveSpeed:phase==WeaponPhase.Charging?W.SplatlingChargeMoveSpeed:W.ShootMoveSpeed;
+                    float expected=phase==WeaponPhase.Idle?Hero.MoveSpeed:phase==WeaponPhase.Charging?W.SplatlingChargeMoveSpeed:W.ShootMoveSpeed;
                     Assert.That(s.Velocity.z,Is.EqualTo(expected).Within(.015),phase.ToString());
                     motor.Step(ref s,new PlayerInputFrame{JumpSequence=1},1f/60,1,firing,SplatlingSimulation.MovementSpeed(s,W));
-                    float jump=phase==WeaponPhase.Charging?W.SplatlingChargeJumpSpeed:W.JumpSpeed;
-                    Assert.That(s.VerticalSpeed,Is.EqualTo(jump-W.CharacterGravity/60).Within(.001));
+                    float jump=phase==WeaponPhase.Charging?W.SplatlingChargeJumpSpeed:Hero.JumpSpeed;
+                    Assert.That(s.VerticalSpeed,Is.EqualTo(jump-Hero.CharacterGravity/60).Within(.001));
                 }
             }
             finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(floor);Physics.SyncTransforms();}

@@ -22,7 +22,7 @@ namespace Splatoon.Tests
         public void ShooterInkAndFullTankCountMatchPinnedReference(int id)
         {
             float cost = Reference(id)["WeaponParam"]["InkConsume"].AsFloat * 100;
-            var w = GameplayConfig.GetHero(id); var state = Player(id); int count = 0;
+            var w = GameplayConfig.GetWeapon(id); var state = Player(id); int count = 0;
             Assert.That(WeaponSimulation.InkCost(w), Is.EqualTo(cost).Within(.00001f));
             for (int tick = 0; tick < 4000; tick++)
                 if (WeaponSimulation.Step(ref state, new PlayerInputFrame { Fire = true, FireSequence = 1 }, w, tick / 60.0, false, true)) count++;
@@ -32,7 +32,7 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(4)]
         public void RecoveryLockUsesPinnedFramesAndAllowsRecoveryAtBoundary(int id)
         {
-            var w = GameplayConfig.GetHero(id); int frames = Reference(id)["WeaponParam"]["InkRecoverStop"].AsInt;
+            var w = GameplayConfig.GetWeapon(id); int frames = Reference(id)["WeaponParam"]["InkRecoverStop"].AsInt;
             var s = Player(id); double fired = -1;
             for (int tick = 0; tick < 10; tick++)
                 if (WeaponSimulation.Step(ref s, new PlayerInputFrame { Fire = true, FireSequence = 1 }, w, tick / 60.0, false, true)) { fired = tick / 60.0; break; }
@@ -47,7 +47,7 @@ namespace Splatoon.Tests
         }
         [Test] public void HeavyShooterConsecutiveShotsAreNineReferenceFramesApart()
         {
-            var w = GameplayConfig.GetHero(3); var s = Player(3); int previous = -1, count = 0;
+            var w = GameplayConfig.GetWeapon(3); var s = Player(3); int previous = -1, count = 0;
             int interval = Reference(3)["WeaponParam"]["RepeatFrame"].AsInt;
             for (int tick = 0; tick < 180; tick++)
                 if (WeaponSimulation.Step(ref s, new PlayerInputFrame { Fire = true, FireSequence = 1 }, w, tick / 60.0, false, true))
@@ -57,7 +57,7 @@ namespace Splatoon.Tests
         }
         [Test] public void FullChargeDamageIsIndependentOfUnverifiedPartialCurve()
         {
-            var w = GameplayConfig.GetHero(5);
+            var w = GameplayConfig.GetWeapon(5);
             Assert.That(WeaponSimulation.Damage(w, .1, 1), Is.EqualTo(Reference(5)["DamageParam"]["ValueFullCharge"].AsFloat / 10));
             Assert.That(WeaponSimulation.Damage(w, .1, 0), Is.EqualTo(40));
             Assert.That(WeaponSimulation.Damage(w, .1, .5f), Is.EqualTo(60), "Partial curve remains the explicitly documented legacy curve.");
@@ -81,8 +81,9 @@ namespace Splatoon.Tests
         }
         [Test] public void GatedPhysicsAndPaintParametersRetainBaseline()
         {
-            foreach (var w in LubanConfigService.Current.Tables.TbHero.DataList)
+            foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
             {
+                var w = GameplayConfig.GetWeapon(hero.Id);
                 Assert.That(w.ProjectileGravity, Is.EqualTo(9.8f)); Assert.That(w.StraightFrames, Is.EqualTo(4));
                 Assert.That(w.BrakeFrames, Is.EqualTo(8)); Assert.That(w.BrakeSpeedMultiplier, Is.EqualTo(.66f));
                 Assert.That(w.PaintRadiusMin, Is.EqualTo(.65f)); Assert.That(w.PaintRadiusMax, Is.EqualTo(.8f));

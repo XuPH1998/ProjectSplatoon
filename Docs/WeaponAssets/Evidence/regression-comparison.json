@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Splatoon.Tests.GameplayUpdateTests.EveryTrailStampUsesAnAdvancingReproducibleRadius",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: True\n  But was:  False\n",
+    "currentMessage": "  Expected: True\n  But was:  False\n"
+  },
+  {
+    "name": "Splatoon.Tests.WeaponReferenceTests.GatedPhysicsAndPaintParametersRetainBaseline",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 9.80000019f\n  But was:  43.133503f\n",
+    "currentMessage": "  Expected: 9.80000019f\n  But was:  43.133503f\n"
+  },
+  {
+    "name": "Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 100 +/- 0.001d\n  But was:  29.999958f\n",
+    "currentMessage": "  Expected: 100 +/- 0.001d\n  But was:  29.999958f\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 108\n  But was:  117\n",
+    "currentMessage": "  Expected: 108\n  But was:  117\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 31.5f\n  But was:  31.0f\n",
+    "currentMessage": "  Expected: 31.5f\n  But was:  31.0f\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 100\n  But was:  117\n",
+    "currentMessage": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 100\n  But was:  117\n",
+    "currentMessage": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 100\n  But was:  117\n",
+    "currentMessage": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: greater than or equal to 6\n  But was:  4\n",
+    "currentMessage": "  Expected: greater than or equal to 6\n  But was:  4\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 6\n  But was:  4\n",
+    "currentMessage": "  Expected: 6\n  But was:  4\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 6\n  But was:  4\n",
+    "currentMessage": "  Expected: 6\n  But was:  4\n"
+  },
+  {
+    "name": "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock",
+    "reproducedOnBfb059a": true,
+    "baselineMessage": "  Expected: 40.5555573f +/- 0.0001d\n  But was:  40.1666679f\n",
+    "currentMessage": "  Expected: 40.5555573f +/- 0.0001d\n  But was:  40.1666679f\n"
+  }
+]

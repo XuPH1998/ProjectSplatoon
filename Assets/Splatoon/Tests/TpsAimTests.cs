@@ -52,7 +52,7 @@ namespace Splatoon.Tests
         }
         static InkShot Shot(TpsAimSolution aim, int hero = 1)
         {
-            var w = GameplayConfig.GetHero(hero);
+            var w = GameplayConfig.GetWeapon(hero);
             var shot = new InkShot { Id = 1, HeroId = hero, Seed = 71, Team = 1, Shooter = ulong.MaxValue,
                 Origin = aim.Muzzle, Velocity = aim.InitialDirection * w.SpeedMin };
             InkBallistics.ApplyCorrection(ref shot, aim, w); return shot;
@@ -63,7 +63,7 @@ namespace Splatoon.Tests
         [TestCase(0f)] [TestCase(4f)] [TestCase(5f)] [TestCase(6f)]
         public void NearAndBoundaryAimAtNearConvergence(float distance)
         {
-            var aim = Geometry(distance); var shot = Shot(aim); var w = GameplayConfig.GetHero(1);
+            var aim = Geometry(distance); var shot = Shot(aim); var w = GameplayConfig.GetWeapon(1);
             Equal(aim.ExitDirection, aim.InitialDirection);
             Equal(aim.AimPoint, aim.CameraOrigin + aim.Forward * distance);
             Equal(aim.CorrectionPoint, aim.CameraOrigin + aim.Forward * 6);
@@ -74,7 +74,7 @@ namespace Splatoon.Tests
         [TestCase(100f, 0f)] [TestCase(float.PositiveInfinity, 65f)] [TestCase(101f, 0f)]
         public void FarOrMissKeepsMuzzleToTargetDirection(float distance, float pitch)
         {
-            var aim = Geometry(distance, 6, pitch); var shot = Shot(aim); var w = GameplayConfig.GetHero(1);
+            var aim = Geometry(distance, 6, pitch); var shot = Shot(aim); var w = GameplayConfig.GetWeapon(1);
             float targetDistance = distance <= 100 ? distance : 50;
             Equal(aim.CorrectionPoint, aim.CameraOrigin + aim.Forward * targetDistance);
             Equal(aim.AimPoint, aim.CorrectionPoint);
@@ -106,7 +106,7 @@ namespace Splatoon.Tests
             var rotation = Quaternion.Euler(pitch, 17, 0);
             var aim = TpsAimSolver.Geometry(Vector3.zero, rotation * Vector3.forward,
                 rotation * new Vector3(side, -.1f, 4.5f), 6, 50, hit);
-            var w = GameplayConfig.GetHero(1); uint seed = 71, repeatSeed = 71;
+            var w = GameplayConfig.GetWeapon(1); uint seed = 71, repeatSeed = 71;
             var shot = Shot(aim);
             shot.Velocity = InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, 5);
             Vector3 expected = InkBallistics.LaunchVelocity((aim.CorrectionPoint - aim.Muzzle).normalized, w, ref repeatSeed, 5);
@@ -163,7 +163,7 @@ namespace Splatoon.Tests
         public void GravityStartsBeforeLongConvergenceAndPersistsPastTarget(int hero)
         {
             var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, Vector3.left * .6f, 6, 14, float.PositiveInfinity);
-            var shot = Shot(aim, hero); var w = GameplayConfig.GetHero(hero);
+            var shot = Shot(aim, hero); var w = GameplayConfig.GetWeapon(hero);
             double bend = InkBallistics.CorrectionAge(shot, w);
             double straight = WeaponSimulation.Seconds(w.StraightFrames);
             Assert.That(bend, Is.GreaterThan(straight));
@@ -187,7 +187,7 @@ namespace Splatoon.Tests
         public void ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(int hero)
         {
             var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, new Vector3(-.6f, 0, 4.5f), 6, 6, float.PositiveInfinity);
-            var shot = Shot(aim, hero); var w = GameplayConfig.GetHero(hero);
+            var shot = Shot(aim, hero); var w = GameplayConfig.GetWeapon(hero);
             double straight = WeaponSimulation.Seconds(w.StraightFrames), bend = InkBallistics.CorrectionAge(shot, w);
             Assert.That(bend, Is.LessThan(straight));
             Assert.That(InkBallistics.Position(shot, w, (straight + bend) * .5).y, Is.Zero.Within(.00001));
@@ -199,7 +199,7 @@ namespace Splatoon.Tests
             var rotation = Quaternion.Euler(pitch, 17, 0);
             var aim = TpsAimSolver.Geometry(Vector3.zero, rotation * Vector3.forward, rotation * new Vector3(-.6f, -.1f, 0), 6, 14, float.PositiveInfinity);
             var shot = Shot(aim); var baseline = shot; baseline.GravityStartAge = 100;
-            var w = GameplayConfig.GetHero(1); double bend = InkBallistics.CorrectionAge(shot, w);
+            var w = GameplayConfig.GetWeapon(1); double bend = InkBallistics.CorrectionAge(shot, w);
             foreach (double age in new[] { bend - .01, bend, bend + .01 })
             {
                 float fall = (float)age - shot.GravityStartAge;
@@ -213,7 +213,7 @@ namespace Splatoon.Tests
         {
             Box(new Vector3(0, -.25f, 0), new Vector3(100, .5f, 100));
             var aim = TpsAimSolver.Geometry(Vector3.up * .3f, Vector3.forward, new Vector3(-.6f, .3f, 0), 6, 30, float.PositiveInfinity);
-            var shot = Shot(aim); var w = GameplayConfig.GetHero(1);
+            var shot = Shot(aim); var w = GameplayConfig.GetWeapon(1);
             var service = new InkProjectileService(); service.SpawnForMeasurement(shot);
             for (int i = 1; i <= frameRate; i++) service.Simulate((double)i / frameRate);
             Assert.That(service.ActiveCount, Is.Zero); Assert.That(service.Impacts.Count, Is.EqualTo(1));
@@ -225,7 +225,7 @@ namespace Splatoon.Tests
         [TestCase(0f)] [TestCase(.1f)] [TestCase(4f)] [TestCase(12f)] [TestCase(100f)]
         public void DistanceInverseIncludesBraking(float distance)
         {
-            var w = GameplayConfig.GetHero(1);
+            var w = GameplayConfig.GetWeapon(1);
             double age = InkBallistics.AgeAtDistance(w, w.SpeedMin, distance);
             Assert.That(w.SpeedMin * InkBallistics.TravelTime(w, age), Is.EqualTo(distance).Within(.0001f));
         }
@@ -237,7 +237,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotRoundTripPreservesEntireTrajectoryAfterShooterMoves()
         {
-            var w = GameplayConfig.GetHero(1); var aim = Geometry(20); var shot = Shot(aim);
+            var w = GameplayConfig.GetWeapon(1); var aim = Geometry(20); var shot = Shot(aim);
             using var writer = new FastBufferWriter(1024, Allocator.Temp); writer.WriteNetworkSerializable(shot);
             using var reader = new FastBufferReader(writer, Allocator.Temp); reader.ReadNetworkSerializable(out InkShot copy);
             Assert.That(copy.FirstSegmentLength, Is.EqualTo(shot.FirstSegmentLength));
@@ -248,7 +248,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunSpreadDoesNotReconvergeAndPreservesSeededPattern()
         {
-            var aim = Geometry(5); var w = GameplayConfig.GetHero(3); var points = new List<Vector3>();
+            var aim = Geometry(5); var w = GameplayConfig.GetWeapon(3); var points = new List<Vector3>();
             for (int pellet = 0; pellet < w.PelletCount; pellet++)
             {
                 var shot = Shot(aim, 3);
@@ -286,7 +286,7 @@ namespace Splatoon.Tests
             Box(Vector3.Lerp(aim.Muzzle, aim.CorrectionPoint, .5f), new Vector3(.08f, 2, .08f));
             aim = solver.Resolve(player, state, 0);
             Assert.That(aim.MuzzleBlocked, Is.False);
-            Assert.That(solver.IsObstructed(aim, GameplayConfig.GetHero(1).CollisionRadius, player.OwnerClientId), Is.True);
+            Assert.That(solver.IsObstructed(aim, GameplayConfig.GetWeapon(1).CollisionRadius, player.OwnerClientId), Is.True);
             var service = new InkProjectileService(); service.Spawn(player, state, 0, 1); service.Simulate(.2);
             Assert.That(service.Impacts.Count, Is.EqualTo(1));
             Assert.That(service.Impacts[0].Position.z, Is.LessThan(aim.CorrectionPoint.z));
@@ -324,7 +324,7 @@ namespace Splatoon.Tests
             string N(double number) => number.ToString("F6", CultureInfo.InvariantCulture);
             foreach (int hero in new[] { 1, 2, 3, 4, 5 })
             {
-                var player = Player(hero); var w = GameplayConfig.GetHero(hero);
+                var player = Player(hero); var w = GameplayConfig.GetWeapon(hero);
                 foreach (float compression in new[] { 1f, .05f })
                 {
                     string mode = compression == 1 ? "normal" : "compressed";

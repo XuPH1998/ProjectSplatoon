@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
+  m_Name: MachineGunGirlWeaponConfig
+  m_EditorClassIdentifier: 
+  weaponPrefabAddress: "Weapon/MachineGun"
+  fireMode: 4
+  fireRate: 15
+  shotInk: 0.53030303
+  startFrames: 0
+  emergeStartFrames: 4
+  inkRecoverLockFrames: 40
+  shootMoveSpeed: 3.125
+  burstCount: 1
+  burstRecoveryFrames: 0
+  speedMin: 101.543454
+  speedMax: 114.124059
+  projectileGravity: 43.1335025
+  lifetime: 3
+  collisionRadius: 0.149769106
+  spreadDegrees: 3
+  straightFrames: 8
+  brakeFrames: 8
+  brakeSpeedMultiplier: 0.1
+  jumpSpreadDegrees: 6
+  spreadRecoverFrames: 45
+  effectiveRange: 20.2188293
+  damage: 40
+  damageMin: 16
+  damageReduceStartFrames: 11
+  damageReduceEndFrames: 19
+  paintRadiusMin: 1.43778342
+  paintRadiusMax: 1.57257561
+  paintHardness: 0.55
+  paintStrength: 1
+  trailSpacing: 17.59787
+  trailRadiusMin: 0.964513042
+  trailRadiusMax: 0.964513042
+  trailMaxDrop: 7.4884553
+  chargeFrames: 150
+  chargeMinDamage: 32
+  chargePartialMaxDamage: 32
+  chargeMinInk: 0.53030303
+  chargeMinRange: 8.23730083
+  chargeMinSpeed: 47.1772684
+  chargeMinSpread: 3
+  chargeMinJumpSpread: 6
+  pelletCount: 1
+  muzzleMode: 0
+  semiBufferFrames: 0
+  splatlingMinChargeFrames: 8
+  splatlingFirstChargeFrames: 120
+  splatlingFirstShootFrames: 130
+  splatlingFullShootFrames: 260
+  splatlingSlowChargeMultiplier: 3
+  splatlingChargeMoveSpeed: 2.29166667
+  splatlingChargeJumpSpeed: 2.69584391
+  splatlingPostFrames: 4
+  splatlingPitchSpread: 2
+  splatlingSpreadBias: 0.3
+  splatlingSpeedBias: 0.2
+  splatlingFootEvery: 8
+  splatlingTrailCount: 1
+  splatlingFootRadius: 1.15741565
+  splatlingPlayerRadius: 0.168490244
+  spreadExpandSeconds: 1
+  spreadRecoverSeconds: 0.5
+  baseSpreadDegrees: 0
+  baseJumpSpreadDegrees: 0

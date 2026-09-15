@@ -24,24 +24,24 @@ namespace Splatoon.Combat
     {
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
-        public static double FireInterval(cfg.HeroConfig w) => 1.0 / w.FireRate;
-        public static bool IsCharge(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.Charge;
-        public static bool IsSemi(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.SemiAutomatic;
-        public static bool IsSplatling(cfg.HeroConfig w) => w.FireMode == (int)WeaponFireMode.Splatling;
-        public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now)
+        public static double FireInterval(WeaponRuntimeConfig w) => 1.0 / w.FireRate;
+        public static bool IsCharge(WeaponRuntimeConfig w) => w.FireMode == (int)WeaponFireMode.Charge;
+        public static bool IsSemi(WeaponRuntimeConfig w) => w.FireMode == (int)WeaponFireMode.SemiAutomatic;
+        public static bool IsSplatling(WeaponRuntimeConfig w) => w.FireMode == (int)WeaponFireMode.Splatling;
+        public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now)
             => IsSplatling(w) ? SplatlingSimulation.WantsFire(s, input, now) : !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
                 (s.WeaponPhase == WeaponPhase.Starting || (s.Ink + .00001f >= w.ShotInk &&
                 (input.Fire || (input.FireSequence != s.ConsumedFire && now + Seconds(w.SemiBufferFrames) + 1e-8 >= s.NextShotAt))));
         public static void ResetPresentation(ref PlayerSnapshot s)
         { s.NextMuzzle = s.LastShotMuzzle = 0; s.RightShotAt = s.LeftShotAt = 0; s.RightShotAction = s.LeftShotAction = 0; }
-        public static float Damage(cfg.HeroConfig w, double age, float charge = 1) => IsCharge(w)
+        public static float Damage(WeaponRuntimeConfig w, double age, float charge = 1) => IsCharge(w)
             ? charge >= 1 ? w.Damage : Mathf.Lerp(w.ChargeMinDamage, w.ChargePartialMaxDamage, charge)
             : Mathf.Lerp(IsSplatling(w) && charge < 1 ? w.ChargePartialMaxDamage : w.Damage, w.DamageMin, Mathf.InverseLerp((float)Seconds(w.DamageReduceStartFrames), (float)Seconds(w.DamageReduceEndFrames), (float)age));
-        public static float InkCost(cfg.HeroConfig w, float charge = 0) => IsCharge(w) ? Mathf.Lerp(w.ChargeMinInk, w.ShotInk, charge) : w.ShotInk;
-        public static float Range(cfg.HeroConfig w, float charge) => IsSplatling(w) ? Mathf.Lerp(w.ChargeMinRange, w.EffectiveRange, SplatlingSimulation.RangeCharge(w, charge)) : IsCharge(w) ? Mathf.Lerp(w.ChargeMinRange, w.EffectiveRange, charge) : w.EffectiveRange;
-        public static float Speed(cfg.HeroConfig w, float charge) => IsCharge(w) ? Mathf.Lerp(w.ChargeMinSpeed, w.SpeedMin, charge) : w.SpeedMin;
-        public static float ChargeRatio(PlayerSnapshot s, cfg.HeroConfig w) => w.ChargeFrames > 0 ? Mathf.Clamp01((IsSplatling(w) ? s.SplatlingCharge : s.ChargeTicks) / w.ChargeFrames) : 0;
-        public static float Spread(cfg.HeroConfig w, bool airborne, float charge) => IsCharge(w)
+        public static float InkCost(WeaponRuntimeConfig w, float charge = 0) => IsCharge(w) ? Mathf.Lerp(w.ChargeMinInk, w.ShotInk, charge) : w.ShotInk;
+        public static float Range(WeaponRuntimeConfig w, float charge) => IsSplatling(w) ? Mathf.Lerp(w.ChargeMinRange, w.EffectiveRange, SplatlingSimulation.RangeCharge(w, charge)) : IsCharge(w) ? Mathf.Lerp(w.ChargeMinRange, w.EffectiveRange, charge) : w.EffectiveRange;
+        public static float Speed(WeaponRuntimeConfig w, float charge) => IsCharge(w) ? Mathf.Lerp(w.ChargeMinSpeed, w.SpeedMin, charge) : w.SpeedMin;
+        public static float ChargeRatio(PlayerSnapshot s, WeaponRuntimeConfig w) => w.ChargeFrames > 0 ? Mathf.Clamp01((IsSplatling(w) ? s.SplatlingCharge : s.ChargeTicks) / w.ChargeFrames) : 0;
+        public static float Spread(WeaponRuntimeConfig w, bool airborne, float charge) => IsCharge(w)
             ? Mathf.Lerp(airborne ? w.ChargeMinJumpSpread : w.ChargeMinSpread, airborne ? w.JumpSpreadDegrees : w.SpreadDegrees, charge)
             : airborne ? w.JumpSpreadDegrees : w.SpreadDegrees;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input) => !input.CancelFire && !s.AttackNeedsRelease &&
@@ -49,7 +49,7 @@ namespace Splatoon.Combat
 
         public static void Cancel(ref PlayerSnapshot s, PlayerInputFrame input, bool requireRelease = false)
         {
-            SplatlingSimulation.Refund(ref s);
+            SplatlingSimulation.Refund(ref s); s.SpreadFiring = false;
             s.NextShotAt = Math.Max(s.NextShotAt, s.BurstReadyAt);
             s.WeaponPhase = WeaponPhase.Idle; s.Firing = false; s.FireVisualUntil = 0; s.BurstRemaining = s.ChargeTicks = 0;
             s.ChargeReleasePending = false; s.ConsumedFire = input.FireSequence; s.ConsumedRelease = input.ReleaseSequence;
@@ -57,10 +57,17 @@ namespace Splatoon.Combat
         }
 
         // Kept for existing deterministic simulation callers; runtime also consumes the immutable fire result.
-        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now, bool emerged, bool canShoot)
+        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now, bool emerged, bool canShoot)
             => Step(ref s, input, w, now, emerged, canShoot, out _);
 
-        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now, bool emerged, bool canShoot, out WeaponFireResult result)
+        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now, bool emerged, bool canShoot, out WeaponFireResult result)
+        {
+            SpreadSimulation.Before(ref s, w, now);
+            bool emitted = StepCore(ref s, input, w, now, emerged, canShoot, out result);
+            SpreadSimulation.After(ref s, input, w, emitted, result.Charge, canShoot);
+            return emitted;
+        }
+        static bool StepCore(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now, bool emerged, bool canShoot, out WeaponFireResult result)
         {
             result = default;
             s.Firing = s.FireVisualUntil > 0 && now <= s.FireVisualUntil + 1e-8;
@@ -74,7 +81,7 @@ namespace Splatoon.Combat
             bool edge = input.FireSequence != s.ConsumedFire;
             bool release = input.ReleaseSequence != s.ConsumedRelease;
             s.ConsumedRelease = input.ReleaseSequence;
-            if (IsSplatling(w)) return SplatlingSimulation.Step(ref s, input, w, now, emerged, canShoot, edge, release, out result);
+            if (IsSplatling(w)) return SplatlingSimulation.Step(ref s, input, GameplayConfig.GetHero(s.HeroId), w, now, emerged, canShoot, edge, release, out result);
             if (IsSemi(w)) return StepSemi(ref s, input, w, now, emerged, canShoot, edge, out result);
             bool chargeWeapon = IsCharge(w), burst = w.FireMode == (int)WeaponFireMode.Burst;
             // Finishing a released shot must keep progressing while submerged or
@@ -126,7 +133,7 @@ namespace Splatoon.Combat
             }
             return true;
         }
-        static bool StepSemi(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now,
+        static bool StepSemi(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now,
             bool emerged, bool canShoot, bool edge, out WeaponFireResult result)
         {
             result = default;
@@ -162,14 +169,14 @@ namespace Splatoon.Combat
             s.WeaponPhase = WeaponPhase.Idle; s.BurstRemaining = 0;
             return emitted;
         }
-        static void Begin(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now, int startup)
+        static void Begin(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now, int startup)
         {
             s.WeaponPhase = WeaponPhase.Starting; s.ConsumedFire = input.FireSequence;
             s.FireBurstSequence = input.Sequence; s.BurstShotIndex = 0;
             s.BurstRemaining = w.BurstCount; s.ChargeTicks = 0; s.ChargeReleasePending = false;
             s.WeaponReadyAt = Math.Max(s.NextShotAt, now + Seconds(startup));
         }
-        internal static bool Emit(ref PlayerSnapshot s, cfg.HeroConfig w, double now, float charge, out WeaponFireResult result, bool prepaid = false)
+        internal static bool Emit(ref PlayerSnapshot s, WeaponRuntimeConfig w, double now, float charge, out WeaponFireResult result, bool prepaid = false)
         {
             result = default;
             if (!prepaid && !PrototypeRules.Spend(ref s.Ink, InkCost(w, charge)))
@@ -183,7 +190,7 @@ namespace Splatoon.Combat
             if (w.MuzzleMode == 1) s.NextMuzzle = (byte)(1 - s.LastShotMuzzle);
             s.NextShotAt = now + FireInterval(w);
             s.InkRecoverAt = now + Seconds(w.InkRecoverLockFrames); s.ProtectedUntil = 0;
-            result = new WeaponFireResult(w.Id, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);
+            result = new WeaponFireResult(s.HeroId, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);
             return true;
         }
     }

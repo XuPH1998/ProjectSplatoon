@@ -21,7 +21,7 @@ namespace Splatoon.Tests
         [TearDown] public void Cleanup() { LubanConfigService.Current.Reset(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
         static PlayerSnapshot Alive(int id = 1) => new() { HeroId = id, Health = 100, Ink = 100, Team = 1, Grounded = true, Revision = 1 };
         static PlayerInputFrame Input(int tick, bool held = true, uint press = 1, bool cancel = false) => new() { Sequence = (uint)tick + 1, Fire = held, FireSequence = press, CancelFire = cancel };
-        static bool Step(ref PlayerSnapshot s, int tick, bool held = true, uint press = 1, bool cancel = false) => WeaponSimulation.Step(ref s, Input(tick, held, press, cancel), GameplayConfig.GetHero(s.HeroId), tick / 60.0, false, true);
+        static bool Step(ref PlayerSnapshot s, int tick, bool held = true, uint press = 1, bool cancel = false) => WeaponSimulation.Step(ref s, Input(tick, held, press, cancel), GameplayConfig.GetWeapon(s.HeroId), tick / 60.0, false, true);
 
         [TestCase(1,6,108)] [TestCase(2,4,200)] [TestCase(3,9,66)]
         public void AutomaticWeaponsHaveTheirOwnCadenceAndInkBoundary(int id, int interval, int count)
@@ -39,7 +39,7 @@ namespace Splatoon.Tests
             var s=Alive(4); var shots=new List<int>();
             for(int i=0;i<60;i++) if(Step(ref s,i))shots.Add(i);
             Assert.That(shots.Take(6),Is.EqualTo(new[]{2,6,10,26,30,34}));
-            Assert.That(WeaponDisplay.SustainedRate(GameplayConfig.GetHero(4)),Is.EqualTo(7.5f));
+            Assert.That(WeaponDisplay.SustainedRate(GameplayConfig.GetWeapon(4)),Is.EqualTo(7.5f));
         }
         [Test] public void ContinuousFireDoesNotRestartUpperBodyLoopEveryShot()
         {
@@ -63,7 +63,7 @@ namespace Splatoon.Tests
             var s=Alive(5);int shots=0;
             for(int i=0;i<=release;i++)if(Step(ref s,i,i<release))shots++;
             Assert.That(shots,Is.EqualTo(1));Assert.That(s.LastShotCharge,Is.EqualTo(q).Within(.0001));
-            var w=GameplayConfig.GetHero(5);
+            var w=GameplayConfig.GetWeapon(5);
             Assert.That(WeaponSimulation.Damage(w,1,s.LastShotCharge),Is.EqualTo(damage).Within(.001));
             Assert.That(s.Ink,Is.EqualTo(100-ink).Within(.001));
             Assert.That(WeaponSimulation.Range(w,q),Is.EqualTo(8+10*q));
@@ -107,7 +107,7 @@ namespace Splatoon.Tests
         [TestCase(1,36,18)] [TestCase(2,32,16)] [TestCase(3,10,4)] [TestCase(4,52,26)]
         public void EachRegularGunUsesItsConfiguredDamageFalloff(int id,float near,float far)
         {
-            var w=GameplayConfig.GetHero(id);
+            var w=GameplayConfig.GetWeapon(id);
             Assert.That(WeaponSimulation.Damage(w,w.DamageReduceStartFrames/60.0),Is.EqualTo(near));
             Assert.That(WeaponSimulation.Damage(w,(w.DamageReduceStartFrames+w.DamageReduceEndFrames)/120.0),Is.EqualTo((near+far)/2).Within(.001));
             Assert.That(WeaponSimulation.Damage(w,w.DamageReduceEndFrames/60.0),Is.EqualTo(far));
@@ -175,7 +175,7 @@ namespace Splatoon.Tests
             var go=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
             try
             {
-                var s=Alive(id);s.Position=Vector3.up*.04f;s.CurrentSpread=.000001f;s.LastShotCharge=charge;go.transform.position=s.Position;Physics.SyncTransforms();
+                var s=Alive(id);s.Position=Vector3.up*.04f;s.CurrentSpread=s.LastShotSpread=.000001f;s.LastShotVerticalSpread=.000001f;s.LastShotCharge=charge;go.transform.position=s.Position;Physics.SyncTransforms();
                 var service=new InkProjectileService();service.Spawn(go.GetComponent<PrototypePlayer>(),s,0,0);
                 HeroSelectionRules.Apply(ref s,id==1?2:1,false,default);
                 Assert.That(service.Spawned[0].HeroId,Is.EqualTo(id));Assert.That(service.Spawned[0].Charge,Is.EqualTo(charge));

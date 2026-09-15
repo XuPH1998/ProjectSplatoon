@@ -35,8 +35,7 @@ namespace Splatoon.Tests
         static readonly Vector3 Offset = new(1000, 1000, 1000);
         static string F(double value) => value.ToString("R", Culture);
         static string V(Vector3 value) => $"{F(value.x)},{F(value.y)},{F(value.z)}";
-        public static void LoadTables() => typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current,
-            new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json"))));
+        public static void LoadTables() => HeroMigrationTests.Load();
 
         public static List<Result> CaptureAll(string directory)
         {
@@ -44,14 +43,15 @@ namespace Splatoon.Tests
             Directory.CreateDirectory(directory); LoadTables(); GameplayConfig.Validate();
             var results = new List<Result>();
             string[] scenarios = { "flat", "up30", "down30", "wall-near", "wall-middle", "wall-far", "slope", "high-drop", "occluded" };
-            foreach (var w in LubanConfigService.Current.Tables.TbHero.DataList.Where(w => w.Id <= 5))
+            foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList.Where(h => h.Id <= 5))
             {
+                var w = GameplayConfig.GetWeapon(hero.Id);
                 var charges = WeaponSimulation.IsCharge(w) ? new[] { 0f, .5f, 59f / 60, 1f } : new[] { 0f };
                 foreach (float charge in charges)
                     foreach (string scenario in scenarios)
-                        results.Add(Capture(w.Id, charge, scenario, 60, 1, directory));
+                        results.Add(Capture(hero.Id, charge, scenario, 60, 1, directory));
                 foreach (int rate in new[] { 30, 60, 144 })
-                    results.Add(Capture(w.Id, WeaponSimulation.IsCharge(w) ? 1 : 0, "continuous", rate, 20, directory));
+                    results.Add(Capture(hero.Id, WeaponSimulation.IsCharge(w) ? 1 : 0, "continuous", rate, 20, directory));
             }
             var summary = new StringBuilder("weapon,charge,scenario,driverHz,shots,stamps,impacts,maxOwnedForwardM,ownedWidthM,ownedDepthM,ownedAreaM2,centerlineContinuousM,gridHash,peakProjectiles,simulationMilliseconds\n");
             foreach (var r in results)
@@ -76,7 +76,7 @@ namespace Splatoon.Tests
             var roots = new List<GameObject>(); var surfaces = new Dictionary<int, PaintSurface>();
             var trace = new StringBuilder("shot,ageSeconds,x,y,z\n");
             var stamps = new StringBuilder("surface,x,y,z,normalX,normalY,normalZ,radiusM,hardness,strength\n");
-            var w = GameplayConfig.GetHero(weapon);
+            var w = GameplayConfig.GetWeapon(weapon);
             var result = new Result { weapon = weapon, charge = charge, scenario = scenario, driverHz = rate, shotCount = shotCount };
             PaintSurface Surface(int id, Vector3 position, Vector2 size, Quaternion rotation, bool floor)
             {
@@ -116,7 +116,7 @@ namespace Splatoon.Tests
                 var playerRoot = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
                 roots.Add(playerRoot); playerRoot.SetActive(false);
                 var player = playerRoot.GetComponent<PrototypePlayer>();
-                string characterName = w.CharacterPrefabAddress.Split('/').Last();
+                string characterName = GameplayConfig.GetHero(weapon).CharacterPrefabAddress.Split('/').Last();
                 player.CharacterView = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{characterName}/Prefabs/{characterName}Visual.prefab").GetComponent<InkCharacterView>();
                 var state = new PlayerSnapshot { HeroId=weapon, Team=1, Health=100, Ink=100, Revision=1, Grounded=true,
                     Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
@@ -131,6 +131,10 @@ namespace Splatoon.Tests
                         launched++;
                         state.ShotSequence=(uint)launched; state.FireBurstSequence=(uint)launched;
                         state.LastShotMuzzle=(byte)(w.MuzzleMode==1?(launched-1)%2:0);
+                        // Explicit per-shot spread, independent of the external projectile driver rate.
+                        var spread = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, false, charge)
+                            : SpreadSimulation.Angles(w, false, w.SpreadExpandSeconds <= 0 ? 1 : (float)nextShot / w.SpreadExpandSeconds);
+                        state.LastShotSpread = spread.x; state.LastShotVerticalSpread = spread.y;
                         service.Spawn(player,state,nextShot,1);
                         double gap = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Seconds(w.StartFrames + w.ChargeFrames) + WeaponSimulation.FireInterval(w) :
                             w.FireMode == 1 && launched % w.BurstCount == 0 ? WeaponSimulation.Seconds(w.BurstRecoveryFrames) : WeaponSimulation.FireInterval(w);
@@ -185,7 +189,7 @@ namespace Splatoon.Tests
             Assert.That(results.Count, Is.EqualTo(87));
             foreach (var r in results)
             {
-                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetHero(r.weapon).PelletCount), r.scenario);
+                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetWeapon(r.weapon).PelletCount), r.scenario);
                 Assert.That(double.IsFinite(r.ownedArea), Is.True); Assert.That(r.targetValidated, Is.False);
             }
             Assert.That(results.Where(r => r.scenario == "flat").All(r => r.paintStamps > 0), Is.True);
@@ -212,14 +216,14 @@ namespace Splatoon.Tests
             Assert.That(PrototypeApp.Current, Is.Not.Null, "Real application bootstrap must run before manually loading measurement tables.");
             Assert.That(PrototypeApp.Current.Ready, Is.True, PrototypeApp.Current.Error);
             Assert.That(LubanConfigService.Current.ContentSignature, Has.Length.EqualTo(32));
-            Assert.That(GameplayConfig.GetHero(2).ShotInk, Is.EqualTo(.7f));
-            Assert.That(GameplayConfig.GetHero(2).InkRecoverLockFrames, Is.EqualTo(15));
-            Assert.That(GameplayConfig.GetHero(3).ShotInk, Is.EqualTo(4));
-            Assert.That(GameplayConfig.GetHero(3).FireRate, Is.EqualTo(2.5f));
-            Assert.That(GameplayConfig.GetHero(3).PelletCount, Is.EqualTo(8));
-            Assert.That(GameplayConfig.GetHero(4).ShotInk, Is.EqualTo(1.4f));
-            Assert.That(GameplayConfig.GetHero(4).InkRecoverLockFrames, Is.EqualTo(22));
-            Assert.That(GameplayConfig.GetHero(5).Damage, Is.EqualTo(160));
+            Assert.That(GameplayConfig.GetWeapon(2).ShotInk, Is.EqualTo(.7f));
+            Assert.That(GameplayConfig.GetWeapon(2).InkRecoverLockFrames, Is.EqualTo(15));
+            Assert.That(GameplayConfig.GetWeapon(3).ShotInk, Is.EqualTo(4));
+            Assert.That(GameplayConfig.GetWeapon(3).FireRate, Is.EqualTo(2.5f));
+            Assert.That(GameplayConfig.GetWeapon(3).PelletCount, Is.EqualTo(8));
+            Assert.That(GameplayConfig.GetWeapon(4).ShotInk, Is.EqualTo(1.4f));
+            Assert.That(GameplayConfig.GetWeapon(4).InkRecoverLockFrames, Is.EqualTo(22));
+            Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(160));
             Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
             Directory.CreateDirectory("Reports/WeaponReference/PlayMode");
             File.WriteAllText("Reports/WeaponReference/PlayMode/addressables.txt",
@@ -231,7 +235,7 @@ namespace Splatoon.Tests
                 string file = $"Reports/WeaponReference/EditMode/w{r.weapon}-q{Mathf.RoundToInt(r.charge * 60)}-{r.scenario}-{r.driverHz}.json";
                 Assert.That(File.Exists(file), Is.True, "Run the EditMode measurement first: " + file);
                 Assert.That(r.gridHash, Is.EqualTo(JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText(file)).gridHash));
-                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetHero(r.weapon).PelletCount));
+                Assert.That(r.impacts, Is.EqualTo(r.shotCount*GameplayConfig.GetWeapon(r.weapon).PelletCount));
             }
             yield return new ExitPlayMode();
         }

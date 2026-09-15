@@ -1,3 +1,4 @@
+using Splatoon.Config;
 using UnityEngine;
 using Splatoon.Prototype;
 
@@ -7,10 +8,10 @@ namespace Splatoon.Combat
     {
         AudioSource _audio; AudioClip _tone;
         ParticleSystem _charge;
-        public void Present(PlayerSnapshot state, cfg.HeroConfig config, Transform muzzle, Material material, float dt)
+        public void Present(PlayerSnapshot state, WeaponRuntimeConfig config, Transform muzzle, Material material, float dt)
         {
             if(!Application.isPlaying)return;
-            bool active=state.Health>0&&!state.Swimming&&!state.CompactBody&&SplatlingSimulation.Charging(state);
+            bool active=WeaponSimulation.IsSplatling(config)&&state.Health>0&&!state.Swimming&&!state.CompactBody&&SplatlingSimulation.Charging(state);
             if(_audio==null)
             {
                 _audio=gameObject.AddComponent<AudioSource>();_audio.playOnAwake=false;_audio.loop=true;_audio.volume=0;_audio.spatialBlend=1;_audio.maxDistance=18;

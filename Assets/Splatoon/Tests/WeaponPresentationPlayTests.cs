@@ -115,7 +115,7 @@ namespace Splatoon.Tests
                     // Put the flight in clear air, keeping actual configured speed,
                     // gravity, lifetime, the host RPC path, and team material.
                     Vector3 origin = new Vector3(0, 5, 0);
-                    var w = GameplayConfig.GetHero(hero);
+                    var w = GameplayConfig.GetWeapon(hero);
                     for (byte pellet = 0; pellet < w.PelletCount; pellet++)
                         match.Projectiles.SpawnForMeasurement(new InkShot { Id = (uint)(1000 + hero * 20 + team * 8 + pellet),
                             HeroId = hero, Team = team, Shooter = ulong.MaxValue, Round = match.State.Value.Round,

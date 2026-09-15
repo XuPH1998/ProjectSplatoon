@@ -91,7 +91,7 @@ namespace Splatoon.Tests
                 foreach (float distance in new[] { 5f, 12f })
                 {
                     SetPose(player, feet);
-                    var state = player.Snapshot.Value; state.CurrentSpread = .000001f; state.LastShotCharge = 1;
+                    var state = player.Snapshot.Value; state.CurrentSpread=state.LastShotSpread=.000001f;state.LastShotVerticalSpread=.000001f; state.LastShotCharge = 1;
                     var aim = solver.Resolve(player, state, state.LastShotMuzzle);
                     var target = Box("TPS target", aim.CameraOrigin + aim.Forward * distance, new Vector3(3, 3, .08f));
                     var impacts = new List<InkImpact>();
@@ -102,7 +102,7 @@ namespace Splatoon.Tests
                     var shots = match.Projectiles.Spawned.ToArray();
                     var resolved = solver.Resolve(player, state, state.LastShotMuzzle);
                     Debug.Log($"[TPS-CONVERGENCE] hero={hero} distance={distance} muzzle={resolved.Muzzle:F4} blocked={resolved.MuzzleBlocked} aim={resolved.AimPoint:F4} target={target.transform.position:F4} immediateImpacts={match.Projectiles.Impacts.Count}");
-                    Assert.That(shots.Length, Is.EqualTo(GameplayConfig.GetHero(hero).PelletCount));
+                    Assert.That(shots.Length, Is.EqualTo(GameplayConfig.GetWeapon(hero).PelletCount));
                     Assert.That(shots.All(s => s.PostCorrectionVelocity == s.Velocity), Is.True, "No projectile turns after convergence");
                     var expectedTarget = distance <= 6 ? resolved.CameraOrigin + resolved.Forward * 6 : resolved.AimHit.Point;
                     Assert.That(Vector3.Distance(resolved.CorrectionPoint, expectedTarget), Is.LessThan(.0001f));
@@ -120,7 +120,7 @@ namespace Splatoon.Tests
                     foreach (var impact in impacts)
                     {
                         var shot = shots.Single(s => s.Id == impact.Id);
-                        var weapon = GameplayConfig.GetHero(hero);
+                        var weapon = GameplayConfig.GetWeapon(hero);
                         float contactZ = target.transform.position.z - .04f;
                         // Solve contact with the front plane, including the projectile radius and gravity.
                         double low = 0, high = weapon.Lifetime;
@@ -148,7 +148,7 @@ namespace Splatoon.Tests
                 Assert.That(Vector3.Distance(miss.CorrectionPoint, miss.CameraOrigin + miss.Forward * 50), Is.LessThan(.0001f));
                 match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time - .05, match.State.Value.Round);
-                var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetHero(hero);
+                var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetWeapon(hero);
                 // GPU captures can take longer than a projectile's lifetime on an importing editor.
                 // Sample a fixed live age without yielding between host RPC dispatch and capture.
                 FlushPresentation(match);
@@ -186,7 +186,7 @@ namespace Splatoon.Tests
             // Sample before a six-metre convergence point, after the weapon straight period.
             // Flush the real host RPC and render in this frame so clock scheduling cannot skip the interval.
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
-            var gravityWeapon = GameplayConfig.GetHero(3);
+            var gravityWeapon = GameplayConfig.GetWeapon(3);
             var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, 6, float.PositiveInfinity);
             var gravityShot = new InkShot { Id = uint.MaxValue, HeroId = 3, Team = player.Snapshot.Value.Team,
                 Shooter = ulong.MaxValue, Round = match.State.Value.Round, Seed = 71, Origin = gravityAim.Muzzle,
@@ -227,7 +227,7 @@ namespace Splatoon.Tests
             player.Simulate(1f / 60, now, match.State.Value.Phase);
             input.Fire = true; input.FireSequence++;
             typeof(PrototypePlayer).GetField("_lastInput", Private).SetValue(player, input);
-            for (int tick = 1; tick <= GameplayConfig.GetHero(1).StartFrames + 3; tick++)
+            for (int tick = 1; tick <= GameplayConfig.GetWeapon(1).StartFrames + 3; tick++)
                 player.Simulate(1f / 60, now + tick / 60.0, match.State.Value.Phase);
             Assert.That(player.Snapshot.Value.ShotSequence, Is.GreaterThan(before.ShotSequence));
             Assert.That(player.Snapshot.Value.Position.x, Is.GreaterThan(before.Position.x));
@@ -252,7 +252,7 @@ namespace Splatoon.Tests
             Object.Destroy(blocker); Object.Destroy(platform);
             yield return null;
             SetPose(player, PrototypeArena.Spawn(player.Snapshot.Value.Team, player.Snapshot.Value.Slot));
-            var paintState = player.Snapshot.Value; paintState.Pitch = 55; paintState.CurrentSpread = .000001f;
+            var paintState = player.Snapshot.Value; paintState.Pitch = 55; paintState.CurrentSpread=paintState.LastShotSpread=.000001f;paintState.LastShotVerticalSpread=.000001f;
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
             match.Projectiles.Spawn(player, paintState, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
             uint paintBeforeFlight = match.PaintSequence;

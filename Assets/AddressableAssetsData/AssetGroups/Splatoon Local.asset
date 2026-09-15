@@ -72,6 +72,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93895183c72b4712bb052f395e4a60dd
+    m_Address: Assets/GameResource/Weapons/DualPistolGirl/DualPistolGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9af6fda7a8d345c49258de1a6d5ac60e
+    m_Address: Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a2ae82d2d55f53b795f638d938078ee5
     m_Address: tbglobal
     m_ReadOnly: 0
@@ -80,6 +90,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a9ba93c4dc8bdc640aee2286b9af04d0
     m_Address: Character/MachineGunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab95d895c9024f0e9af24a15a1db889c
+    m_Address: Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlWeaponConfig.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -98,6 +113,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c14e8a52956b46428618c47be7377881
+    m_Address: Assets/GameResource/Weapons/PistolGirl/PistolGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c72a525c03a085a47b7d5323006b3241
     m_Address: Character/RocketLauncherGirl
     m_ReadOnly: 0
@@ -113,6 +133,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2b59601cc544b75a7df2f98fa8996eb
+    m_Address: Assets/GameResource/Weapons/RocketLauncherGirl/RocketLauncherGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e70d12c018cb82d47b4fdc662ed1e5d2
     m_Address: Character/ShotgunGirl
     m_ReadOnly: 0
@@ -123,6 +148,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fbdaf9e9e89f47b78502c4a6b9f24490
+    m_Address: Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c37a37c5f9680ed4fa8b246f400b724d, type: 2}

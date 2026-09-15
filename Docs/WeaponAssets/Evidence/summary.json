@@ -1,0 +1,7 @@
+{
+  "uniqueTests": 372,
+  "passed": 360,
+  "failed": 12,
+  "baseline": "bfb059a",
+  "baselineReproducedFailures": 12
+}

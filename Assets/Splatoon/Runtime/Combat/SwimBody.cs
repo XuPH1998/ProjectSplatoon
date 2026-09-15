@@ -109,7 +109,10 @@ namespace Splatoon.Combat
             if (_capture == null) Sample(state);
             _capture?.Render();
             Vector3 normal = state.PaperRotation * Vector3.forward;
-            if (state.PaperPose == PaperPose.Ground || state.PaperPose == PaperPose.Wall)
+            // Vertical root interpolation can lag a form's origin conversion.
+            // Keep the airborne support plane on the simulated hit plane too,
+            // so a remote sheet cannot still float after its landing contact.
+            if (state.PaperPose == PaperPose.Ground || state.PaperPose == PaperPose.Wall || state.PaperPose == PaperPose.Air)
                 visualOffset = Vector3.ProjectOnPlane(visualOffset, normal);
             BodyRenderer.transform.SetPositionAndRotation(state.PaperCenter + visualOffset, state.PaperRotation);
             _color ??= new MaterialPropertyBlock();

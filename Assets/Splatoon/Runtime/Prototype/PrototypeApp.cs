@@ -26,6 +26,7 @@ namespace Splatoon.Prototype
         public bool Ready { get; private set; }
         public bool Busy { get; private set; }
         public bool InRoom { get; private set; }
+        public bool IsWeaponDebugRoom { get; private set; }
         public bool HasControl => InRoom && _captured && _overlay == GameplayOverlay.Game && !Busy && Application.isFocused;
         public string Error { get; private set; } = "";
         public string Status { get; private set; } = "正在初始化…";
@@ -71,6 +72,7 @@ namespace Splatoon.Prototype
             {
                 await Addressables.InitializeAsync().Task;
                 await LubanConfigService.Current.InitializeAsync(_operation.Token);
+                await WeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 GameplayConfig.Validate();
                 Time.fixedDeltaTime = 1f / GameplayConfig.Global.SimulationRate;
                 _port = GameplayConfig.Global.DefaultPort.ToString();
@@ -101,7 +103,7 @@ namespace Splatoon.Prototype
         }
         private void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
-            response.Approved = request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
+            response.Approved = (!IsWeaponDebugRoom || request.ClientNetworkId == NetworkManager.ServerClientId) && request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
             response.CreatePlayerObject = false; response.Pending = false;
             if(response.Approved) _admitted.Add(request.ClientNetworkId);
             if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? $"协议或游戏内容不一致（玩家协议 {PlayerSnapshot.ProtocolVersion}、墨水协议 {GameplayContentSignature.PaintProtocolVersion}），请使用相同地图、配置和角色资源。" : $"房间已满（最多 {GameplayConfig.Mode.MaxPlayers} 人）。";
@@ -110,10 +112,14 @@ namespace Splatoon.Prototype
         { if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.AddPlayer(id, _playerPrefab.Result); }
         private void ClientDisconnected(ulong id)
         { _admitted.Remove(id); if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.RemovePlayer(id); }
-        public async UniTask Connect(bool host, string address, ushort port)
+        public async UniTask Connect(bool host, string address, ushort port, bool weaponDebug = false)
         {
             if (!Ready || Busy || InRoom) return;
             if (!LanDiscoveryProtocol.ValidGamePort(port)) { Error = "游戏端口须为 1～65535，且不能使用房间发现端口 47777。"; return; }
+#if !UNITY_EDITOR
+            if (weaponDebug) { Error = "武器调试房仅编辑器可用"; return; }
+#endif
+            IsWeaponDebugRoom = weaponDebug && host;
             _discovery.Stop();
             Busy = true; Error = ""; Status = "正在加载场地…"; _progress = 0;
             _operation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
@@ -131,6 +137,7 @@ namespace Splatoon.Prototype
                 _playerPrefab = Addressables.LoadAssetAsync<GameObject>(PlayerAddress);
                 _matchPrefab = Addressables.LoadAssetAsync<GameObject>(MatchAddress);
                 await WaitForPrefab(_playerPrefab, _operation.Token); await WaitForPrefab(_matchPrefab, _operation.Token);
+                await WeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token, IsWeaponDebugRoom);
                 await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
                 _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
@@ -139,7 +146,7 @@ namespace Splatoon.Prototype
                 Status = host ? "正在创建房间…" : "正在连接房主…";
                 if (host)
                 {
-                    var result = await Session.StartHostAsync(new LanHostOptions(port), _operation.Token);
+                    var result = await Session.StartHostAsync(new LanHostOptions(port, IsWeaponDebugRoom), _operation.Token);
                     if (!result.Success) throw new InvalidOperationException(result.Error);
                     var match = Instantiate(_matchPrefab.Result).GetComponent<PrototypeMatch>();
                     match.GetComponent<NetworkObject>().Spawn(true);
@@ -155,9 +162,9 @@ namespace Splatoon.Prototype
                 }
                 _activePort = port;
                 if (host) { int index = Array.IndexOf(_localAddresses, address); if (index >= 0) _hostAddressIndex = index; }
-                RoomCode = LanRoomCode.Encode(host ? _localAddresses[_hostAddressIndex] : address, port);
-                InRoom = true; CaptureMouse(true); Status = host ? "房主" : "已连接";
-                if (host) { _discoveryRoomId = Guid.NewGuid(); _discovery.StartAdvertising(DiscoverySnapshot); }
+                RoomCode = IsWeaponDebugRoom ? "" : LanRoomCode.Encode(host ? _localAddresses[_hostAddressIndex] : address, port);
+                InRoom = true; CaptureMouse(true); Status = IsWeaponDebugRoom ? "单机武器调试" : host ? "房主" : "已连接";
+                if (host && !IsWeaponDebugRoom) { _discoveryRoomId = Guid.NewGuid(); _discovery.StartAdvertising(DiscoverySnapshot); }
                 Debug.Log("[LAN] 房间码=" + RoomCode);
                 Debug.Log($"[LAN] Connected role={(host ? "host" : "client")} address={address} port={port}");
             }
@@ -190,7 +197,10 @@ namespace Splatoon.Prototype
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
-            Heroes.Clear();
+            Heroes.Clear(); WeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
+#if UNITY_EDITOR
+            ClearDebugWeaponChanges();
+#endif
             var boot = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Main/Boot.unity");
             if (boot.IsValid() && boot.isLoaded) UnityEngine.SceneManagement.SceneManager.SetActiveScene(boot);
             if (_loaded) { await _loader.UnloadAsync(_scene); _loaded = false; }
@@ -210,6 +220,9 @@ namespace Splatoon.Prototype
         private void Update()
         {
             _discovery.Tick();
+#if UNITY_EDITOR
+            ObserveDebugWeaponAssets();
+#endif
             UpdateOverlayInput();
             UpdateMatchFeedback();
             if (!InRoom || Busy) return;
@@ -227,6 +240,9 @@ namespace Splatoon.Prototype
         private void OnDestroy()
         {
             _destroying = true; _discovery.Dispose();
+#if UNITY_EDITOR
+            ClearDebugWeaponChanges();
+#endif
             _operation?.Cancel(); Session?.Dispose();
             if (Manager != null) { Manager.Shutdown(); Destroy(Manager.gameObject); }
             Heroes.Dispose();
@@ -260,6 +276,7 @@ namespace Splatoon.Prototype
             if(match==null||local==null) return;
             var state=match.State.Value; var player=local.PresentedState;
             var equipped = GameplayConfig.GetHero(player.HeroId);
+            var weapon = GameplayConfig.GetWeapon(player.HeroId);
             GUI.Label(new Rect(24,542,340,30),equipped.DisplayName,_label);
             double total=Math.Max(.0001,state.TotalArea);
             Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
@@ -277,31 +294,33 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            if (equipped.FireMode != 4 || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
-                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (equipped.FireMode == 4 ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(820,625,440,82),(equipped.FireMode == 4 ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n回车开始（房主）",_small);
+            if (weapon.FireMode != 4 || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
+                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(weapon) ? (weapon.FireMode == 4 ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(820,625,440,82),(weapon.FireMode == 4 ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择英雄 · 调试房保持热身" : "回车开始（房主）"),_small);
             if (_captured && player.Health>0)
             {
-                if (equipped.FireMode == 2)
+                if (weapon.FireMode == 2)
                 {
-                    float charge = Splatoon.Combat.WeaponSimulation.ChargeRatio(player, equipped);
+                    float charge = Splatoon.Combat.WeaponSimulation.ChargeRatio(player, weapon);
                     Panel(new Rect(570, 440, 140, 7), new Color(.2f,.23f,.27f));
                     Panel(new Rect(570, 440, 140 * charge, 7), PrototypeArena.TeamColor(player.Team));
-                    bool limited = player.WeaponPhase == Splatoon.Combat.WeaponPhase.Charging && player.Ink < equipped.ShotInk &&
-                        charge >= Mathf.Floor((player.Ink - equipped.ChargeMinInk) / (equipped.ShotInk - equipped.ChargeMinInk) * equipped.ChargeFrames) / equipped.ChargeFrames;
+                    bool limited = player.WeaponPhase == Splatoon.Combat.WeaponPhase.Charging && player.Ink < weapon.ShotInk &&
+                        charge >= Mathf.Floor((player.Ink - weapon.ChargeMinInk) / (weapon.ShotInk - weapon.ChargeMinInk) * weapon.ChargeFrames) / weapon.ChargeFrames;
                     GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
                 }
-                float gap = 5 + player.CurrentSpread;
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
-                if (equipped.FireMode == 4) DrawSplatlingHud(player, equipped, reticleCenter);
-                Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetHero(player.HeroId)) ? Color.yellow : Color.white;
-                Panel(new Rect(reticleCenter.x-1,reticleCenter.y-gap-7,2,7),reticle); Panel(new Rect(reticleCenter.x-1,reticleCenter.y+gap,2,7),reticle);
-                Panel(new Rect(reticleCenter.x-gap-7,reticleCenter.y-1,7,2),reticle); Panel(new Rect(reticleCenter.x+gap,reticleCenter.y-1,7,2),reticle);
+                if (weapon.FireMode == 4) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
+                DrawSpreadReticle(local, player, weapon, reticleCenter);
                 if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(reticleCenter.x-12,reticleCenter.y-13,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
                 if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),"H 选择英雄 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
+#if UNITY_EDITOR
+            if (IsWeaponDebugRoom) DrawWeaponDebugHud(player);
+#endif
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58), IsWeaponDebugRoom
+                ? "单机武器调试 · 无限热身\nH 选择英雄 · Esc 添加 / 移除 BOT 或定位武器资产"
+                : "H 选择英雄 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
@@ -354,6 +373,7 @@ namespace Splatoon.Prototype
         }
         private void DrawRoomCode()
         {
+            if (IsWeaponDebugRoom) return;
             if (!string.IsNullOrEmpty(_discovery.LastError)) GUI.Label(new Rect(330,637,650,55),_discovery.LastError,_small);
             Panel(new Rect(330,532,620,100),new Color(.055f,.075f,.1f,.97f));
             GUI.Label(new Rect(350,540,395,30),"房间码：" + RoomCode,_label);

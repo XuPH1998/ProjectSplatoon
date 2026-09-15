@@ -40,6 +40,8 @@ namespace Splatoon.Combat
         readonly float _standingHeight;
         readonly Vector3 _standingCenter;
         readonly Collider[] _overlap = new Collider[32];
+        PaperBodyProfile PaperProfile => _root.GetComponent<PrototypePlayer>()?.SwimBody?.Profile;
+        public static Vector3 HumanPosition(PlayerSnapshot s) => s.Position - Vector3.up * s.AirHumanOffset;
         public PlayerMotorSimulation(CharacterController controller, PrototypeArena arena = null)
         { _controller = controller; _arena = arena; _root = controller.transform; _standingHeight = controller.height; _standingCenter = controller.center; }
         public void Restore(PlayerSnapshot s)
@@ -56,6 +58,27 @@ namespace Splatoon.Combat
             if (_controller.height == height && _controller.center == center) return;
             // Avoid rewriting unchanged controller geometry every simulation tick.
             _controller.height = height; _controller.center = center;
+        }
+        void Rebase(ref PlayerSnapshot s, float height)
+        {
+            if (Mathf.Abs(height) < .00001f) return;
+            // Coordinate conversion, not movement: do not create velocity or
+            // sweep the old form through the space occupied by the new form.
+            bool enabled = _controller.enabled;
+            _controller.enabled = false;
+            s.Position += Vector3.up * height; _root.position = s.Position;
+            _controller.enabled = enabled;
+            s.CameraRebaseOffset -= height;
+        }
+        void EnterAirPaper(ref PlayerSnapshot s, bool hadPaper)
+        {
+            var profile = PaperProfile;
+            float surfaceOffset = profile != null ? profile.SurfaceOffset : .03f;
+            float center = hadPaper && s.PaperPose != PaperPose.None ? s.PaperCenter.y
+                : s.Position.y + (profile != null ? profile.Size.y : 1.8f) / 2;
+            float shift = center - s.Position.y - surfaceOffset;
+            Rebase(ref s, shift);
+            s.AirHumanOffset += shift;
         }
         public bool CanStand(Vector3 position)
         {
@@ -80,12 +103,13 @@ namespace Splatoon.Combat
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
             var previous = s;
+            s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
             StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
             // Traversal source may survive takeoff or seam grace; recovery requires fresh contact.
             s.FriendlyInkContact = HasFriendlyInkContact(s);
-            var profile = _root.GetComponent<PrototypePlayer>()?.SwimBody?.Profile;
-            // The capsule alone decides traversal. Paper geometry follows the
-            // completed simulation and never rolls it back at a surface edge.
+            var profile = PaperProfile;
+            // The capsule support point and airborne paper plane share one
+            // origin; rendering and hit geometry consume the completed contact.
             PaperPoseSimulation.Resolve(ref s, previous, profile, now);
             PaperAnimation.Step(ref s, previous, dt, profile);
         }
@@ -103,6 +127,7 @@ namespace Splatoon.Combat
         void StepMovement(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed, bool shootingMovement)
         {
             var c = GameplayConfig.GetHero(s.HeroId);
+            var weapon = GameplayConfig.GetWeapon(s.HeroId);
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
             bool jump = input.JumpSequence != s.ConsumedJump; s.ConsumedJump = input.JumpSequence;
@@ -115,7 +140,8 @@ namespace Splatoon.Combat
             else if (!grounded && s.AirSwimSource == SwimSurface.None)
                 s.AirSwimSource = s.Grounded && s.Swimming && s.SwimSource == SwimSurface.Friendly ? SwimSurface.Friendly : SwimSurface.Neutral;
             bool wasCompact = s.Swimming || s.CompactBody;
-            bool canStand = CanStand(s.Position), detached = false;
+            bool wasAirPaper = wasCompact && !s.Grounded && s.Movement == MovementMode.Air;
+            bool canStand = CanStand(HumanPosition(s)), detached = false;
             if (s.Movement == MovementMode.Mantle)
             {
                 if (!input.Swim || wantsFire || jump) s.Movement = MovementMode.Air;
@@ -182,6 +208,11 @@ namespace Splatoon.Combat
             if (grounded) s.AirSwimSource = useInk ? s.SwimSource : SwimSurface.Neutral;
             s.Swimming = useInk;
             s.CompactBody = !useInk && wasCompact && !canStand;
+            if (!useInk && !s.CompactBody && s.AirHumanOffset != 0)
+            {
+                Rebase(ref s, -s.AirHumanOffset);
+                s.AirHumanOffset = 0;
+            }
             SetShape(useInk || s.CompactBody);
             var aim = Quaternion.Euler(0, s.Yaw, 0);
             if (!detached && (grounded || useInk) && !(grounded && IsEnemy(floor, s.Team)) && input.Swim && !wantsFire && !jump && input.Move.y > 0 &&
@@ -191,17 +222,20 @@ namespace Splatoon.Combat
                 s.WallSeenAt = now; s.Movement = MovementMode.WallInk;
                 s.Swimming = true; s.Grounded = false; s.VerticalSpeed = 0; s.PlanarVelocity = Vector3.zero;
                 s.CompactBody = false;
+                s.AirHumanOffset = 0;
                 SetShape(true); return;
             }
             bool airSwim = useInk && (!grounded || jump);
+            if (!grounded && (useInk || s.CompactBody) && !wasAirPaper)
+                EnterAirPaper(ref s, wasCompact);
             float speed = airSwim ? c.AirSwimSpeed : useInk ? (s.SwimSource == SwimSurface.Neutral ? c.NeutralSwimSpeed : c.SwimSpeed)
-                : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
+                : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : weapon.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;
-            if (jump && grounded) s.VerticalSpeed = WeaponSimulation.IsSplatling(c) && wantsFire && s.SplatlingRemaining == 0 && s.WeaponPhase != WeaponPhase.Ending
-                ? c.SplatlingChargeJumpSpeed : c.JumpSpeed;
+            if (jump && grounded) s.VerticalSpeed = WeaponSimulation.IsSplatling(weapon) && wantsFire && s.SplatlingRemaining == 0 && s.WeaponPhase != WeaponPhase.Ending
+                ? weapon.SplatlingChargeJumpSpeed : c.JumpSpeed;
             s.VerticalSpeed = AirSwimSimulation.VerticalSpeed(s.VerticalSpeed, airSwim, c, dt);
             var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
@@ -241,6 +275,9 @@ namespace Splatoon.Combat
         }
         void ResolveGround(ref PlayerSnapshot s, PlayerInputFrame input, bool wantsFire)
         {
+            // The support point has now reached the floor. Standing from here
+            // uses this contact, not the old human origin below the sheet.
+            s.AirHumanOffset = 0;
             PrototypeArena.TryGetGround(s.Position, out byte floor, _controller.slopeLimit);
             bool allowed = input.Swim && !wantsFire && !IsEnemy(floor, s.Team);
             s.CompactBody = !allowed && (s.Swimming || s.CompactBody) && !CanStand(s.Position);
@@ -296,6 +333,7 @@ namespace Splatoon.Combat
         {
             _controller.enabled = false; s.Movement = MovementMode.Dead; s.Swimming = s.Firing = false; s.WeaponPhase = WeaponPhase.Idle; s.TurnDirection = 0;
             s.SwimSource = s.AirSwimSource = SwimSurface.None; s.CompactBody = false;
+            s.AirHumanOffset = 0;
             s.VerticalSpeed -= GameplayConfig.GetHero(s.HeroId).CharacterGravity * dt;
             Vector3 direction = s.VerticalSpeed > 0 ? Vector3.up : Vector3.down;
             float distance = Mathf.Abs(s.VerticalSpeed * dt); s.Grounded = false;

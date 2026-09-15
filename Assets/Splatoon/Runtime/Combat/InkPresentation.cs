@@ -44,6 +44,7 @@ namespace Splatoon.Combat
         public void Spawn(InkShot shot)
         {
             if (_streams == null || _shots.ContainsKey(shot.Id)) return;
+            shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
             _shots.Add(shot.Id, shot);
             float extra = 0;
             if (_emitters.TryGetValue(shot.Shooter, out var previous) && shot.Born - previous.born < .1)
@@ -77,7 +78,7 @@ namespace Splatoon.Combat
                 foreach (var pair in _shots)
                 {
                     var shot = pair.Value; if (shot.Team != team) continue;
-                    var w = LubanConfigService.Current.Tables.TbHero.Get(shot.HeroId); double age = now - shot.Born;
+                    var w = shot.Configuration; double age = now - shot.Born;
                     if (age > w.Lifetime + .05) { _expired.Add(pair.Key); continue; }
                     int blobs = _blobCounts[pair.Key];
                     for (int n = 0; n < blobs && count < _particles.Length; n++)

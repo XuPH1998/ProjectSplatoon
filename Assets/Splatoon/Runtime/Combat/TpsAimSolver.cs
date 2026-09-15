@@ -41,7 +41,7 @@ namespace Splatoon.Combat
                 GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
             result.Pivot = pivot;
             result.AimHit = aimHit;
-            float radius = GameplayConfig.GetHero(state.HeroId).CollisionRadius;
+            float radius = GameplayConfig.GetWeapon(state.HeroId).CollisionRadius;
             // Detect an embedded pivot too: casts do not report an origin inside a collider.
             result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit)
                 || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.PlayerId, out result.MuzzleHit)

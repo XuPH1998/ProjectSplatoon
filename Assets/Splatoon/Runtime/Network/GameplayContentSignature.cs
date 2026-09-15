@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 7;
-        public const int WeaponSimulationVersion = 1; // Stop transitions also advance without shooting clearance.
+        public const int WeaponSimulationVersion = 2; // Asset snapshots and timed two-axis spread.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
@@ -48,7 +48,8 @@ namespace Splatoon.Networking
                 var entries = heroes.OrderBy(h => h.Config.Id).ToArray(); w.Write(entries.Length);
                 foreach (var hero in entries)
                 {
-                    w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.Config.WeaponPrefabAddress);
+                    hero.WeaponConfig.Write(w); w.Write(hero.Config.WeaponConfigPath);
+                    w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.WeaponConfig.WeaponPrefabAddress);
                     var profile = hero.Profile;
                     var paper = profile.Paper;
                     w.Write(paper != null);

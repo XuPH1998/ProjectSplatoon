@@ -97,8 +97,12 @@ namespace Splatoon.Prototype
             {
                 _ip=GUI.TextField(new Rect(890,439,230,42),_ip,45,_lobbyField);
                 if(GUI.Button(new Rect(1130,439,96,42),"加入",_button)) ConnectFromUI(false);
-                GUI.Label(new Rect(890,494,340,63),"使用上方游戏端口。\n同机测试可填 127.0.0.1。",_small);
+                GUI.Label(new Rect(890,489,340,44),"使用上方端口 · 同机可填 127.0.0.1",_small);
             }
+#if UNITY_EDITOR
+            GUI.enabled = Ready && !Busy;
+            if (GUI.Button(new Rect(890, 536, 336, 36), "单机武器调试", _button)) StartWeaponDebugRoom().Forget();
+#endif
             GUI.enabled=true;
             GUI.Label(new Rect(888,593,Busy?224:340,36),Status,_small);
             if(Busy)

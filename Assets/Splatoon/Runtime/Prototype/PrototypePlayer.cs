@@ -9,13 +9,16 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 18;
+        public const uint ProtocolVersion = 20;
         public float SplatlingCharge, SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
         public double SplatlingUpdatedAt, SplatlingReleasedAt, SplatlingEndedAt;
         public bool SplatlingSlow;
         public PaperPose PaperPose;
         public Vector3 PaperCenter;
+        // Air paper uses its support plane as the motor origin. Retain the
+        // human origin for reversible midair form changes and camera continuity.
+        public float AirHumanOffset, CameraRebaseOffset;
         public Quaternion PaperRotation;
         public double PaperChangedAt;
         public float PaperAnimationTime;
@@ -51,7 +54,10 @@ namespace Splatoon.Prototype
         public uint FireBurstSequence, BurstShotIndex;
         public ulong ShotActionId => ((ulong)FireBurstSequence << 32) | BurstShotIndex;
         public double SimulatedAt, WeaponReadyAt, NextShotAt, InkRecoverAt, LastDamageAt, WallSeenAt, MantleStartedAt;
-        public float VerticalSpeed, CurrentSpread;
+        public float VerticalSpeed, CurrentSpread, CurrentVerticalSpread;
+        public float SpreadProgress, LastShotSpread, LastShotVerticalSpread;
+        public double SpreadUpdatedAt;
+        public bool SpreadInitialized, SpreadFiring;
         public Vector3 PlanarVelocity, WallNormal, WallPoint, MantleFrom, MantleTo;
         public int WallSurfaceId, WallRegionId;
         public MovementMode Movement;
@@ -62,6 +68,7 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);
             s.SerializeValue(ref SplatlingUpdatedAt); s.SerializeValue(ref SplatlingReleasedAt); s.SerializeValue(ref SplatlingEndedAt);
             s.SerializeValue(ref PaperPose); s.SerializeValue(ref PaperCenter);
+            s.SerializeValue(ref AirHumanOffset); s.SerializeValue(ref CameraRebaseOffset);
             s.SerializeValue(ref PaperRotation); s.SerializeValue(ref PaperChangedAt);
             s.SerializeValue(ref PaperAnimationTime); s.SerializeValue(ref PaperMove);
             s.SerializeValue(ref FriendlyInkContact); s.SerializeValue(ref SwimSource); s.SerializeValue(ref AirSwimSource); s.SerializeValue(ref CompactBody);
@@ -82,7 +89,9 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref RequiredPaintSequence);
             s.SerializeValue(ref FireBurstSequence); s.SerializeValue(ref BurstShotIndex);
             s.SerializeValue(ref SimulatedAt); s.SerializeValue(ref WeaponReadyAt); s.SerializeValue(ref NextShotAt); s.SerializeValue(ref InkRecoverAt); s.SerializeValue(ref LastDamageAt);
-            s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread);
+            s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread); s.SerializeValue(ref CurrentVerticalSpread);
+            s.SerializeValue(ref SpreadProgress); s.SerializeValue(ref LastShotSpread); s.SerializeValue(ref LastShotVerticalSpread);
+            s.SerializeValue(ref SpreadUpdatedAt); s.SerializeValue(ref SpreadInitialized); s.SerializeValue(ref SpreadFiring);
             s.SerializeValue(ref PlanarVelocity); s.SerializeValue(ref WallNormal); s.SerializeValue(ref WallPoint); s.SerializeValue(ref MantleFrom); s.SerializeValue(ref MantleTo);
             s.SerializeValue(ref WallSurfaceId); s.SerializeValue(ref WallRegionId); s.SerializeValue(ref Movement); s.SerializeValue(ref WeaponPhase);
         }

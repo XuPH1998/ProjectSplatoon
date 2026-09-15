@@ -117,7 +117,7 @@ namespace Splatoon.Combat
             if(Profile.Splatling && Application.isPlaying)
             {
                 if(_splatlingFeedback==null)_splatlingFeedback=gameObject.AddComponent<SplatlingFeedback>();
-                _splatlingFeedback.Present(state,GameplayConfig.GetHero(state.HeroId),Nozzle,SwimEffect!=null?SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial:null,dt);
+                _splatlingFeedback.Present(state,GameplayConfig.GetWeapon(state.HeroId),Nozzle,SwimEffect!=null?SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial:null,dt);
             }
             bool alive = state.Health > 0, visible = !(state.Swimming || state.CompactBody) || !alive;
             bool reset = !_presented || _revision != state.Revision || (alive && !_alive);

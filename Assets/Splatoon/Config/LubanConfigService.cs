@@ -42,6 +42,6 @@ namespace Splatoon.Config
             }
             finally { if (handle.IsValid()) Addressables.Release(handle); }
         }
-        public void Reset() { Tables = null; ContentSignature = null; IsReady = false; }
+        public void Reset() { WeaponConfigService.Current.Clear(); Tables = null; ContentSignature = null; IsReady = false; }
     }
 }

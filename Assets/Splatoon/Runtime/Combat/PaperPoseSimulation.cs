@@ -52,7 +52,11 @@ namespace Splatoon.Combat
             bool newFrame = !hadPaper || before.PaperPose != PaperPose.Air || (s.Swimming && !before.Swimming) ||
                 Vector3.Dot(before.PaperRotation * Vector3.forward, Vector3.up) < .999f;
             s.PaperRotation = newFrame ? GroundRotation(Vector3.up, s.Yaw) : before.PaperRotation;
-            s.PaperCenter = hadPaper ? before.PaperCenter + s.Position - before.Position : s.Position + Vector3.up * (height / 2);
+            // The motor has already aligned its support point with the sheet.
+            // Preserve the horizontal frame on wall takeoff, but never retain
+            // a vertical gap above the collider that would snap away on landing.
+            s.PaperCenter = hadPaper ? before.PaperCenter + s.Position - before.Position : s.Position;
+            s.PaperCenter.y = s.Position.y + offset;
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Splatoon.Prototype
                     if(target!=null)
                     {
                         float distance = Vector3.Distance(state.Position, target.Snapshot.Value.Position);
-                        var aim=target.Snapshot.Value.Position+Vector3.up*(.9f + .5f * GameplayConfig.DefaultHero.ProjectileGravity * Mathf.Pow(distance / 22.5f, 2));
+                        var aim=target.Snapshot.Value.Position+Vector3.up*(.9f + .5f * GameplayConfig.GetWeapon(0).ProjectileGravity * Mathf.Pow(distance / 22.5f, 2));
                         for(int n=0;n<3;n++)
                         {
                             var origin=PrototypePlayer.CameraPosition(state.Position+Vector3.up*1.5f,Quaternion.Euler(frame.Look.y,frame.Look.x,0));

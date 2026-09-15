@@ -124,7 +124,8 @@ namespace Splatoon.Tests
                 if (!swim || before.VerticalSpeed > 0)
                     Assert.That(state.VerticalSpeed,Is.EqualTo(before.VerticalSpeed-GameplayConfig.DefaultHero.CharacterGravity*Dt).Within(.0001f));
                 else Assert.That(state.VerticalSpeed,Is.LessThanOrEqualTo(0),"glide cannot add a jump");
-                Assert.That(state.Position.y,Is.EqualTo(before.Position.y+state.VerticalSpeed*Dt).Within(.002f));
+                Assert.That(PlayerMotorSimulation.HumanPosition(state).y,
+                    Is.EqualTo(PlayerMotorSimulation.HumanPosition(before).y+state.VerticalSpeed*Dt).Within(.002f));
                 Assert.That(state.Swimming,Is.EqualTo(swim)); Assert.That(state.AirSwimSource,Is.EqualTo(source));
                 Assert.That(state.HasInkRecovery,Is.False);
                 Run(5); Assert.That(state.PlanarVelocity.magnitude,Is.EqualTo(target).Within(.002f));
@@ -138,9 +139,9 @@ namespace Splatoon.Tests
             state.Position=Vector3.up*10; state.Grounded=false; state.Movement=MovementMode.Air; motor.Restore(state);
             input.Move=Vector2.zero; Tick();
             var ceiling=new GameObject("air ceiling"); var box=ceiling.AddComponent<BoxCollider>();
-            box.center=state.Position+Vector3.up*1.3f; box.size=new Vector3(3,.2f,3); Physics.SyncTransforms();
+            box.center=PlayerMotorSimulation.HumanPosition(state)+Vector3.up*1.3f; box.size=new Vector3(3,.2f,3); Physics.SyncTransforms();
             input.Swim=false; input.JumpSequence++; float vertical=state.VerticalSpeed; Tick(true);
-            Assert.That(state.CompactBody,Is.True); Assert.That(state.Swimming,Is.False); Assert.That(motor.CanStand(state.Position),Is.False);
+            Assert.That(state.CompactBody,Is.True); Assert.That(state.Swimming,Is.False); Assert.That(motor.CanStand(PlayerMotorSimulation.HumanPosition(state)),Is.False);
             Assert.That(state.VerticalSpeed,Is.LessThan(vertical));
             Object.DestroyImmediate(ceiling); Tick(); Assert.That(state.CompactBody,Is.False);
             input.Swim=true; Tick(true); Assert.That(state.Swimming,Is.False,"fire priority");

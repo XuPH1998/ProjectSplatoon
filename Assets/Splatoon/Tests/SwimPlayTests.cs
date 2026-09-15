@@ -45,6 +45,59 @@ namespace Splatoon.Tests
             yield return RifleRecoveryScenario();
             yield return new ExitPlayMode();
         }
+        [UnityTest] public IEnumerator RealHostAllHeroesAirPaperLandsAtVisualContact()
+        {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
+            yield return new EnterPlayMode();
+            yield return PaperLandingScenario();
+            yield return new ExitPlayMode();
+        }
+        static IEnumerator PaperLandingScenario()
+        {
+            Directory.CreateDirectory(Output);
+            yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Landing bootstrap");
+            ushort port;
+            using (var socket = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0))) port = (ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
+            yield return PrototypeApp.Current.Connect(true, "127.0.0.1", port).ToCoroutine();
+            yield return Wait(() => PrototypePlayer.Local != null && PrototypePlayer.Local.SwimBody != null, "Landing host");
+            var player = PrototypePlayer.Local; var match = PrototypeMatch.Current; var arena = PrototypeArena.Current;
+            match.enabled = player.enabled = false;
+            Vector3 spawn = arena.SpawnPoints[0].position + Vector3.forward * 2;
+            Assert.That(Physics.Raycast(spawn + Vector3.up * .2f, Vector3.down, out var floor, 2, PlayerMotorSimulation.WorldMask), Is.True);
+            using var report = new StreamWriter(Output + "/air-paper-landing.csv");
+            report.WriteLine("hero,lastAirHeight,landedHeight,landingSnap,ticks");
+            for (int hero = 1; hero <= 6; hero++)
+            {
+                match.enabled = true; player.RequestHeroChange(hero, HeroSelectionOrigin.Warmup);
+                yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == hero, "Landing hero " + hero);
+                match.enabled = false;
+                Reset(player, floor.point + Vector3.up * .04f, 1);
+                for (int i = 0; i < 5; i++) Tick(player, false);
+                for (int i = 0; i < 12; i++) Tick(player, false, 1);
+                var human = player.Snapshot.Value; Assert.That(human.Grounded, Is.False);
+                Tick(player, true, 1); var opened = player.Snapshot.Value;
+                Assert.That(opened.PaperCenter.y, Is.EqualTo(human.Position.y + .9f + opened.VerticalSpeed * Dt).Within(.005f));
+                bool captured = false, landed = false;
+                for (int i = 0; i < 250; i++)
+                {
+                    var before = player.Snapshot.Value;
+                    if (!captured && (hero == 1 || hero == 6) && before.PaperCenter.y - floor.point.y < .1f)
+                    { Capture(player, "landing-hero-" + hero + "-air"); captured = true; }
+                    Tick(player, true, 1); Present(player); var s = player.Snapshot.Value;
+                    Assert.That(Vector3.Distance(player.SwimBody.BodyRenderer.transform.position, s.PaperCenter), Is.LessThan(.0001f));
+                    Assert.That(Vector3.Distance(player.SwimBody.HitVolume.transform.position, s.PaperCenter), Is.LessThan(.0001f));
+                    if (!s.Grounded) { Assert.That(s.HasInkRecovery, Is.False); continue; }
+                    Assert.That(before.PaperCenter.y - floor.point.y, Is.LessThan(.11f));
+                    Assert.That(s.PaperCenter.y - floor.point.y, Is.EqualTo(.03f).Within(.005f));
+                    Assert.That(Mathf.Abs(before.PaperCenter.y - s.PaperCenter.y), Is.LessThan(.08f));
+                    report.WriteLine($"{hero},{before.PaperCenter.y-floor.point.y:F5},{s.PaperCenter.y-floor.point.y:F5},{before.PaperCenter.y-s.PaperCenter.y:F5},{i+1}"); report.Flush();
+                    if (hero == 1 || hero == 6) Capture(player, "landing-hero-" + hero + "-ground");
+                    landed = true; break;
+                }
+                Assert.That(landed, Is.True, "hero " + hero);
+                yield return null;
+            }
+        }
 
         static IEnumerator RifleRecoveryScenario()
         {
@@ -74,7 +127,7 @@ namespace Splatoon.Tests
                 player.Snapshot.Value = start;
                 for (int i = 0; i < 8; i++) Tick(player, false);
                 uint shotsBefore = player.Snapshot.Value.ShotSequence;
-                int firingTicks = w.StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(w) * 60) + 1;
+                int firingTicks = GameplayConfig.GetWeapon(w.Id).StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
                 for (int i = 0; i < firingTicks; i++) Tick(player, false, fire: true);
                 var fired = player.Snapshot.Value;
                 Assert.That(fired.ShotSequence, Is.GreaterThan(shotsBefore));
@@ -131,6 +184,7 @@ namespace Splatoon.Tests
             var s = player.Snapshot.Value; s.Position = feet; s.Team = team; s.Yaw = s.BodyYaw = s.Pitch = 0;
             s.PlanarVelocity = s.Velocity = Vector3.zero; s.VerticalSpeed = 0; s.Health = s.Ink = 100; s.ProtectedUntil = 0;
             s.Swimming = s.CompactBody = false; s.SwimSource = s.AirSwimSource = SwimSurface.None; s.PaperPose = PaperPose.None; s.PaperCenter=Vector3.zero; s.PaperRotation=Quaternion.identity; s.Grounded = true;
+            s.AirHumanOffset = s.CameraRebaseOffset = 0;
             s.ConsumedJump = 0; s.Movement = MovementMode.Human; s.SimulatedAt = Math.Max(s.SimulatedAt,player.NetworkManager.ServerTime.Time);
             Motor(player).Restore(s); player.Snapshot.Value = s;
         }

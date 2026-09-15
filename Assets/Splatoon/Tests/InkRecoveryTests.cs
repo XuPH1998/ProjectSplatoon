@@ -20,9 +20,9 @@ namespace Splatoon.Tests
         {
             var w = GameplayConfig.GetHero(1);
             var s = new PlayerSnapshot { HeroId = 1, Team = 1, Health = w.MaxHealth, Ink = 20, Grounded = true };
-            releaseTick = w.StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(w) * 60) + 1;
+            releaseTick = GameplayConfig.GetWeapon(w.Id).StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
             for (int tick = 0; tick < releaseTick; tick++)
-                WeaponSimulation.Step(ref s, new PlayerInputFrame { Sequence = (uint)tick + 1, Fire = true, FireSequence = 1 }, w, tick / 60.0, false, true);
+                WeaponSimulation.Step(ref s, new PlayerInputFrame { Sequence = (uint)tick + 1, Fire = true, FireSequence = 1 }, GameplayConfig.GetWeapon(w.Id), tick / 60.0, false, true);
             Assert.That(s.ShotSequence, Is.GreaterThan(0));
             Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Firing));
             return s;
@@ -35,12 +35,12 @@ namespace Splatoon.Tests
             var input = new PlayerInputFrame { Sequence = (uint)tick + 1, FireSequence = 1, ReleaseSequence = 1, Swim = swim };
             // Match production order, with explicit contact fixtures instead of Unity physics.
             bool wasSwimming = s.Swimming;
-            s.Swimming = swim && !WeaponSimulation.WantsFire(s, input, w, tick / 60.0);
+            s.Swimming = swim && !WeaponSimulation.WantsFire(s, input, GameplayConfig.GetWeapon(w.Id), tick / 60.0);
             s.SwimSource = s.Swimming ? source : SwimSurface.None;
             s.Grounded = grounded;
             s.FriendlyInkContact = s.Swimming && grounded && source == SwimSurface.Friendly;
             s.Movement = !grounded ? MovementMode.Air : s.Swimming ? MovementMode.GroundInk : MovementMode.Human;
-            WeaponSimulation.Step(ref s, input, w, tick / 60.0, wasSwimming, !s.Swimming && clearance);
+            WeaponSimulation.Step(ref s, input, GameplayConfig.GetWeapon(w.Id), tick / 60.0, wasSwimming, !s.Swimming && clearance);
             ResourceSimulation.Step(ref s, w, false, false, Dt, tick / 60.0);
         }
 
@@ -119,19 +119,19 @@ namespace Splatoon.Tests
             var w = GameplayConfig.GetHero(1);
             var s = new PlayerSnapshot { HeroId = 1, Health = 100, Ink = 100 };
             var press = new PlayerInputFrame { Fire = true, FireSequence = 1 };
-            WeaponSimulation.Step(ref s, press, w, 0, false, true);
+            WeaponSimulation.Step(ref s, press, GameplayConfig.GetWeapon(w.Id), 0, false, true);
             var release = new PlayerInputFrame { FireSequence = 1, ReleaseSequence = 1 };
-            for (int tick = 1; tick <= w.StartFrames + 5; tick++)
+            for (int tick = 1; tick <= GameplayConfig.GetWeapon(w.Id).StartFrames + 5; tick++)
             {
-                Assert.That(WeaponSimulation.Step(ref s, release, w, tick / 60.0, false, false), Is.False);
+                Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), tick / 60.0, false, false), Is.False);
                 Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Starting));
             }
-            double now = (w.StartFrames + 6) / 60.0;
-            Assert.That(WeaponSimulation.Step(ref s, release, w, now, false, true), Is.True);
+            double now = (GameplayConfig.GetWeapon(w.Id).StartFrames + 6) / 60.0;
+            Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), now, false, true), Is.True);
             for (int tick = 1; tick <= 120; tick++)
-                Assert.That(WeaponSimulation.Step(ref s, release, w, now + tick / 60.0, false, false), Is.False);
+                Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), now + tick / 60.0, false, false), Is.False);
             Assert.That(s.ShotSequence, Is.EqualTo(1)); Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Idle));
-            Assert.That(s.Ink, Is.EqualTo(100 - w.ShotInk).Within(.0001f));
+            Assert.That(s.Ink, Is.EqualTo(100 - GameplayConfig.GetWeapon(w.Id).ShotInk).Within(.0001f));
         }
     }
 }

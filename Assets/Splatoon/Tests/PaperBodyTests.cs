@@ -193,9 +193,10 @@ namespace Splatoon.Tests
             var s=new PlayerSnapshot { HeroId=1,Health=100,Swimming=true,Movement=MovementMode.WallInk,WallNormal=Vector3.right,WallPoint=Vector3.zero,Position=new Vector3(.36f,1,0) };
             PaperPoseSimulation.Resolve(ref s,default,Profile("RifleGirl"),1); var before=s;
             s.Movement=MovementMode.Air; s.Position+=new Vector3(.2f,.1f,.3f); s.Yaw=175;
+            s.Position.y=before.PaperCenter.y+.1f-Profile("RifleGirl").SurfaceOffset;
             PaperPoseSimulation.Resolve(ref s,before,Profile("RifleGirl"),2);
             Assert.That(Quaternion.Angle(s.PaperRotation,PaperPoseSimulation.GroundRotation(Vector3.up,s.Yaw)),Is.LessThan(.001));
-            Assert.That(Vector3.Distance(s.PaperCenter-before.PaperCenter,s.Position-before.Position),Is.LessThan(.001));
+            Assert.That(Vector3.Distance(s.PaperCenter-before.PaperCenter,new Vector3(.2f,.1f,.3f)),Is.LessThan(.001));
             var expected=s; s=before; s.Movement=MovementMode.Air; s.Position=expected.Position; s.Yaw=175;
             PaperPoseSimulation.Resolve(ref s,before,Profile("RifleGirl"),2);
             Assert.That(JsonUtility.ToJson(s),Is.EqualTo(JsonUtility.ToJson(expected)));
@@ -238,7 +239,7 @@ namespace Splatoon.Tests
             {
                 var human=s; s.Swimming=true; s.Yaw=yaw; PaperPoseSimulation.Resolve(ref s,human,profile,1);
                 Assert.That(Quaternion.Angle(s.PaperRotation,PaperPoseSimulation.GroundRotation(Vector3.up,yaw)),Is.LessThan(.001f));
-                Assert.That(s.PaperCenter,Is.EqualTo(s.Position+Vector3.up*(profile.Size.y/2)));
+                Assert.That(s.PaperCenter,Is.EqualTo(s.Position+Vector3.up*profile.SurfaceOffset));
                 var opened=s; s.Position+=new Vector3(.2f,-.1f,.3f); s.Yaw+=95;
                 PaperPoseSimulation.Resolve(ref s,opened,profile,2);
                 Assert.That(Quaternion.Angle(s.PaperRotation,opened.PaperRotation),Is.LessThan(.001f));

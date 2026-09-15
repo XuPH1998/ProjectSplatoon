@@ -18,7 +18,7 @@ namespace Splatoon.Tests
 {
     public sealed class ShooterMovementTests
     {
-        cfg.HeroConfig W => GameplayConfig.DefaultHero;
+        WeaponRuntimeConfig W => GameplayConfig.GetWeapon(0);
         [SetUp] public void Setup()
         {
             var tables=new cfg.Tables(name=>SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/"+name+".json")));
@@ -112,9 +112,9 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(32)] [TestCase(62)]
         public void ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(int release)
         {
-            var arena=LoadArena();var w=GameplayConfig.GetHero(5);
+            var arena=LoadArena();var w=GameplayConfig.GetWeapon(5);
             // Keep this firing/swimming test off the tile seam and the spawn shield.
-            var s=Alive();s.HeroId=w.Id;s.Position=arena.SpawnPoints[0].position+Vector3.forward;
+            var s=Alive();s.HeroId=5;s.Position=arena.SpawnPoints[0].position+Vector3.forward;
             Assert.That(Physics.Raycast(s.Position+Vector3.up*.2f,Vector3.down,out var hit,1,PlayerMotorSimulation.WorldMask),Is.True);
             var floor=hit.collider.GetComponent<PaintSurface>();Assert.That(floor,Is.Not.Null);
             arena.Apply(new PaintStamp{SurfaceId=floor.SurfaceId,Position=hit.point,Normal=hit.normal,Radius=3,Hardness=1,Strength=1,Team=s.Team},true);
@@ -233,7 +233,7 @@ namespace Splatoon.Tests
             var go=UnityEngine.Object.Instantiate(prefab);var player=go.GetComponent<PrototypePlayer>();
             try
             {
-                var state=Alive();state.Position=Vector3.up*.04f;state.CurrentSpread=.000001f;go.transform.position=state.Position;Physics.SyncTransforms();
+                var state=Alive();state.Position=Vector3.up*.04f;state.CurrentSpread=state.LastShotSpread=.000001f;state.LastShotVerticalSpread=.000001f;go.transform.position=state.Position;Physics.SyncTransforms();
                 var service=new InkProjectileService();service.Spawn(player,state,0,0);
                 var shot=service.Spawned[0];
                 Assert.That(Vector3.Distance(shot.PostCorrectionVelocity,shot.Velocity),Is.LessThan(.00001));

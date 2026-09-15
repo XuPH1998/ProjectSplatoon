@@ -20,23 +20,23 @@ namespace Splatoon.Tests
         [TearDown] public void Reset() => LubanConfigService.Current.Reset();
         static PlayerSnapshot Player(int hero = 2) => new() { HeroId = hero, Health = 100, Ink = 100, Team = 1, Revision = 1, Grounded = true };
         static bool Fire(ref PlayerSnapshot s, int tick, bool held, uint press = 1, bool cancel = false)
-            => WeaponSimulation.Step(ref s, new PlayerInputFrame { Sequence = (uint)tick + 1, Fire = held, FireSequence = press, CancelFire = cancel }, GameplayConfig.GetHero(s.HeroId), tick / 60.0, false, true);
+            => WeaponSimulation.Step(ref s, new PlayerInputFrame { Sequence = (uint)tick + 1, Fire = held, FireSequence = press, CancelFire = cancel }, GameplayConfig.GetWeapon(s.HeroId), tick / 60.0, false, true);
 
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void ReleaseBeforeCooldownNeverQueuesAnAutomaticShot(int hero)
         {
-            var s = Player(hero); var w = GameplayConfig.GetHero(hero);
+            var s = Player(hero); var w = GameplayConfig.GetWeapon(hero);
             for (int t = 0; t < 100; t++) Fire(ref s, t, t / 60.0 < w.StartFrames / 60.0 + 1.0 / w.FireRate - 1e-8);
             Assert.That(s.ShotSequence, Is.EqualTo(1));
         }
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void DryHeldTriggerRecoversAndResumesWithoutInventingClicks(int hero)
         {
-            var s = Player(hero); var w = GameplayConfig.GetHero(hero); s.Ink = w.ShotInk;
+            var s = Player(hero); var w = GameplayConfig.GetWeapon(hero); s.Ink = w.ShotInk;
             for (int t = 0; t < 240; t++)
             {
                 Fire(ref s, t, true);
-                ResourceSimulation.Step(ref s, w, false, false, 1f / 60, t / 60.0);
+                ResourceSimulation.Step(ref s, GameplayConfig.GetHero(s.HeroId), false, false, 1f / 60, t / 60.0);
             }
             Assert.That(s.ShotSequence, Is.GreaterThan(1)); Assert.That(s.Ink, Is.GreaterThanOrEqualTo(0));
             if (hero == 2) Assert.That(s.NextMuzzle, Is.EqualTo(s.ShotSequence % 2));
@@ -48,8 +48,8 @@ namespace Splatoon.Tests
             Fire(ref s, 8, true, 1, true); uint count = s.ShotSequence;
             for (int t = 9; t < 60; t++) Assert.That(Fire(ref s, t, true), Is.False);
             Fire(ref s, 60, false);
-            for (int t = 61; t < 61 + GameplayConfig.GetHero(hero).StartFrames; t++) Assert.That(Fire(ref s, t, true, 2), Is.False);
-            Assert.That(Fire(ref s, 61 + GameplayConfig.GetHero(hero).StartFrames, true, 2), Is.True);
+            for (int t = 61; t < 61 + GameplayConfig.GetWeapon(hero).StartFrames; t++) Assert.That(Fire(ref s, t, true, 2), Is.False);
+            Assert.That(Fire(ref s, 61 + GameplayConfig.GetWeapon(hero).StartFrames, true, 2), Is.True);
             Assert.That(s.ShotSequence, Is.EqualTo(count + 1));
         }
         [Test] public void HeldStateRoundTripReplaysIdenticalShotsHandsAndInk()
@@ -65,7 +65,7 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void ReusedHeldInputKeepsEveryShotActionDistinct(int hero)
         {
-            var s = Player(hero); var w = GameplayConfig.GetHero(hero);
+            var s = Player(hero); var w = GameplayConfig.GetWeapon(hero);
             var input = new PlayerInputFrame { Sequence = 7, FireSequence = 1, Fire = true };
             var actions = new List<ulong>();
             for (int tick = 0; tick < 120; tick++)
@@ -100,7 +100,7 @@ namespace Splatoon.Tests
             {
                 Physics.SyncTransforms(); var service = new InkProjectileService();
                 service.PaintObserved = stamp => { if (stamp.Radius < 2) stamps.Add(stamp); };
-                var state = Player(1); state.Position = new Vector3(5000, 1000.05f, 5000); state.CurrentSpread = .01f;
+                var state = Player(1); state.Position = new Vector3(5000, 1000.05f, 5000); state.CurrentSpread=state.LastShotSpread=.01f;state.LastShotVerticalSpread=.01f;
                 service.Spawn(player, state, 0, 1);
                 Assert.That(stamps.Count, Is.EqualTo(1), "The initial muzzle trail also uses the range");
                 for (int frame = 1; frame <= rate * 4; frame++) service.Simulate(frame / (double)rate);

@@ -2,7 +2,7 @@
 
 已新增英雄 ID 6，热身阶段按 H 选择「消防栓旋转枪」。原有五名英雄、默认英雄、半自动长按连发和现有弦化规则保留。
 
-按住左键蓄力，松开后持续射击；第一圈 33 发，满蓄 66 发，满蓄整轮保持 40 点近端伤害。Shift 取消蓄力或剩余射击，未发射的预留墨返还。双环准星分别显示两段蓄力，发射期间显示剩余弹量。
+按住左键蓄力，松开后持续射击；第一圈 33 发，满蓄 66 发，满蓄整轮保持 40 点近端伤害。Shift 取消蓄力或剩余射击，未发射的预留墨返还。屏幕底部中央双环分别显示两段蓄力，发射期间显示剩余弹量；准星四角范围显示实时双轴散布。
 
 正式资源：
 
@@ -19,7 +19,7 @@
 
 脸部保留专用 Toon SDF Shader，通过 `MachineGunFaceShadow` 更新头部朝向；弦化拍摄同样更新该参数。正式材质仅将 `_Is_Filter_LightColor` 设为 1，限制训练场强光导致的过曝；源材质保持原样。枪管不额外旋转。
 
-配置由 `Config/Luban/source/TbHero.xlsx` → Luban → 生成 C#/JSON 驱动。快照协议为 18；蓄力、预留墨、剩余弹数、释放进度和射击时间参与同步。现有发射组标识加轮内弹序号构成每发稳定身份，墨弹保留发射时的英雄与满蓄身份。
+英雄基础属性由 `Config/Luban/source/TbHero.xlsx` → Luban → 生成 C#/JSON 驱动。武器属性改为 `Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset`，由表内 `weaponConfigPath` 引用。快照协议为 19、武器模拟版本为 2；蓄力、预留墨、弹数与实时散布参与同步。每发稳定身份及满蓄身份保留，并持有发射时武器快照。详见 [武器资产与单机调试](../../WeaponAssets.md)。
 
 复建流程：
 
@@ -29,6 +29,7 @@ cmd /c Config\Luban\gen_luban.bat
 python Tools/CombatGirls/import_assets.py --hero 6
 # Unity 菜单：喷墨对战 / 角色 / 安装 MachineGunGirl
 python Tools/CombatGirls/validate_machinegun.py
+python Tools/CombatGirls/validate_weapon_assets.py
 ```
 
 配置脚本在 ID 6 已存在时保留其数值；导入与构建只选择 ID 6。首次导入记录位于 `Tools/ValidationData/MachineGun/source-assets.json`，用于检查源文件哈希。重新建立资源基线时应检查导入报告后更新此记录。

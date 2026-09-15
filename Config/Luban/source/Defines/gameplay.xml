@@ -1,10 +1,10 @@
 <module name="">
-  <bean name="HeroConfig" comment="英雄完整角色、武器与射击配置">
+  <bean name="HeroConfig" comment="英雄基础属性、移动与武器资产引用">
     <var name="id" type="int" comment="英雄 ID" />
     <var name="name" type="string" comment="英雄英文标识" />
     <var name="displayName" type="string" comment="英雄中文显示名" />
+    <var name="weaponConfigPath" type="string" comment="武器配置资产工程路径（Assets/.../*.asset）" />
     <var name="characterPrefabAddress" type="string" comment="模型：正式角色外观地址" />
-    <var name="weaponPrefabAddress" type="string" comment="模型：正式武器地址" />
     <var name="maxHealth" type="float" comment="角色属性：生命上限" />
     <var name="maxInk" type="float" comment="角色属性：墨水上限" />
     <var name="recoverInk" type="float" comment="移动恢复：普通回墨（点/秒）" />
@@ -31,65 +31,6 @@
     <var name="swimHealthRecoverRate" type="float" comment="移动恢复：己方潜墨回血（HP/秒）" />
     <var name="enemyInkDamageRate" type="float" comment="移动恢复：敌墨伤害（HP/秒）" />
     <var name="enemyInkHealthFloor" type="float" comment="移动恢复：敌墨非致死生命下限（HP）" />
-    <var name="fireMode" type="int" comment="发射：0全自动／1三连发／2蓄力松开发射／3半自动／4旋转枪" />
-    <var name="fireRate" type="float" comment="发射：权威射速（发/秒）" />
-    <var name="shotInk" type="float" comment="发射：每次有效发射总耗墨（霰弹整组）" />
-    <var name="startFrames" type="int" comment="发射：人形起手（60Hz参考帧）" />
-    <var name="emergeStartFrames" type="int" comment="发射：出墨起手（60Hz参考帧）" />
-    <var name="inkRecoverLockFrames" type="int" comment="发射：最后一发后回墨锁定（60Hz参考帧）" />
-    <var name="shootMoveSpeed" type="float" comment="发射：射击或蓄力移动速度（米/秒）" />
-    <var name="burstCount" type="int" comment="发射：每组发数（全自动为1）" />
-    <var name="burstRecoveryFrames" type="int" comment="发射：末发到下一组首发（60Hz参考帧）" />
-    <var name="speedMin" type="float" comment="弹道：最低初速（米/秒）" />
-    <var name="speedMax" type="float" comment="弹道：最高初速（米/秒）" />
-    <var name="projectileGravity" type="float" comment="弹道：墨弹重力（米/秒²，0为无重力）" />
-    <var name="lifetime" type="float" comment="弹道：有效寿命（秒）" />
-    <var name="collisionRadius" type="float" comment="弹道：扫掠半径（米）" />
-    <var name="spreadDegrees" type="float" comment="弹道：散布半角（度）" />
-    <var name="straightFrames" type="int" comment="弹道：直行阶段（60Hz参考帧）" />
-    <var name="brakeFrames" type="int" comment="弹道：减速过渡（60Hz参考帧）" />
-    <var name="brakeSpeedMultiplier" type="float" comment="弹道：减速后的速度比例" />
-    <var name="jumpSpreadDegrees" type="float" comment="弹道：跳跃散布半角（度）" />
-    <var name="spreadRecoverFrames" type="int" comment="弹道：落地散布恢复（60Hz参考帧）" />
-    <var name="effectiveRange" type="float" comment="弹道：伤害弹最大前向射程（本项目米）" />
-    <var name="damage" type="float" comment="伤害：每颗伤害" />
-    <var name="damageMin" type="float" comment="伤害：衰减后伤害（HP）" />
-    <var name="damageReduceStartFrames" type="int" comment="伤害：伤害衰减开始（飞行60Hz参考帧）" />
-    <var name="damageReduceEndFrames" type="int" comment="伤害：伤害衰减结束（飞行60Hz参考帧）" />
-    <var name="paintRadiusMin" type="float" comment="涂色：最小涂色半径（米）" />
-    <var name="paintRadiusMax" type="float" comment="涂色：最大涂色半径（米）" />
-    <var name="paintHardness" type="float" comment="涂色：笔刷硬度（0 到 1）" />
-    <var name="paintStrength" type="float" comment="涂色：笔刷强度（0 到 1）" />
-    <var name="trailSpacing" type="float" comment="涂色：沿途落墨间隔（米）" />
-    <var name="trailRadiusMin" type="float" comment="涂色：沿途落墨最小笔刷半径（米）" />
-    <var name="trailRadiusMax" type="float" comment="涂色：沿途落墨最大笔刷半径（米）" />
-    <var name="trailMaxDrop" type="float" comment="涂色：沿途落墨向下探测范围（米）" />
-    <var name="chargeFrames" type="int" comment="蓄力：满蓄时间（60Hz参考帧，非蓄力为0）" />
-    <var name="chargeMinDamage" type="float" comment="蓄力：点射伤害（HP）" />
-    <var name="chargePartialMaxDamage" type="float" comment="蓄力：未满蓄伤害上限（HP）" />
-    <var name="chargeMinInk" type="float" comment="蓄力：点射耗墨（点）" />
-    <var name="chargeMinRange" type="float" comment="蓄力：点射伤害射程（米）" />
-    <var name="chargeMinSpeed" type="float" comment="蓄力：点射初速（米/秒）" />
-    <var name="chargeMinSpread" type="float" comment="蓄力：点射地面散布半角（度）" />
-    <var name="chargeMinJumpSpread" type="float" comment="蓄力：点射空中散布半角（度）" />
-    <var name="pelletCount" type="int" comment="发射：每次有效发射的弹丸数量" />
-    <var name="muzzleMode" type="int" comment="发射：枪口模式（0单枪／1右左交替）" />
-    <var name="semiBufferFrames" type="int" comment="发射：半自动冷却末尾点击缓存（60Hz帧）" />
-    <var name="splatlingMinChargeFrames" type="int" comment="旋转枪：最小有效蓄力帧数" />
-    <var name="splatlingFirstChargeFrames" type="int" comment="旋转枪：第一圈蓄力帧数" />
-    <var name="splatlingFirstShootFrames" type="int" comment="旋转枪：第一圈射击窗口帧数（含第0帧首弹）" />
-    <var name="splatlingFullShootFrames" type="int" comment="旋转枪：满蓄射击窗口帧数（含末帧）" />
-    <var name="splatlingSlowChargeMultiplier" type="float" comment="旋转枪：空中或缺墨蓄力耗时倍率（不叠乘）" />
-    <var name="splatlingChargeMoveSpeed" type="float" comment="旋转枪：蓄力移动速度（米/秒）" />
-    <var name="splatlingChargeJumpSpeed" type="float" comment="旋转枪：蓄力起跳速度（米/秒）" />
-    <var name="splatlingPostFrames" type="int" comment="旋转枪：末弹后恢复帧数" />
-    <var name="splatlingPitchSpread" type="float" comment="旋转枪：地面垂直散布半角（度）" />
-    <var name="splatlingSpreadBias" type="float" comment="旋转枪：中心散布偏向（0到1）" />
-    <var name="splatlingSpeedBias" type="float" comment="旋转枪：初速随机中心偏向（0到1）" />
-    <var name="splatlingFootEvery" type="int" comment="旋转枪：脚下落墨间隔（发）" />
-    <var name="splatlingTrailCount" type="int" comment="旋转枪：每颗沿途最大落墨数" />
-    <var name="splatlingFootRadius" type="float" comment="旋转枪：脚下落墨半径（米）" />
-    <var name="splatlingPlayerRadius" type="float" comment="旋转枪：命中玩家扫掠半径（米）" />
   </bean>
   <table name="TbHero" value="HeroConfig" input="TbHero.xlsx" mode="map" index="id" />
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">

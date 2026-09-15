@@ -83,7 +83,7 @@ namespace Splatoon.Prototype
         public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
         public void StartRound()
         {
-            if (!IsServer || !CanStartRound) return;
+            if (!IsServer || !CanStartRound || (PrototypeApp.Current != null && PrototypeApp.Current.IsWeaponDebugRoom)) return;
             ClearTestBots();
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing;
             s.StartsAt = NetworkManager.ServerTime.Time; s.EndsAt = s.StartsAt + GameplayConfig.Mode.MatchSeconds;
@@ -130,6 +130,9 @@ namespace Splatoon.Prototype
             if (!IsSpawned || !IsServer) return;
             _simulationTime = System.Math.Max(_simulationTime, Time.fixedTimeAsDouble + _networkFrameOffset);
             double now = _simulationTime; var s = State.Value;
+#if UNITY_EDITOR
+            PrototypeApp.Current?.ApplyDebugWeaponChanges();
+#endif
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
             { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);

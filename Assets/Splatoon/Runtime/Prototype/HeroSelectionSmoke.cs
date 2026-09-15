@@ -76,7 +76,7 @@ namespace Splatoon.Prototype
             double age=p.NetworkManager.ServerTime.Time-s._start;
             input.Move=Vector2.zero;input.Swim=false;input.JumpSequence=p.PresentedState.ConsumedJump;
             input.Look=new Vector2((p.PresentedState.Team==1?0:180)+(p.PresentedState.Slot==0?-25:25),5);
-            var weapon=Splatoon.Config.GameplayConfig.GetHero(p.PresentedState.HeroId);
+            var weapon=Splatoon.Config.GameplayConfig.GetWeapon(p.PresentedState.HeroId);
             input.Fire=(WeaponSimulation.IsSemi(weapon) ? age%(.05+WeaponSimulation.FireInterval(weapon))<.065 : age%3<1.9) && !p.HeroChangePending;
             if(age>40&&age<48)input.Move=new Vector2(Mathf.Sin((float)age)*.2f,0);
         }

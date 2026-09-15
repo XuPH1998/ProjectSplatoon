@@ -1,3 +1,4 @@
+using Splatoon.Config;
 using System;
 using UnityEngine;
 using Splatoon.Prototype;
@@ -12,13 +13,13 @@ namespace Splatoon.Combat
             (Charging(s) || s.SplatlingRemaining > 0 ||
              ((s.WeaponPhase != WeaponPhase.Ending || now + 1e-8 >= s.NextShotAt) && (input.Fire || input.FireSequence != s.ConsumedFire)));
         public static bool Charging(PlayerSnapshot s) => s.WeaponPhase == WeaponPhase.Starting || s.WeaponPhase == WeaponPhase.Charging;
-        public static float MovementSpeed(PlayerSnapshot s, cfg.HeroConfig w) =>
+        public static float MovementSpeed(PlayerSnapshot s, WeaponRuntimeConfig w) =>
             s.SplatlingRemaining > 0 || s.WeaponPhase == WeaponPhase.Firing ? w.ShootMoveSpeed : w.SplatlingChargeMoveSpeed;
-        public static float RangeCharge(cfg.HeroConfig w, float charge) => Mathf.InverseLerp(w.SplatlingMinChargeFrames, w.SplatlingFirstChargeFrames, charge * w.ChargeFrames);
-        public static float Window(cfg.HeroConfig w, float ticks) => ticks <= w.SplatlingFirstChargeFrames
+        public static float RangeCharge(WeaponRuntimeConfig w, float charge) => Mathf.InverseLerp(w.SplatlingMinChargeFrames, w.SplatlingFirstChargeFrames, charge * w.ChargeFrames);
+        public static float Window(WeaponRuntimeConfig w, float ticks) => ticks <= w.SplatlingFirstChargeFrames
             ? Mathf.Lerp(0, w.SplatlingFirstShootFrames, Mathf.InverseLerp(w.SplatlingMinChargeFrames, w.SplatlingFirstChargeFrames, ticks))
             : Mathf.Lerp(w.SplatlingFirstShootFrames, w.SplatlingFullShootFrames, Mathf.InverseLerp(w.SplatlingFirstChargeFrames, w.ChargeFrames, ticks));
-        public static int Rounds(cfg.HeroConfig w, float ticks) => ticks + .0001f < w.SplatlingMinChargeFrames ? 0 :
+        public static int Rounds(WeaponRuntimeConfig w, float ticks) => ticks + .0001f < w.SplatlingMinChargeFrames ? 0 :
             1 + Mathf.FloorToInt(Window(w, ticks) * w.FireRate / 60 + .00001f);
         public static void Refund(ref PlayerSnapshot s)
         {
@@ -29,7 +30,7 @@ namespace Splatoon.Combat
             s.SplatlingEndedAt = s.SplatlingReleasedAt = s.SplatlingUpdatedAt = 0;
             s.SplatlingReleasedCharge = 0;
         }
-        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig w, double now,
+        public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, cfg.HeroConfig hero, WeaponRuntimeConfig w, double now,
             bool emerged, bool canShoot, bool edge, bool release, out WeaponFireResult result)
         {
             result = default;
@@ -79,7 +80,7 @@ namespace Splatoon.Combat
                 if (!s.ChargeReleasePending || s.SplatlingLoaded == 0) return false;
                 // Return the fractional reservation left between discrete bullets.
                 float cost = s.SplatlingLoaded * w.ShotInk;
-                s.Ink = Mathf.Min(w.MaxInk, s.Ink + Mathf.Max(0, s.SplatlingReservedInk - cost)); s.SplatlingReservedInk = cost;
+                s.Ink = Mathf.Min(hero.MaxInk, s.Ink + Mathf.Max(0, s.SplatlingReservedInk - cost)); s.SplatlingReservedInk = cost;
                 s.SplatlingRemaining = s.SplatlingLoaded;
                 s.SplatlingReleasedCharge = Mathf.Clamp01(next / w.ChargeFrames);
                 s.SplatlingReleasedAt = s.NextShotAt = now;
@@ -101,7 +102,7 @@ namespace Splatoon.Combat
             }
             return true;
         }
-        static float ReserveAt(cfg.HeroConfig w, float ticks)
+        static float ReserveAt(WeaponRuntimeConfig w, float ticks)
         {
             if (ticks < w.SplatlingMinChargeFrames) return w.ShotInk * ticks / w.SplatlingMinChargeFrames;
             return Mathf.Min(Rounds(w, w.ChargeFrames), 1 + Window(w, ticks) * w.FireRate / 60) * w.ShotInk;

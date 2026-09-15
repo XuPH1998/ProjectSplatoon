@@ -104,8 +104,9 @@ namespace Splatoon.Editor
             foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList)
             foreach (bool trail in new[] { false, true })
             {
-                float min = trail ? hero.TrailRadiusMin : hero.PaintRadiusMin;
-                float max = trail ? hero.TrailRadiusMax : hero.PaintRadiusMax;
+                var weapon = Splatoon.Config.GameplayConfig.GetWeapon(hero.Id);
+                float min = trail ? weapon.TrailRadiusMin : weapon.PaintRadiusMin;
+                float max = trail ? weapon.TrailRadiusMax : weapon.PaintRadiusMax;
                 var surface = InkLookValidation.Plane("Radius measure", 4, 1024, material);
                 if (wall) surface.transform.rotation = Quaternion.Euler(-90, 0, 0);
                 Measurement first = default; float firstRadius = 0;

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Splatoon.Networking
 {
     // 房主监听所有网卡；端口默认 7777。客户端地址由房间码解码或手动输入。
-    public readonly struct LanHostOptions { public readonly ushort Port; public LanHostOptions(ushort port = 7777) => Port = port; }
+    public readonly struct LanHostOptions { public readonly ushort Port; public readonly bool LoopbackOnly; public LanHostOptions(ushort port = 7777, bool loopbackOnly = false) { Port = port; LoopbackOnly = loopbackOnly; } }
     public readonly struct LanJoinOptions { public readonly string Address; public readonly ushort Port; public LanJoinOptions(string address, ushort port = 7777) { Address = address; Port = port; } }
     public enum NetworkSessionState { [InspectorName("离线")] Offline, [InspectorName("正在启动")] Starting, [InspectorName("房主")] Hosting, [InspectorName("正在加入")] Joining, [InspectorName("已连接")] Connected, [InspectorName("失败")] Failed }
     public readonly struct HostResult { public readonly bool Success; public readonly string Error; public HostResult(bool success, string error = null) { Success = success; Error = error; } }

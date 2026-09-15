@@ -1,3 +1,4 @@
+using Splatoon.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,14 @@ namespace Splatoon.Combat
         public async UniTask<GameObject> LoadAsync(string address, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
+#if UNITY_EDITOR
+            if (Splatoon.Prototype.PrototypeApp.Current != null && Splatoon.Prototype.PrototypeApp.Current.IsWeaponDebugRoom && address.StartsWith("Assets/", StringComparison.Ordinal))
+            {
+                var direct = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(address);
+                if (direct == null) throw new InvalidOperationException("武器模型不存在：" + address);
+                return direct;
+            }
+#endif
             var handle = Addressables.LoadAssetAsync<GameObject>(address); _handles.Add(handle);
             while (!handle.IsDone) await UniTask.Yield(token);
             token.ThrowIfCancellationRequested();
@@ -38,11 +47,13 @@ namespace Splatoon.Combat
     public sealed class HeroContent
     {
         public cfg.HeroConfig Config { get; }
+        public WeaponRuntimeConfig WeaponConfig { get; }
         public GameObject CharacterPrefab { get; }
         public GameObject WeaponPrefab { get; }
         public CharacterPresentationProfile Profile { get; }
-        public HeroContent(cfg.HeroConfig config, GameObject character, GameObject weapon)
+        public HeroContent(cfg.HeroConfig config, GameObject character, GameObject weapon, WeaponRuntimeConfig weaponConfig = null)
         {
+            WeaponConfig = weaponConfig ?? WeaponConfigService.Current.Get(config);
             Config = config; CharacterPrefab = character; WeaponPrefab = weapon;
             var view = character != null ? character.GetComponent<InkCharacterView>() : null;
             var bindings = weapon != null ? weapon.GetComponent<HeroWeaponBindings>() : null;
@@ -52,12 +63,12 @@ namespace Splatoon.Combat
                 throw new InvalidOperationException($"英雄 {config.Id} 角色模型缺少人形动画、表现配置、武器挂点或墨水表现绑定：{config.CharacterPrefabAddress}");
             if (bindings == null || bindings.Nozzle == null || !bindings.Nozzle.IsChildOf(weapon.transform) ||
                 (bindings.SupportLeftHand && (bindings.LeftGrip == null || !bindings.LeftGrip.IsChildOf(weapon.transform))))
-                throw new InvalidOperationException($"英雄 {config.Id} 武器模型缺少有效枪口或左手握点：{config.WeaponPrefabAddress}");
-            if (config.MuzzleMode == 1 && (view.LeftWeaponSocket == null || !view.Profile.DualWield || bindings.SupportLeftHand ||
+                throw new InvalidOperationException($"英雄 {config.Id} 武器模型缺少有效枪口或左手握点：{WeaponConfig.WeaponPrefabAddress}");
+            if (WeaponConfig.MuzzleMode == 1 && (view.LeftWeaponSocket == null || !view.Profile.DualWield || bindings.SupportLeftHand ||
                 bindings.LeftPart == null || bindings.LeftNozzle == null || !bindings.LeftPart.IsChildOf(weapon.transform) || !bindings.LeftNozzle.IsChildOf(bindings.LeftPart)))
                 throw new InvalidOperationException($"英雄 {config.Id} 双枪挂点、部件或枪口绑定无效");
             Profile = view.Profile;
-            if (config.FireMode == (int)WeaponFireMode.Splatling && (!Profile.Splatling || Profile.SingleShot ||
+            if (WeaponConfig.FireMode == (int)WeaponFireMode.Splatling && (!Profile.Splatling || Profile.SingleShot ||
                 Profile.ShootDuration <= 0 || Profile.ShootEndDuration <= 0 || !bindings.SupportLeftHand))
                 throw new InvalidOperationException($"英雄 {config.Id} 缺少旋转枪循环、结束动作或支撑握持配置");
             if (Profile.Paper == null || Profile.Paper.CapturePrefab == null || Profile.Paper.DisplayMesh == null ||
@@ -84,18 +95,27 @@ namespace Splatoon.Combat
                 foreach (var hero in heroes.OrderBy(h => h.Id))
                 {
                     var character = await Load(hero.CharacterPrefabAddress, token);
-                    var weapon = await Load(hero.WeaponPrefabAddress, token);
+                    var weapon = await Load(WeaponConfigService.Current.Get(hero).WeaponPrefabAddress, token);
                     token.ThrowIfCancellationRequested();
                     _heroes.Add(hero.Id, new HeroContent(hero, character, weapon));
                 }
             }
             catch { Clear(); throw; }
         }
+        public async UniTask<HeroContent> PrepareWeaponAsync(int heroId, WeaponRuntimeConfig candidate, CancellationToken token)
+        {
+            var current = Get(heroId);
+            var prefab = await Load(candidate.WeaponPrefabAddress, token);
+            return new HeroContent(current.Config, current.CharacterPrefab, prefab, candidate);
+        }
+        public void Replace(HeroContent content) => _heroes[content.Config.Id] = content;
         async UniTask<GameObject> Load(string address, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
             if (_assets.TryGetValue(address, out var asset)) return asset;
-            asset = await _source.LoadAsync(address, token); _assets.Add(address, asset); return asset;
+            asset = await _source.LoadAsync(address, token);
+            token.ThrowIfCancellationRequested();
+            _assets[address] = asset; return asset;
         }
         public void Clear() { _heroes.Clear(); _assets.Clear(); _source.ReleaseAll(); }
         public void Dispose() => Clear();

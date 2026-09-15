@@ -23,6 +23,13 @@ def main():
         if not dst.exists():errors.append('Missing import: '+str(dst))
         elif dst.suffix!='.meta' and sha(dst)!=item['importSha256']:errors.append('Imported art changed: '+str(dst))
     heroes=load(ROOT/'Assets/GameResource/Bootstrap/Config/Luban/tbhero.json')
+    # Audit old balance against the two current sources without restoring deleted columns.
+    for hero in heroes:
+        asset=(ROOT/hero['weaponConfigPath']).read_text('utf-8-sig')
+        for key,value in re.findall(r'^  ([a-z]\w*): (.+)$',asset,re.M):
+            if key.startswith('m_'):continue
+            try:hero[key]=json.loads(value)
+            except json.JSONDecodeError:hero[key]=value
     before=load(REF/'Heroes-Before.json')
     for old in before:
         current=next(h for h in heroes if h['id']==old['id'])

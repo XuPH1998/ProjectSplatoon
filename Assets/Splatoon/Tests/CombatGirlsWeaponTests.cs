@@ -20,7 +20,7 @@ namespace Splatoon.Tests
         [TearDown] public void Cleanup() => LubanConfigService.Current.Reset();
         static PlayerSnapshot Player(int id) => new() { HeroId=id,Health=100,Ink=100,Grounded=true,Team=1,Revision=1 };
         static bool Step(ref PlayerSnapshot s,int tick,uint press,bool held=false,bool cancel=false,bool clearance=true)
-            => WeaponSimulation.Step(ref s,new PlayerInputFrame { Sequence=(uint)tick+1,FireSequence=press,Fire=held,CancelFire=cancel },GameplayConfig.GetHero(s.HeroId),tick/60.0,false,clearance);
+            => WeaponSimulation.Step(ref s,new PlayerInputFrame { Sequence=(uint)tick+1,FireSequence=press,Fire=held,CancelFire=cancel },GameplayConfig.GetWeapon(s.HeroId),tick/60.0,false,clearance);
 
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(int id)
@@ -29,7 +29,7 @@ namespace Splatoon.Tests
             {
                 var s=Player(id);var shots=new List<int>();
                 for(int tick=0;tick<240;tick++)if(Step(ref s,tick,1,held))shots.Add(tick);
-                var w = GameplayConfig.GetHero(id);
+                var w = GameplayConfig.GetWeapon(id);
                 int intervalTicks = (int)Math.Ceiling(60.0 / w.FireRate - 1e-6);
                 var expected = held ? Enumerable.Range(0, 1 + (239 - w.StartFrames) / intervalTicks).Select(n => w.StartFrames + n * intervalTicks).ToArray() : new[] { w.StartFrames };
                 Assert.That(shots,Is.EqualTo(expected));Assert.That(s.Ink,Is.EqualTo(100-shots.Count*w.ShotInk).Within(.0002));
@@ -38,7 +38,7 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(int id)
         {
-            var w=GameplayConfig.GetHero(id);var s=Player(id);uint press=1;var shots=new List<int>();
+            var w=GameplayConfig.GetWeapon(id);var s=Player(id);uint press=1;var shots=new List<int>();
             int intervalTicks=(int)Math.Ceiling(60.0/w.FireRate-1e-6);
             int next=2+intervalTicks;
             for(int tick=0;tick<next+intervalTicks+10;tick++)
@@ -85,16 +85,16 @@ namespace Splatoon.Tests
         }
         [Test] public void SemiHoldRequestsShootingAndKeepsConfiguredRecoveryRule()
         {
-            var s=Player(2);var w=GameplayConfig.GetHero(2);for(int tick=0;tick<40;tick++)Step(ref s,tick,1,true);
+            var s=Player(2);var w=GameplayConfig.GetWeapon(2);for(int tick=0;tick<40;tick++)Step(ref s,tick,1,true);
             var input=new PlayerInputFrame{Fire=true,FireSequence=1};
             Assert.That(WeaponSimulation.WantsFire(s,input,w,1),Is.True);
-            float before=s.Ink;ResourceSimulation.Step(ref s,w,false,input.Fire&&!WeaponSimulation.IsSemi(w),1f/60,1);
+            float before=s.Ink;ResourceSimulation.Step(ref s,GameplayConfig.GetHero(s.HeroId),false,input.Fire&&!WeaponSimulation.IsSemi(w),1f/60,1);
             Assert.That(s.Ink,Is.GreaterThan(before));
         }
         [Test] public void ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets()
         {
             var s=Player(3);for(int tick=0;tick<3;tick++)Step(ref s,tick,1);
-            var w=GameplayConfig.GetHero(3);
+            var w=GameplayConfig.GetWeapon(3);
             Assert.That(s.Ink,Is.EqualTo(96));Assert.That(s.ShotSequence,Is.EqualTo(1));
             Assert.That(w.PelletCount,Is.EqualTo(8));Assert.That(w.PelletCount*w.Damage,Is.EqualTo(80));
             var velocities=Enumerable.Range(0,8).Select(i=>InkBallistics.PelletVelocity(Vector3.forward,w,w.SpreadDegrees,i,77)).ToArray();
@@ -105,7 +105,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(18));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(19));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }
@@ -126,7 +126,7 @@ namespace Splatoon.Tests
             var root=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
             root.SetActive(false);var player=root.GetComponent<PrototypePlayer>();
             player.CharacterView=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Characters/DualPistolGirl/Prefabs/DualPistolGirlVisual.prefab").GetComponent<InkCharacterView>();
-            var s=Player(2);s.Position=Vector3.one*1000;s.CurrentSpread=.000001f;
+            var s=Player(2);s.Position=Vector3.one*1000;s.CurrentSpread=s.LastShotSpread=.000001f;s.LastShotVerticalSpread=.000001f;
             Vector3 pivot=s.Position+player.Presentation.CameraPivot;
             Vector3 left=s.Position+player.MuzzleOffset(0,1),right=s.Position+player.MuzzleOffset(0,0);
             var wall=new GameObject("Left muzzle obstacle");wall.transform.position=Vector3.Lerp(pivot,left,.8f);wall.AddComponent<BoxCollider>().size=Vector3.one*.07f;

@@ -14,7 +14,7 @@ using SimpleJSON;
 namespace cfg
 {
 /// <summary>
-/// 英雄完整角色、武器与射击配置
+/// 英雄基础属性、移动与武器资产引用
 /// </summary>
 public sealed partial class HeroConfig : Luban.BeanBase
 {
@@ -23,8 +23,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["displayName"].IsString) { throw new SerializationException(); }  DisplayName = _buf["displayName"]; }
+        { if(!_buf["weaponConfigPath"].IsString) { throw new SerializationException(); }  WeaponConfigPath = _buf["weaponConfigPath"]; }
         { if(!_buf["characterPrefabAddress"].IsString) { throw new SerializationException(); }  CharacterPrefabAddress = _buf["characterPrefabAddress"]; }
-        { if(!_buf["weaponPrefabAddress"].IsString) { throw new SerializationException(); }  WeaponPrefabAddress = _buf["weaponPrefabAddress"]; }
         { if(!_buf["maxHealth"].IsNumber) { throw new SerializationException(); }  MaxHealth = _buf["maxHealth"]; }
         { if(!_buf["maxInk"].IsNumber) { throw new SerializationException(); }  MaxInk = _buf["maxInk"]; }
         { if(!_buf["recoverInk"].IsNumber) { throw new SerializationException(); }  RecoverInk = _buf["recoverInk"]; }
@@ -51,65 +51,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["swimHealthRecoverRate"].IsNumber) { throw new SerializationException(); }  SwimHealthRecoverRate = _buf["swimHealthRecoverRate"]; }
         { if(!_buf["enemyInkDamageRate"].IsNumber) { throw new SerializationException(); }  EnemyInkDamageRate = _buf["enemyInkDamageRate"]; }
         { if(!_buf["enemyInkHealthFloor"].IsNumber) { throw new SerializationException(); }  EnemyInkHealthFloor = _buf["enemyInkHealthFloor"]; }
-        { if(!_buf["fireMode"].IsNumber) { throw new SerializationException(); }  FireMode = _buf["fireMode"]; }
-        { if(!_buf["fireRate"].IsNumber) { throw new SerializationException(); }  FireRate = _buf["fireRate"]; }
-        { if(!_buf["shotInk"].IsNumber) { throw new SerializationException(); }  ShotInk = _buf["shotInk"]; }
-        { if(!_buf["startFrames"].IsNumber) { throw new SerializationException(); }  StartFrames = _buf["startFrames"]; }
-        { if(!_buf["emergeStartFrames"].IsNumber) { throw new SerializationException(); }  EmergeStartFrames = _buf["emergeStartFrames"]; }
-        { if(!_buf["inkRecoverLockFrames"].IsNumber) { throw new SerializationException(); }  InkRecoverLockFrames = _buf["inkRecoverLockFrames"]; }
-        { if(!_buf["shootMoveSpeed"].IsNumber) { throw new SerializationException(); }  ShootMoveSpeed = _buf["shootMoveSpeed"]; }
-        { if(!_buf["burstCount"].IsNumber) { throw new SerializationException(); }  BurstCount = _buf["burstCount"]; }
-        { if(!_buf["burstRecoveryFrames"].IsNumber) { throw new SerializationException(); }  BurstRecoveryFrames = _buf["burstRecoveryFrames"]; }
-        { if(!_buf["speedMin"].IsNumber) { throw new SerializationException(); }  SpeedMin = _buf["speedMin"]; }
-        { if(!_buf["speedMax"].IsNumber) { throw new SerializationException(); }  SpeedMax = _buf["speedMax"]; }
-        { if(!_buf["projectileGravity"].IsNumber) { throw new SerializationException(); }  ProjectileGravity = _buf["projectileGravity"]; }
-        { if(!_buf["lifetime"].IsNumber) { throw new SerializationException(); }  Lifetime = _buf["lifetime"]; }
-        { if(!_buf["collisionRadius"].IsNumber) { throw new SerializationException(); }  CollisionRadius = _buf["collisionRadius"]; }
-        { if(!_buf["spreadDegrees"].IsNumber) { throw new SerializationException(); }  SpreadDegrees = _buf["spreadDegrees"]; }
-        { if(!_buf["straightFrames"].IsNumber) { throw new SerializationException(); }  StraightFrames = _buf["straightFrames"]; }
-        { if(!_buf["brakeFrames"].IsNumber) { throw new SerializationException(); }  BrakeFrames = _buf["brakeFrames"]; }
-        { if(!_buf["brakeSpeedMultiplier"].IsNumber) { throw new SerializationException(); }  BrakeSpeedMultiplier = _buf["brakeSpeedMultiplier"]; }
-        { if(!_buf["jumpSpreadDegrees"].IsNumber) { throw new SerializationException(); }  JumpSpreadDegrees = _buf["jumpSpreadDegrees"]; }
-        { if(!_buf["spreadRecoverFrames"].IsNumber) { throw new SerializationException(); }  SpreadRecoverFrames = _buf["spreadRecoverFrames"]; }
-        { if(!_buf["effectiveRange"].IsNumber) { throw new SerializationException(); }  EffectiveRange = _buf["effectiveRange"]; }
-        { if(!_buf["damage"].IsNumber) { throw new SerializationException(); }  Damage = _buf["damage"]; }
-        { if(!_buf["damageMin"].IsNumber) { throw new SerializationException(); }  DamageMin = _buf["damageMin"]; }
-        { if(!_buf["damageReduceStartFrames"].IsNumber) { throw new SerializationException(); }  DamageReduceStartFrames = _buf["damageReduceStartFrames"]; }
-        { if(!_buf["damageReduceEndFrames"].IsNumber) { throw new SerializationException(); }  DamageReduceEndFrames = _buf["damageReduceEndFrames"]; }
-        { if(!_buf["paintRadiusMin"].IsNumber) { throw new SerializationException(); }  PaintRadiusMin = _buf["paintRadiusMin"]; }
-        { if(!_buf["paintRadiusMax"].IsNumber) { throw new SerializationException(); }  PaintRadiusMax = _buf["paintRadiusMax"]; }
-        { if(!_buf["paintHardness"].IsNumber) { throw new SerializationException(); }  PaintHardness = _buf["paintHardness"]; }
-        { if(!_buf["paintStrength"].IsNumber) { throw new SerializationException(); }  PaintStrength = _buf["paintStrength"]; }
-        { if(!_buf["trailSpacing"].IsNumber) { throw new SerializationException(); }  TrailSpacing = _buf["trailSpacing"]; }
-        { if(!_buf["trailRadiusMin"].IsNumber) { throw new SerializationException(); }  TrailRadiusMin = _buf["trailRadiusMin"]; }
-        { if(!_buf["trailRadiusMax"].IsNumber) { throw new SerializationException(); }  TrailRadiusMax = _buf["trailRadiusMax"]; }
-        { if(!_buf["trailMaxDrop"].IsNumber) { throw new SerializationException(); }  TrailMaxDrop = _buf["trailMaxDrop"]; }
-        { if(!_buf["chargeFrames"].IsNumber) { throw new SerializationException(); }  ChargeFrames = _buf["chargeFrames"]; }
-        { if(!_buf["chargeMinDamage"].IsNumber) { throw new SerializationException(); }  ChargeMinDamage = _buf["chargeMinDamage"]; }
-        { if(!_buf["chargePartialMaxDamage"].IsNumber) { throw new SerializationException(); }  ChargePartialMaxDamage = _buf["chargePartialMaxDamage"]; }
-        { if(!_buf["chargeMinInk"].IsNumber) { throw new SerializationException(); }  ChargeMinInk = _buf["chargeMinInk"]; }
-        { if(!_buf["chargeMinRange"].IsNumber) { throw new SerializationException(); }  ChargeMinRange = _buf["chargeMinRange"]; }
-        { if(!_buf["chargeMinSpeed"].IsNumber) { throw new SerializationException(); }  ChargeMinSpeed = _buf["chargeMinSpeed"]; }
-        { if(!_buf["chargeMinSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinSpread = _buf["chargeMinSpread"]; }
-        { if(!_buf["chargeMinJumpSpread"].IsNumber) { throw new SerializationException(); }  ChargeMinJumpSpread = _buf["chargeMinJumpSpread"]; }
-        { if(!_buf["pelletCount"].IsNumber) { throw new SerializationException(); }  PelletCount = _buf["pelletCount"]; }
-        { if(!_buf["muzzleMode"].IsNumber) { throw new SerializationException(); }  MuzzleMode = _buf["muzzleMode"]; }
-        { if(!_buf["semiBufferFrames"].IsNumber) { throw new SerializationException(); }  SemiBufferFrames = _buf["semiBufferFrames"]; }
-        { if(!_buf["splatlingMinChargeFrames"].IsNumber) { throw new SerializationException(); }  SplatlingMinChargeFrames = _buf["splatlingMinChargeFrames"]; }
-        { if(!_buf["splatlingFirstChargeFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFirstChargeFrames = _buf["splatlingFirstChargeFrames"]; }
-        { if(!_buf["splatlingFirstShootFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFirstShootFrames = _buf["splatlingFirstShootFrames"]; }
-        { if(!_buf["splatlingFullShootFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFullShootFrames = _buf["splatlingFullShootFrames"]; }
-        { if(!_buf["splatlingSlowChargeMultiplier"].IsNumber) { throw new SerializationException(); }  SplatlingSlowChargeMultiplier = _buf["splatlingSlowChargeMultiplier"]; }
-        { if(!_buf["splatlingChargeMoveSpeed"].IsNumber) { throw new SerializationException(); }  SplatlingChargeMoveSpeed = _buf["splatlingChargeMoveSpeed"]; }
-        { if(!_buf["splatlingChargeJumpSpeed"].IsNumber) { throw new SerializationException(); }  SplatlingChargeJumpSpeed = _buf["splatlingChargeJumpSpeed"]; }
-        { if(!_buf["splatlingPostFrames"].IsNumber) { throw new SerializationException(); }  SplatlingPostFrames = _buf["splatlingPostFrames"]; }
-        { if(!_buf["splatlingPitchSpread"].IsNumber) { throw new SerializationException(); }  SplatlingPitchSpread = _buf["splatlingPitchSpread"]; }
-        { if(!_buf["splatlingSpreadBias"].IsNumber) { throw new SerializationException(); }  SplatlingSpreadBias = _buf["splatlingSpreadBias"]; }
-        { if(!_buf["splatlingSpeedBias"].IsNumber) { throw new SerializationException(); }  SplatlingSpeedBias = _buf["splatlingSpeedBias"]; }
-        { if(!_buf["splatlingFootEvery"].IsNumber) { throw new SerializationException(); }  SplatlingFootEvery = _buf["splatlingFootEvery"]; }
-        { if(!_buf["splatlingTrailCount"].IsNumber) { throw new SerializationException(); }  SplatlingTrailCount = _buf["splatlingTrailCount"]; }
-        { if(!_buf["splatlingFootRadius"].IsNumber) { throw new SerializationException(); }  SplatlingFootRadius = _buf["splatlingFootRadius"]; }
-        { if(!_buf["splatlingPlayerRadius"].IsNumber) { throw new SerializationException(); }  SplatlingPlayerRadius = _buf["splatlingPlayerRadius"]; }
     }
 
     public static HeroConfig DeserializeHeroConfig(JSONNode _buf)
@@ -130,13 +71,13 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly string DisplayName;
     /// <summary>
+    /// 武器配置资产工程路径（Assets/.../*.asset）
+    /// </summary>
+    public readonly string WeaponConfigPath;
+    /// <summary>
     /// 模型：正式角色外观地址
     /// </summary>
     public readonly string CharacterPrefabAddress;
-    /// <summary>
-    /// 模型：正式武器地址
-    /// </summary>
-    public readonly string WeaponPrefabAddress;
     /// <summary>
     /// 角色属性：生命上限
     /// </summary>
@@ -241,242 +182,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 移动恢复：敌墨非致死生命下限（HP）
     /// </summary>
     public readonly float EnemyInkHealthFloor;
-    /// <summary>
-    /// 发射：0全自动／1三连发／2蓄力松开发射／3半自动／4旋转枪
-    /// </summary>
-    public readonly int FireMode;
-    /// <summary>
-    /// 发射：权威射速（发/秒）
-    /// </summary>
-    public readonly float FireRate;
-    /// <summary>
-    /// 发射：每次有效发射总耗墨（霰弹整组）
-    /// </summary>
-    public readonly float ShotInk;
-    /// <summary>
-    /// 发射：人形起手（60Hz参考帧）
-    /// </summary>
-    public readonly int StartFrames;
-    /// <summary>
-    /// 发射：出墨起手（60Hz参考帧）
-    /// </summary>
-    public readonly int EmergeStartFrames;
-    /// <summary>
-    /// 发射：最后一发后回墨锁定（60Hz参考帧）
-    /// </summary>
-    public readonly int InkRecoverLockFrames;
-    /// <summary>
-    /// 发射：射击或蓄力移动速度（米/秒）
-    /// </summary>
-    public readonly float ShootMoveSpeed;
-    /// <summary>
-    /// 发射：每组发数（全自动为1）
-    /// </summary>
-    public readonly int BurstCount;
-    /// <summary>
-    /// 发射：末发到下一组首发（60Hz参考帧）
-    /// </summary>
-    public readonly int BurstRecoveryFrames;
-    /// <summary>
-    /// 弹道：最低初速（米/秒）
-    /// </summary>
-    public readonly float SpeedMin;
-    /// <summary>
-    /// 弹道：最高初速（米/秒）
-    /// </summary>
-    public readonly float SpeedMax;
-    /// <summary>
-    /// 弹道：墨弹重力（米/秒&#178;，0为无重力）
-    /// </summary>
-    public readonly float ProjectileGravity;
-    /// <summary>
-    /// 弹道：有效寿命（秒）
-    /// </summary>
-    public readonly float Lifetime;
-    /// <summary>
-    /// 弹道：扫掠半径（米）
-    /// </summary>
-    public readonly float CollisionRadius;
-    /// <summary>
-    /// 弹道：散布半角（度）
-    /// </summary>
-    public readonly float SpreadDegrees;
-    /// <summary>
-    /// 弹道：直行阶段（60Hz参考帧）
-    /// </summary>
-    public readonly int StraightFrames;
-    /// <summary>
-    /// 弹道：减速过渡（60Hz参考帧）
-    /// </summary>
-    public readonly int BrakeFrames;
-    /// <summary>
-    /// 弹道：减速后的速度比例
-    /// </summary>
-    public readonly float BrakeSpeedMultiplier;
-    /// <summary>
-    /// 弹道：跳跃散布半角（度）
-    /// </summary>
-    public readonly float JumpSpreadDegrees;
-    /// <summary>
-    /// 弹道：落地散布恢复（60Hz参考帧）
-    /// </summary>
-    public readonly int SpreadRecoverFrames;
-    /// <summary>
-    /// 弹道：伤害弹最大前向射程（本项目米）
-    /// </summary>
-    public readonly float EffectiveRange;
-    /// <summary>
-    /// 伤害：每颗伤害
-    /// </summary>
-    public readonly float Damage;
-    /// <summary>
-    /// 伤害：衰减后伤害（HP）
-    /// </summary>
-    public readonly float DamageMin;
-    /// <summary>
-    /// 伤害：伤害衰减开始（飞行60Hz参考帧）
-    /// </summary>
-    public readonly int DamageReduceStartFrames;
-    /// <summary>
-    /// 伤害：伤害衰减结束（飞行60Hz参考帧）
-    /// </summary>
-    public readonly int DamageReduceEndFrames;
-    /// <summary>
-    /// 涂色：最小涂色半径（米）
-    /// </summary>
-    public readonly float PaintRadiusMin;
-    /// <summary>
-    /// 涂色：最大涂色半径（米）
-    /// </summary>
-    public readonly float PaintRadiusMax;
-    /// <summary>
-    /// 涂色：笔刷硬度（0 到 1）
-    /// </summary>
-    public readonly float PaintHardness;
-    /// <summary>
-    /// 涂色：笔刷强度（0 到 1）
-    /// </summary>
-    public readonly float PaintStrength;
-    /// <summary>
-    /// 涂色：沿途落墨间隔（米）
-    /// </summary>
-    public readonly float TrailSpacing;
-    /// <summary>
-    /// 涂色：沿途落墨最小笔刷半径（米）
-    /// </summary>
-    public readonly float TrailRadiusMin;
-    /// <summary>
-    /// 涂色：沿途落墨最大笔刷半径（米）
-    /// </summary>
-    public readonly float TrailRadiusMax;
-    /// <summary>
-    /// 涂色：沿途落墨向下探测范围（米）
-    /// </summary>
-    public readonly float TrailMaxDrop;
-    /// <summary>
-    /// 蓄力：满蓄时间（60Hz参考帧，非蓄力为0）
-    /// </summary>
-    public readonly int ChargeFrames;
-    /// <summary>
-    /// 蓄力：点射伤害（HP）
-    /// </summary>
-    public readonly float ChargeMinDamage;
-    /// <summary>
-    /// 蓄力：未满蓄伤害上限（HP）
-    /// </summary>
-    public readonly float ChargePartialMaxDamage;
-    /// <summary>
-    /// 蓄力：点射耗墨（点）
-    /// </summary>
-    public readonly float ChargeMinInk;
-    /// <summary>
-    /// 蓄力：点射伤害射程（米）
-    /// </summary>
-    public readonly float ChargeMinRange;
-    /// <summary>
-    /// 蓄力：点射初速（米/秒）
-    /// </summary>
-    public readonly float ChargeMinSpeed;
-    /// <summary>
-    /// 蓄力：点射地面散布半角（度）
-    /// </summary>
-    public readonly float ChargeMinSpread;
-    /// <summary>
-    /// 蓄力：点射空中散布半角（度）
-    /// </summary>
-    public readonly float ChargeMinJumpSpread;
-    /// <summary>
-    /// 发射：每次有效发射的弹丸数量
-    /// </summary>
-    public readonly int PelletCount;
-    /// <summary>
-    /// 发射：枪口模式（0单枪／1右左交替）
-    /// </summary>
-    public readonly int MuzzleMode;
-    /// <summary>
-    /// 发射：半自动冷却末尾点击缓存（60Hz帧）
-    /// </summary>
-    public readonly int SemiBufferFrames;
-    /// <summary>
-    /// 旋转枪：最小有效蓄力帧数
-    /// </summary>
-    public readonly int SplatlingMinChargeFrames;
-    /// <summary>
-    /// 旋转枪：第一圈蓄力帧数
-    /// </summary>
-    public readonly int SplatlingFirstChargeFrames;
-    /// <summary>
-    /// 旋转枪：第一圈射击窗口帧数（含第0帧首弹）
-    /// </summary>
-    public readonly int SplatlingFirstShootFrames;
-    /// <summary>
-    /// 旋转枪：满蓄射击窗口帧数（含末帧）
-    /// </summary>
-    public readonly int SplatlingFullShootFrames;
-    /// <summary>
-    /// 旋转枪：空中或缺墨蓄力耗时倍率（不叠乘）
-    /// </summary>
-    public readonly float SplatlingSlowChargeMultiplier;
-    /// <summary>
-    /// 旋转枪：蓄力移动速度（米/秒）
-    /// </summary>
-    public readonly float SplatlingChargeMoveSpeed;
-    /// <summary>
-    /// 旋转枪：蓄力起跳速度（米/秒）
-    /// </summary>
-    public readonly float SplatlingChargeJumpSpeed;
-    /// <summary>
-    /// 旋转枪：末弹后恢复帧数
-    /// </summary>
-    public readonly int SplatlingPostFrames;
-    /// <summary>
-    /// 旋转枪：地面垂直散布半角（度）
-    /// </summary>
-    public readonly float SplatlingPitchSpread;
-    /// <summary>
-    /// 旋转枪：中心散布偏向（0到1）
-    /// </summary>
-    public readonly float SplatlingSpreadBias;
-    /// <summary>
-    /// 旋转枪：初速随机中心偏向（0到1）
-    /// </summary>
-    public readonly float SplatlingSpeedBias;
-    /// <summary>
-    /// 旋转枪：脚下落墨间隔（发）
-    /// </summary>
-    public readonly int SplatlingFootEvery;
-    /// <summary>
-    /// 旋转枪：每颗沿途最大落墨数
-    /// </summary>
-    public readonly int SplatlingTrailCount;
-    /// <summary>
-    /// 旋转枪：脚下落墨半径（米）
-    /// </summary>
-    public readonly float SplatlingFootRadius;
-    /// <summary>
-    /// 旋转枪：命中玩家扫掠半径（米）
-    /// </summary>
-    public readonly float SplatlingPlayerRadius;
    
     public const int __ID__ = -563759108;
     public override int GetTypeId() => __ID__;
@@ -491,8 +196,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "displayName:" + DisplayName + ","
+        + "weaponConfigPath:" + WeaponConfigPath + ","
         + "characterPrefabAddress:" + CharacterPrefabAddress + ","
-        + "weaponPrefabAddress:" + WeaponPrefabAddress + ","
         + "maxHealth:" + MaxHealth + ","
         + "maxInk:" + MaxInk + ","
         + "recoverInk:" + RecoverInk + ","
@@ -519,65 +224,6 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "swimHealthRecoverRate:" + SwimHealthRecoverRate + ","
         + "enemyInkDamageRate:" + EnemyInkDamageRate + ","
         + "enemyInkHealthFloor:" + EnemyInkHealthFloor + ","
-        + "fireMode:" + FireMode + ","
-        + "fireRate:" + FireRate + ","
-        + "shotInk:" + ShotInk + ","
-        + "startFrames:" + StartFrames + ","
-        + "emergeStartFrames:" + EmergeStartFrames + ","
-        + "inkRecoverLockFrames:" + InkRecoverLockFrames + ","
-        + "shootMoveSpeed:" + ShootMoveSpeed + ","
-        + "burstCount:" + BurstCount + ","
-        + "burstRecoveryFrames:" + BurstRecoveryFrames + ","
-        + "speedMin:" + SpeedMin + ","
-        + "speedMax:" + SpeedMax + ","
-        + "projectileGravity:" + ProjectileGravity + ","
-        + "lifetime:" + Lifetime + ","
-        + "collisionRadius:" + CollisionRadius + ","
-        + "spreadDegrees:" + SpreadDegrees + ","
-        + "straightFrames:" + StraightFrames + ","
-        + "brakeFrames:" + BrakeFrames + ","
-        + "brakeSpeedMultiplier:" + BrakeSpeedMultiplier + ","
-        + "jumpSpreadDegrees:" + JumpSpreadDegrees + ","
-        + "spreadRecoverFrames:" + SpreadRecoverFrames + ","
-        + "effectiveRange:" + EffectiveRange + ","
-        + "damage:" + Damage + ","
-        + "damageMin:" + DamageMin + ","
-        + "damageReduceStartFrames:" + DamageReduceStartFrames + ","
-        + "damageReduceEndFrames:" + DamageReduceEndFrames + ","
-        + "paintRadiusMin:" + PaintRadiusMin + ","
-        + "paintRadiusMax:" + PaintRadiusMax + ","
-        + "paintHardness:" + PaintHardness + ","
-        + "paintStrength:" + PaintStrength + ","
-        + "trailSpacing:" + TrailSpacing + ","
-        + "trailRadiusMin:" + TrailRadiusMin + ","
-        + "trailRadiusMax:" + TrailRadiusMax + ","
-        + "trailMaxDrop:" + TrailMaxDrop + ","
-        + "chargeFrames:" + ChargeFrames + ","
-        + "chargeMinDamage:" + ChargeMinDamage + ","
-        + "chargePartialMaxDamage:" + ChargePartialMaxDamage + ","
-        + "chargeMinInk:" + ChargeMinInk + ","
-        + "chargeMinRange:" + ChargeMinRange + ","
-        + "chargeMinSpeed:" + ChargeMinSpeed + ","
-        + "chargeMinSpread:" + ChargeMinSpread + ","
-        + "chargeMinJumpSpread:" + ChargeMinJumpSpread + ","
-        + "pelletCount:" + PelletCount + ","
-        + "muzzleMode:" + MuzzleMode + ","
-        + "semiBufferFrames:" + SemiBufferFrames + ","
-        + "splatlingMinChargeFrames:" + SplatlingMinChargeFrames + ","
-        + "splatlingFirstChargeFrames:" + SplatlingFirstChargeFrames + ","
-        + "splatlingFirstShootFrames:" + SplatlingFirstShootFrames + ","
-        + "splatlingFullShootFrames:" + SplatlingFullShootFrames + ","
-        + "splatlingSlowChargeMultiplier:" + SplatlingSlowChargeMultiplier + ","
-        + "splatlingChargeMoveSpeed:" + SplatlingChargeMoveSpeed + ","
-        + "splatlingChargeJumpSpeed:" + SplatlingChargeJumpSpeed + ","
-        + "splatlingPostFrames:" + SplatlingPostFrames + ","
-        + "splatlingPitchSpread:" + SplatlingPitchSpread + ","
-        + "splatlingSpreadBias:" + SplatlingSpreadBias + ","
-        + "splatlingSpeedBias:" + SplatlingSpeedBias + ","
-        + "splatlingFootEvery:" + SplatlingFootEvery + ","
-        + "splatlingTrailCount:" + SplatlingTrailCount + ","
-        + "splatlingFootRadius:" + SplatlingFootRadius + ","
-        + "splatlingPlayerRadius:" + SplatlingPlayerRadius + ","
         + "}";
     }
 }

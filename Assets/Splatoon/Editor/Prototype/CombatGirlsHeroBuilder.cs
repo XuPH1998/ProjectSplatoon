@@ -141,8 +141,8 @@ namespace Splatoon.Editor
             if (profile == null) { profile = ScriptableObject.CreateInstance<CharacterPresentationProfile>(); AssetDatabase.CreateAsset(profile, profilePath); }
             profile.SingleShot = p.id != 6; profile.DualWield = p.id == 2; profile.Splatling = p.id == 6;
             var tables = new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json")));
-            var weaponConfig = tables.TbHero.Get(p.id);
-            profile.AnimationReferenceSpeed = weaponConfig.MoveSpeed;
+            var weaponConfig = Splatoon.Config.WeaponConfigService.Current.Get(tables.TbHero.Get(p.id));
+            profile.AnimationReferenceSpeed = tables.TbHero.Get(p.id).MoveSpeed;
             profile.ShotPlaybackSeconds = 1f / weaponConfig.FireRate * (p.id == 2 ? 2 : 1) * .9f;
             profile.TurnLeftDuration = Clip(p, p.clips[4]).length; profile.TurnRightDuration = Clip(p, p.clips[5]).length;
             profile.TurnLeftProgress = CombatGirlsBuilder.ExtractTurnCurve(Clip(p, p.clips[4]), raw);

@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
+  m_Name: ShotgunGirlWeaponConfig
+  m_EditorClassIdentifier: 
+  weaponPrefabAddress: "Weapon/Shotgun"
+  fireMode: 3
+  fireRate: 2.5
+  shotInk: 4
+  startFrames: 2
+  emergeStartFrames: 10
+  inkRecoverLockFrames: 30
+  shootMoveSpeed: 3.2
+  burstCount: 1
+  burstRecoveryFrames: 0
+  speedMin: 30
+  speedMax: 30
+  projectileGravity: 8
+  lifetime: 10
+  collisionRadius: 0.025
+  spreadDegrees: 5
+  straightFrames: 10
+  brakeFrames: 8
+  brakeSpeedMultiplier: 0.66
+  jumpSpreadDegrees: 10
+  spreadRecoverFrames: 12
+  effectiveRange: 6.5
+  damage: 10
+  damageMin: 4
+  damageReduceStartFrames: 4
+  damageReduceEndFrames: 18
+  paintRadiusMin: 0.95
+  paintRadiusMax: 1.3
+  paintHardness: 0.55
+  paintStrength: 1
+  trailSpacing: 0.2
+  trailRadiusMin: 0.45
+  trailRadiusMax: 0.85
+  trailMaxDrop: 2.4
+  chargeFrames: 0
+  chargeMinDamage: 0
+  chargePartialMaxDamage: 0
+  chargeMinInk: 0
+  chargeMinRange: 0
+  chargeMinSpeed: 0
+  chargeMinSpread: 0
+  chargeMinJumpSpread: 0
+  pelletCount: 8
+  muzzleMode: 0
+  semiBufferFrames: 6
+  splatlingMinChargeFrames: 0
+  splatlingFirstChargeFrames: 0
+  splatlingFirstShootFrames: 0
+  splatlingFullShootFrames: 0
+  splatlingSlowChargeMultiplier: 0
+  splatlingChargeMoveSpeed: 0
+  splatlingChargeJumpSpeed: 0
+  splatlingPostFrames: 0
+  splatlingPitchSpread: 0
+  splatlingSpreadBias: 0
+  splatlingSpeedBias: 0
+  splatlingFootEvery: 0
+  splatlingTrailCount: 0
+  splatlingFootRadius: 0
+  splatlingPlayerRadius: 0
+  spreadExpandSeconds: 1
+  spreadRecoverSeconds: 0.5
+  baseSpreadDegrees: 2
+  baseJumpSpreadDegrees: 4

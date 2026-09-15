@@ -1,5 +1,7 @@
 # 验收记录
 
+此页保留旋转枪初次实现的历史结果。武器资产拆分、动态散布及单机热更新的最新结果见 [武器资产验收](../../WeaponAssets/Acceptance.md)。
+
 环境：Windows，Unity 6000.3.9f1，URP 17.3.0，UTS 0.14.1-preview，RTX 3060。使用独立验证工程执行 Unity 编译、资源构建和 Play Mode，产物同步回当前工程。源 CombatGirls 工程没有被 Unity 打开或写入。
 
 **静态与配置检查通过。** 对照 278 个源文件哈希；10 个 FBX / 11 个正式动画片段；Humanoid 有效且 Hips=pelvis；正式角色无 Missing Script；保留 SDF 及脸部方向绑定；角色、武器和弦化资源引用完整。Luban 源表与生成结果共检查 540 个值，前五名英雄的原有字段值一致，Assets 无重复 GUID。详见 `Evidence/static-validation.json`。

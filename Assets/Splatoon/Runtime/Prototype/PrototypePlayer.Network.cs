@@ -28,8 +28,8 @@ namespace Splatoon.Prototype
         public Vector2 Look => _look;
         public Vector3 CameraPivot => transform.position + _visualOffset + CameraPivotOffset(PresentedState, Presentation);
         public static Vector3 CameraPivotOffset(PlayerSnapshot state, CharacterPresentationProfile profile) =>
-            state.ShowsSwimBody && profile != null && profile.Paper != null ? profile.Paper.CameraOffset :
-            profile != null ? profile.CameraPivot : Vector3.up * 1.5f;
+            (state.ShowsSwimBody && profile != null && profile.Paper != null ? profile.Paper.CameraOffset :
+            profile != null ? profile.CameraPivot : Vector3.up * 1.5f) + Vector3.up * state.CameraRebaseOffset;
         public Vector3 MuzzleOffset(float pitch, byte muzzle = 0) => Presentation != null ? Presentation.MuzzleOffset(pitch, muzzle) : SimulationAimPivot + Quaternion.Euler(pitch, 0, 0) * (SimulationMuzzle.localPosition - SimulationAimPivot);
         public float LastCorrectionDistance { get; private set; }
         public uint CorrectionCount { get; private set; }
@@ -72,9 +72,10 @@ namespace Splatoon.Prototype
                 Position = IsTestBot ? _botPosition : PrototypeArena.Spawn(team, slot), Yaw = IsTestBot ? _botYaw : team == 1 ? 0 : 180, Pitch = 12,
                 AttackNeedsRelease = requireRelease,
                 ProtectedUntil = NetworkManager.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds,
-                Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetHero(old.HeroId), false, 0),
+                Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetWeapon(old.HeroId), false, 0),
                 SimulatedAt = NetworkManager.ServerTime.Time, AcknowledgedInput = old.AcknowledgedInput,
                 ShotSequence = old.ShotSequence, ConsumedFire = old.ConsumedFire, ConsumedJump = old.ConsumedJump };
+            SpreadSimulation.Reset(ref s, GameplayConfig.GetWeapon(s.HeroId));
             s.BodyYaw = s.TurnStartYaw = s.Yaw; s.LastDamageAt = s.SimulatedAt;
             _serverInputs.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, FireSequence = s.ConsumedFire, JumpSequence = s.ConsumedJump };
             _motor.Restore(s); Snapshot.Value = s;
@@ -218,7 +219,8 @@ namespace Splatoon.Prototype
             s.SimulatedAt = now; s.SimulationTick++;
             if (phase == MatchPhase.Finished)
             { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; SwimBody?.ApplyCollision(s); return false; }
-            var w = GameplayConfig.GetHero(s.HeroId);
+            var hero = GameplayConfig.GetHero(s.HeroId);
+            var w = GameplayConfig.GetWeapon(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
             bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
@@ -230,14 +232,9 @@ namespace Splatoon.Prototype
             if (s.Health <= 0) { SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
             SwimBody?.ApplyCollision(s);
-            float charge = WeaponSimulation.ChargeRatio(s, w);
-            float groundSpread = WeaponSimulation.Spread(w, false, charge), airSpread = WeaponSimulation.Spread(w, true, charge);
-            s.CurrentSpread = !s.Grounded ? airSpread : Mathf.MoveTowards(s.CurrentSpread, groundSpread,
-                Mathf.Abs(airSpread - groundSpread) * dt / Mathf.Max(.001f, (float)WeaponSimulation.Seconds(w.SpreadRecoverFrames)));
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
-            if (shot && WeaponSimulation.IsCharge(w)) s.CurrentSpread = WeaponSimulation.Spread(w, !s.Grounded, fireResult.Charge);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
-            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
+            ResourceSimulation.Step(ref s, hero, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
@@ -321,8 +318,8 @@ namespace Splatoon.Prototype
         {
             if (PrototypeApp.Current == null) return;
             if (heroId == 0) heroId = GameplayConfig.Mode.HeroId;
-            if (_heroView?.Content?.Config.Id == heroId) return;
             var content = PrototypeApp.Current.Heroes.Get(heroId);
+            if (ReferenceEquals(_heroView?.Content, content)) return;
             var authoredVisual = _heroView == null ? Visual : null;
             _heroView ??= new HeroViewBinder(transform);
             bool changed = _heroView.Apply(content);
@@ -364,7 +361,7 @@ namespace Splatoon.Prototype
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
-            MuzzleBlocked = _aimSolver.IsObstructed(aim, GameplayConfig.GetHero(s.HeroId).CollisionRadius, PlayerId);
+            MuzzleBlocked = _aimSolver.IsObstructed(aim, GameplayConfig.GetWeapon(s.HeroId).CollisionRadius, PlayerId);
         }
         public override void OnNetworkDespawn()
         {
