@@ -6,6 +6,7 @@ using Unity.Collections;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using Unity.Profiling;
 using Object = UnityEngine.Object;
 
 namespace Splatoon.Combat
@@ -32,6 +33,7 @@ namespace Splatoon.Combat
         readonly List<Part> _parts = new();
         readonly PaperSilhouette _silhouette = new();
         int _frame = -1, _renderedVersion = -1;
+        static readonly ProfilerMarker SampleMarker = new("Splatoon.Paper.Sample");
         Vector2 _move;
         public Mesh HitMesh { get; }
         public RenderTexture Texture { get; private set; }
@@ -99,6 +101,7 @@ namespace Splatoon.Combat
             int frame=Mathf.FloorToInt(state.PaperAnimationTime*PaperAnimation.FramesPerSecond);
             var move=new Vector2(Mathf.Round(state.PaperMove.x*8)/8,Mathf.Round(state.PaperMove.y*8)/8);
             if (_frame==frame && _move==move) return false;
+            using var sample = SampleMarker.Auto();
             _frame=frame; _move=move;
             _rig.Evaluate(frame/(float)PaperAnimation.FramesPerSecond,move);
             _silhouette.Clear();

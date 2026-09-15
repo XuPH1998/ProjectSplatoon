@@ -44,11 +44,11 @@ namespace Splatoon.Combat
         public static Vector3 HumanPosition(PlayerSnapshot s) => s.Position - Vector3.up * s.AirHumanOffset;
         public PlayerMotorSimulation(CharacterController controller, PrototypeArena arena = null)
         { _controller = controller; _arena = arena; _root = controller.transform; _standingHeight = controller.height; _standingCenter = controller.center; }
-        public void Restore(PlayerSnapshot s)
+        public void Restore(PlayerSnapshot s, bool updateHitGeometry = true)
         {
             _controller.enabled = false; _root.position = s.Position;
             SetShape(s.Swimming || s.CompactBody); _controller.enabled = s.Health > 0;
-            _root.GetComponent<PrototypePlayer>()?.SwimBody?.ApplyCollision(s);
+            if (updateHitGeometry) _root.GetComponent<PrototypePlayer>()?.SwimBody?.ApplyCollision(s);
             Physics.SyncTransforms();
         }
         void SetShape(bool ink)

@@ -57,6 +57,7 @@ namespace Splatoon.Prototype
         public static void ModifyInput(PrototypePlayer p, ref PlayerInputFrame frame)
         {
             if (!Active) return;
+            if (_inkCase == "prediction") { PredictionMovementSmoke.ModifyInput(p, ref frame); return; }
             float t=Time.realtimeSinceStartup-_connectedAt;
             // A remote spawn/timeout can require release before firing. Exercise the same legal
             // release/press sequence as a real player so every participant actually fires.
@@ -108,6 +109,7 @@ namespace Splatoon.Prototype
             if (!Active || !PrototypeApp.Current.InRoom || PrototypeMatch.Current==null) return;
             var match=PrototypeMatch.Current;var s=match.State.Value;float t=Time.realtimeSinceStartup-_connectedAt;
             if (_inkCase == "inkperf") InkPerformanceSmoke.Tick(match);
+            if (_inkCase == "prediction") PredictionMovementSmoke.Tick(match);
             if (_inkCase == "map")
             {
                 try { TrainingGroundSmoke.Tick(match); }
@@ -123,7 +125,7 @@ namespace Splatoon.Prototype
                 int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
                 Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} pink={s.PinkArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
             }
-            if (_inkCase != "inkperf" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
+            if (_inkCase != "inkperf" && _inkCase != "prediction" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {
                 _dumped = true;
                 foreach (var surface in PrototypeArena.Current.Surfaces.Values)
@@ -180,7 +182,7 @@ namespace Splatoon.Prototype
             if(!app.InRoom){Debug.LogError("[SMOKE] Reconnect failed: "+app.Error);Application.Quit(4);return;}
             Debug.Log("[SMOKE] Reconnected after cleanup");_connectedAt=Time.realtimeSinceStartup;_cycling=false;
         }
-        private void OnDestroy() { if (_inkCase == "inkperf") InkPerformanceSmoke.Reset(); Active=false; }
+        private void OnDestroy() { if (_inkCase == "inkperf") InkPerformanceSmoke.Reset(); if (_inkCase == "prediction") PredictionMovementSmoke.Reset(); Active=false; }
 #endif
     }
 }

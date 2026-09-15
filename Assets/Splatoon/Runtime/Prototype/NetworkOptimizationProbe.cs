@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Unity.Profiling;
-using Unity.Netcode.Transports.UTP;
 #endif
 
 namespace Splatoon.Prototype
@@ -28,11 +27,30 @@ namespace Splatoon.Prototype
             public double lastSnapshotSeconds;
             public double snapshotAgeMeanMs, snapshotAgeP95Ms;
             public PlayerShots[] authoritativeShots;
+            public int rttSamples;
+            public bool rttAvailable;
+            public uint inputAckSamples, predictionSteps, paintReplays, speculativePaintReconciles, hardCorrections;
+            public double inputAckMeanMs, inputAckMaxMs, initialSyncPauseSeconds, inputTimeoutPauseSeconds, correctionDistanceTotal;
+            public long totalReplaySteps;
+            public int maxReplaySteps;
+            public int humanSamples, neutralSwimSamples, friendlySwimSamples, deadSamples;
+        }
+        struct Sample
+        {
+            public double time, frameMs, rttMs, inputAckMs, syncPause, timeoutPause;
+            public int pending, replaySteps, paperPose;
+            public uint corrections, acknowledgedInput, appliedPaint, requiredPaint;
+            public float correction, x, y, z;
+            public bool paintPending;
         }
         [Serializable] sealed class PlayerShots { public ulong player; public uint shots; }
         readonly List<double> _frames = new(20000), _rtt = new(20000), _snapshotAges = new(20000);
         readonly Dictionary<ulong, uint> _shots = new(8);
         readonly HashSet<string> _errors = new();
+        readonly List<Sample> _samples = new(2400);
+        PrototypePlayer _observedPlayer;
+        uint _latencySamples;
+        double _nextSample;
         ProfilerRecorder _gc;
         Result _result;
         string _output;
@@ -85,13 +103,48 @@ namespace Splatoon.Prototype
                 _result.peakPending = Math.Max(_result.peakPending, player.PendingInputCount);
                 _result.corrections = player.CorrectionCount;
                 _result.maxCorrection = Math.Max(_result.maxCorrection, player.LastCorrectionDistance);
+                if (_observedPlayer != player) { _observedPlayer = player; _latencySamples = 0; }
+                var timing = player.InputTiming;
+                _result.inputAckSamples = timing.Samples;
+                _result.inputAckMeanMs = timing.Samples > 0 ? timing.TotalMilliseconds / timing.Samples : 0;
+                _result.inputAckMaxMs = timing.MaxMilliseconds;
+                _result.predictionSteps = player.PredictionSteps;
+                _result.paintReplays = player.PaintReplayCount;
+                _result.speculativePaintReconciles = player.SpeculativePaintReconciles;
+                _result.hardCorrections = player.HardCorrectionCount;
+                _result.initialSyncPauseSeconds = player.InitialSyncPauseSeconds;
+                _result.inputTimeoutPauseSeconds = player.InputTimeoutPauseSeconds;
+                _result.correctionDistanceTotal = player.CorrectionDistanceTotal;
+                _result.totalReplaySteps = player.TotalReplaySteps;
+                _result.maxReplaySteps = player.MaxReplaySteps;
+                bool validRtt = !player.IsServer && player.GameLatency.TryRead(Time.realtimeSinceStartupAsDouble, out _);
+                _result.rttAvailable = validRtt;
+                if (elapsed >= _nextSample)
+                {
+                    _nextSample = elapsed + .1;
+                    var predicted = player.PresentedState; var authority = player.Snapshot.Value;
+                    if (predicted.Health <= 0) _result.deadSamples++;
+                    else if (!predicted.Swimming) _result.humanSamples++;
+                    else if (predicted.SwimSource == Splatoon.Combat.SwimSurface.Friendly) _result.friendlySwimSamples++;
+                    else _result.neutralSwimSamples++;
+                    _samples.Add(new Sample { time = elapsed, frameMs = Time.unscaledDeltaTime * 1000,
+                        rttMs = validRtt ? player.GameLatency.Milliseconds : -1, inputAckMs = timing.Samples > 0 ? timing.LastMilliseconds : -1,
+                        pending = player.PendingInputCount, replaySteps = player.LastReplaySteps,
+                        paperPose = player.SwimBody?.Capture?.PoseVersion ?? 0, corrections = player.CorrectionCount,
+                        acknowledgedInput = authority.AcknowledgedInput, appliedPaint = match.AppliedPaintSequence,
+                        requiredPaint = authority.RequiredPaintSequence, paintPending = player.PaintReplayPending,
+                        syncPause = player.InitialSyncPauseSeconds, timeoutPause = player.InputTimeoutPauseSeconds,
+                        correction = player.LastCorrectionDistance, x = predicted.Position.x, y = predicted.Position.y, z = predicted.Position.z });
+                }
                 foreach (var pair in PrototypePlayer.ByOwner)
                     if (pair.Value != null && pair.Value.IsSpawned)
                     { _shots.TryGetValue(pair.Key, out uint previous); _shots[pair.Key] = Math.Max(previous, pair.Value.Snapshot.Value.ShotSequence); }
                 if (elapsed - _firstConnected > 3)
                 {
                     _frames.Add(Time.unscaledDeltaTime * 1000.0);
-                    _rtt.Add(player.IsServer ? 0 : ((UnityTransport)player.NetworkManager.NetworkConfig.NetworkTransport).GetCurrentRtt(0));
+                    // Each echo contributes once; reading the same value every frame is not a new sample.
+                    if (validRtt && player.GameLatency.Samples != _latencySamples)
+                    { _latencySamples = player.GameLatency.Samples; _rtt.Add(player.GameLatency.Milliseconds); }
                     if (!player.IsServer) _snapshotAges.Add(Math.Max(0, player.NetworkManager.ServerTime.Time - player.Snapshot.Value.SimulatedAt) * 1000);
                     if (_gc.Valid) _sumGc += _gc.LastValue;
                 }
@@ -108,6 +161,7 @@ namespace Splatoon.Prototype
             double sum = 0; foreach (var value in _rtt) sum += value;
             _result.rttMeanMs = _rtt.Count > 0 ? sum / _rtt.Count : 0;
             _result.rttP95Ms = Percentile(_rtt, .95);
+            _result.rttSamples = _rtt.Count;
             _result.frameP95Ms = Percentile(_frames, .95); _result.frameP99Ms = Percentile(_frames, .99);
             _result.gcMeanBytes = _frames.Count > 0 ? _sumGc / _frames.Count : 0;
             sum = 0; foreach (var age in _snapshotAges) sum += age;
@@ -132,6 +186,11 @@ namespace Splatoon.Prototype
             }
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_output)));
             File.WriteAllText(_output, JsonUtility.ToJson(_result, true));
+            using (var csv = new StreamWriter(Path.ChangeExtension(_output, ".csv")))
+            {
+                csv.WriteLine("seconds,frameMs,gameRttMs,inputAckMs,pendingInputs,corrections,correctionMetres,lastReplaySteps,paperPoseVersion,acknowledgedInput,appliedPaint,requiredPaint,paintReplayPending,initialSyncPauseSeconds,inputTimeoutPauseSeconds,x,y,z");
+                foreach (var s in _samples) csv.WriteLine(FormattableString.Invariant($"{s.time:F4},{s.frameMs:F3},{s.rttMs:F3},{s.inputAckMs:F3},{s.pending},{s.corrections},{s.correction:F5},{s.replaySteps},{s.paperPose},{s.acknowledgedInput},{s.appliedPaint},{s.requiredPaint},{s.paintPending},{s.syncPause:F4},{s.timeoutPause:F4},{s.x:F5},{s.y:F5},{s.z:F5}"));
+            }
             File.WriteAllLines(Path.ChangeExtension(_output, ".errors.txt"), _errors);
             if (SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
                 ScreenCapture.CaptureScreenshot(Path.ChangeExtension(_output, ".png"));

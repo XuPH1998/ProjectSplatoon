@@ -1,5 +1,7 @@
 # 网络优化验证工具
 
+玩家协议 23 起，`NetworkOptimizationProbe` 改用每秒两次的游戏不可靠回显，并输出输入确认、预测暂停、重放统计与 CSV。旧报告中的 UTP RTT 仍是历史口径，不能直接与新版游戏往返混算。新增 `--matrix prediction --seconds 65` 覆盖 0/50/100ms 两进程地面弦化/潜墨场景；详细说明见 `Docs/ClientPrediction.md`。
+
 只用于开发构建。生产网络通道、模拟步长和玩法参数不受这些工具影响。
 
 1. 使用 Unity 6000.3.9f1，通过 `Splatoon.Editor.PrototypeBuilder.BuildWindows` 构建开发客户端。

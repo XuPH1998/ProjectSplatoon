@@ -9,7 +9,7 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 22;
+        public const uint ProtocolVersion = 23;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;

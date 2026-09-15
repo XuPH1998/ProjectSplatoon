@@ -91,6 +91,13 @@ def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario
             shots = result["reports"].get("host", {}).get("authoritativeShots", [])
             result["all_players_fired"] = len(shots) >= players and all(player["shots"] > 0 for player in shots)
             result["passed"] = result["passed"] and result["all_players_fired"]
+        if scenario == "prediction":
+            result["traversal_observed"] = all(all(result["reports"][name].get(key, 0) > 0 for key in
+                ("humanSamples", "neutralSwimSamples", "friendlySwimSamples", "deadSamples"))
+                for name, _ in processes if name != "proxy" and name in result["reports"])
+            client = result["reports"].get("client-1", {})
+            result["live_echo_observed"] = client.get("rttSamples", 0) >= 10 and client.get("inputAckSamples", 0) > 0
+            result["passed"] = result["passed"] and result["traversal_observed"] and result["live_echo_observed"]
         if reconnect:
             result["reconnected"] = all("[SMOKE] Reconnected after cleanup" in (output / f"client-{i}.log").read_text(encoding="utf-8", errors="replace")
                                         for i in range(1, players))
@@ -113,7 +120,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--matrix", choices=("smoke", "representative", "full", "eight", "eight-playing", "reconnect", "combat"), default="smoke")
+    parser.add_argument("--matrix", choices=("smoke", "representative", "full", "eight", "eight-playing", "reconnect", "combat", "prediction"), default="smoke")
     parser.add_argument("--seconds", type=int, default=50)
     args = parser.parse_args()
     cases = [(0, 0, 2, False)]
@@ -125,8 +132,10 @@ if __name__ == "__main__":
         cases = [(50, 1, 8, True)]
     elif args.matrix in ("reconnect", "combat"):
         cases = [(100, 1, 2, False)]
+    elif args.matrix == "prediction":
+        cases = [(0, 0, 2, False), (50, 0, 2, False), (100, 0, 2, False)]
     results = [run_case(args.exe.resolve(), args.output.resolve() / f"rtt{rtt}-loss{loss}-p{players}", rtt, loss, players, late, args.seconds,
-                       scenario="combat" if args.matrix == "combat" else "inkperf", reconnect=args.matrix == "reconnect", playing=args.matrix == "eight-playing")
+                       scenario=args.matrix if args.matrix in ("combat", "prediction") else "inkperf", reconnect=args.matrix == "reconnect", playing=args.matrix == "eight-playing")
                for rtt, loss, players, late in cases]
     (args.output.resolve() / "summary.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     sys.exit(0 if all(result["passed"] for result in results) else 1)

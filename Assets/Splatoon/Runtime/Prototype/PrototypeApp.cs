@@ -288,8 +288,9 @@ namespace Splatoon.Prototype
             Panel(new Rect(378,86,524,8),new Color(.25f,.28f,.3f));
             Panel(new Rect(378,86,(float)(524*state.PinkArea/total),8),PrototypeArena.Pink);
             Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
-            ulong ping=Manager.IsHost?0:((UnityTransport)Manager.NetworkConfig.NetworkTransport).GetCurrentRtt(0);
-            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/{GameplayConfig.Mode.MaxPlayers}\n连接延迟 {ping} 毫秒",_small);
+            string latency = Manager.IsHost ? "房主 · 本机裁决" :
+                local.GameLatency.TryRead(Time.realtimeSinceStartupAsDouble, out double ping) ? $"游戏往返 {ping:0} 毫秒" : "暂无有效测量";
+            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/{GameplayConfig.Mode.MaxPlayers}\n{latency}",_small);
             Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
