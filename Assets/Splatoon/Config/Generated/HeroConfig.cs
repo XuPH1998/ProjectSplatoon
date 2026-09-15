@@ -95,6 +95,21 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["pelletCount"].IsNumber) { throw new SerializationException(); }  PelletCount = _buf["pelletCount"]; }
         { if(!_buf["muzzleMode"].IsNumber) { throw new SerializationException(); }  MuzzleMode = _buf["muzzleMode"]; }
         { if(!_buf["semiBufferFrames"].IsNumber) { throw new SerializationException(); }  SemiBufferFrames = _buf["semiBufferFrames"]; }
+        { if(!_buf["splatlingMinChargeFrames"].IsNumber) { throw new SerializationException(); }  SplatlingMinChargeFrames = _buf["splatlingMinChargeFrames"]; }
+        { if(!_buf["splatlingFirstChargeFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFirstChargeFrames = _buf["splatlingFirstChargeFrames"]; }
+        { if(!_buf["splatlingFirstShootFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFirstShootFrames = _buf["splatlingFirstShootFrames"]; }
+        { if(!_buf["splatlingFullShootFrames"].IsNumber) { throw new SerializationException(); }  SplatlingFullShootFrames = _buf["splatlingFullShootFrames"]; }
+        { if(!_buf["splatlingSlowChargeMultiplier"].IsNumber) { throw new SerializationException(); }  SplatlingSlowChargeMultiplier = _buf["splatlingSlowChargeMultiplier"]; }
+        { if(!_buf["splatlingChargeMoveSpeed"].IsNumber) { throw new SerializationException(); }  SplatlingChargeMoveSpeed = _buf["splatlingChargeMoveSpeed"]; }
+        { if(!_buf["splatlingChargeJumpSpeed"].IsNumber) { throw new SerializationException(); }  SplatlingChargeJumpSpeed = _buf["splatlingChargeJumpSpeed"]; }
+        { if(!_buf["splatlingPostFrames"].IsNumber) { throw new SerializationException(); }  SplatlingPostFrames = _buf["splatlingPostFrames"]; }
+        { if(!_buf["splatlingPitchSpread"].IsNumber) { throw new SerializationException(); }  SplatlingPitchSpread = _buf["splatlingPitchSpread"]; }
+        { if(!_buf["splatlingSpreadBias"].IsNumber) { throw new SerializationException(); }  SplatlingSpreadBias = _buf["splatlingSpreadBias"]; }
+        { if(!_buf["splatlingSpeedBias"].IsNumber) { throw new SerializationException(); }  SplatlingSpeedBias = _buf["splatlingSpeedBias"]; }
+        { if(!_buf["splatlingFootEvery"].IsNumber) { throw new SerializationException(); }  SplatlingFootEvery = _buf["splatlingFootEvery"]; }
+        { if(!_buf["splatlingTrailCount"].IsNumber) { throw new SerializationException(); }  SplatlingTrailCount = _buf["splatlingTrailCount"]; }
+        { if(!_buf["splatlingFootRadius"].IsNumber) { throw new SerializationException(); }  SplatlingFootRadius = _buf["splatlingFootRadius"]; }
+        { if(!_buf["splatlingPlayerRadius"].IsNumber) { throw new SerializationException(); }  SplatlingPlayerRadius = _buf["splatlingPlayerRadius"]; }
     }
 
     public static HeroConfig DeserializeHeroConfig(JSONNode _buf)
@@ -227,7 +242,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// </summary>
     public readonly float EnemyInkHealthFloor;
     /// <summary>
-    /// 发射：0全自动／1三连发／2蓄力松开发射／3半自动
+    /// 发射：0全自动／1三连发／2蓄力松开发射／3半自动／4旋转枪
     /// </summary>
     public readonly int FireMode;
     /// <summary>
@@ -402,6 +417,66 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 发射：半自动冷却末尾点击缓存（60Hz帧）
     /// </summary>
     public readonly int SemiBufferFrames;
+    /// <summary>
+    /// 旋转枪：最小有效蓄力帧数
+    /// </summary>
+    public readonly int SplatlingMinChargeFrames;
+    /// <summary>
+    /// 旋转枪：第一圈蓄力帧数
+    /// </summary>
+    public readonly int SplatlingFirstChargeFrames;
+    /// <summary>
+    /// 旋转枪：第一圈射击窗口帧数（含第0帧首弹）
+    /// </summary>
+    public readonly int SplatlingFirstShootFrames;
+    /// <summary>
+    /// 旋转枪：满蓄射击窗口帧数（含末帧）
+    /// </summary>
+    public readonly int SplatlingFullShootFrames;
+    /// <summary>
+    /// 旋转枪：空中或缺墨蓄力耗时倍率（不叠乘）
+    /// </summary>
+    public readonly float SplatlingSlowChargeMultiplier;
+    /// <summary>
+    /// 旋转枪：蓄力移动速度（米/秒）
+    /// </summary>
+    public readonly float SplatlingChargeMoveSpeed;
+    /// <summary>
+    /// 旋转枪：蓄力起跳速度（米/秒）
+    /// </summary>
+    public readonly float SplatlingChargeJumpSpeed;
+    /// <summary>
+    /// 旋转枪：末弹后恢复帧数
+    /// </summary>
+    public readonly int SplatlingPostFrames;
+    /// <summary>
+    /// 旋转枪：地面垂直散布半角（度）
+    /// </summary>
+    public readonly float SplatlingPitchSpread;
+    /// <summary>
+    /// 旋转枪：中心散布偏向（0到1）
+    /// </summary>
+    public readonly float SplatlingSpreadBias;
+    /// <summary>
+    /// 旋转枪：初速随机中心偏向（0到1）
+    /// </summary>
+    public readonly float SplatlingSpeedBias;
+    /// <summary>
+    /// 旋转枪：脚下落墨间隔（发）
+    /// </summary>
+    public readonly int SplatlingFootEvery;
+    /// <summary>
+    /// 旋转枪：每颗沿途最大落墨数
+    /// </summary>
+    public readonly int SplatlingTrailCount;
+    /// <summary>
+    /// 旋转枪：脚下落墨半径（米）
+    /// </summary>
+    public readonly float SplatlingFootRadius;
+    /// <summary>
+    /// 旋转枪：命中玩家扫掠半径（米）
+    /// </summary>
+    public readonly float SplatlingPlayerRadius;
    
     public const int __ID__ = -563759108;
     public override int GetTypeId() => __ID__;
@@ -488,6 +563,21 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "pelletCount:" + PelletCount + ","
         + "muzzleMode:" + MuzzleMode + ","
         + "semiBufferFrames:" + SemiBufferFrames + ","
+        + "splatlingMinChargeFrames:" + SplatlingMinChargeFrames + ","
+        + "splatlingFirstChargeFrames:" + SplatlingFirstChargeFrames + ","
+        + "splatlingFirstShootFrames:" + SplatlingFirstShootFrames + ","
+        + "splatlingFullShootFrames:" + SplatlingFullShootFrames + ","
+        + "splatlingSlowChargeMultiplier:" + SplatlingSlowChargeMultiplier + ","
+        + "splatlingChargeMoveSpeed:" + SplatlingChargeMoveSpeed + ","
+        + "splatlingChargeJumpSpeed:" + SplatlingChargeJumpSpeed + ","
+        + "splatlingPostFrames:" + SplatlingPostFrames + ","
+        + "splatlingPitchSpread:" + SplatlingPitchSpread + ","
+        + "splatlingSpreadBias:" + SplatlingSpreadBias + ","
+        + "splatlingSpeedBias:" + SplatlingSpeedBias + ","
+        + "splatlingFootEvery:" + SplatlingFootEvery + ","
+        + "splatlingTrailCount:" + SplatlingTrailCount + ","
+        + "splatlingFootRadius:" + SplatlingFootRadius + ","
+        + "splatlingPlayerRadius:" + SplatlingPlayerRadius + ","
         + "}";
     }
 }

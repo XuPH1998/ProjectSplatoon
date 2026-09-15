@@ -40,7 +40,7 @@ namespace Splatoon.Tests
             ushort port;
             using (var socket = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0))) port = (ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
             yield return app.Connect(true, "127.0.0.1", port).ToCoroutine();
-            Assert.That(app.InRoom, Is.True, app.Error); Assert.That(app.Heroes.AssetCount, Is.EqualTo(10));
+            Assert.That(app.InRoom, Is.True, app.Error); Assert.That(app.Heroes.AssetCount, Is.EqualTo(12));
             yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current != null, "Host local player spawn");
             var player = PrototypePlayer.Local;
             var match = PrototypeMatch.Current;

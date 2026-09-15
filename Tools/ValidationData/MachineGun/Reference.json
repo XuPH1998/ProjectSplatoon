@@ -1,0 +1,10 @@
+{
+  "version": "11.3.0",
+  "source": "https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponSpinnerHyper.game__GameParameterTable.json",
+  "sha256": "1f92f4f4266070e59c7ab3775fb90c75624018899bb3b9bced915a6a3e2630ed",
+  "spatialScale": 0.7488455298082124,
+  "normalWalkingAnchor": 5,
+  "swimAnchor": 8,
+  "fullChargeShots": 66,
+  "firstChargeShots": 33
+}

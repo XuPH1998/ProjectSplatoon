@@ -9,7 +9,11 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 17;
+        public const uint ProtocolVersion = 18;
+        public float SplatlingCharge, SplatlingReservedInk, SplatlingReleasedCharge;
+        public int SplatlingRemaining, SplatlingLoaded;
+        public double SplatlingUpdatedAt, SplatlingReleasedAt, SplatlingEndedAt;
+        public bool SplatlingSlow;
         public PaperPose PaperPose;
         public Vector3 PaperCenter;
         public Quaternion PaperRotation;
@@ -54,6 +58,9 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref SplatlingCharge); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
+            s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);
+            s.SerializeValue(ref SplatlingUpdatedAt); s.SerializeValue(ref SplatlingReleasedAt); s.SerializeValue(ref SplatlingEndedAt);
             s.SerializeValue(ref PaperPose); s.SerializeValue(ref PaperCenter);
             s.SerializeValue(ref PaperRotation); s.SerializeValue(ref PaperChangedAt);
             s.SerializeValue(ref PaperAnimationTime); s.SerializeValue(ref PaperMove);

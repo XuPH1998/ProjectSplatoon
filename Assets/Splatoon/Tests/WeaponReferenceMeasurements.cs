@@ -44,7 +44,7 @@ namespace Splatoon.Tests
             Directory.CreateDirectory(directory); LoadTables(); GameplayConfig.Validate();
             var results = new List<Result>();
             string[] scenarios = { "flat", "up30", "down30", "wall-near", "wall-middle", "wall-far", "slope", "high-drop", "occluded" };
-            foreach (var w in LubanConfigService.Current.Tables.TbHero.DataList)
+            foreach (var w in LubanConfigService.Current.Tables.TbHero.DataList.Where(w => w.Id <= 5))
             {
                 var charges = WeaponSimulation.IsCharge(w) ? new[] { 0f, .5f, 59f / 60, 1f } : new[] { 0f };
                 foreach (float charge in charges)

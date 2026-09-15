@@ -62,6 +62,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8114e8f68a627584b8a481cbb6eb467c
+    m_Address: Weapon/MachineGun
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8fc6e6c01920f2349a9074deec382a79
     m_Address: Weapon/RifleGirlRifle
     m_ReadOnly: 0
@@ -72,6 +77,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9ba93c4dc8bdc640aee2286b9af04d0
+    m_Address: Character/MachineGunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad0ca03e324ec8344bdd0404ea7189f4
     m_Address: Weapon/RocketLauncher

@@ -57,6 +57,9 @@ namespace Splatoon.Combat
                 bindings.LeftPart == null || bindings.LeftNozzle == null || !bindings.LeftPart.IsChildOf(weapon.transform) || !bindings.LeftNozzle.IsChildOf(bindings.LeftPart)))
                 throw new InvalidOperationException($"英雄 {config.Id} 双枪挂点、部件或枪口绑定无效");
             Profile = view.Profile;
+            if (config.FireMode == (int)WeaponFireMode.Splatling && (!Profile.Splatling || Profile.SingleShot ||
+                Profile.ShootDuration <= 0 || Profile.ShootEndDuration <= 0 || !bindings.SupportLeftHand))
+                throw new InvalidOperationException($"英雄 {config.Id} 缺少旋转枪循环、结束动作或支撑握持配置");
             if (Profile.Paper == null || Profile.Paper.CapturePrefab == null || Profile.Paper.DisplayMesh == null ||
                 Profile.Paper.Material == null || Profile.Paper.CaptureHeight <= 0)
                 throw new InvalidOperationException($"英雄 {config.Id} 缺少实时纸片拍摄模型与画面配置");

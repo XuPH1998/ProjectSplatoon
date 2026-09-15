@@ -1,0 +1,1379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="189" result="Failed(Child)" total="189" passed="177" failed="12" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-15 03:08:24Z" end-time="2026-09-15 03:08:39Z" duration="14.3695517">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="444" result="Failed" site="Child" start-time="2026-09-15 03:08:24Z" end-time="2026-09-15 03:08:39Z" duration="14.369552" total="189" passed="177" failed="12" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1554" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon-MachineGun-Validation-20260915/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="443" result="Failed" site="Child" start-time="2026-09-15 03:08:24Z" end-time="2026-09-15 03:08:39Z" duration="14.260826" total="189" passed="177" failed="12" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42424" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[[LAN] Ready. Config loaded from Luban.
+]]></output>
+      <test-suite type="TestSuite" id="1555" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="443" result="Failed" site="Child" start-time="2026-09-15 03:08:24Z" end-time="2026-09-15 03:08:39Z" duration="14.159641" total="189" passed="177" failed="12" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1556" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="443" result="Failed" site="Child" start-time="2026-09-15 03:08:24Z" end-time="2026-09-15 03:08:39Z" duration="14.140029" total="189" passed="177" failed="12" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1053" name="CombatGirlsWeaponTests" fullname="Splatoon.Tests.CombatGirlsWeaponTests" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.208514" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1069" name="AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" fullname="Splatoon.Tests.CombatGirlsWeaponTests.AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" methodname="AlternatingLogicalMuzzlesHaveIndependentWorldObstruction" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="648437240" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.065203" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1063" name="AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" fullname="Splatoon.Tests.CombatGirlsWeaponTests.AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" methodname="AlternationAndShotIdentitySurviveReplayAndResetOnlyWithHeroLifecycle" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="121804182" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.007849" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1064" name="CancelledBufferedClickDoesNotFireAfterControlReturns" fullname="Splatoon.Tests.CombatGirlsWeaponTests.CancelledBufferedClickDoesNotFireAfterControlReturns" methodname="CancelledBufferedClickDoesNotFireAfterControlReturns" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="458313800" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.004408" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1062" name="FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" fullname="Splatoon.Tests.CombatGirlsWeaponTests.FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" methodname="FailedClicksCannotResurfaceLaterOrChangeAlternatingHand" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1844141687" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.003624" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1057" name="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.030638" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1054" name="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(2)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(2)" methodname="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1369213767" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.009908" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1055" name="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(3)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(3)" methodname="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1092803643" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.006746" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1056" name="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(4)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce(4)" methodname="HeldTriggerRepeatsAtCooldownAndReleasedQuickTapEmitsOnce" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="687132693" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.005311" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1067" name="NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" fullname="Splatoon.Tests.CombatGirlsWeaponTests.NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" methodname="NewProtocolAndHeroSchemaRejectInvalidGunAssemblies" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="269375278" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.019685" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1065" name="SemiHoldRequestsShootingAndKeepsConfiguredRecoveryRule" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SemiHoldRequestsShootingAndKeepsConfiguredRecoveryRule" methodname="SemiHoldRequestsShootingAndKeepsConfiguredRecoveryRule" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1044702612" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.007549" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1066" name="ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" fullname="Splatoon.Tests.CombatGirlsWeaponTests.ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" methodname="ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1831300207" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.010445" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1061" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.022897" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1058" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(2)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(2)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="288849466" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.005864" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1059" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(3)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(3)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="1940555121" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.006062" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1060" name="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(4)" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(4)" methodname="SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="69229187" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.005836" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1068" name="SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" fullname="Splatoon.Tests.CombatGirlsWeaponTests.SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" methodname="SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines" classname="Splatoon.Tests.CombatGirlsWeaponTests" runstate="Runnable" seed="520644093" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:06:59Z" duration="0.014261" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1143" name="HeroMigrationPlayTests" fullname="Splatoon.Tests.HeroMigrationPlayTests" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-15 03:07:04Z" end-time="2026-09-15 03:07:30Z" duration="26.683198" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1144" name="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" fullname="Splatoon.Tests.HeroMigrationPlayTests.RealAppLoadsSelectsRespawnsAndReleasesHeroModels" methodname="RealAppLoadsSelectsRespawnsAndReleasesHeroModels" classname="Splatoon.Tests.HeroMigrationPlayTests" runstate="Runnable" seed="2056516209" result="Passed" start-time="2026-09-15 03:06:59Z" end-time="2026-09-15 03:07:30Z" duration="31.468384" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-WXHCS
+[LAN] Connected role=host address=127.0.0.1 port=52933
+[INK-GPU] surface=1 firstStamp seed=3588129781 index=21 rotation=2.9958 radius=0.469
+[LAN] Returned to menu. 
+[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-WXHCS
+[LAN] Connected role=host address=127.0.0.1 port=52933
+[LAN] Returned to menu. 
+[中文字体] Microsoft YaHei，房间涂墨字形=True
+[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-WXHCS
+[LAN] Connected role=host address=127.0.0.1 port=52933
+[LAN] Returned to menu. 
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1145" name="HeroMigrationTests" fullname="Splatoon.Tests.HeroMigrationTests" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:31Z" duration="0.280274" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1152" name="AlternativeAddressesResolveAndAssembleTheirOwnModels" fullname="Splatoon.Tests.HeroMigrationTests.AlternativeAddressesResolveAndAssembleTheirOwnModels" methodname="AlternativeAddressesResolveAndAssembleTheirOwnModels" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="199411656" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:30Z" duration="0.173831" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1149" name="BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" fullname="Splatoon.Tests.HeroMigrationTests.BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" methodname="BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="288822778" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:30Z" duration="0.032070" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1150" name="CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" fullname="Splatoon.Tests.HeroMigrationTests.CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" methodname="CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="463640881" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:30Z" duration="0.014601" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1148" name="HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" fullname="Splatoon.Tests.HeroMigrationTests.HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" methodname="HeroSwitchClampsResourcesWithoutResettingLifeOrPosition" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1750676" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:30Z" duration="0.011259" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1146" name="MachineGunAdditionPreservesTheExistingFiveHeroes" fullname="Splatoon.Tests.HeroMigrationTests.MachineGunAdditionPreservesTheExistingFiveHeroes" methodname="MachineGunAdditionPreservesTheExistingFiveHeroes" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="637084461" result="Passed" start-time="2026-09-15 03:07:30Z" end-time="2026-09-15 03:07:31Z" duration="0.010310" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1151" name="MissingWeaponBindingsAreRejectedBeforeAssembly" fullname="Splatoon.Tests.HeroMigrationTests.MissingWeaponBindingsAreRejectedBeforeAssembly" methodname="MissingWeaponBindingsAreRejectedBeforeAssembly" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1331224825" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.003998" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1147" name="SelectedHeroDrivesMovementRecoveryAndDisplay" fullname="Splatoon.Tests.HeroMigrationTests.SelectedHeroDrivesMovementRecoveryAndDisplay" methodname="SelectedHeroDrivesMovementRecoveryAndDisplay" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1447394528" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.013481" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1153" name="SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" fullname="Splatoon.Tests.HeroMigrationTests.SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" methodname="SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder" classname="Splatoon.Tests.HeroMigrationTests" runstate="Runnable" seed="1690398920" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.014395" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1213" name="InkRecoveryTests" fullname="Splatoon.Tests.InkRecoveryTests" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.093062" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1217" name="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate" fullname="Splatoon.Tests.InkRecoveryTests.ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.033036" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1214" name="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(0)" fullname="Splatoon.Tests.InkRecoveryTests.ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(0)" methodname="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="1373246969" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.010283" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1215" name="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(1)" fullname="Splatoon.Tests.InkRecoveryTests.ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(1)" methodname="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="2131644385" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.008126" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1216" name="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(2)" fullname="Splatoon.Tests.InkRecoveryTests.ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate(2)" methodname="ImmediateSwimFinishesReleaseAndRecoversAtTheConfiguredRate" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="391233887" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.007681" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1221" name="NeutralGroundAndAirOnlyGetNormalRecovery" fullname="Splatoon.Tests.InkRecoveryTests.NeutralGroundAndAirOnlyGetNormalRecovery" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.012177" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1219" name="NeutralGroundAndAirOnlyGetNormalRecovery(Neutral,True)" fullname="Splatoon.Tests.InkRecoveryTests.NeutralGroundAndAirOnlyGetNormalRecovery(Neutral,True)" methodname="NeutralGroundAndAirOnlyGetNormalRecovery" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="1720624848" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.004233" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1220" name="NeutralGroundAndAirOnlyGetNormalRecovery(Friendly,False)" fullname="Splatoon.Tests.InkRecoveryTests.NeutralGroundAndAirOnlyGetNormalRecovery(Friendly,False)" methodname="NeutralGroundAndAirOnlyGetNormalRecovery" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="237909607" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.003398" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1218" name="NoStandingClearanceStillAllowsStopAndNormalRecovery" fullname="Splatoon.Tests.InkRecoveryTests.NoStandingClearanceStillAllowsStopAndNormalRecovery" methodname="NoStandingClearanceStillAllowsStopAndNormalRecovery" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="1989055740" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.003530" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1226" name="PendingAutomaticTapWaitsForClearanceAndFiresOnce" fullname="Splatoon.Tests.InkRecoveryTests.PendingAutomaticTapWaitsForClearanceAndFiresOnce" methodname="PendingAutomaticTapWaitsForClearanceAndFiresOnce" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="612850573" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.003372" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1225" name="SnapshotReplayAgreesAcrossImmediateSwim" fullname="Splatoon.Tests.InkRecoveryTests.SnapshotReplayAgreesAcrossImmediateSwim" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.021244" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1222" name="SnapshotReplayAgreesAcrossImmediateSwim(0)" fullname="Splatoon.Tests.InkRecoveryTests.SnapshotReplayAgreesAcrossImmediateSwim(0)" methodname="SnapshotReplayAgreesAcrossImmediateSwim" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="95507978" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.006882" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1223" name="SnapshotReplayAgreesAcrossImmediateSwim(1)" fullname="Splatoon.Tests.InkRecoveryTests.SnapshotReplayAgreesAcrossImmediateSwim(1)" methodname="SnapshotReplayAgreesAcrossImmediateSwim" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="748132981" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.003894" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1224" name="SnapshotReplayAgreesAcrossImmediateSwim(2)" fullname="Splatoon.Tests.InkRecoveryTests.SnapshotReplayAgreesAcrossImmediateSwim(2)" methodname="SnapshotReplayAgreesAcrossImmediateSwim" classname="Splatoon.Tests.InkRecoveryTests" runstate="Runnable" seed="1687408639" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:31Z" duration="0.004150" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1277" name="MachineGunPlayTests" fullname="Splatoon.Tests.MachineGunPlayTests" classname="Splatoon.Tests.MachineGunPlayTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-15 03:07:37Z" end-time="2026-09-15 03:07:42Z" duration="4.724007" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1278" name="RealHostMachineGunLifecycleAndFourPlayerVolley" fullname="Splatoon.Tests.MachineGunPlayTests.RealHostMachineGunLifecycleAndFourPlayerVolley" methodname="RealHostMachineGunLifecycleAndFourPlayerVolley" classname="Splatoon.Tests.MachineGunPlayTests" runstate="Runnable" seed="1243588841" result="Passed" start-time="2026-09-15 03:07:31Z" end-time="2026-09-15 03:07:42Z" duration="11.497289" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-ZJYHZ
+[LAN] Connected role=host address=127.0.0.1 port=63866
+[INK-GPU] surface=1 firstStamp seed=1922949823 index=31 rotation=2.9339 radius=1.157
+[INK-GPU] surface=26 firstStamp seed=2156053422 index=14 rotation=0.2713 radius=1.566
+[INK-GPU] surface=25 firstStamp seed=883711006 index=30 rotation=4.3550 radius=1.544
+[INK-GPU] surface=1 maskAlpha=5706 displayAlpha=5706 propertyBlockBound=True
+[INK-GPU] surface=25 maskAlpha=8469 displayAlpha=8814 propertyBlockBound=True
+[INK-GPU] surface=26 maskAlpha=4369 displayAlpha=4508 propertyBlockBound=True
+[LAN] Returned to menu. 
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1279" name="MachineGunTests" fullname="Splatoon.Tests.MachineGunTests" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" testcasecount="25" result="Passed" start-time="2026-09-15 03:07:42Z" end-time="2026-09-15 03:07:43Z" duration="1.184222" total="25" passed="25" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1306" name="ActualTrajectoryAndPaintAreStableAcrossSimulationDriverRates" fullname="Splatoon.Tests.MachineGunTests.ActualTrajectoryAndPaintAreStableAcrossSimulationDriverRates" methodname="ActualTrajectoryAndPaintAreStableAcrossSimulationDriverRates" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1841440596" result="Passed" start-time="2026-09-15 03:07:42Z" end-time="2026-09-15 03:07:43Z" duration="1.025212" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1299" name="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking" fullname="Splatoon.Tests.MachineGunTests.AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.019916" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1296" name="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(False,100)" fullname="Splatoon.Tests.MachineGunTests.AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(False,100)" methodname="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1024443620" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.004082" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1297" name="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(True,0)" fullname="Splatoon.Tests.MachineGunTests.AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(True,0)" methodname="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="495435553" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003027" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1298" name="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(False,0)" fullname="Splatoon.Tests.MachineGunTests.AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(False,0)" methodname="AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1347772938" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003738" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1295" name="CancelRefundsOnlyUnspentReservationOnce" fullname="Splatoon.Tests.MachineGunTests.CancelRefundsOnlyUnspentReservationOnce" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.013804" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1291" name="CancelRefundsOnlyUnspentReservationOnce(60)" fullname="Splatoon.Tests.MachineGunTests.CancelRefundsOnlyUnspentReservationOnce(60)" methodname="CancelRefundsOnlyUnspentReservationOnce" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1929675993" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003796" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1292" name="CancelRefundsOnlyUnspentReservationOnce(120)" fullname="Splatoon.Tests.MachineGunTests.CancelRefundsOnlyUnspentReservationOnce(120)" methodname="CancelRefundsOnlyUnspentReservationOnce" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1680176996" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002739" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1293" name="CancelRefundsOnlyUnspentReservationOnce(150)" fullname="Splatoon.Tests.MachineGunTests.CancelRefundsOnlyUnspentReservationOnce(150)" methodname="CancelRefundsOnlyUnspentReservationOnce" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1202429945" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002566" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1294" name="CancelRefundsOnlyUnspentReservationOnce(194)" fullname="Splatoon.Tests.MachineGunTests.CancelRefundsOnlyUnspentReservationOnce(194)" methodname="CancelRefundsOnlyUnspentReservationOnce" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="466470754" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002862" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1288" name="ChargeBoundariesAndInclusiveLastRound" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.027929" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1280" name="ChargeBoundariesAndInclusiveLastRound(0,1,8)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(0,1,8)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1566410168" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.004949" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1281" name="ChargeBoundariesAndInclusiveLastRound(7,1,8)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(7,1,8)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="2119274457" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002913" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1282" name="ChargeBoundariesAndInclusiveLastRound(8,1,8)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(8,1,8)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="579136007" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002674" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1283" name="ChargeBoundariesAndInclusiveLastRound(119,33,119)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(119,33,119)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="2025268350" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003102" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1284" name="ChargeBoundariesAndInclusiveLastRound(120,33,120)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(120,33,120)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="852777790" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002825" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1285" name="ChargeBoundariesAndInclusiveLastRound(121,34,121)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(121,34,121)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="2129900887" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002923" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1286" name="ChargeBoundariesAndInclusiveLastRound(149,64,149)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(149,64,149)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="815390269" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002830" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1287" name="ChargeBoundariesAndInclusiveLastRound(150,66,150)" fullname="Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(150,66,150)" methodname="ChargeBoundariesAndInclusiveLastRound" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="2022910598" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.002767" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1302" name="ClearanceCancelDeathAndHeroSwitchClearAllPendingOutput" fullname="Splatoon.Tests.MachineGunTests.ClearanceCancelDeathAndHeroSwitchClearAllPendingOutput" methodname="ClearanceCancelDeathAndHeroSwitchClearAllPendingOutput" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1314170538" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003315" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1305" name="FormalAssetsHaveElevenClipsPelvisAvatarAndSdfFaces" fullname="Splatoon.Tests.MachineGunTests.FormalAssetsHaveElevenClipsPelvisAvatarAndSdfFaces" methodname="FormalAssetsHaveElevenClipsPelvisAvatarAndSdfFaces" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="585031655" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.011508" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1290" name="FullDamageIdentitySurvivesTheWholeMagazine" fullname="Splatoon.Tests.MachineGunTests.FullDamageIdentitySurvivesTheWholeMagazine" methodname="FullDamageIdentitySurvivesTheWholeMagazine" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1751760537" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003516" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1289" name="FullHoldKeepsItsMagazineWithoutFiringOrOrdinaryRecovery" fullname="Splatoon.Tests.MachineGunTests.FullHoldKeepsItsMagazineWithoutFiringOrOrdinaryRecovery" methodname="FullHoldKeepsItsMagazineWithoutFiringOrOrdinaryRecovery" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="985101409" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003159" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1307" name="HeavyMovementAndChargeJumpUseActualMotorLimits" fullname="Splatoon.Tests.MachineGunTests.HeavyMovementAndChargeJumpUseActualMotorLimits" methodname="HeavyMovementAndChargeJumpUseActualMotorLimits" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="211834292" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.005653" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1301" name="HeldNextMagazineStartsAfterRecoveryButReleasedTapsDoNotQueue" fullname="Splatoon.Tests.MachineGunTests.HeldNextMagazineStartsAfterRecoveryButReleasedTapsDoNotQueue" methodname="HeldNextMagazineStartsAfterRecoveryButReleasedTapsDoNotQueue" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1236814967" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.003559" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1300" name="LowInkFillingAndCancellationCannotRefundTwice" fullname="Splatoon.Tests.MachineGunTests.LowInkFillingAndCancellationCannotRefundTwice" methodname="LowInkFillingAndCancellationCannotRefundTwice" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="451889288" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.004931" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1303" name="SnapshotReplayKeepsMagazineAndStableUniqueRoundIdentities" fullname="Splatoon.Tests.MachineGunTests.SnapshotReplayKeepsMagazineAndStableUniqueRoundIdentities" methodname="SnapshotReplayKeepsMagazineAndStableUniqueRoundIdentities" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="77857322" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.009902" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1304" name="SplatlingVelocityIsSeededAndRespectsIndependentSpreadAndChargeRange" fullname="Splatoon.Tests.MachineGunTests.SplatlingVelocityIsSeededAndRespectsIndependentSpreadAndChargeRange" methodname="SplatlingVelocityIsSeededAndRespectsIndependentSpreadAndChargeRange" classname="Splatoon.Tests.MachineGunTests" runstate="Runnable" seed="1482878422" result="Passed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:43Z" duration="0.045549" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1308" name="Match4v4PlayTests" fullname="Splatoon.Tests.Match4v4PlayTests" classname="Splatoon.Tests.Match4v4PlayTests" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2026-09-15 03:07:49Z" end-time="2026-09-15 03:07:54Z" duration="4.581267" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1309" name="RealHostCapacityCombatTabAndReturnToWarmup" fullname="Splatoon.Tests.Match4v4PlayTests.RealHostCapacityCombatTabAndReturnToWarmup" methodname="RealHostCapacityCombatTabAndReturnToWarmup" classname="Splatoon.Tests.Match4v4PlayTests" runstate="Runnable" seed="960278239" result="Failed" start-time="2026-09-15 03:07:43Z" end-time="2026-09-15 03:07:54Z" duration="10.521190" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: Locked
+  But was:  None
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.Match4v4PlayTests+<Scenario>d__4.MoveNext () [0x00b33] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\Match4v4PlayTests.cs:104
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-XSMM1
+[LAN] Connected role=host address=127.0.0.1 port=56530
+[LAN] Player joined id=1 team=2 slot=0
+[LAN] Player joined id=2 team=1 slot=1
+[LAN] Player joined id=3 team=2 slot=1
+[LAN] Player joined id=4 team=1 slot=2
+[LAN] Player joined id=5 team=2 slot=2
+[LAN] Player joined id=6 team=1 slot=3
+[LAN] Player joined id=7 team=2 slot=3
+[LAN] Round started round=1 ends=180.00
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1354" name="PaperTraversalTests" fullname="Splatoon.Tests.PaperTraversalTests" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-09-15 03:07:54Z" end-time="2026-09-15 03:07:59Z" duration="5.424280" total="18" passed="17" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1355" name="AllHeroesApproachFromFriendlyAndNeutralGroundStraightAndDiagonally" fullname="Splatoon.Tests.PaperTraversalTests.AllHeroesApproachFromFriendlyAndNeutralGroundStraightAndDiagonally" methodname="AllHeroesApproachFromFriendlyAndNeutralGroundStraightAndDiagonally" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="180186175" result="Passed" start-time="2026-09-15 03:07:54Z" end-time="2026-09-15 03:07:55Z" duration="1.395529" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1374" name="ContentSignatureRejectsDifferentHitProxyContacts" fullname="Splatoon.Tests.PaperTraversalTests.ContentSignatureRejectsDifferentHitProxyContacts" methodname="ContentSignatureRejectsDifferentHitProxyContacts" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1394729712" result="Failed" start-time="2026-09-15 03:07:55Z" end-time="2026-09-15 03:07:55Z" duration="0.075849" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[  Expected: 17
+  But was:  18
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.PaperTraversalTests.ContentSignatureRejectsDifferentHitProxyContacts () [0x00077] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\PaperTraversalTests.cs:235
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1359" name="DescendingWallResolvesDestinationGround" fullname="Splatoon.Tests.PaperTraversalTests.DescendingWallResolvesDestinationGround" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:07:55Z" end-time="2026-09-15 03:07:56Z" duration="0.556043" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1356" name="DescendingWallResolvesDestinationGround(0)" fullname="Splatoon.Tests.PaperTraversalTests.DescendingWallResolvesDestinationGround(0)" methodname="DescendingWallResolvesDestinationGround" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1229858743" result="Passed" start-time="2026-09-15 03:07:55Z" end-time="2026-09-15 03:07:56Z" duration="0.183785" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1357" name="DescendingWallResolvesDestinationGround(1)" fullname="Splatoon.Tests.PaperTraversalTests.DescendingWallResolvesDestinationGround(1)" methodname="DescendingWallResolvesDestinationGround" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="452883222" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:56Z" duration="0.181558" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1358" name="DescendingWallResolvesDestinationGround(2)" fullname="Splatoon.Tests.PaperTraversalTests.DescendingWallResolvesDestinationGround(2)" methodname="DescendingWallResolvesDestinationGround" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1300999384" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:56Z" duration="0.182257" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1364" name="InvalidWallBlocksCapsuleWithoutEnteringPaperWall" fullname="Splatoon.Tests.PaperTraversalTests.InvalidWallBlocksCapsuleWithoutEnteringPaperWall" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:56Z" duration="0.244629" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1363" name="InvalidWallBlocksCapsuleWithoutEnteringPaperWall(2)" fullname="Splatoon.Tests.PaperTraversalTests.InvalidWallBlocksCapsuleWithoutEnteringPaperWall(2)" methodname="InvalidWallBlocksCapsuleWithoutEnteringPaperWall" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="996141021" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:56Z" duration="0.239644" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1373" name="NeutralCoplanarSeamKeepsReducedSpeed" fullname="Splatoon.Tests.PaperTraversalTests.NeutralCoplanarSeamKeepsReducedSpeed" methodname="NeutralCoplanarSeamKeepsReducedSpeed" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="152080788" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:56Z" duration="0.149241" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1371" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:57Z" duration="1.119074" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1366" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(1)" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(1)" methodname="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="750405120" result="Passed" start-time="2026-09-15 03:07:56Z" end-time="2026-09-15 03:07:57Z" duration="0.232251" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1367" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(2)" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(2)" methodname="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1875160401" result="Passed" start-time="2026-09-15 03:07:57Z" end-time="2026-09-15 03:07:57Z" duration="0.224080" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1368" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(3)" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(3)" methodname="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1814772417" result="Passed" start-time="2026-09-15 03:07:57Z" end-time="2026-09-15 03:07:57Z" duration="0.218898" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1369" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(4)" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(4)" methodname="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1226489925" result="Passed" start-time="2026-09-15 03:07:57Z" end-time="2026-09-15 03:07:57Z" duration="0.207057" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1370" name="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(5)" fullname="Splatoon.Tests.PaperTraversalTests.NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(5)" methodname="NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="362420236" result="Passed" start-time="2026-09-15 03:07:57Z" end-time="2026-09-15 03:07:57Z" duration="0.227479" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1361" name="OwnHitProxyDoesNotChangeApproachWallAndJumpTrajectory" fullname="Splatoon.Tests.PaperTraversalTests.OwnHitProxyDoesNotChangeApproachWallAndJumpTrajectory" methodname="OwnHitProxyDoesNotChangeApproachWallAndJumpTrajectory" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="569354550" result="Passed" start-time="2026-09-15 03:07:57Z" end-time="2026-09-15 03:07:58Z" duration="0.388860" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1365" name="PaperCrossesCoplanarSeamButEnemyNeighbourDetachesImmediately" fullname="Splatoon.Tests.PaperTraversalTests.PaperCrossesCoplanarSeamButEnemyNeighbourDetachesImmediately" methodname="PaperCrossesCoplanarSeamButEnemyNeighbourDetachesImmediately" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="679481450" result="Passed" start-time="2026-09-15 03:07:58Z" end-time="2026-09-15 03:07:58Z" duration="0.156300" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1362" name="PaperMayOverhangWallAndCapsuleSlidesAlongObstacle" fullname="Splatoon.Tests.PaperTraversalTests.PaperMayOverhangWallAndCapsuleSlidesAlongObstacle" methodname="PaperMayOverhangWallAndCapsuleSlidesAlongObstacle" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1643459731" result="Passed" start-time="2026-09-15 03:07:58Z" end-time="2026-09-15 03:07:58Z" duration="0.313478" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1372" name="RepaintWhileStationaryOrJumpingUsesActualContactAndReplayAgrees" fullname="Splatoon.Tests.PaperTraversalTests.RepaintWhileStationaryOrJumpingUsesActualContactAndReplayAgrees" methodname="RepaintWhileStationaryOrJumpingUsesActualContactAndReplayAgrees" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1902939808" result="Passed" start-time="2026-09-15 03:07:58Z" end-time="2026-09-15 03:07:58Z" duration="0.167249" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1360" name="WallAxesCameraRotationAndReplayKeepContinuousMotion" fullname="Splatoon.Tests.PaperTraversalTests.WallAxesCameraRotationAndReplayKeepContinuousMotion" methodname="WallAxesCameraRotationAndReplayKeepContinuousMotion" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="1382184035" result="Passed" start-time="2026-09-15 03:07:58Z" end-time="2026-09-15 03:07:59Z" duration="0.311425" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1375" name="WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall" fullname="Splatoon.Tests.PaperTraversalTests.WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall" methodname="WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall" classname="Splatoon.Tests.PaperTraversalTests" runstate="Runnable" seed="131569605" result="Passed" start-time="2026-09-15 03:07:59Z" end-time="2026-09-15 03:07:59Z" duration="0.528285" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1383" name="ShooterMovementTests" fullname="Splatoon.Tests.ShooterMovementTests" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-09-15 03:07:59Z" end-time="2026-09-15 03:08:04Z" duration="4.634936" total="28" passed="19" failed="9" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1413" name="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" fullname="Splatoon.Tests.ShooterMovementTests.ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" methodname="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="119799070" result="Passed" start-time="2026-09-15 03:07:59Z" end-time="2026-09-15 03:07:59Z" duration="0.043786" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1415" name="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" fullname="Splatoon.Tests.ShooterMovementTests.CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" methodname="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="158672442" result="Passed" start-time="2026-09-15 03:07:59Z" end-time="2026-09-15 03:08:00Z" duration="0.446777" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1389" name="DamageHasExactAgeBoundariesAndThreeShotCloseKill" fullname="Splatoon.Tests.ShooterMovementTests.DamageHasExactAgeBoundariesAndThreeShotCloseKill" methodname="DamageHasExactAgeBoundariesAndThreeShotCloseKill" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="192287051" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.039743" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1394" name="EnemyInkIsNonlethalAndNeverHeals" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.115698" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1391" name="EnemyInkIsNonlethalAndNeverHeals(100,60)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(100,60)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1256623271" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.035482" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1392" name="EnemyInkIsNonlethalAndNeverHeals(59,59)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(59,59)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="864313207" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.036584" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1393" name="EnemyInkIsNonlethalAndNeverHeals(20,20)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(20,20)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1641202709" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.035426" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1388" name="FullTankFires108AndNeverGoesNegative" fullname="Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative" methodname="FullTankFires108AndNeverGoesNegative" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1204305520" result="Failed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.039677" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[  Expected: 108
+  But was:  117
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative () [0x0005c] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:56
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1395" name="HealthRecoveryWaitsAfterDamageAndEnemyInk" fullname="Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk" methodname="HealthRecoveryWaitsAfterDamageAndEnemyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1968890729" result="Failed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.037143" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[  Expected: 31.5f
+  But was:  31.0f
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk () [0x000bd] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:82
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1400" name="HorizontalBallisticsUsesCurrentStraightAndBrakeTimings" fullname="Splatoon.Tests.ShooterMovementTests.HorizontalBallisticsUsesCurrentStraightAndBrakeTimings" methodname="HorizontalBallisticsUsesCurrentStraightAndBrakeTimings" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="166525881" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.037289" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1407" name="OnlyLocomotionUsesSpeedParameter" fullname="Splatoon.Tests.ShooterMovementTests.OnlyLocomotionUsesSpeedParameter" methodname="OnlyLocomotionUsesSpeedParameter" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1708245539" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:00Z" duration="0.044057" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1406" name="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" fullname="Splatoon.Tests.ShooterMovementTests.OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" methodname="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1565517883" result="Passed" start-time="2026-09-15 03:08:00Z" end-time="2026-09-15 03:08:01Z" duration="0.437010" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1409" name="PredictionSnapshotSerializesEverySimulationField" fullname="Splatoon.Tests.ShooterMovementTests.PredictionSnapshotSerializesEverySimulationField" methodname="PredictionSnapshotSerializesEverySimulationField" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="98992762" result="Passed" start-time="2026-09-15 03:08:01Z" end-time="2026-09-15 03:08:01Z" duration="0.040299" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1411" name="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" fullname="Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" methodname="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1778627469" result="Passed" start-time="2026-09-15 03:08:01Z" end-time="2026-09-15 03:08:01Z" duration="0.131080" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1404" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:01Z" end-time="2026-09-15 03:08:02Z" duration="1.372379" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1401" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="693392783" result="Passed" start-time="2026-09-15 03:08:01Z" end-time="2026-09-15 03:08:01Z" duration="0.452836" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=1 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+]]></output>
+              </test-case>
+              <test-case id="1402" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1347027339" result="Passed" start-time="2026-09-15 03:08:01Z" end-time="2026-09-15 03:08:02Z" duration="0.462823" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=1 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+]]></output>
+              </test-case>
+              <test-case id="1403" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="252680021" result="Passed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.445644" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=1 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 firstStamp seed=0 index=0 rotation=0.0000 radius=3.000
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1399" name="RenderRatesDoNotChangeFixedSimulationResults" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.121499" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1396" name="RenderRatesDoNotChangeFixedSimulationResults(30)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1195983450" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.037964" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[  Expected: 100
+  But was:  117
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults (System.Int32 rate) [0x000cd] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:94
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1397" name="RenderRatesDoNotChangeFixedSimulationResults(60)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1590061114" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.036754" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[  Expected: 100
+  But was:  117
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults (System.Int32 rate) [0x000cd] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:94
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1398" name="RenderRatesDoNotChangeFixedSimulationResults(144)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1622345963" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.036650" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[  Expected: 100
+  But was:  117
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults (System.Int32 rate) [0x000cd] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:94
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-case id="1412" name="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" fullname="Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" methodname="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="2064514434" result="Passed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.043213" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1410" name="RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" fullname="Splatoon.Tests.ShooterMovementTests.RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" methodname="RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1174358269" result="Passed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.081197" asserts="0">
+              <properties />
+              <output><![CDATA[[SHOOTER-RANGE] RifleGirl corrected floor=15.055m
+]]></output>
+            </test-case>
+            <test-case id="1387" name="ShortTapCompletesStartupAndCannotBypassCooldown" fullname="Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown" methodname="ShortTapCompletesStartupAndCannotBypassCooldown" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="647056564" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.037174" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[  Expected: greater than or equal to 6
+  But was:  4
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown () [0x00099] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:48
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1386" name="StartupAndContinuousCadenceUseReferenceFrames" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.082065" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1384" name="StartupAndContinuousCadenceUseReferenceFrames(False,2)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="180599925" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.036593" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[  Expected: 6
+  But was:  4
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames (System.Boolean emerged, System.Int32 startup) [0x00091] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:36
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1385" name="StartupAndContinuousCadenceUseReferenceFrames(True,10)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="232980642" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:02Z" duration="0.039049" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[  Expected: 6
+  But was:  4
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames (System.Boolean emerged, System.Int32 startup) [0x00091] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:36
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-case id="1390" name="SwimmingCannotBypassRecoveryLock" fullname="Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock" methodname="SwimmingCannotBypassRecoveryLock" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1265825390" result="Failed" start-time="2026-09-15 03:08:02Z" end-time="2026-09-15 03:08:03Z" duration="0.037248" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[  Expected: 40.5555573f +/- 0.0001d
+  But was:  40.1666679f
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock () [0x00085] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\ShooterMovementTests.cs:68
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1408" name="WallClimbMantleAndEnemyCoverUseActualController" fullname="Splatoon.Tests.ShooterMovementTests.WallClimbMantleAndEnemyCoverUseActualController" methodname="WallClimbMantleAndEnemyCoverUseActualController" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1634210598" result="Passed" start-time="2026-09-15 03:08:03Z" end-time="2026-09-15 03:08:03Z" duration="0.470668" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1414" name="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" fullname="Splatoon.Tests.ShooterMovementTests.WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" methodname="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1958428380" result="Passed" start-time="2026-09-15 03:08:03Z" end-time="2026-09-15 03:08:03Z" duration="0.491477" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1405" name="WallPlanesAreIndependentAndDoNotAddScoreArea" fullname="Splatoon.Tests.ShooterMovementTests.WallPlanesAreIndependentAndDoNotAddScoreArea" methodname="WallPlanesAreIndependentAndDoNotAddScoreArea" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1145575943" result="Passed" start-time="2026-09-15 03:08:03Z" end-time="2026-09-15 03:08:04Z" duration="0.455410" asserts="0">
+              <properties />
+              <output><![CDATA[[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=16 firstStamp seed=0 index=0 rotation=0.0000 radius=1.000
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1418" name="SwimMovementTests" fullname="Splatoon.Tests.SwimMovementTests" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:06Z" duration="1.643110" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1434" name="AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" fullname="Splatoon.Tests.SwimMovementTests.AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" methodname="AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1009880247" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.071218" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1427" name="AirReleaseCanReenterAndEnemyLandingExits" fullname="Splatoon.Tests.SwimMovementTests.AirReleaseCanReenterAndEnemyLandingExits" methodname="AirReleaseCanReenterAndEnemyLandingExits" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="91256349" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.080274" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1438" name="AirSnapshotReplaysSameMovement" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.153523" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1436" name="AirSnapshotReplaysSameMovement(0)" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement(0)" methodname="AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="79185671" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.072214" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1437" name="AirSnapshotReplaysSameMovement(1)" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement(1)" methodname="AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="2093430421" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.072896" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1435" name="AirSourceSurvivesSerializationAndHumanCheckpointReplay" fullname="Splatoon.Tests.SwimMovementTests.AirSourceSurvivesSerializationAndHumanCheckpointReplay" methodname="AirSourceSurvivesSerializationAndHumanCheckpointReplay" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1996063624" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.073114" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1433" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:05Z" duration="0.297739" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1429" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,False)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,False)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1937113127" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.072184" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1430" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,False)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,False)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1527859128" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:04Z" duration="0.073893" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1431" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,True)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,True)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="462743449" result="Passed" start-time="2026-09-15 03:08:04Z" end-time="2026-09-15 03:08:05Z" duration="0.070256" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1432" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,True)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,True)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1187105301" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.072698" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1423" name="EnemyPaintCancelsImmediatelyAndCannotBeEntered" fullname="Splatoon.Tests.SwimMovementTests.EnemyPaintCancelsImmediatelyAndCannotBeEntered" methodname="EnemyPaintCancelsImmediatelyAndCannotBeEntered" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1232868181" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.078202" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1439" name="FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" fullname="Splatoon.Tests.SwimMovementTests.FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" methodname="FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="2131349246" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.072192" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1443" name="InvalidNeutralSpeedRejected" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.234061" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1440" name="InvalidNeutralSpeedRejected(0)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(0)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1916012987" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.078189" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1441" name="InvalidNeutralSpeedRejected(5)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(5)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="519304312" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.075786" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1442" name="InvalidNeutralSpeedRejected(-1)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(-1)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="986771221" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.072259" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1426" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.156891" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1424" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding(0)" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding(0)" methodname="JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1706439493" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.074703" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1425" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding(1)" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding(1)" methodname="JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="2081005537" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.075799" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1428" name="LowCeilingDefersStandingWithoutEnemyInkInvisibility" fullname="Splatoon.Tests.SwimMovementTests.LowCeilingDefersStandingWithoutEnemyInkInvisibility" methodname="LowCeilingDefersStandingWithoutEnemyInkInvisibility" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1132094947" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.077395" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1422" name="NonPaintableGroundAndFreshAirAllowNeutralSwimming" fullname="Splatoon.Tests.SwimMovementTests.NonPaintableGroundAndFreshAirAllowNeutralSwimming" methodname="NonPaintableGroundAndFreshAirAllowNeutralSwimming" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1908087452" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.070431" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1444" name="SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" fullname="Splatoon.Tests.SwimMovementTests.SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" methodname="SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1851063242" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:05Z" duration="0.099950" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1421" name="SurfaceChoosesSpeedRecoveryAndModel" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:06Z" duration="0.156759" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1419" name="SurfaceChoosesSpeedRecoveryAndModel(0,3,Neutral)" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel(0,3,Neutral)" methodname="SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="9851774" result="Passed" start-time="2026-09-15 03:08:05Z" end-time="2026-09-15 03:08:06Z" duration="0.074723" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1420" name="SurfaceChoosesSpeedRecoveryAndModel(1,8,Friendly)" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel(1,8,Friendly)" methodname="SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1397440662" result="Passed" start-time="2026-09-15 03:08:06Z" end-time="2026-09-15 03:08:06Z" duration="0.072953" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1445" name="SwimPlayTests" fullname="Splatoon.Tests.SwimPlayTests" classname="Splatoon.Tests.SwimPlayTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:25Z" end-time="2026-09-15 03:08:36Z" duration="11.092361" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1447" name="RealHostRifleReleaseRecoversWhileSwimming" fullname="Splatoon.Tests.SwimPlayTests.RealHostRifleReleaseRecoversWhileSwimming" methodname="RealHostRifleReleaseRecoversWhileSwimming" classname="Splatoon.Tests.SwimPlayTests" runstate="Runnable" seed="1279130142" result="Passed" start-time="2026-09-15 03:08:06Z" end-time="2026-09-15 03:08:19Z" duration="12.918541" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+              </properties>
+              <output><![CDATA[[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-YW3A1
+[LAN] Connected role=host address=127.0.0.1 port=60941
+[INK-GPU] surface=1 firstStamp seed=121 index=25 rotation=0.0001 radius=6.000
+[INK-GPU] surface=5 firstStamp seed=121 index=25 rotation=0.0001 radius=6.000
+[LAN] Returned to menu. 
+]]></output>
+            </test-case>
+            <test-case id="1446" name="RealHostSharedModelHitsJumpAndLifecycle" fullname="Splatoon.Tests.SwimPlayTests.RealHostSharedModelHitsJumpAndLifecycle" methodname="RealHostSharedModelHitsJumpAndLifecycle" classname="Splatoon.Tests.SwimPlayTests" runstate="Runnable" seed="499907169" result="Passed" start-time="2026-09-15 03:08:19Z" end-time="2026-09-15 03:08:36Z" duration="17.221053" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[INK-GPU] surface=2 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=25 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=30 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=7 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=31 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x736
+[INK-GPU] surface=32 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=28 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=19 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=10 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=29 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=6 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=13 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=20 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=36 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=12 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=4 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=17 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x320
+[INK-GPU] surface=21 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=3 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=18 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=33 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=14 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x736
+[INK-GPU] surface=22 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=23 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=1024x288
+[INK-GPU] surface=35 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[INK-GPU] surface=34 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x192
+[INK-GPU] surface=9 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+[INK-GPU] surface=24 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x128
+[INK-GPU] surface=11 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=160x224
+[INK-GPU] surface=8 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=26 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x256
+[INK-GPU] surface=15 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x1440
+[INK-GPU] surface=27 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=256x320
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-XN6R7
+[LAN] Connected role=host address=127.0.0.1 port=55963
+[INK-GPU] surface=1 firstStamp seed=121 index=25 rotation=0.0001 radius=3.000
+[INK-GPU] surface=5 firstStamp seed=121 index=25 rotation=0.0001 radius=3.000
+[INK-GPU] surface=1 maskAlpha=14439 displayAlpha=14439 propertyBlockBound=True
+[INK-GPU] surface=5 maskAlpha=0 displayAlpha=0 propertyBlockBound=True
+[INK-GPU] surface=999 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=16 firstStamp seed=401 index=17 rotation=0.0006 radius=4.000
+[INK-GPU] surface=7 firstStamp seed=501 index=21 rotation=0.0007 radius=3.000
+[INK-GPU] surface=6 firstStamp seed=501 index=21 rotation=0.0007 radius=3.000
+[INK-GPU] surface=16 maskAlpha=14024 displayAlpha=0 propertyBlockBound=True
+[INK-GPU] surface=7 maskAlpha=5695 displayAlpha=0 propertyBlockBound=True
+[INK-GPU] surface=6 maskAlpha=6507 displayAlpha=0 propertyBlockBound=True
+[INK-GPU] surface=21 firstStamp seed=801 index=1 rotation=0.0012 radius=3.000
+[INK-GPU] surface=999 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1450" name="TpsAimTests" fullname="Splatoon.Tests.TpsAimTests" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="60" result="Failed" site="Child" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:39Z" duration="2.772364" total="60" passed="59" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1523" name="CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake" fullname="Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake" methodname="CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1324277779" result="Failed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.056803" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: less than 0.0001d
+  But was:  0.000126957893f
+]]></message>
+                <stack-trace><![CDATA[at Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake () [0x0010c] in D:\XPHUNITY\ProjectSplatoon-MachineGun-Validation-20260915\Assets\Splatoon\Tests\TpsAimTests.cs:312
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1520" name="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend" fullname="Splatoon.Tests.TpsAimTests.CollisionSweepsBothLegsWhenOneFixedStepCrossesBend" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.161878" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1517" name="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(30)" fullname="Splatoon.Tests.TpsAimTests.CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(30)" methodname="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="967708965" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.051119" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1518" name="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(60)" fullname="Splatoon.Tests.TpsAimTests.CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(60)" methodname="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="912708480" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.048590" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1519" name="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(144)" fullname="Splatoon.Tests.TpsAimTests.CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(144)" methodname="CollisionSweepsBothLegsWhenOneFixedStepCrossesBend" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="393704645" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.049912" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1514" name="ConvergenceAtOrBehindMuzzleNeverLaunchesBackward" fullname="Splatoon.Tests.TpsAimTests.ConvergenceAtOrBehindMuzzleNeverLaunchesBackward" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.105294" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1512" name="ConvergenceAtOrBehindMuzzleNeverLaunchesBackward(6.0f)" fullname="Splatoon.Tests.TpsAimTests.ConvergenceAtOrBehindMuzzleNeverLaunchesBackward(6.0f)" methodname="ConvergenceAtOrBehindMuzzleNeverLaunchesBackward" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="250919679" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.052427" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1513" name="ConvergenceAtOrBehindMuzzleNeverLaunchesBackward(7.0f)" fullname="Splatoon.Tests.TpsAimTests.ConvergenceAtOrBehindMuzzleNeverLaunchesBackward(7.0f)" methodname="ConvergenceAtOrBehindMuzzleNeverLaunchesBackward" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="702847336" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.040156" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1511" name="DistanceInverseIncludesBraking" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.210962" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1506" name="DistanceInverseIncludesBraking(0.0f)" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking(0.0f)" methodname="DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1073597533" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.040023" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1507" name="DistanceInverseIncludesBraking(0.1f)" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking(0.1f)" methodname="DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1380997659" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.037640" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1508" name="DistanceInverseIncludesBraking(4.0f)" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking(4.0f)" methodname="DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1042744367" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.037279" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1509" name="DistanceInverseIncludesBraking(12.0f)" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking(12.0f)" methodname="DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="114510775" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.039732" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1510" name="DistanceInverseIncludesBraking(100.0f)" fullname="Splatoon.Tests.TpsAimTests.DistanceInverseIncludesBraking(100.0f)" methodname="DistanceInverseIncludesBraking" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1154081100" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.044427" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1522" name="EmbeddedMuzzleResolvesImmediatelyWithoutFlightOrTrail" fullname="Splatoon.Tests.TpsAimTests.EmbeddedMuzzleResolvesImmediatelyWithoutFlightOrTrail" methodname="EmbeddedMuzzleResolvesImmediatelyWithoutFlightOrTrail" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="724845365" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.041437" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1462" name="FarOrMissKeepsMuzzleToTargetDirection" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:37Z" duration="0.260283" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1456" name="FarOrMissKeepsMuzzleToTargetDirection(6.001f,0.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(6.001f,0.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="727429968" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.046588" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1457" name="FarOrMissKeepsMuzzleToTargetDirection(20.0f,-45.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(20.0f,-45.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="895637605" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:36Z" duration="0.040793" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1458" name="FarOrMissKeepsMuzzleToTargetDirection(80.0f,35.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(80.0f,35.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1036282188" result="Passed" start-time="2026-09-15 03:08:36Z" end-time="2026-09-15 03:08:37Z" duration="0.039019" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1459" name="FarOrMissKeepsMuzzleToTargetDirection(100.0f,0.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(100.0f,0.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1524546675" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.039405" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1460" name="FarOrMissKeepsMuzzleToTargetDirection(float.PositiveInfinity,65.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(float.PositiveInfinity,65.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1539691473" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038816" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1461" name="FarOrMissKeepsMuzzleToTargetDirection(101.0f,0.0f)" fullname="Splatoon.Tests.TpsAimTests.FarOrMissKeepsMuzzleToTargetDirection(101.0f,0.0f)" methodname="FarOrMissKeepsMuzzleToTargetDirection" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1514465045" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038607" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1467" name="FarParameterDoesNotClampHits" fullname="Splatoon.Tests.TpsAimTests.FarParameterDoesNotClampHits" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.160810" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1463" name="FarParameterDoesNotClampHits(5.0f)" fullname="Splatoon.Tests.TpsAimTests.FarParameterDoesNotClampHits(5.0f)" methodname="FarParameterDoesNotClampHits" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1785999180" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.037983" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1464" name="FarParameterDoesNotClampHits(6.0f)" fullname="Splatoon.Tests.TpsAimTests.FarParameterDoesNotClampHits(6.0f)" methodname="FarParameterDoesNotClampHits" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1870117247" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.035395" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1465" name="FarParameterDoesNotClampHits(20.0f)" fullname="Splatoon.Tests.TpsAimTests.FarParameterDoesNotClampHits(20.0f)" methodname="FarParameterDoesNotClampHits" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1151993918" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038565" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1466" name="FarParameterDoesNotClampHits(80.0f)" fullname="Splatoon.Tests.TpsAimTests.FarParameterDoesNotClampHits(80.0f)" methodname="FarParameterDoesNotClampHits" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1814405745" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.039363" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1505" name="GravityCanHitFloorBeforeCorrectionCompletes" fullname="Splatoon.Tests.TpsAimTests.GravityCanHitFloorBeforeCorrectionCompletes" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.124411" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1502" name="GravityCanHitFloorBeforeCorrectionCompletes(30)" fullname="Splatoon.Tests.TpsAimTests.GravityCanHitFloorBeforeCorrectionCompletes(30)" methodname="GravityCanHitFloorBeforeCorrectionCompletes" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="823630197" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038379" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1503" name="GravityCanHitFloorBeforeCorrectionCompletes(60)" fullname="Splatoon.Tests.TpsAimTests.GravityCanHitFloorBeforeCorrectionCompletes(60)" methodname="GravityCanHitFloorBeforeCorrectionCompletes" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1501439304" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038053" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1504" name="GravityCanHitFloorBeforeCorrectionCompletes(144)" fullname="Splatoon.Tests.TpsAimTests.GravityCanHitFloorBeforeCorrectionCompletes(144)" methodname="GravityCanHitFloorBeforeCorrectionCompletes" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="2104855459" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038020" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1492" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.213807" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1487" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget(1)" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget(1)" methodname="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1689621480" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.039145" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1488" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget(2)" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget(2)" methodname="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1943088083" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.043071" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1489" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget(3)" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget(3)" methodname="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1515618087" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.039818" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1490" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget(4)" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget(4)" methodname="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="2014311280" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.042069" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1491" name="GravityStartsBeforeLongConvergenceAndPersistsPastTarget(5)" fullname="Splatoon.Tests.TpsAimTests.GravityStartsBeforeLongConvergenceAndPersistsPastTarget(5)" methodname="GravityStartsBeforeLongConvergenceAndPersistsPastTarget" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1043493409" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.037355" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1524" name="MeasureFloorLandingBeforeAndAfterForNormalAndCompressedCamera" fullname="Splatoon.Tests.TpsAimTests.MeasureFloorLandingBeforeAndAfterForNormalAndCompressedCamera" methodname="MeasureFloorLandingBeforeAndAfterForNormalAndCompressedCamera" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="581684815" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.126339" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1471" name="MissUsesConfiguredFarPoint" fullname="Splatoon.Tests.TpsAimTests.MissUsesConfiguredFarPoint" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.127557" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1468" name="MissUsesConfiguredFarPoint(30.0f)" fullname="Splatoon.Tests.TpsAimTests.MissUsesConfiguredFarPoint(30.0f)" methodname="MissUsesConfiguredFarPoint" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1921124884" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.043580" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1469" name="MissUsesConfiguredFarPoint(50.0f)" fullname="Splatoon.Tests.TpsAimTests.MissUsesConfiguredFarPoint(50.0f)" methodname="MissUsesConfiguredFarPoint" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="994349538" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038593" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1470" name="MissUsesConfiguredFarPoint(150.0f)" fullname="Splatoon.Tests.TpsAimTests.MissUsesConfiguredFarPoint(150.0f)" methodname="MissUsesConfiguredFarPoint" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="264331003" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.036482" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1455" name="NearAndBoundaryAimAtNearConvergence" fullname="Splatoon.Tests.TpsAimTests.NearAndBoundaryAimAtNearConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:38Z" duration="0.162526" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1451" name="NearAndBoundaryAimAtNearConvergence(0.0f)" fullname="Splatoon.Tests.TpsAimTests.NearAndBoundaryAimAtNearConvergence(0.0f)" methodname="NearAndBoundaryAimAtNearConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1309267972" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.036871" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1452" name="NearAndBoundaryAimAtNearConvergence(4.0f)" fullname="Splatoon.Tests.TpsAimTests.NearAndBoundaryAimAtNearConvergence(4.0f)" methodname="NearAndBoundaryAimAtNearConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="422862421" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:37Z" duration="0.038589" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1453" name="NearAndBoundaryAimAtNearConvergence(5.0f)" fullname="Splatoon.Tests.TpsAimTests.NearAndBoundaryAimAtNearConvergence(5.0f)" methodname="NearAndBoundaryAimAtNearConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="987408013" result="Passed" start-time="2026-09-15 03:08:37Z" end-time="2026-09-15 03:08:38Z" duration="0.038717" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1454" name="NearAndBoundaryAimAtNearConvergence(6.0f)" fullname="Splatoon.Tests.TpsAimTests.NearAndBoundaryAimAtNearConvergence(6.0f)" methodname="NearAndBoundaryAimAtNearConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="829920714" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.037415" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1485" name="NearObstacleStopsActualFlightBeforeConvergence" fullname="Splatoon.Tests.TpsAimTests.NearObstacleStopsActualFlightBeforeConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.127312" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1482" name="NearObstacleStopsActualFlightBeforeConvergence(30)" fullname="Splatoon.Tests.TpsAimTests.NearObstacleStopsActualFlightBeforeConvergence(30)" methodname="NearObstacleStopsActualFlightBeforeConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="223729608" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.040653" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1483" name="NearObstacleStopsActualFlightBeforeConvergence(60)" fullname="Splatoon.Tests.TpsAimTests.NearObstacleStopsActualFlightBeforeConvergence(60)" methodname="NearObstacleStopsActualFlightBeforeConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="485982922" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.037582" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1484" name="NearObstacleStopsActualFlightBeforeConvergence(144)" fullname="Splatoon.Tests.TpsAimTests.NearObstacleStopsActualFlightBeforeConvergence(144)" methodname="NearObstacleStopsActualFlightBeforeConvergence" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="994005732" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.039055" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1486" name="ObstructionStopsAtCloseAimDepthAndUsesNewLaunchLine" fullname="Splatoon.Tests.TpsAimTests.ObstructionStopsAtCloseAimDepthAndUsesNewLaunchLine" methodname="ObstructionStopsAtCloseAimDepthAndUsesNewLaunchLine" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1967515777" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.039088" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1501" name="PitchedConvergencePreservesGravityDisplacementAndVelocity" fullname="Splatoon.Tests.TpsAimTests.PitchedConvergencePreservesGravityDisplacementAndVelocity" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.081514" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1499" name="PitchedConvergencePreservesGravityDisplacementAndVelocity(-45.0f)" fullname="Splatoon.Tests.TpsAimTests.PitchedConvergencePreservesGravityDisplacementAndVelocity(-45.0f)" methodname="PitchedConvergencePreservesGravityDisplacementAndVelocity" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="138477332" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.036723" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1500" name="PitchedConvergencePreservesGravityDisplacementAndVelocity(35.0f)" fullname="Splatoon.Tests.TpsAimTests.PitchedConvergencePreservesGravityDisplacementAndVelocity(35.0f)" methodname="PitchedConvergencePreservesGravityDisplacementAndVelocity" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="736836322" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.037861" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1481" name="ResolveKeepsHundredMetreProbeIndependentOfFarConfig" fullname="Splatoon.Tests.TpsAimTests.ResolveKeepsHundredMetreProbeIndependentOfFarConfig" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.195060" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1477" name="ResolveKeepsHundredMetreProbeIndependentOfFarConfig(5.0f)" fullname="Splatoon.Tests.TpsAimTests.ResolveKeepsHundredMetreProbeIndependentOfFarConfig(5.0f)" methodname="ResolveKeepsHundredMetreProbeIndependentOfFarConfig" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1244281147" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.042919" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1478" name="ResolveKeepsHundredMetreProbeIndependentOfFarConfig(20.0f)" fullname="Splatoon.Tests.TpsAimTests.ResolveKeepsHundredMetreProbeIndependentOfFarConfig(20.0f)" methodname="ResolveKeepsHundredMetreProbeIndependentOfFarConfig" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="193238729" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.047996" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1479" name="ResolveKeepsHundredMetreProbeIndependentOfFarConfig(80.0f)" fullname="Splatoon.Tests.TpsAimTests.ResolveKeepsHundredMetreProbeIndependentOfFarConfig(80.0f)" methodname="ResolveKeepsHundredMetreProbeIndependentOfFarConfig" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1441796634" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.044559" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1480" name="ResolveKeepsHundredMetreProbeIndependentOfFarConfig(120.0f)" fullname="Splatoon.Tests.TpsAimTests.ResolveKeepsHundredMetreProbeIndependentOfFarConfig(120.0f)" methodname="ResolveKeepsHundredMetreProbeIndependentOfFarConfig" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1032858440" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.048038" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1498" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.233345" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1493" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(1)" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(1)" methodname="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1762521565" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.041410" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1494" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(2)" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(2)" methodname="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="40681793" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.044081" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1495" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(3)" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(3)" methodname="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1299701725" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.046518" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1496" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(4)" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(4)" methodname="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1477538040" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.045049" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1497" name="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(5)" fullname="Splatoon.Tests.TpsAimTests.ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod(5)" methodname="ShortCorrectionDoesNotStartGravityBeforeOriginalStraightPeriod" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="129063168" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.042263" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1516" name="ShotgunSpreadDoesNotReconvergeAndPreservesSeededPattern" fullname="Splatoon.Tests.TpsAimTests.ShotgunSpreadDoesNotReconvergeAndPreservesSeededPattern" methodname="ShotgunSpreadDoesNotReconvergeAndPreservesSeededPattern" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="428855769" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.041153" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1515" name="ShotRoundTripPreservesEntireTrajectoryAfterShooterMoves" fullname="Splatoon.Tests.TpsAimTests.ShotRoundTripPreservesEntireTrajectoryAfterShooterMoves" methodname="ShotRoundTripPreservesEntireTrajectoryAfterShooterMoves" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="204105347" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.040028" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1476" name="SpreadUsesEachMuzzleDirectionOnce" fullname="Splatoon.Tests.TpsAimTests.SpreadUsesEachMuzzleDirectionOnce" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.171915" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1472" name="SpreadUsesEachMuzzleDirectionOnce(5.0f,-35.0f,-0.6f)" fullname="Splatoon.Tests.TpsAimTests.SpreadUsesEachMuzzleDirectionOnce(5.0f,-35.0f,-0.6f)" methodname="SpreadUsesEachMuzzleDirectionOnce" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1367424214" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.039694" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1473" name="SpreadUsesEachMuzzleDirectionOnce(5.0f,40.0f,0.6f)" fullname="Splatoon.Tests.TpsAimTests.SpreadUsesEachMuzzleDirectionOnce(5.0f,40.0f,0.6f)" methodname="SpreadUsesEachMuzzleDirectionOnce" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="2025086155" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.039804" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1474" name="SpreadUsesEachMuzzleDirectionOnce(20.0f,-35.0f,0.6f)" fullname="Splatoon.Tests.TpsAimTests.SpreadUsesEachMuzzleDirectionOnce(20.0f,-35.0f,0.6f)" methodname="SpreadUsesEachMuzzleDirectionOnce" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="771283429" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.038980" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1475" name="SpreadUsesEachMuzzleDirectionOnce(float.PositiveInfinity,40.0f,-0.6f)" fullname="Splatoon.Tests.TpsAimTests.SpreadUsesEachMuzzleDirectionOnce(float.PositiveInfinity,40.0f,-0.6f)" methodname="SpreadUsesEachMuzzleDirectionOnce" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1315918727" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:38Z" duration="0.042550" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1521" name="VisibleTargetCanStillBeBlockedByMuzzlePath" fullname="Splatoon.Tests.TpsAimTests.VisibleTargetCanStillBeBlockedByMuzzlePath" methodname="VisibleTargetCanStillBeBlockedByMuzzlePath" classname="Splatoon.Tests.TpsAimTests" runstate="Runnable" seed="1112992708" result="Passed" start-time="2026-09-15 03:08:38Z" end-time="2026-09-15 03:08:39Z" duration="0.043534" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

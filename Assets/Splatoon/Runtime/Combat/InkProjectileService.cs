@@ -13,6 +13,8 @@ namespace Splatoon.Combat
         public uint Id, Round, Seed, ShotSequence;
         public ulong Shooter;
         public ulong ActionId;
+        public uint ReleaseSequence => (uint)(ActionId >> 32);
+        public uint RoundIndex => (uint)ActionId;
         public uint Lifecycle, HeroRevision;
         public byte MuzzleIndex, PelletIndex;
         public int HeroId;
@@ -120,6 +122,18 @@ namespace Splatoon.Combat
             Vector3 local = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 1).normalized;
             return Quaternion.LookRotation(direction) * local * Mathf.Lerp(w.SpeedMin, w.SpeedMax, Random01(ref seed));
         }
+        public static Vector3 SplatlingVelocity(Vector3 direction, cfg.HeroConfig w, float charge, float spread, ref uint seed)
+        {
+            float bias = Mathf.Log(w.SplatlingSpreadBias) / Mathf.Log(.5f);
+            float x = Centered(ref seed, bias), y = Centered(ref seed, bias);
+            float vertical = Mathf.Lerp(w.SplatlingPitchSpread, w.JumpSpreadDegrees, Mathf.InverseLerp(w.SpreadDegrees, w.JumpSpreadDegrees, spread));
+            Vector3 local = new(Mathf.Tan(x * spread * Mathf.Deg2Rad), Mathf.Tan(y * vertical * Mathf.Deg2Rad), 1);
+            float center = Mathf.Lerp(w.ChargeMinSpeed, (w.SpeedMin+w.SpeedMax)*.5f, SplatlingSimulation.RangeCharge(w, charge));
+            float jitter = Centered(ref seed, Mathf.Log(w.SplatlingSpeedBias)/Mathf.Log(.5f)) * (w.SpeedMax-w.SpeedMin)*.5f;
+            return Quaternion.LookRotation(direction) * local.normalized * Mathf.Max(.01f,center+jitter);
+        }
+        static float Centered(ref uint seed, float gamma)
+        { float x=Random01(ref seed)*2-1; return Mathf.Sign(x)*Mathf.Pow(Mathf.Abs(x),gamma); }
         public static Vector3 PelletVelocity(Vector3 direction, cfg.HeroConfig w, float spread, int index, uint groupSeed)
         {
             // Equal-area disk samples; rotate the complete pattern, never cluster eight independent random samples.
@@ -131,7 +145,7 @@ namespace Splatoon.Combat
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
     public sealed class InkProjectileService
     {
-        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; }
+        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; public int TrailCount; }
         private readonly List<Active> _active = new(256);
         private readonly TpsAimSolver _aim = new();
         private readonly InkShapeSelector _shapes = new();
@@ -170,17 +184,20 @@ namespace Splatoon.Combat
             shot.Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity(aim.InitialDirection, w, spread, pellet, groupSeed)
                 : InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
+            if (WeaponSimulation.IsSplatling(w)) shot.Velocity = InkBallistics.SplatlingVelocity(aim.InitialDirection,w,shot.Charge,spread,ref seed);
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
             if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
-            else BeginFlight(shot, aim.Muzzle, aim.InitialDirection);
+            else BeginFlight(shot, aim.Muzzle, aim.InitialDirection, WeaponSimulation.IsSplatling(w) ? state.Position + Vector3.up * .1f : (Vector3?)null);
             }
         }
-        private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward)
+        private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward, Vector3? foot = null)
         {
             uint trailSeed = shot.Seed ^ 0x9E3779B9u, ordinal = 0;
             if (trailSeed == 0) trailSeed = 1;
-            if (shot.PelletIndex == 0) PaintTrail(muzzle - forward * .6f, shot, GameplayConfig.GetHero(shot.HeroId), ref trailSeed, ref ordinal);
+            var config=GameplayConfig.GetHero(shot.HeroId);
+            if (shot.PelletIndex == 0 && (!WeaponSimulation.IsSplatling(config) || (shot.ShotSequence-1)%config.SplatlingFootEvery==0))
+                PaintTrail(foot ?? (muzzle - forward * .6f), shot, config, ref trailSeed, ref ordinal, WeaponSimulation.IsSplatling(config) ? config.SplatlingFootRadius : -1);
             _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
                 CorrectionAt = shot.Born + InkBallistics.CorrectionAge(shot, GameplayConfig.GetHero(shot.HeroId)) });
 #if UNITY_EDITOR
@@ -226,12 +243,29 @@ namespace Splatoon.Combat
             Vector3 to = InkBallistics.Position(shot, weapon, end - shot.Born);
             Vector3 delta = to - from;
             float distance = delta.magnitude;
-            if (_aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
+            if (WeaponSimulation.IsSplatling(weapon))
+            {
+                bool worldOverlap = _aim.Overlap(from,weapon.CollisionRadius,shot.Shooter,-delta.normalized,out var world,false);
+                bool playerOverlap = _aim.Overlap(from,weapon.SplatlingPlayerRadius,shot.Shooter,-delta.normalized,out var player,true);
+                if (worldOverlap || playerOverlap)
+                {
+                    var contact=worldOverlap?world:player;
+                    Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born,ref active.PaintOrdinal); return true;
+                }
+                bool worldHit=_aim.ClosestCast(from,delta,distance,weapon.CollisionRadius,shot.Shooter,out world,false);
+                bool playerHit=_aim.ClosestCast(from,delta,distance,weapon.SplatlingPlayerRadius,shot.Shooter,out player,true);
+                if (worldHit || playerHit)
+                {
+                    var contact=worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
+                    Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance),ref active.PaintOrdinal); return true;
+                }
+            }
+            else if (_aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
             {
                 Resolve(shot, overlap.Collider, overlap.Point, overlap.Normal, start - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
-            if (_aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
+            if (!WeaponSimulation.IsSplatling(weapon) && _aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
             {
                 Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
                 return true;
@@ -239,11 +273,11 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, end - shot.Born, to);
 #endif
-            if (Vector3.Distance(active.LastTrail, to) >= weapon.TrailSpacing)
-            { PaintTrail(to, shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal); active.LastTrail = to; }
+            if (Vector3.Distance(active.LastTrail, to) >= weapon.TrailSpacing && (!WeaponSimulation.IsSplatling(weapon) || active.TrailCount < weapon.SplatlingTrailCount))
+            { PaintTrail(to, shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal); active.LastTrail = to; active.TrailCount++; }
             return false;
         }
-        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w, ref uint seed, ref uint ordinal)
+        private void PaintTrail(Vector3 position, InkShot shot, cfg.HeroConfig w, ref uint seed, ref uint ordinal, float radius = -1)
         {
             bool enabled = PrototypeMatch.Current != null;
 #if UNITY_EDITOR
@@ -251,11 +285,15 @@ namespace Splatoon.Combat
 #endif
             if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, false);
+            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, radius > 0 ? radius : Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, false);
         }
         private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, cfg.HeroConfig w, uint ordinal, bool impact)
         {
-            uint shapeSeed = _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.Id, shot.PelletIndex, ordinal, impact);
+            // A sustained magazine can have several bullets in flight. Give each
+            // stamp an immutable shape so batching their arrivals cannot alter paint.
+            uint entropy = InkShapeAtlas.Hash(shot.Seed ^ InkShapeAtlas.Hash(shot.Id) ^ InkShapeAtlas.Hash(ordinal) ^ (impact ? 0xb5297a4du : 0x68e31da4u));
+            uint shapeSeed = WeaponSimulation.IsSplatling(w) ? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy)
+                : _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.Id, shot.PelletIndex, ordinal, impact);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed });

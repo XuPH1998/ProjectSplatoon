@@ -64,6 +64,7 @@ namespace Splatoon.Networking
                     w.Write(profile.BlendSeconds); w.Write(profile.AnimationReferenceSpeed);
                     w.Write(profile.WalkPlayback.x); w.Write(profile.WalkPlayback.y); w.Write(profile.WalkPlayback.z); w.Write(profile.WalkPlayback.w);
                     w.Write(profile.ShootDuration); w.Write(profile.DieForwardDuration); w.Write(profile.DieBackwardDuration);
+                    w.Write(profile.Splatling); w.Write(profile.ShootEndDuration);
                     w.Write(profile.SpineAimWeight); w.Write(profile.RecoilRecovery); w.Write(profile.CameraShake);
                     Write(w, profile.CameraPivot); Write(w, profile.CameraOffset);
                     w.Write(profile.CameraCollisionRadius); w.Write(profile.CameraCollisionPadding);

@@ -1,0 +1,5 @@
+PASS: GPU URP host boot, sixth hero selection/preload, 3 bots inherit ID6, four magazines = 264 unique rounds, total 35 ink each, full damage identity, five aim angles (-65 to 75) and left grip, swim cancel, swim death, respawn.
+Peak active projectiles=6
+Synchronous four-player simulation P95 ms=3.165 (not render frame time)
+GPU=NVIDIA GeForce RTX 3060
+Resolution=960x960

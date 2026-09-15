@@ -32,6 +32,8 @@ namespace Splatoon.Combat
         private bool _presented, _alive, _supportGrip = true;
         private uint _revision;
         private double _turnStarted = double.NaN, _fireStarted = double.NaN, _diedAt = double.NaN;
+        private double _shootEnded = double.NaN;
+        private SplatlingFeedback _splatlingFeedback;
         private int _baseState;
         private PlayerSnapshot _state;
         private Transform _spine, _chest, _leftUpper, _leftLower, _leftHand;
@@ -112,6 +114,11 @@ namespace Splatoon.Combat
         {
             if (Profile == null || Animator == null) return;
             _state = state;
+            if(Profile.Splatling && Application.isPlaying)
+            {
+                if(_splatlingFeedback==null)_splatlingFeedback=gameObject.AddComponent<SplatlingFeedback>();
+                _splatlingFeedback.Present(state,GameplayConfig.GetHero(state.HeroId),Nozzle,SwimEffect!=null?SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial:null,dt);
+            }
             bool alive = state.Health > 0, visible = !(state.Swimming || state.CompactBody) || !alive;
             bool reset = !_presented || _revision != state.Revision || (alive && !_alive);
             bool restored = visible && !Animator.enabled;
@@ -167,7 +174,14 @@ namespace Splatoon.Combat
                     float phase = Mathf.Repeat((float)(now - state.FireStartedAt), Profile.ShootDuration);
                     Animator.Play(Shoot, 1, phase / Profile.ShootDuration); _fireStarted = state.FireStartedAt;
                 }
-                float weight = !alive ? 0 : Mathf.MoveTowards(Animator.GetLayerWeight(1), firing ? 1 : 0, dt / Profile.BlendSeconds);
+                bool ending = Profile.Splatling && alive && !state.Swimming && !state.CompactBody && !firing &&
+                    !SplatlingSimulation.Charging(state) && state.SplatlingEndedAt > 0 && now >= state.SplatlingEndedAt && now < state.SplatlingEndedAt + Profile.ShootEndDuration;
+                if (ending && (_shootEnded != state.SplatlingEndedAt || reset || restored))
+                {
+                    Animator.Play("Shooting.ShootEnd",1,(float)(now-state.SplatlingEndedAt)/Profile.ShootEndDuration);
+                    _shootEnded=state.SplatlingEndedAt;
+                }
+                float weight = !alive ? 0 : Mathf.MoveTowards(Animator.GetLayerWeight(1), firing || ending ? 1 : 0, dt / Profile.BlendSeconds);
                 Animator.SetLayerWeight(1, weight);
                 }
                 // Present runs after Unity's Animator update. Rebind restores the

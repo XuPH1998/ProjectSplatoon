@@ -1,0 +1,3 @@
+hero,frames,p50FrameMs,p95FrameMs,medianDrawCalls,medianBatches,allocatedMiB
+1,120,8.353,9.605,265,265,443.55
+6,120,8.331,8.772,244,244,444.77

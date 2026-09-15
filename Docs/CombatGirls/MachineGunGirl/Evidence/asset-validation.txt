@@ -1,0 +1,22 @@
+MachineGunGirl MG_AimWalk_F: speed=1.41533, playback=3.23835
+MachineGunGirl MG_AimWalk_B: speed=1.41533, playback=3.23834
+MachineGunGirl MG_AimWalk_FL: speed=1.39620, playback=3.28273
+MachineGunGirl MG_AimWalk_BR: speed=1.39620, playback=3.28273
+MachineGunGirl: DieForward=MG_Die_F, DieBackward=MG_Die_B; signed torso offset=0.9164/-0.8726
+MachineGunGirl material MachineGun_Hair_01: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Body: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Sportswear: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material MachineGun_Cloth_01: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material MachineGun_Cloth_Outer_01: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Face 12345: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Eye 1: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Face 6: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material Weapon_MachineGun: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGunGirl material MachineGun_Glass: CombatGirls/MachineGun/Toon SDF; only _Is_Filter_LightColor=1
+MachineGun assembly: hand=(0.185419112, 1.019834, -0.1758094), root=(0.185419291, 1.0198338, -0.175809473), rotation=(274.395172, 312.972473, 142.472748)
+MachineGunGirl: avatar=Humanoid_F, camera=(0, 1.361966, 0), muzzleR=(0.174741924, 0.906075954, 0.9067824), muzzleL=(-0.25, 1.4, 0.7)
+DualPistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+ShotgunGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+PistolGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+RocketLauncherGirl: bindings, humanoid, whitelist, loops and missing scripts PASS
+MachineGunGirl: bindings, humanoid, whitelist, loops and missing scripts PASS

@@ -17,7 +17,8 @@ namespace Splatoon.Editor
     {
         public const string Root = "Assets/GameResource/Characters/Shared/Paper";
         public const string Output = "Reports/PaperBody";
-        public static readonly string[] Heroes = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl" };
+        public static readonly string[] Heroes = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl" };
+        public static void ConfigureHero(string hero) => Configure(hero, Shader.Find("Splatoon/PaperBody"));
         static PaperBodyBuilder() => EditorApplication.update += Poll;
         static void Poll()
         {
@@ -79,7 +80,7 @@ namespace Splatoon.Editor
                 var nozzle=bindings.Nozzle; var grip=bindings.SupportLeftHand ? bindings.LeftGrip : null;
                 var aim=view.AimReference; float spineWeight=view.Profile.SpineAimWeight;
                 referenceSpeed=view.Profile.AnimationReferenceSpeed;
-                foreach (var c in instance.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(c);
+                foreach (var c in instance.GetComponentsInChildren<MonoBehaviour>(true)) if (c is not MachineGunFaceShadow) Object.DestroyImmediate(c);
                 foreach (var c in instance.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(c);
                 foreach (var c in instance.GetComponentsInChildren<Rigidbody>(true)) Object.DestroyImmediate(c);
                 foreach (var t in instance.GetComponentsInChildren<Transform>(true)) t.gameObject.layer=PaperCapture.Layer;

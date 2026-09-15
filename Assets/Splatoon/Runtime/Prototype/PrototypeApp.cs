@@ -277,8 +277,9 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(820,625,440,82),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n回车开始（房主）",_small);
+            if (equipped.FireMode != 4 || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
+                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (equipped.FireMode == 4 ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(820,625,440,82),(equipped.FireMode == 4 ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
                 if (equipped.FireMode == 2)
@@ -292,6 +293,7 @@ namespace Splatoon.Prototype
                 }
                 float gap = 5 + player.CurrentSpread;
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
+                if (equipped.FireMode == 4) DrawSplatlingHud(player, equipped, reticleCenter);
                 Color reticle = local.MuzzleBlocked ? Color.red : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(GameplayConfig.GetHero(player.HeroId)) ? Color.yellow : Color.white;
                 Panel(new Rect(reticleCenter.x-1,reticleCenter.y-gap-7,2,7),reticle); Panel(new Rect(reticleCenter.x-1,reticleCenter.y+gap,2,7),reticle);
                 Panel(new Rect(reticleCenter.x-gap-7,reticleCenter.y-1,7,2),reticle); Panel(new Rect(reticleCenter.x+gap,reticleCenter.y-1,7,2),reticle);

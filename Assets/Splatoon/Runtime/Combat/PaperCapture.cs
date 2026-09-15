@@ -125,6 +125,7 @@ namespace Splatoon.Combat
             try
             {
                 foreach (var part in _parts) part.Renderer.enabled=true;
+                _character.GetComponent<MachineGunFaceShadow>()?.Apply();
                 _light.enabled=true;
                 RenderPipeline.SubmitRenderRequest(_camera,new UniversalRenderPipeline.SingleCameraRequest { destination=Texture });
                 Texture.GenerateMips();

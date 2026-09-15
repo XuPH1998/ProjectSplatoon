@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "sourceFiles": 278,
+  "sourceUnchanged": true,
+  "importedFbxCount": 10,
+  "heroes": 6,
+  "fieldsPerHero": 90,
+  "checkedConfigValues": 540,
+  "originalFivePreserved": true,
+  "duplicateGuids": [],
+  "errors": []
+}

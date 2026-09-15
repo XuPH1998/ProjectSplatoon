@@ -1,0 +1,38 @@
+[
+  {
+    "view": "front",
+    "meanAbsoluteChannelDifference": 0.0817234375,
+    "resolution": [
+      800,
+      800
+    ],
+    "note": "Same camera and white light; differences also include assembly/pose, not a standalone material accuracy metric."
+  },
+  {
+    "view": "side",
+    "meanAbsoluteChannelDifference": 0.26193489583333335,
+    "resolution": [
+      800,
+      800
+    ],
+    "note": "Same camera and white light; differences also include assembly/pose, not a standalone material accuracy metric."
+  },
+  {
+    "view": "back",
+    "meanAbsoluteChannelDifference": 0.4362046875,
+    "resolution": [
+      800,
+      800
+    ],
+    "note": "Same camera and white light; differences also include assembly/pose, not a standalone material accuracy metric."
+  },
+  {
+    "view": "face",
+    "meanAbsoluteChannelDifference": 0.0,
+    "resolution": [
+      800,
+      800
+    ],
+    "note": "Same camera and white light; differences also include assembly/pose, not a standalone material accuracy metric."
+  }
+]

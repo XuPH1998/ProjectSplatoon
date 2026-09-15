@@ -16,8 +16,11 @@ def main():
     parser.add_argument("--source", default="D:/XPHUNITY/CombatGirls/Assets")
     parser.add_argument("--project", default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument("--heroes", action="store_true", help="Import the four approved additional heroes without touching RifleGirl")
+    parser.add_argument("--hero", type=int, help="Import only one pack from hero-packs.json")
     parser.add_argument("--manifest-only", action="store_true", help="Refresh provenance without resetting Unity importer settings")
     args = parser.parse_args()
+    if args.hero is not None:
+        args.heroes = True
     source, project = Path(args.source), Path(args.project)
     pack = source / "CombatGirlsCharacterPack"
     target = project / "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack"
@@ -34,13 +37,16 @@ def main():
         if match:
             existing[match[1]] = meta
     definitions = json.loads(Path(__file__).with_name('hero-packs.json').read_text()) if args.heroes else [dict(pack='RifleGirl', clips=CLIPS, avatar='Humanoid_F')]
+    if args.hero is not None:
+        definitions = [d for d in definitions if d['id'] == args.hero]
+        if not definitions: raise ValueError('Unknown hero')
     allowed = {d['pack']: set(d['clips']) for d in definitions}
     def approved(path):
         return 'Animations' not in path.parts or any((pack / p) in path.parents and path.stem in names for p, names in allowed.items())
     selected = set()
     for definition in definitions:
         for path in (pack / definition['pack']).rglob('*'):
-            if path.is_file() and path.suffix.lower() not in ('.meta', '.unity', '.controller', '.cs') and approved(path):
+            if path.is_file() and 'UI' not in path.parts and path.suffix.lower() not in ('.meta', '.unity', '.controller', '.cs') and approved(path):
                 selected.add(path)
         selected.add(pack / ('Humanoid_Bot/Models/' + definition['avatar'] + '.fbx'))
     if not args.heroes:
@@ -73,9 +79,9 @@ def main():
     if args.heroes:
         for path in selected:
             dst = target / path.relative_to(pack)
-            if dst.exists() and not any((pack / d['pack']) in path.parents for d in definitions) and dst.read_bytes() != path.read_bytes():
+            if not any((pack / d['pack']) in path.parents for d in definitions) and (args.hero == 6 or (dst.exists() and dst.read_bytes() != path.read_bytes())):
                 original_guid = re.search(r'(?m)^guid: ([a-f0-9]{32})', Path(str(path)+'.meta').read_text('utf-8-sig'))[1]
-                forks[original_guid] = uuid.uuid5(uuid.NAMESPACE_URL, 'CombatGirls/FourHeroes/' + str(path.relative_to(pack))).hex
+                forks[original_guid] = uuid.uuid5(uuid.NAMESPACE_URL, ('CombatGirls/MachineGun/' if args.hero == 6 else 'CombatGirls/FourHeroes/') + str(path.relative_to(pack))).hex
     records = []
     for path in sorted(selected):
         if pack not in path.parents:
@@ -85,7 +91,7 @@ def main():
         guid = re.search(r"(?m)^guid: ([a-f0-9]{32})", meta.read_text(encoding="utf-8-sig"))[1]
         shared = args.heroes and not any((pack / d['pack']) in path.parents for d in definitions)
         if guid in forks:
-            dst = target / 'SharedFourHeroes' / path.relative_to(pack)
+            dst = target / ('SharedMachineGun' if args.hero == 6 else 'SharedFourHeroes') / path.relative_to(pack)
         if guid in existing:
             raise RuntimeError(f"GUID collision: {path} and {existing[guid]}")
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -117,7 +123,7 @@ def main():
                 dst_file.write_bytes(data)
             records.append({"source": str(src_file), "target": str(dst_file.relative_to(project)).replace("\\", "/"),
                             "sourceSha256": original_hash, "importSha256": hashlib.sha256(data).hexdigest(), "changes": changes})
-    manifest = project / ("Reports/CombatGirls/FourHeroes/source-assets.json" if args.heroes else "Reports/CombatGirls/source-assets.json")
+    manifest = project / (f"Reports/CombatGirls/{definitions[0]['name']}/source-assets.json" if args.hero else "Reports/CombatGirls/FourHeroes/source-assets.json" if args.heroes else "Reports/CombatGirls/source-assets.json")
     manifest.parent.mkdir(parents=True, exist_ok=True)
     manifest.write_text(json.dumps({"packs": definitions, "files": records}, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({"assets": len(selected), "files": len(records), "clips": sum(len(d['clips']) for d in definitions)}))

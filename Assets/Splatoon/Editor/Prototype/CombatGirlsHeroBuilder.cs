@@ -29,18 +29,34 @@ namespace Splatoon.Editor
             public string Root => "Assets/GameResource/Characters/" + name;
             public string CharacterPath => Root + "/Prefabs/" + name + "Visual.prefab";
             public string WeaponPath => "Assets/GameResource/Weapons/" + name + "/Prefabs/" + weapon + ".prefab";
-            public string ClipPath(string clip) => Art + "/Animations/" + (clip.Contains("Die") ? "Normal/" : "Aiming/") + clip + ".fbx";
+            public string ClipPath(string clip) => Art + "/Animations/" + (clip.Contains("Die") ? "Normal/" : "Aiming/") + (clip.StartsWith("MG_Shoot") ? "MG_Shoot" : clip) + ".fbx";
         }
         [Serializable] sealed class Packs { public Pack[] items; }
         [Serializable] sealed class PaintMeasurement { public int id; public float range; }
         public static Pack[] Definitions => JsonUtility.FromJson<Packs>("{\"items\":" + File.ReadAllText("Tools/CombatGirls/hero-packs.json") + "}").items;
-        const string ReportRoot = "Reports/CombatGirls/FourHeroes";
+        static string ReportRoot = "Reports/CombatGirls/FourHeroes";
         static readonly List<string> Report = new();
         static readonly Dictionary<Material, Material> Materials = new();
-        static AnimationClip Clip(Pack p, string name) => AssetDatabase.LoadAllAssetsAtPath(p.ClipPath(name)).OfType<AnimationClip>().Single(c => !c.name.StartsWith("__preview__"));
+        static AnimationClip Clip(Pack p, string name) => AssetDatabase.LoadAllAssetsAtPath(p.ClipPath(name)).OfType<AnimationClip>().Single(c => !c.name.StartsWith("__preview__") && (!name.StartsWith("MG_Shoot") || c.name == name));
+        [MenuItem("喷墨对战/角色/安装 MachineGunGirl")]
+        public static void InstallMachineGun()
+        {
+            ReportRoot = "Reports/CombatGirls/MachineGunGirl";
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Cannot rebuild while playing");
+            Directory.CreateDirectory(ReportRoot + "/Screenshots"); Report.Clear();
+            var scene = EditorSceneManager.NewPreviewScene();
+            try
+            {
+                Build(Definitions.Single(p => p.id == 6), scene);
+                PaperBodyBuilder.ConfigureHero("MachineGunGirl");
+                PrototypeBuilder.ConfigureAddressables(); AssetDatabase.SaveAssets(); Validate();
+                File.WriteAllLines(ReportRoot + "/asset-validation.txt", Report);
+            }
+            finally { EditorSceneManager.ClosePreviewScene(scene); ReportRoot = "Reports/CombatGirls/FourHeroes"; }
+        }
         static T Load<T>(string path) where T : UnityEngine.Object => CombatGirlsBuilder.Load<T>(path);
 
-        [MenuItem("喷墨对战/角色/安装四位 CombatGirls 英雄")]
+        [MenuItem("喷墨对战/角色/安装 CombatGirls 清单英雄")]
         public static void Install()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Cannot rebuild while playing");
@@ -52,7 +68,7 @@ namespace Splatoon.Editor
                 PrototypeBuilder.ConfigureAddressables(); AssetDatabase.SaveAssets();
                 Validate();
                 File.WriteAllLines(ReportRoot + "/asset-validation.txt", Report);
-                Debug.Log("[FourHeroes] Assets, 41 animations, bindings and material validation PASS");
+                Debug.Log("[CombatGirls] Assets, animations, bindings and material validation PASS");
             }
             finally { EditorSceneManager.ClosePreviewScene(preview); }
         }
@@ -77,7 +93,7 @@ namespace Splatoon.Editor
             foreach (var folder in new[] { p.Root + "/Animations", p.Root + "/Materials", p.Root + "/Prefabs", Path.GetDirectoryName(p.WeaponPath) }) Directory.CreateDirectory(folder);
             AssetDatabase.Refresh(); Materials.Clear();
             string avatarPath = CombatGirlsBuilder.SourceRoot + "/Humanoid_Bot/Models/" + p.avatar + ".fbx";
-            string isolatedAvatar = CombatGirlsBuilder.SourceRoot + "/SharedFourHeroes/Humanoid_Bot/Models/" + p.avatar + ".fbx";
+            string isolatedAvatar = CombatGirlsBuilder.SourceRoot + (p.id == 6 ? "/SharedMachineGun" : "/SharedFourHeroes") + "/Humanoid_Bot/Models/" + p.avatar + ".fbx";
             avatarPath = File.Exists(isolatedAvatar) ? isolatedAvatar : avatarPath;
             var avatar = AssetDatabase.LoadAssetAtPath<Avatar>(avatarPath);
             // FePistol is authored with the shared female Humanoid mapping. Unity's
@@ -85,11 +101,11 @@ namespace Splatoon.Editor
             // of "pelvis", leaving the animated weapon outside the retargeted body.
             // Preserve the explicit source mapping when creating its local Avatar.
             bool incorrectHips = avatar != null && avatar.humanDescription.human.Any(b => b.humanName == "Hips" && b.boneName != "pelvis");
-            if (avatar == null || (p.avatar == "Humanoid_FePistol" && incorrectHips))
+            if (avatar == null || ((p.avatar == "Humanoid_FePistol" || p.id == 6) && incorrectHips))
             {
                 var importer = (ModelImporter)AssetImporter.GetAtPath(avatarPath);
                 var description = importer.humanDescription;
-                if (p.avatar == "Humanoid_FePistol")
+                if (p.avatar == "Humanoid_FePistol" || p.id == 6)
                 {
                     var shared = (ModelImporter)AssetImporter.GetAtPath(CombatGirlsBuilder.SourceRoot + "/SharedFourHeroes/Humanoid_Bot/Models/Humanoid_F.fbx");
                     description = shared.humanDescription;
@@ -103,24 +119,30 @@ namespace Splatoon.Editor
                 Report.Add(p.name + ": regenerated source Avatar from its authored Humanoid mapping");
             }
             if (!avatar.isValid || !avatar.isHuman) throw new InvalidOperationException("Invalid Avatar: " + p.avatar);
+            if (p.id == 6 && !avatar.humanDescription.human.Any(b => b.humanName == "Hips" && b.boneName == "pelvis"))
+                throw new InvalidOperationException("MachineGun Hips must map to pelvis");
             foreach (var name in p.clips)
             {
                 var importer = (ModelImporter)AssetImporter.GetAtPath(p.ClipPath(name));
                 importer.animationType = ModelImporterAnimationType.Human; importer.avatarSetup = ModelImporterAvatarSetup.CopyFromOther; importer.sourceAvatar = avatar;
                 var clips = importer.clipAnimations.Length > 0 ? importer.clipAnimations : importer.defaultClipAnimations;
-                if (clips.Length != 1) throw new InvalidOperationException("Expected one authored take: " + name);
-                clips[0].lockRootRotation = clips[0].lockRootHeightY = clips[0].lockRootPositionXZ = false;
-                clips[0].keepOriginalOrientation = false; clips[0].keepOriginalPositionY = true; clips[0].keepOriginalPositionXZ = false;
-                clips[0].loopTime = clips[0].loopPose = false;
+                if (clips.Length != 1 && p.id != 6) throw new InvalidOperationException("Expected one authored take: " + name);
+                foreach (var take in clips)
+                {
+                    take.lockRootRotation = take.lockRootHeightY = take.lockRootPositionXZ = false;
+                    take.keepOriginalOrientation = false; take.keepOriginalPositionY = true; take.keepOriginalPositionXZ = false;
+                    take.loopTime = take.loopPose = false;
+                }
                 importer.clipAnimations = clips; importer.SaveAndReimport();
             }
             var raw = CreateSource(p, avatar, preview);
             var profilePath = p.Root + "/" + p.name + "Presentation.asset";
             var profile = AssetDatabase.LoadAssetAtPath<CharacterPresentationProfile>(profilePath);
             if (profile == null) { profile = ScriptableObject.CreateInstance<CharacterPresentationProfile>(); AssetDatabase.CreateAsset(profile, profilePath); }
-            profile.SingleShot = true; profile.DualWield = p.id == 2;
+            profile.SingleShot = p.id != 6; profile.DualWield = p.id == 2; profile.Splatling = p.id == 6;
             var tables = new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json")));
             var weaponConfig = tables.TbHero.Get(p.id);
+            profile.AnimationReferenceSpeed = weaponConfig.MoveSpeed;
             profile.ShotPlaybackSeconds = 1f / weaponConfig.FireRate * (p.id == 2 ? 2 : 1) * .9f;
             profile.TurnLeftDuration = Clip(p, p.clips[4]).length; profile.TurnRightDuration = Clip(p, p.clips[5]).length;
             profile.TurnLeftProgress = CombatGirlsBuilder.ExtractTurnCurve(Clip(p, p.clips[4]), raw);
@@ -131,19 +153,22 @@ namespace Splatoon.Editor
                 float speed = clip.averageSpeed.magnitude;
                 if (speed < .05f) speed = CombatGirlsBuilder.MeasureStrideSpeed(clip, raw, i < 2 ? Vector3.forward : Vector3.right);
                 if (!float.IsFinite(speed) || speed < .05f) throw new InvalidOperationException("Cannot measure stride " + p.name + "/" + clip.name);
-                profile.WalkPlayback[i] = 5 / speed;
+                profile.WalkPlayback[i] = profile.AnimationReferenceSpeed / speed;
                 Report.Add($"{p.name} {p.clips[i]}: speed={speed:F5}, playback={profile.WalkPlayback[i]:F5}");
             }
             UnityEngine.Object.DestroyImmediate(raw);
             foreach (var name in p.clips)
             {
                 var importer = (ModelImporter)AssetImporter.GetAtPath(p.ClipPath(name)); var clips = importer.clipAnimations;
-                bool loop = name.Contains("AimWalk") || name.EndsWith("AimIdle");
-                clips[0].loopTime = clips[0].loopPose = loop;
-                clips[0].lockRootRotation = !name.Contains("AimTurn"); clips[0].keepOriginalOrientation = true;
-                clips[0].lockRootPositionXZ = clips[0].lockRootHeightY = true;
-                clips[0].keepOriginalPositionXZ = clips[0].keepOriginalPositionY = true;
-                if (name.Contains("Shoot")) { clips[0].firstFrame = 0; clips[0].lastFrame = 29; }
+                foreach (var take in clips)
+                {
+                    bool loop = name.Contains("AimWalk") || name.EndsWith("AimIdle") || take.name == "MG_Shoot_Loop";
+                    take.loopTime = take.loopPose = loop;
+                    take.lockRootRotation = !name.Contains("AimTurn"); take.keepOriginalOrientation = true;
+                    take.lockRootPositionXZ = take.lockRootHeightY = true;
+                    take.keepOriginalPositionXZ = take.keepOriginalPositionY = true;
+                    if (name.Contains("Shoot") && p.id != 6) { take.firstFrame = 0; take.lastFrame = 29; }
+                }
                 importer.clipAnimations = clips; importer.SaveAndReimport();
             }
             var character = CreateSource(p, avatar, preview);
@@ -157,7 +182,8 @@ namespace Splatoon.Editor
                 string forward = firstDirection > 0 ? firstDeath : secondDeath, backward = firstDirection < 0 ? firstDeath : secondDeath;
                 Report.Add($"{p.name}: DieForward={forward}, DieBackward={backward}; signed torso offset={firstDirection:F4}/{secondDirection:F4}");
                 profile.DieForwardDuration = Clip(p, forward).length; profile.DieBackwardDuration = Clip(p, backward).length;
-                profile.ShootDuration = Clip(p, p.clips[7]).length;
+                profile.ShootDuration = Clip(p, p.id == 6 ? "MG_Shoot_Loop" : p.clips[7]).length;
+                if (p.id == 6) profile.ShootEndDuration = Clip(p, "MG_Shoot_End").length;
                 animator.Rebind(); Clip(p, p.clips[6]).SampleAnimation(character, 0);
                 // The reference uses the same original materials and source scene part selection.
                 Capture(p, character, "source", preview);
@@ -208,6 +234,7 @@ namespace Splatoon.Editor
 
         static HeroWeaponBindings MakeWeapon(Pack p, GameObject character, Transform socket, Transform leftHand, Scene scene)
         {
+            if (p.id == 6) return MakeMachineGun(p, character, socket, scene);
             var allMeshes = character.GetComponentsInChildren<MeshFilter>(true);
             var gunMeshes = allMeshes.Where(f => p.id == 5 ? Under(f.transform, "Weapon_Rocket_Launcher") && !Under(f.transform, "Bullet")
                 : Under(f.transform, "add_weapon_r") || (p.id == 2 && Under(f.transform, "add_weapon_l"))).ToArray();
@@ -246,6 +273,33 @@ namespace Splatoon.Editor
             foreach (var mesh in gunMeshes) UnityEngine.Object.DestroyImmediate(mesh.gameObject);
             return binding;
         }
+        static HeroWeaponBindings MakeMachineGun(Pack p, GameObject character, Transform socket, Scene scene)
+        {
+            var original = character.GetComponentsInChildren<Transform>(true).Single(t => t.name == "Weapon_MachineGun");
+            var constraint = original.GetComponent<ParentConstraint>();
+            if (constraint != null && constraint.sourceCount > 0)
+            {
+                var source = constraint.GetSource(0).sourceTransform;
+                original.SetPositionAndRotation(source.TransformPoint(constraint.translationOffsets[0]), source.rotation * Quaternion.Euler(constraint.rotationOffsets[0]));
+            }
+            Vector3 assemblyPosition = original.position; Quaternion assemblyRotation = original.rotation;
+            var copy = UnityEngine.Object.Instantiate(original.gameObject); SceneManager.MoveGameObjectToScene(copy, scene);
+            var root = Child(p.weapon, socket);
+            copy.name = "Weapon_MachineGun"; copy.transform.SetParent(root, true);
+            foreach (var c in copy.GetComponentsInChildren<ParentConstraint>(true)) UnityEngine.Object.DestroyImmediate(c);
+            foreach (var c in copy.GetComponentsInChildren<MonoBehaviour>(true)) UnityEngine.Object.DestroyImmediate(c);
+            copy.transform.SetPositionAndRotation(assemblyPosition, assemblyRotation);
+            Report.Add($"MachineGun assembly: hand={socket.position:R}, root={copy.transform.position:R}, rotation={copy.transform.eulerAngles:R}");
+            var binding = root.gameObject.AddComponent<HeroWeaponBindings>(); binding.SupportLeftHand = true;
+            binding.LeftGrip = copy.GetComponentsInChildren<Transform>(true).Single(t => t.name == "L_Hand_Position");
+            binding.Nozzle = Child("Muzzle", root); binding.Nozzle.position = MeasureActiveMuzzle(copy.transform); binding.Nozzle.rotation = Quaternion.identity;
+            UnityEngine.Object.DestroyImmediate(original.gameObject);
+            // The second magazine is the demo's loose reload prop.
+            foreach (var t in character.GetComponentsInChildren<Transform>(true).Where(t => t.name == "Weapon_MiniGun_Magazine" && !t.IsChildOf(copy.transform)).ToArray())
+                UnityEngine.Object.DestroyImmediate(t.gameObject);
+            foreach (var c in character.GetComponentsInChildren<ParentConstraint>(true)) UnityEngine.Object.DestroyImmediate(c);
+            return binding;
+        }
         static Vector3 MeasureActiveMuzzle(Transform root)
         {
             var vertices = root.GetComponentsInChildren<MeshFilter>(false).SelectMany(f => f.sharedMesh.vertices.Select(f.transform.TransformPoint)).ToArray();
@@ -265,6 +319,12 @@ namespace Splatoon.Editor
             foreach (var body in go.GetComponentsInChildren<Rigidbody>(true)) UnityEngine.Object.DestroyImmediate(body);
             go.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             var animator = go.GetComponent<Animator>(); animator.avatar = avatar; animator.applyRootMotion = false;
+            if (p.id == 6)
+            {
+                var sdf = go.AddComponent<MachineGunFaceShadow>(); sdf.Head = animator.GetBoneTransform(HumanBodyBones.Head);
+                sdf.Faces = go.GetComponentsInChildren<Renderer>(true).Where(r => r.sharedMaterials.Any(m => m != null && m.HasProperty("_UseSDFShadow") && m.GetFloat("_UseSDFShadow") > .5f)).ToArray();
+                sdf.Apply();
+            }
             return go;
         }
         static void ApplySceneAppearance(Pack p, GameObject go)
@@ -319,9 +379,10 @@ namespace Splatoon.Editor
                         material = AssetDatabase.LoadAssetAtPath<Material>(path);
                         if (material == null) { material = new Material(source); AssetDatabase.CreateAsset(material, path); }
                         else EditorUtility.CopySerialized(source, material);
-                        if (material.shader.name == "Toon/Toon") material.SetFloat("_Is_Filter_LightColor", 1);
+                        bool filter = material.shader.name == "Toon/Toon" || p.id == 6 && material.HasProperty("_Is_Filter_LightColor");
+                        if (filter) material.SetFloat("_Is_Filter_LightColor", 1);
                         EditorUtility.SetDirty(material); Materials.Add(source, material);
-                        Report.Add($"{p.name} material {source.name}: {source.shader.name}; " + (material.shader.name == "Toon/Toon" ? "only _Is_Filter_LightColor=1" : "unchanged"));
+                        Report.Add($"{p.name} material {source.name}: {source.shader.name}; " + (filter ? "only _Is_Filter_LightColor=1" : "unchanged"));
                     }
                     array[i] = material;
                 }
@@ -367,7 +428,8 @@ namespace Splatoon.Editor
                 { string bone=mask.GetTransformPath(i); mask.SetTransformActive(i,p.id==2 ? bone.Contains(hand==0?"/clavicle_r":"/clavicle_l") : bone.Contains("/spine_01")); }
                 EditorUtility.SetDirty(mask);c.AddLayer(hand==0?"Shooting":"ShootingLeft");var layers=c.layers;
                 layers[0].defaultWeight=1;layers[hand+1].avatarMask=mask;layers[hand+1].defaultWeight=0;layers[hand+1].blendingMode=AnimatorLayerBlendingMode.Override;
-                var shot=layers[hand+1].stateMachine.AddState("Shot");shot.motion=Clip(p,p.clips[7+hand]);shot.speed=((AnimationClip)shot.motion).length/profile.ShotPlaybackSeconds;shot.writeDefaultValues=false;
+                var shot=layers[hand+1].stateMachine.AddState(p.id == 6 ? "AutoShoot" : "Shot");shot.motion=Clip(p,p.id == 6 ? "MG_Shoot_Loop" : p.clips[7+hand]);shot.speed=p.id == 6 ? 1 : ((AnimationClip)shot.motion).length/profile.ShotPlaybackSeconds;shot.writeDefaultValues=false;
+                if (p.id == 6) { var end=layers[hand+1].stateMachine.AddState("ShootEnd"); end.motion=Clip(p,"MG_Shoot_End");end.writeDefaultValues=false; }
                 layers[hand+1].stateMachine.defaultState=shot;c.layers=layers;
             }
             EditorUtility.SetDirty(c);return c;
@@ -404,6 +466,7 @@ namespace Splatoon.Editor
         static void CaptureOne(GameObject character, Scene scene, string path, Vector3 position, Vector3 target)
         {
             if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)return;
+            character.GetComponent<MachineGunFaceShadow>()?.Apply();
             var cameraObject=new GameObject("ComparisonCamera",typeof(Camera));SceneManager.MoveGameObjectToScene(cameraObject,scene);
             var lightObject=new GameObject("ComparisonLight",typeof(Light));SceneManager.MoveGameObjectToScene(lightObject,scene);
             var camera=cameraObject.GetComponent<Camera>();camera.scene=scene;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.36f,.39f,.43f);camera.fieldOfView=35;
@@ -424,16 +487,16 @@ namespace Splatoon.Editor
                 if(!view.Animator.avatar.isValid||view.Animator.applyRootMotion)throw new InvalidOperationException("Avatar/root motion invalid "+p.name);
                 foreach(var t in character.GetComponentsInChildren<Transform>(true))if(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)!=0)throw new InvalidOperationException("Missing component "+t.name);
                 var clips=view.Animator.runtimeAnimatorController.animationClips.Distinct().ToArray();count+=clips.Length;
-                if(clips.Length!=p.clips.Length)throw new InvalidOperationException("Wrong clip count "+p.name+": "+clips.Length);
+                if(clips.Length!=p.clips.Length+(p.id==6?1:0))throw new InvalidOperationException("Wrong clip count "+p.name+": "+clips.Length);
                 foreach(var clip in clips)
                 {
                     string name=Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(clip));
-                    if(!p.clips.Contains(name)||clip.isLooping!=(name.Contains("AimWalk")||name.EndsWith("AimIdle")))throw new InvalidOperationException("Clip whitelist/loop mismatch "+name);
+                    if(!p.clips.Contains(name)||clip.isLooping!=(name.Contains("AimWalk")||name.EndsWith("AimIdle")||clip.name=="MG_Shoot_Loop"))throw new InvalidOperationException("Clip whitelist/loop mismatch "+name);
                 }
                 foreach(var dependency in AssetDatabase.GetDependencies(p.CharacterPath,true))if(dependency.Contains("_Incoming")||dependency.Contains("Jammo"))throw new InvalidOperationException("Old dependency "+dependency);
                 Report.Add(p.name+": bindings, humanoid, whitelist, loops and missing scripts PASS");
             }
-            if(count!=41)throw new InvalidOperationException("Expected 41 new clips");
+            if(count!=Definitions.Sum(p=>p.clips.Length+(p.id==6?1:0)))throw new InvalidOperationException("Unexpected clip count");
         }
     }
 }

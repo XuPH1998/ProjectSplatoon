@@ -222,9 +222,9 @@ namespace Splatoon.Prototype
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             bool wasSwimming = s.Swimming;
             bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
-            if (WeaponSimulation.IsSemi(w) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
+            if ((WeaponSimulation.IsSemi(w) || WeaponSimulation.IsSplatling(w)) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
             bool fire = WeaponSimulation.WantsFire(s, input, w, now);
-            _motor.Step(ref s, input, dt, now, fire, w.ShootMoveSpeed,
+            _motor.Step(ref s, input, dt, now, fire, WeaponSimulation.IsSplatling(w) ? SplatlingSimulation.MovementSpeed(s, w) : w.ShootMoveSpeed,
                 WeaponSimulation.IsSemi(w) && s.FireVisualUntil > now);
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
             if (s.Health <= 0) { SwimBody?.ApplyCollision(s); return false; }
@@ -237,7 +237,7 @@ namespace Splatoon.Prototype
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             if (shot && WeaponSimulation.IsCharge(w)) s.CurrentSpread = WeaponSimulation.Spread(w, !s.Grounded, fireResult.Charge);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
-            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w), dt, now);
+            ResourceSimulation.Step(ref s, w, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)

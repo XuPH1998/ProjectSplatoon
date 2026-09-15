@@ -1,0 +1,78 @@
+{
+  "targeted": {
+    "total": 67,
+    "passed": 67,
+    "failed": 0,
+    "skipped": 0,
+    "failures": {}
+  },
+  "extendedBeforeProtocolAssertionFix": {
+    "total": 189,
+    "passed": 177,
+    "failed": 12,
+    "skipped": 0,
+    "failures": {
+      "Splatoon.Tests.Match4v4PlayTests.RealHostCapacityCombatTabAndReturnToWarmup": "Expected: Locked\n  But was:  None",
+      "Splatoon.Tests.PaperTraversalTests.ContentSignatureRejectsDifferentHitProxyContacts": "Expected: 17\n  But was:  18",
+      "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative": "Expected: 108\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk": "Expected: 31.5f\n  But was:  31.0f",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown": "Expected: greater than or equal to 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)": "Expected: 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)": "Expected: 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock": "Expected: 40.5555573f +/- 0.0001d\n  But was:  40.1666679f",
+      "Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake": "Expected: less than 0.0001d\n  But was:  0.000126957893f"
+    }
+  },
+  "baselineCommit": "63fbb1b",
+  "baseline": {
+    "total": 89,
+    "passed": 78,
+    "failed": 11,
+    "skipped": 0,
+    "failures": {
+      "Splatoon.Tests.Match4v4PlayTests.RealHostCapacityCombatTabAndReturnToWarmup": "spawn protection\n  Expected: 0\n  But was:  1",
+      "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative": "Expected: 108\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk": "Expected: 31.5f\n  But was:  31.0f",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)": "Expected: 100\n  But was:  117",
+      "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown": "Expected: greater than or equal to 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)": "Expected: 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)": "Expected: 6\n  But was:  4",
+      "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock": "Expected: 40.5555573f +/- 0.0001d\n  But was:  40.1666679f",
+      "Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake": "Expected: less than 0.0001d\n  But was:  0.000126957893f"
+    }
+  },
+  "overlappingFailedTests": [
+    "Splatoon.Tests.Match4v4PlayTests.RealHostCapacityCombatTabAndReturnToWarmup",
+    "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative",
+    "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)",
+    "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown",
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)",
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)",
+    "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock",
+    "Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake"
+  ],
+  "sameFailureMessages": [
+    "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative",
+    "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)",
+    "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)",
+    "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown",
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)",
+    "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)",
+    "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock",
+    "Splatoon.Tests.TpsAimTests.CameraCollisionAndReticleProjectionUseLogicalAimWithoutShake"
+  ],
+  "protocolAssertionFixed": "PaperTraversalTests.ContentSignatureRejectsDifferentHitProxyContacts",
+  "physicalTwoMachine": false,
+  "formalAddressablesBuild": false,
+  "playerBuild": false
+}

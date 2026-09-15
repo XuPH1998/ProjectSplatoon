@@ -1,0 +1,2054 @@
+{
+  "packs": [
+    {
+      "id": 6,
+      "pack": "CombatGirls_MachineGun",
+      "name": "MachineGunGirl",
+      "weapon": "MachineGun",
+      "avatar": "Humanoid_F",
+      "prefab": "Prefab/MachineGun_Girl.prefab",
+      "scene": "MachineGun_Girl_Scene.unity",
+      "clips": [
+        "MG_AimWalk_F",
+        "MG_AimWalk_B",
+        "MG_AimWalk_FL",
+        "MG_AimWalk_BR",
+        "MG_AimTurn_L90",
+        "MG_AimTurn_R90",
+        "MG_AimIdle",
+        "MG_Shoot",
+        "MG_Die_F",
+        "MG_Die_B"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimIdle.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimIdle.fbx",
+      "sourceSha256": "f95454e5ef61cb0aa9b4d304d5b204816c74bd33ea5f72d66e75eb7b44a7c03e",
+      "importSha256": "f95454e5ef61cb0aa9b4d304d5b204816c74bd33ea5f72d66e75eb7b44a7c03e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimIdle.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimIdle.fbx.meta",
+      "sourceSha256": "f6e9a5640d7ee63e30cdb79df3b26b097e3a5f2c07adbe0e409647aedabe2662",
+      "importSha256": "388c6178b3ceb985c8bc72b6f693b75c2bd36a8e1914f4c8552b4ab315c0ce50",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimTurn_L90.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimTurn_L90.fbx",
+      "sourceSha256": "a6a68dd561359bad160cafcf8cd337381e8c8db9ab4a6e6d5c235ac4659121d1",
+      "importSha256": "a6a68dd561359bad160cafcf8cd337381e8c8db9ab4a6e6d5c235ac4659121d1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimTurn_L90.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimTurn_L90.fbx.meta",
+      "sourceSha256": "dfb7dd704db97674b629f51cee77435cec28831008a23fc47d9a031717afafa1",
+      "importSha256": "8ba26e7e245bbb133e7020bf0ddceb1b11e7cd87ee9cf08b0662a39157bbf2eb",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimTurn_R90.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimTurn_R90.fbx",
+      "sourceSha256": "e0bd7628d701fe89394d204030017564ec12ec495c2c4a01637c3f290c57ba09",
+      "importSha256": "e0bd7628d701fe89394d204030017564ec12ec495c2c4a01637c3f290c57ba09",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimTurn_R90.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimTurn_R90.fbx.meta",
+      "sourceSha256": "5320ca09ec84fc625080a737eb6d7a627c15ea34e7461e7ddc432fde7c737a72",
+      "importSha256": "992975a6507fc07faf132317a263dcd6a3fcc25b1739c83333c73feec7679827",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_B.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_B.fbx",
+      "sourceSha256": "07b43802da87a4f780a6f812433323914c40047f7258e9c390eda805f4ef41ed",
+      "importSha256": "07b43802da87a4f780a6f812433323914c40047f7258e9c390eda805f4ef41ed",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_B.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_B.fbx.meta",
+      "sourceSha256": "b79b0ed39543a46b38b649de6ff432be1cb97383c957ce16bbfeaabe0a76641b",
+      "importSha256": "8721a15319e6257f33ef376deae41b8169889098246d2f0c0dd27dbd8b0fe889",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_BR.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_BR.fbx",
+      "sourceSha256": "c0f3446fe971dd9e1563c401757e22be6512402b060a37b5dc4e9e3a615d3e87",
+      "importSha256": "c0f3446fe971dd9e1563c401757e22be6512402b060a37b5dc4e9e3a615d3e87",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_BR.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_BR.fbx.meta",
+      "sourceSha256": "814a9f4ba4ebaafa76fffa76d16d158ae623ec99a19eb59214c18efa59f81c52",
+      "importSha256": "c31e4a9a396fb2aaf9e519e9284b5d90e39f44c42559ea9ac320a9fa05aece97",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_F.fbx",
+      "sourceSha256": "27a8ac5f43c8b5351f282a0a4989039fda6dcfa979d6282968d7dc76e286e093",
+      "importSha256": "27a8ac5f43c8b5351f282a0a4989039fda6dcfa979d6282968d7dc76e286e093",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_F.fbx.meta",
+      "sourceSha256": "babfa882c58682c3df404e2c40d0b62b060cd88eb1c6a02660259b2620218b92",
+      "importSha256": "23bb0fe62854eda940a5cd1b03a84b84c3c48349e1533354562a2bec65ab4653",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_FL.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_FL.fbx",
+      "sourceSha256": "decc36db2784b15c42a0432a1538b893341ac8207fbe848a30ac0661f80ad685",
+      "importSha256": "decc36db2784b15c42a0432a1538b893341ac8207fbe848a30ac0661f80ad685",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_AimWalk_FL.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_AimWalk_FL.fbx.meta",
+      "sourceSha256": "f1316002c2c4543b3284a53f223d4c7600d72930b9bbea9c683cfd262a6e11e3",
+      "importSha256": "5b89557b086b9c80bb24cdb35a55a7e3e17a7818e01aa7ddc530c78816915926",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_Shoot.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_Shoot.fbx",
+      "sourceSha256": "0d9712a6d42454d981414fc05422766a72bd29a10e4d468ec7812fe2fceeb767",
+      "importSha256": "0d9712a6d42454d981414fc05422766a72bd29a10e4d468ec7812fe2fceeb767",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Aiming\\MG_Shoot.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Aiming/MG_Shoot.fbx.meta",
+      "sourceSha256": "10a81bb1f954898b21a39cbbe20369758c97a808278a8ffda7e5cf2d2278ff35",
+      "importSha256": "a00bca06833d7ac56ea52c74a9da29c58afb6272edee555eb428772e3e934b3e",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Normal\\MG_Die_B.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Normal/MG_Die_B.fbx",
+      "sourceSha256": "29d1d92d9cb1da1a776806cb4a8c65fad896aa30c34fe87b1caafa6866e54aa6",
+      "importSha256": "29d1d92d9cb1da1a776806cb4a8c65fad896aa30c34fe87b1caafa6866e54aa6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Normal\\MG_Die_B.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Normal/MG_Die_B.fbx.meta",
+      "sourceSha256": "ac40f22da97fe6560a517bccffba0faabc2e7742f45e21e1422de73ee7ea1a30",
+      "importSha256": "6505f3c4756ebbb3b00e1f537168d59d0ff3574a1065fe5126fcca8ab2cf7c24",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Normal\\MG_Die_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Normal/MG_Die_F.fbx",
+      "sourceSha256": "175b4828f6d9be72b235bfa1e034d222c204bf78be522c67e7cc1f2449075366",
+      "importSha256": "175b4828f6d9be72b235bfa1e034d222c204bf78be522c67e7cc1f2449075366",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Animations\\Normal\\MG_Die_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Animations/Normal/MG_Die_F.fbx.meta",
+      "sourceSha256": "27c8b59e82d7f9431b67bb59b2389a57f793c6b78c02fbc75aa85d255b8cdd30",
+      "importSha256": "c62c10911e875d5002b2c69cf64d600e31ef959c5f056869291c8321008c6362",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Body.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Body.mat",
+      "sourceSha256": "fd34ca9b45e1135e537e4f2ca36c49e694e30e306ab76f8c74d921248357f702",
+      "importSha256": "fd34ca9b45e1135e537e4f2ca36c49e694e30e306ab76f8c74d921248357f702",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Body.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Body.mat.meta",
+      "sourceSha256": "e083d4796b961bdcbad60a8b189b6321308cb03e4e555c6ec6df26a5a5bb5e33",
+      "importSha256": "e083d4796b961bdcbad60a8b189b6321308cb03e4e555c6ec6df26a5a5bb5e33",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 1.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 1.mat",
+      "sourceSha256": "74c7592dc4ac1825581a96b74c8dab99276cf0e65f29b68f1daaf319c8a9b831",
+      "importSha256": "74c7592dc4ac1825581a96b74c8dab99276cf0e65f29b68f1daaf319c8a9b831",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 1.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 1.mat.meta",
+      "sourceSha256": "c02c5fb4c25284b6d794c3600563b792737b8c8eb8cc4ccea67c68b5c7ef25b7",
+      "importSha256": "c02c5fb4c25284b6d794c3600563b792737b8c8eb8cc4ccea67c68b5c7ef25b7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 2.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 2.mat",
+      "sourceSha256": "38c69605d978a8235b9233a1a82d3cf1608d710bced25347adda45997e16ad22",
+      "importSha256": "38c69605d978a8235b9233a1a82d3cf1608d710bced25347adda45997e16ad22",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 2.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 2.mat.meta",
+      "sourceSha256": "af432f85bb0c2ce93a22016a48365220f344a1dc94e6736e878b243cf96d4cc9",
+      "importSha256": "af432f85bb0c2ce93a22016a48365220f344a1dc94e6736e878b243cf96d4cc9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 3.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 3.mat",
+      "sourceSha256": "a14ed0025349ac453c03c5c0f054d87291596e5cfc537e20027dcf4b3221721b",
+      "importSha256": "a14ed0025349ac453c03c5c0f054d87291596e5cfc537e20027dcf4b3221721b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 3.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 3.mat.meta",
+      "sourceSha256": "898fd2d96c6904172c6aebf521e0adefe1d26597d8040882b828c19fa9cc6a44",
+      "importSha256": "898fd2d96c6904172c6aebf521e0adefe1d26597d8040882b828c19fa9cc6a44",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 4.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 4.mat",
+      "sourceSha256": "62d57bf1336f85c240822f3a088ef43550240b8ed55febcc271dde17d073627f",
+      "importSha256": "62d57bf1336f85c240822f3a088ef43550240b8ed55febcc271dde17d073627f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 4.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 4.mat.meta",
+      "sourceSha256": "eaf878f9bb2ffba357b0d7e6d6467156bc4f84ccce952bab4ce84e25b6987996",
+      "importSha256": "eaf878f9bb2ffba357b0d7e6d6467156bc4f84ccce952bab4ce84e25b6987996",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 5.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 5.mat",
+      "sourceSha256": "1aaf4180e6eba82f94190046f7318232ad69b21e848cdc4aa0b5938233b97e13",
+      "importSha256": "1aaf4180e6eba82f94190046f7318232ad69b21e848cdc4aa0b5938233b97e13",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 5.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 5.mat.meta",
+      "sourceSha256": "8cc578baedcc90ad03f759312901d1f4a22676d24b5743fe4a1120251937ae81",
+      "importSha256": "8cc578baedcc90ad03f759312901d1f4a22676d24b5743fe4a1120251937ae81",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 6.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 6.mat",
+      "sourceSha256": "61f35c00f35118bd414b45e2e168d5500f7da13e53010b62aa1c51a37218f3e4",
+      "importSha256": "61f35c00f35118bd414b45e2e168d5500f7da13e53010b62aa1c51a37218f3e4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Eye 6.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Eye 6.mat.meta",
+      "sourceSha256": "e85bc635546c1b0d58dc54ad3cb48bcbea1f080c4008f05810cfb190e023d5fc",
+      "importSha256": "e85bc635546c1b0d58dc54ad3cb48bcbea1f080c4008f05810cfb190e023d5fc",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Face 12345.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Face 12345.mat",
+      "sourceSha256": "4acf53403769e00aa89da1f47b9bd0ab760dcd74156e275a321a5dfa180401a4",
+      "importSha256": "2bdfc51d32b0616d958b2f56b47d685e5f301f7a77483a56c9ab1669656ad264",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Face 12345.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Face 12345.mat.meta",
+      "sourceSha256": "b4eea3281244c2af45d88331d5d4398ba8b3b72abe3d0856073f58dd3067aca6",
+      "importSha256": "b4eea3281244c2af45d88331d5d4398ba8b3b72abe3d0856073f58dd3067aca6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Face 6.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Face 6.mat",
+      "sourceSha256": "3a65e83d4f77cdd95f20da5a5438bf73d59af8ce06693f667562dba2c3acdb3c",
+      "importSha256": "833edbd948c21f4abff59f9a9e1f76667d9f8a45637aedbf32f43a0868945782",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Body\\Face 6.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Body/Face 6.mat.meta",
+      "sourceSha256": "ca40e34526570d3bcb1dc0bd00c6a96447b1480d989b639c5c5f7b33f0881b5a",
+      "importSha256": "ca40e34526570d3bcb1dc0bd00c6a96447b1480d989b639c5c5f7b33f0881b5a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_01.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_01.mat",
+      "sourceSha256": "9242da976283acfd8f4a6995899b55495010899087e27d9bc92601129898f1e4",
+      "importSha256": "37d58127abce89c829b02744a1e60553808e6ab09f6008d172fc3507a709e321",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_01.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_01.mat.meta",
+      "sourceSha256": "119b294374d8b27ea161037e10610c5fa35e3249b879bb78611865eb9c56ef2e",
+      "importSha256": "119b294374d8b27ea161037e10610c5fa35e3249b879bb78611865eb9c56ef2e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_02.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_02.mat",
+      "sourceSha256": "90e958387646060c76a294503590a601f9e1d6e1fb61a4016aa5e32d8fdcac25",
+      "importSha256": "fea1af7047d9456b9b984ebaf1a8a8668a61fb609861f332200b02b7d32aebad",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_02.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_02.mat.meta",
+      "sourceSha256": "4fa10fb6bbbc8c1e5a68056fdbb83c3ff7b045617b7c23c26172545245a50d36",
+      "importSha256": "4fa10fb6bbbc8c1e5a68056fdbb83c3ff7b045617b7c23c26172545245a50d36",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_03.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_03.mat",
+      "sourceSha256": "fbce2ccac25d1ebba16e57ee91ba0fb3cbd666884533631650e1eca6acc4485b",
+      "importSha256": "3972ed891af94fed111e2e155c21c479112f1eadc9de874dd6c672e585220322",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_03.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_03.mat.meta",
+      "sourceSha256": "5cc3a2a55c75972b85df0d1cb3fde91ed2bd074803a13e740bd83b763af2526e",
+      "importSha256": "5cc3a2a55c75972b85df0d1cb3fde91ed2bd074803a13e740bd83b763af2526e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_04.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_04.mat",
+      "sourceSha256": "83f4f06eaf185520351a2d4b3b397c70f168e96f950715f1572f57ff12430718",
+      "importSha256": "210e4246373565b6520c20e9c7036c552f09e0ee3efbf5da9c8b59aca4b21027",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_04.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_04.mat.meta",
+      "sourceSha256": "29a9558fcabba44f2178efbdf0cd55dc1295b1caab7580172b42775b3e590262",
+      "importSha256": "29a9558fcabba44f2178efbdf0cd55dc1295b1caab7580172b42775b3e590262",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_05.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_05.mat",
+      "sourceSha256": "4ca060f85b358f01ac88865f5566fd7689f227598905be4a13e974a8fb6248ea",
+      "importSha256": "547512d3440fb22eb060764f5717b74cc1244341a8219ad346019c7fd0f3b483",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_05.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_05.mat.meta",
+      "sourceSha256": "e5384fa9f3eb4419be74995ffd6c317dd5704dfedc5878d9e442e595b46dce7f",
+      "importSha256": "e5384fa9f3eb4419be74995ffd6c317dd5704dfedc5878d9e442e595b46dce7f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_06.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_06.mat",
+      "sourceSha256": "6c932c428777c366ba4662a5e22cf66bf4901e98f886d59312ba9289108fadfe",
+      "importSha256": "2f133a9004232c6725b5bbde5783ae107211ba2143958a1c6cc96ad66a6209e1",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_06.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_06.mat.meta",
+      "sourceSha256": "91134a6bcd0de9a745d9412155b3ac7add9bb2236174dd99cf830ebd2783b706",
+      "importSha256": "91134a6bcd0de9a745d9412155b3ac7add9bb2236174dd99cf830ebd2783b706",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_01.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_01.mat",
+      "sourceSha256": "92fd50c74f3ed7869ac8b1121c20e38236d9f551d63b53171f0ded072c8ba51c",
+      "importSha256": "0f72089182e2d397a86f151eb1d7c56c43b900aa30f18061e9b60f54ed1cf0e9",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_01.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_01.mat.meta",
+      "sourceSha256": "1f5df9c400414331b3c2fab91103e9b78d29a248700e871308587a08d5fed6aa",
+      "importSha256": "1f5df9c400414331b3c2fab91103e9b78d29a248700e871308587a08d5fed6aa",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_02.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_02.mat",
+      "sourceSha256": "e868873566a8c657f81b4d35f73c9d484866d160f6e7d13aa76cbf5424babe8c",
+      "importSha256": "0d23df2440bb1a6f645ff629bb74d023dc0d6bb70c1cd182f691c06f61ab52e1",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_02.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_02.mat.meta",
+      "sourceSha256": "ca11832f7421428668834b0e27032169fc8ad81b8afa1f2c6d59a958452a0ddb",
+      "importSha256": "ca11832f7421428668834b0e27032169fc8ad81b8afa1f2c6d59a958452a0ddb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_03.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_03.mat",
+      "sourceSha256": "e2d86d69d2e8f25341ecc5fe40848167c222bf8b5eb759d03709818386a723f8",
+      "importSha256": "24b9d9629f94351fd4945def1b1824d01e9dfceeb699e6f302936d179eb45ccf",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_03.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_03.mat.meta",
+      "sourceSha256": "ba8507a1fac4367a7c7bf7a74f014c810e4913fe30009d5a97b230d5584d1c6f",
+      "importSha256": "ba8507a1fac4367a7c7bf7a74f014c810e4913fe30009d5a97b230d5584d1c6f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_04.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_04.mat",
+      "sourceSha256": "5fabbcd47c658059294a5298ae725085851a7508ea06486b831e9bdff6ac3588",
+      "importSha256": "a48860e550bbff6e447153f383d09e95feda533a6901ffd65cdbb26110d746f2",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_04.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_04.mat.meta",
+      "sourceSha256": "38b64d7133a4d7192153a0970f9dfe7c2b7f5854f95b463e4498a74d210c3054",
+      "importSha256": "38b64d7133a4d7192153a0970f9dfe7c2b7f5854f95b463e4498a74d210c3054",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_05.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_05.mat",
+      "sourceSha256": "f9fbcada04876f5924c55f39a2debbccb3ecbd81f210dfc6cafc050953f98408",
+      "importSha256": "1d370f59424e5fba3c8e1ad1046d724b504b68c0d9d07eb392d1a992c14a0483",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_05.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_05.mat.meta",
+      "sourceSha256": "b636b3867a017ec095e83104ad94710df7b424bfedd0f7e2d876d2659d2a8288",
+      "importSha256": "b636b3867a017ec095e83104ad94710df7b424bfedd0f7e2d876d2659d2a8288",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_06.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_06.mat",
+      "sourceSha256": "ca046140eb3931cf971488411b41435e606981a813bf24c932fb6b80cd21c9e6",
+      "importSha256": "90f571ae911da9fcf3ce2eedf13e0b5f0f255e5d6330463d30c0a6387bed4720",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Cloth_Outer_06.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Cloth_Outer_06.mat.meta",
+      "sourceSha256": "06e33dd51f60eab7429a03cb6b3c7b6f724d3ca9d4575f4eb45009a9c6062e19",
+      "importSha256": "06e33dd51f60eab7429a03cb6b3c7b6f724d3ca9d4575f4eb45009a9c6062e19",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Glass.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Glass.mat",
+      "sourceSha256": "80da3b6bbce2932bdefad8305b3c76c482743628cb9b791aa3f79659aa10536a",
+      "importSha256": "80da3b6bbce2932bdefad8305b3c76c482743628cb9b791aa3f79659aa10536a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Cloth\\MachineGun_Glass.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Cloth/MachineGun_Glass.mat.meta",
+      "sourceSha256": "9c980db7df6d797fbc40f6bef9922fd81b093c84f76c7be74cf6fc6ae9251b2e",
+      "importSha256": "9c980db7df6d797fbc40f6bef9922fd81b093c84f76c7be74cf6fc6ae9251b2e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_01.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_01.mat",
+      "sourceSha256": "1c73a917acb1b3ab8180a37a081759c32042f3743f1d08cc147a1d9532c7f0d5",
+      "importSha256": "1c73a917acb1b3ab8180a37a081759c32042f3743f1d08cc147a1d9532c7f0d5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_01.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_01.mat.meta",
+      "sourceSha256": "2b45231656bfc08965916a85e439b88b0a5bdaf1675ee38abfcab51567b5cba7",
+      "importSha256": "2b45231656bfc08965916a85e439b88b0a5bdaf1675ee38abfcab51567b5cba7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_02.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_02.mat",
+      "sourceSha256": "bbe90b56f23546afc2cd437f524905cd4a5059d5fabcf323bd5677e1f736ab56",
+      "importSha256": "bbe90b56f23546afc2cd437f524905cd4a5059d5fabcf323bd5677e1f736ab56",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_02.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_02.mat.meta",
+      "sourceSha256": "75e3b6f31c81b8916abd10d7124b5f4ca0ea2e07b23edd4a7ba1c686675b8608",
+      "importSha256": "75e3b6f31c81b8916abd10d7124b5f4ca0ea2e07b23edd4a7ba1c686675b8608",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_03.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_03.mat",
+      "sourceSha256": "c30b438eb519c09774aaafdf11ca98bd0d495a229f2acb23a5cf967047d90de2",
+      "importSha256": "c30b438eb519c09774aaafdf11ca98bd0d495a229f2acb23a5cf967047d90de2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_03.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_03.mat.meta",
+      "sourceSha256": "d132bb38f8517087a2e0a7b470291a862fe1dab12bb07d27a85392204c10c831",
+      "importSha256": "d132bb38f8517087a2e0a7b470291a862fe1dab12bb07d27a85392204c10c831",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_04.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_04.mat",
+      "sourceSha256": "b22b710460f4c1a5f6f2aa578d13267ca17a07b6d48a9a5525641d053c6554bf",
+      "importSha256": "b22b710460f4c1a5f6f2aa578d13267ca17a07b6d48a9a5525641d053c6554bf",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_04.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_04.mat.meta",
+      "sourceSha256": "8747add8dccd01cb7f1cbdfd80cbe3a4c3d67761648c3e17c64a66fd2e16d66d",
+      "importSha256": "8747add8dccd01cb7f1cbdfd80cbe3a4c3d67761648c3e17c64a66fd2e16d66d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_05.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_05.mat",
+      "sourceSha256": "40cd9718fd64d033342ae6b4b67524bf7f28372789cb3b120161152ac5160b61",
+      "importSha256": "40cd9718fd64d033342ae6b4b67524bf7f28372789cb3b120161152ac5160b61",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_05.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_05.mat.meta",
+      "sourceSha256": "7c01bc06c2e189bb2c154a4575d017f53b98b1678d3bce99b548ecfbf7155e61",
+      "importSha256": "7c01bc06c2e189bb2c154a4575d017f53b98b1678d3bce99b548ecfbf7155e61",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_06.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_06.mat",
+      "sourceSha256": "7efce3250d962922e884c410bb6b38fab2d413639036ccf45ce029b8ed423097",
+      "importSha256": "7efce3250d962922e884c410bb6b38fab2d413639036ccf45ce029b8ed423097",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Hair\\MachineGun_Hair_06.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Hair/MachineGun_Hair_06.mat.meta",
+      "sourceSha256": "e66ffe5c7b9fae79cb35ac2705b49e3ec9528b99666da6520ffeeace427b9c6d",
+      "importSha256": "e66ffe5c7b9fae79cb35ac2705b49e3ec9528b99666da6520ffeeace427b9c6d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Sportswear\\Sportswear.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Sportswear/Sportswear.mat",
+      "sourceSha256": "33964659491923fd30daf6a19218a5cf738d3aeb52c924a8e5f0f63025f9513d",
+      "importSha256": "33964659491923fd30daf6a19218a5cf738d3aeb52c924a8e5f0f63025f9513d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Sportswear\\Sportswear.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Sportswear/Sportswear.mat.meta",
+      "sourceSha256": "3c01dd687f16f99282fa6a512624d3236b0b3e0f4784ca24a21d7e86badb4251",
+      "importSha256": "3c01dd687f16f99282fa6a512624d3236b0b3e0f4784ca24a21d7e86badb4251",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Weapon\\Weapon_MachineGun.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Weapon/Weapon_MachineGun.mat",
+      "sourceSha256": "4086f8672d7c1cbd8c9be839091f4bbfb2c89ee1129dbb6b41d1a7afc58764e9",
+      "importSha256": "4086f8672d7c1cbd8c9be839091f4bbfb2c89ee1129dbb6b41d1a7afc58764e9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Materials\\Weapon\\Weapon_MachineGun.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Materials/Weapon/Weapon_MachineGun.mat.meta",
+      "sourceSha256": "e8b5c25033b787bfb3edcf5f2fe9fc74f4dee4fcf2b90e801d31e31296bae637",
+      "importSha256": "e8b5c25033b787bfb3edcf5f2fe9fc74f4dee4fcf2b90e801d31e31296bae637",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\MachineGun_Girl.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/MachineGun_Girl.fbx",
+      "sourceSha256": "653c18ec8e1844074b9e86beb7d96f6fe7926d862c265ab16364bba26b59d509",
+      "importSha256": "653c18ec8e1844074b9e86beb7d96f6fe7926d862c265ab16364bba26b59d509",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\MachineGun_Girl.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/MachineGun_Girl.fbx.meta",
+      "sourceSha256": "c4f395c50a47c81d42f616c620d46f62702b2e007d50b8ea8483f34abae4ca7c",
+      "importSha256": "4ff55adf6765671f14fa2eef89e857bfb4d583875b74f813b8e0c1db80289388",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\Weapon\\Weapon_MachineGun.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/Weapon/Weapon_MachineGun.fbx",
+      "sourceSha256": "26249883cc925160d7bc67ac9252d1b6e873eaae03f86480379d7429f8c992ef",
+      "importSha256": "26249883cc925160d7bc67ac9252d1b6e873eaae03f86480379d7429f8c992ef",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\Weapon\\Weapon_MachineGun.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/Weapon/Weapon_MachineGun.fbx.meta",
+      "sourceSha256": "9a3e376669ef866bf89541b05dc18d6f45b211cfbb7b5626fa02b8ba2c89b53c",
+      "importSha256": "9a3e376669ef866bf89541b05dc18d6f45b211cfbb7b5626fa02b8ba2c89b53c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\Weapon\\Weapon_MiniGun_Magazine.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/Weapon/Weapon_MiniGun_Magazine.fbx",
+      "sourceSha256": "36cf1bd91ed0cf7ceecbd3feb906bc9d09ce59aeb5643e236575b424b6432415",
+      "importSha256": "36cf1bd91ed0cf7ceecbd3feb906bc9d09ce59aeb5643e236575b424b6432415",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Models\\Weapon\\Weapon_MiniGun_Magazine.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Models/Weapon/Weapon_MiniGun_Magazine.fbx.meta",
+      "sourceSha256": "d2751a456e489001bdcd9f54df697110c097c923d8978bdab962ba48d84e6cc2",
+      "importSha256": "d2751a456e489001bdcd9f54df697110c097c923d8978bdab962ba48d84e6cc2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Humanoid_F_MachineGun.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Humanoid_F_MachineGun.prefab",
+      "sourceSha256": "626403148fbcbbeb8e5eb6141595e976a9eb6eb8db4b611093c98ef8c585436c",
+      "importSha256": "02d40711f5198cc5c1f655b6624f5081c053f26587af6c350cac0685bd7b9780",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Humanoid_F_MachineGun.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Humanoid_F_MachineGun.prefab.meta",
+      "sourceSha256": "3cad1ed13c97b2b044661333137e5bfc8bae2bcb00912e04eebed1c329d461bd",
+      "importSha256": "3cad1ed13c97b2b044661333137e5bfc8bae2bcb00912e04eebed1c329d461bd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\MachineGun_Girl.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/MachineGun_Girl.prefab",
+      "sourceSha256": "77360bff1c5a945497b0b8ffcafec12d721d26775d668294f8b8b0f769eaabd3",
+      "importSha256": "3799a5e4e9a8ad91f6376209b4e1af26e50d743b43adbcfa69ba14142a5c61d6",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl",
+        "Remove demo animator controller dependency"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\MachineGun_Girl.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/MachineGun_Girl.prefab.meta",
+      "sourceSha256": "a4fdfd514561e659f25e5fe10d31ecb4805ea7768d362b0ce87cfd651a36aedd",
+      "importSha256": "a4fdfd514561e659f25e5fe10d31ecb4805ea7768d362b0ce87cfd651a36aedd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Prefab_Parts\\Weapon_MachineGun.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Prefab_Parts/Weapon_MachineGun.prefab",
+      "sourceSha256": "d07d91c663be1858ee6cc45c00b338dd038f07c84474a7ce0d286e0d3cdc70d6",
+      "importSha256": "d07d91c663be1858ee6cc45c00b338dd038f07c84474a7ce0d286e0d3cdc70d6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Prefab_Parts\\Weapon_MachineGun.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Prefab_Parts/Weapon_MachineGun.prefab.meta",
+      "sourceSha256": "17a415ac9ccf7f64bf23d543bbec4870d9fd5fbdc2ba93f3ab7b7f290a2c7808",
+      "importSha256": "17a415ac9ccf7f64bf23d543bbec4870d9fd5fbdc2ba93f3ab7b7f290a2c7808",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Prefab_Parts\\Weapon_MiniGun_Magazine.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Prefab_Parts/Weapon_MiniGun_Magazine.prefab",
+      "sourceSha256": "a38682ba20a465dea7388ae648d00fb0f576bac5b626c797ecbe9b3303af902c",
+      "importSha256": "a38682ba20a465dea7388ae648d00fb0f576bac5b626c797ecbe9b3303af902c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Prefab\\Prefab_Parts\\Weapon_MiniGun_Magazine.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Prefab/Prefab_Parts/Weapon_MiniGun_Magazine.prefab.meta",
+      "sourceSha256": "0b7a0180110549847a3fa495819ef7d5db0bc21e92d3df923e6ad36f4e4026c2",
+      "importSha256": "0b7a0180110549847a3fa495819ef7d5db0bc21e92d3df923e6ad36f4e4026c2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\BuiltInToonMode.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/BuiltInToonMode.hlsl",
+      "sourceSha256": "d5e70c907ac4e724cbdd774f61691d380b2cdd25d4485589156e84d0cbeed2fa",
+      "importSha256": "d5e70c907ac4e724cbdd774f61691d380b2cdd25d4485589156e84d0cbeed2fa",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\BuiltInToonMode.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/BuiltInToonMode.hlsl.meta",
+      "sourceSha256": "ba6776ee3df8844022a8e84aa91701e3545f62da1a9cc8caf0c243d2aa425dbe",
+      "importSha256": "ba6776ee3df8844022a8e84aa91701e3545f62da1a9cc8caf0c243d2aa425dbe",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_DoubleShadeWithFeather.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_DoubleShadeWithFeather.cginc",
+      "sourceSha256": "9d9e9dbd046fa7f8ade9f9da871b30847a8f6d03a8b9f39eec978a28265f7869",
+      "importSha256": "9d9e9dbd046fa7f8ade9f9da871b30847a8f6d03a8b9f39eec978a28265f7869",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_DoubleShadeWithFeather.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_DoubleShadeWithFeather.cginc.meta",
+      "sourceSha256": "46ff531c625e112c99a1ce54121659102fa8bb0d5d68c397b1bfdf43a3752e36",
+      "importSha256": "46ff531c625e112c99a1ce54121659102fa8bb0d5d68c397b1bfdf43a3752e36",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Input.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Input.cginc",
+      "sourceSha256": "298aa26f09e6e46b1112a9201b3f653ca8da4c7058f8b89ed13cfb671eb17488",
+      "importSha256": "298aa26f09e6e46b1112a9201b3f653ca8da4c7058f8b89ed13cfb671eb17488",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Input.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Input.cginc.meta",
+      "sourceSha256": "0e76994a7312546328052a9b3a0e5f07dc1bde302ed195a72e38682a317ad7bf",
+      "importSha256": "0e76994a7312546328052a9b3a0e5f07dc1bde302ed195a72e38682a317ad7bf",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Light.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Light.cginc",
+      "sourceSha256": "22121ae5de85eae10fcc5f57300cd3443d9769a2dd51e3fdeee7ec9b7ef89e4a",
+      "importSha256": "22121ae5de85eae10fcc5f57300cd3443d9769a2dd51e3fdeee7ec9b7ef89e4a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Light.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Light.cginc.meta",
+      "sourceSha256": "b50bbd3e96d376dd0171831bb73d11274939b3e99226edb44c7579fc1e870971",
+      "importSha256": "b50bbd3e96d376dd0171831bb73d11274939b3e99226edb44c7579fc1e870971",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Outline.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Outline.cginc",
+      "sourceSha256": "9acff0ee567ca73e9fd65f422eaef1b99f70a053079659ee1e6808ecd9372696",
+      "importSha256": "9acff0ee567ca73e9fd65f422eaef1b99f70a053079659ee1e6808ecd9372696",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Outline.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Outline.cginc.meta",
+      "sourceSha256": "c6dcad38e1553298ee576b7e2223485af8b43928d2c4efc211a6975d7bfc127f",
+      "importSha256": "c6dcad38e1553298ee576b7e2223485af8b43928d2c4efc211a6975d7bfc127f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Outline_Tess.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Outline_Tess.cginc",
+      "sourceSha256": "4cd012b78ae33d77df997f99ddb0b4180565c2cd4e43513e63d549835a4fbd29",
+      "importSha256": "4cd012b78ae33d77df997f99ddb0b4180565c2cd4e43513e63d549835a4fbd29",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Outline_Tess.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Outline_Tess.cginc.meta",
+      "sourceSha256": "42ecdbf102b53b4a4ec7c524e37ebf5ca30b11ba536bae39f2a95a2e44913cf7",
+      "importSha256": "42ecdbf102b53b4a4ec7c524e37ebf5ca30b11ba536bae39f2a95a2e44913cf7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadingGradeMap.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadingGradeMap.cginc",
+      "sourceSha256": "b636cd0708e83dfb780ca88fa5b9f23bdebdf347f0a99c711989706a2a3a41ee",
+      "importSha256": "b636cd0708e83dfb780ca88fa5b9f23bdebdf347f0a99c711989706a2a3a41ee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadingGradeMap.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadingGradeMap.cginc.meta",
+      "sourceSha256": "5ade1168f12175407b8bbbcc2b437e95562f088e90d14795bd4abe95d42cef4c",
+      "importSha256": "5ade1168f12175407b8bbbcc2b437e95562f088e90d14795bd4abe95d42cef4c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadowCaster.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadowCaster.cginc",
+      "sourceSha256": "3eb68e973aab18224b4ccd3b27a3f719731e1c4b0ba05ee3a37cc3b4ab1b54ad",
+      "importSha256": "3eb68e973aab18224b4ccd3b27a3f719731e1c4b0ba05ee3a37cc3b4ab1b54ad",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadowCaster.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadowCaster.cginc.meta",
+      "sourceSha256": "f30b2ae8616eb405c99890f689acfd02972d1308b1928d5c4cc068055b0e2a78",
+      "importSha256": "f30b2ae8616eb405c99890f689acfd02972d1308b1928d5c4cc068055b0e2a78",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadowCaster_Tess.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadowCaster_Tess.cginc",
+      "sourceSha256": "37888f1011557ceeb548302e99e0816c40a2a54e307b25bb067bfc82f7ea9a4e",
+      "importSha256": "37888f1011557ceeb548302e99e0816c40a2a54e307b25bb067bfc82f7ea9a4e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_ShadowCaster_Tess.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_ShadowCaster_Tess.cginc.meta",
+      "sourceSha256": "fa86c62897eb320e39ef677a34f2e908b7bae7ad01611028df69b1263ce7b286",
+      "importSha256": "fa86c62897eb320e39ef677a34f2e908b7bae7ad01611028df69b1263ce7b286",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Tess.cginc",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Tess.cginc",
+      "sourceSha256": "98cfd0df5840a79def90493f59b71c0d61a20d2d5b534a1bcdae53ced214c56d",
+      "importSha256": "98cfd0df5840a79def90493f59b71c0d61a20d2d5b534a1bcdae53ced214c56d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\BuiltIn\\UCTS_Tess.cginc.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/BuiltIn/UCTS_Tess.cginc.meta",
+      "sourceSha256": "9434370500e73df347a5437049128df66d9332ce317740e483d68aee36da6412",
+      "importSha256": "9434370500e73df347a5437049128df66d9332ce317740e483d68aee36da6412",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\Common\\Error.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/Common/Error.hlsl",
+      "sourceSha256": "1d64f8ae906e113678e59dd9912898dc157fd66bf66b69ec6ee10eaabd38b611",
+      "importSha256": "1d64f8ae906e113678e59dd9912898dc157fd66bf66b69ec6ee10eaabd38b611",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\Common\\Error.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/Common/Error.hlsl.meta",
+      "sourceSha256": "c939c4cf0c0a8f0d59a6386b260632513d599d6420731c22ed3fbbb264039e64",
+      "importSha256": "c939c4cf0c0a8f0d59a6386b260632513d599d6420731c22ed3fbbb264039e64",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DebugDisplay.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DebugDisplay.hlsl",
+      "sourceSha256": "92ca503702cd8d2910dddf885bc7f999471de3a0ef50c12ad2bc6e9ae7530b29",
+      "importSha256": "92ca503702cd8d2910dddf885bc7f999471de3a0ef50c12ad2bc6e9ae7530b29",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DebugDisplay.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DebugDisplay.hlsl.meta",
+      "sourceSha256": "cdd2323180f455a5df33c641c0059fcaf773093def48258c2454ba0e9ff7e707",
+      "importSha256": "cdd2323180f455a5df33c641c0059fcaf773093def48258c2454ba0e9ff7e707",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DoubleShadeWithFeatherMainLight.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DoubleShadeWithFeatherMainLight.hlsl",
+      "sourceSha256": "b4324981d632bf3529469bdb81b28e474675754858739e9eab57dd659abd30a0",
+      "importSha256": "b4324981d632bf3529469bdb81b28e474675754858739e9eab57dd659abd30a0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DoubleShadeWithFeatherMainLight.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DoubleShadeWithFeatherMainLight.hlsl.meta",
+      "sourceSha256": "e0711c022e8de52b4761a817c6ba8ec491132ef354a95dbd576597c959b3c00b",
+      "importSha256": "e0711c022e8de52b4761a817c6ba8ec491132ef354a95dbd576597c959b3c00b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DoubleShadeWithFeatherOtherLight.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DoubleShadeWithFeatherOtherLight.hlsl",
+      "sourceSha256": "6ad08ea2f3b5d2dcc5c3e1c9026cf81793acc430a6d3442b603a57ca3cdffa5d",
+      "importSha256": "6ad08ea2f3b5d2dcc5c3e1c9026cf81793acc430a6d3442b603a57ca3cdffa5d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\DoubleShadeWithFeatherOtherLight.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/DoubleShadeWithFeatherOtherLight.hlsl.meta",
+      "sourceSha256": "1f7e62c4bfb642da17b9511911494b0c39b9c9bf5501c1d33a1691c105e47f7f",
+      "importSha256": "1f7e62c4bfb642da17b9511911494b0c39b9c9bf5501c1d33a1691c105e47f7f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonHead.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonHead.hlsl",
+      "sourceSha256": "31f09c56febb62e0850d891f210f4caf6728bb41d6ee2e63c23de67e7128437b",
+      "importSha256": "31f09c56febb62e0850d891f210f4caf6728bb41d6ee2e63c23de67e7128437b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonHead.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonHead.hlsl.meta",
+      "sourceSha256": "05c722ffbdbd2e5fe187cfaecd37f4fa7e2062cf8e269b7ae4d7ade6d02614f0",
+      "importSha256": "05c722ffbdbd2e5fe187cfaecd37f4fa7e2062cf8e269b7ae4d7ade6d02614f0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonOutline.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonOutline.hlsl",
+      "sourceSha256": "c4e167b8de98025070d336d547f05089c71d1c55051a4deb55a70a030fd29e14",
+      "importSha256": "c4e167b8de98025070d336d547f05089c71d1c55051a4deb55a70a030fd29e14",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonOutline.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonOutline.hlsl.meta",
+      "sourceSha256": "efac7859451ecdf195e0fdeee7154b605bd70afa304823a3d9d5e7bc49c20960",
+      "importSha256": "efac7859451ecdf195e0fdeee7154b605bd70afa304823a3d9d5e7bc49c20960",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonOutlineVertMain.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonOutlineVertMain.hlsl",
+      "sourceSha256": "14422cf2652eac5c815031ff514dc9f7c5ad78d50e55872b228263ab5260f1ac",
+      "importSha256": "14422cf2652eac5c815031ff514dc9f7c5ad78d50e55872b228263ab5260f1ac",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\HDRPToonOutlineVertMain.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/HDRPToonOutlineVertMain.hlsl.meta",
+      "sourceSha256": "7385c7a3b96d2e9096ef7235fbbc880438bddd1a7dbc899cc4b1a5b5c6522c83",
+      "importSha256": "7385c7a3b96d2e9096ef7235fbbc880438bddd1a7dbc899cc4b1a5b5c6522c83",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShaderPassForward.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShaderPassForward.hlsl",
+      "sourceSha256": "0a4e3293151cefb3ffc2f13e2f860c0812641327d908782bc295f22ca4b4c1f6",
+      "importSha256": "0a4e3293151cefb3ffc2f13e2f860c0812641327d908782bc295f22ca4b4c1f6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShaderPassForward.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShaderPassForward.hlsl.meta",
+      "sourceSha256": "8ad109f659b224818cddb9f5fa9d832ef38e535ce73fd867816db07ade6d40bb",
+      "importSha256": "8ad109f659b224818cddb9f5fa9d832ef38e535ce73fd867816db07ade6d40bb",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShaderPassForwardUTS.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShaderPassForwardUTS.hlsl",
+      "sourceSha256": "b72145f8c3da0d5687439a33de25182321d081e9e051da2992df84b8c475df91",
+      "importSha256": "b72145f8c3da0d5687439a33de25182321d081e9e051da2992df84b8c475df91",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShaderPassForwardUTS.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShaderPassForwardUTS.hlsl.meta",
+      "sourceSha256": "bd0ebad001a0978226a5b2f957f5b1047203270146887fc5d2210a625279ccc3",
+      "importSha256": "bd0ebad001a0978226a5b2f957f5b1047203270146887fc5d2210a625279ccc3",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShadingGrademapMainLight.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShadingGrademapMainLight.hlsl",
+      "sourceSha256": "5de9b50d30d0ff756b373de0e2812190fefa4eb6bf0e74ebf7704dbec826019a",
+      "importSha256": "5de9b50d30d0ff756b373de0e2812190fefa4eb6bf0e74ebf7704dbec826019a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShadingGrademapMainLight.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShadingGrademapMainLight.hlsl.meta",
+      "sourceSha256": "bab659c45ec0bd669e2271771cbdcd84699334ae526080eef9c3c229709f414c",
+      "importSha256": "bab659c45ec0bd669e2271771cbdcd84699334ae526080eef9c3c229709f414c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShadingGrademapOtherLight.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShadingGrademapOtherLight.hlsl",
+      "sourceSha256": "717686dcfb5b419560fc91b26f76e0e406a5d59dc44b81825839144ee2bd3ffe",
+      "importSha256": "717686dcfb5b419560fc91b26f76e0e406a5d59dc44b81825839144ee2bd3ffe",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\ShadingGrademapOtherLight.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/ShadingGrademapOtherLight.hlsl.meta",
+      "sourceSha256": "a47a3c257c84d50f668ba4758ae6d3d0da265bcabda667e63413fe6fab410a02",
+      "importSha256": "a47a3c257c84d50f668ba4758ae6d3d0da265bcabda667e63413fe6fab410a02",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsHDRP.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsHDRP.hlsl",
+      "sourceSha256": "540485f05fa751691cb8f317066dbd10e80ee5b0e92b1f15300cb8260154f90c",
+      "importSha256": "540485f05fa751691cb8f317066dbd10e80ee5b0e92b1f15300cb8260154f90c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsHDRP.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsHDRP.hlsl.meta",
+      "sourceSha256": "c81f8ba92579d88ab3f297241e7f37203822820a133d251c5ecf848178aefb47",
+      "importSha256": "c81f8ba92579d88ab3f297241e7f37203822820a133d251c5ecf848178aefb47",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsHdrpProperties.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsHdrpProperties.hlsl",
+      "sourceSha256": "218f7e8a8331111d2e19b4a833c9d52ff2aa63e58fee86f28fcd9acdde0b69c0",
+      "importSha256": "218f7e8a8331111d2e19b4a833c9d52ff2aa63e58fee86f28fcd9acdde0b69c0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsHdrpProperties.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsHdrpProperties.hlsl.meta",
+      "sourceSha256": "726444e73cc48b0ad7947de9f37e6d6dfd4e50fbd4770ca629f34b33954bc353",
+      "importSha256": "726444e73cc48b0ad7947de9f37e6d6dfd4e50fbd4770ca629f34b33954bc353",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsLightLoop.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsLightLoop.hlsl",
+      "sourceSha256": "ef14ac9da40d9b12c8c611468e4296cf83acc3689e9e5ab534c58e0989cdab70",
+      "importSha256": "ef14ac9da40d9b12c8c611468e4296cf83acc3689e9e5ab534c58e0989cdab70",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsLightLoop.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsLightLoop.hlsl.meta",
+      "sourceSha256": "07164d35118772b72c8fde3475a6a8b15343176d9976a56c91f605ac8fc7d5e1",
+      "importSha256": "07164d35118772b72c8fde3475a6a8b15343176d9976a56c91f605ac8fc7d5e1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsSelfShadowMainLight.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsSelfShadowMainLight.hlsl",
+      "sourceSha256": "9ac2d11cf688d38d8a350d5b70f994a9660328cd1ae20f69680125c6ec9773c4",
+      "importSha256": "9ac2d11cf688d38d8a350d5b70f994a9660328cd1ae20f69680125c6ec9773c4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsSelfShadowMainLight.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsSelfShadowMainLight.hlsl.meta",
+      "sourceSha256": "2d40bf2398bec207b01210248c62de2aea2b081b7cd5d77717858b34f3ce630b",
+      "importSha256": "2d40bf2398bec207b01210248c62de2aea2b081b7cd5d77717858b34f3ce630b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsTextures.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsTextures.hlsl",
+      "sourceSha256": "c8c474c61dbddfe3ea5d9d5deced47c8336bd16e3d1fb99f43db55cfc0cf3733",
+      "importSha256": "c8c474c61dbddfe3ea5d9d5deced47c8336bd16e3d1fb99f43db55cfc0cf3733",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsTextures.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsTextures.hlsl.meta",
+      "sourceSha256": "22b9c8db11537b41138f5fcb6fcc47b55cabf4ef9b415133a79f57ae81ed483a",
+      "importSha256": "22b9c8db11537b41138f5fcb6fcc47b55cabf4ef9b415133a79f57ae81ed483a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsUnityPerMaterial.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsUnityPerMaterial.hlsl",
+      "sourceSha256": "b9b49d1f1fb464a8aa2f6608672f88eae47dfe305d7e7f1c93b9c568739928be",
+      "importSha256": "b9b49d1f1fb464a8aa2f6608672f88eae47dfe305d7e7f1c93b9c568739928be",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\HDRP\\UtsUnityPerMaterial.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/HDRP/UtsUnityPerMaterial.hlsl.meta",
+      "sourceSha256": "dba2681e7c2ac6168452e02cb911dba546cb0c81ebf2e4130da9e07c4a635bde",
+      "importSha256": "dba2681e7c2ac6168452e02cb911dba546cb0c81ebf2e4130da9e07c4a635bde",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\LICENSE.md",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/LICENSE.md",
+      "sourceSha256": "0f6561548d7ac17438c2a2049b02c842faa9cfcc1849da59d913635564cb4e49",
+      "importSha256": "0f6561548d7ac17438c2a2049b02c842faa9cfcc1849da59d913635564cb4e49",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\LICENSE.md.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/LICENSE.md.meta",
+      "sourceSha256": "9790720970dfe4ee8573d2507060bc97d4056d84fdb7f4c86b8e82b9f1f514d2",
+      "importSha256": "9790720970dfe4ee8573d2507060bc97d4056d84fdb7f4c86b8e82b9f1f514d2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\UnityToon.shader",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/UnityToon.shader",
+      "sourceSha256": "9643099c545099c4e1e2017ca8716177981c3b2ddf9d6ac0bc15bc93b4d29364",
+      "importSha256": "9643099c545099c4e1e2017ca8716177981c3b2ddf9d6ac0bc15bc93b4d29364",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\UnityToon.shader.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/UnityToon.shader.meta",
+      "sourceSha256": "07e1c2b4662eac8c14e6baa393262c5c5a901c6582362782e0d93780af480937",
+      "importSha256": "07e1c2b4662eac8c14e6baa393262c5c5a901c6582362782e0d93780af480937",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\ObjectTransform.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/ObjectTransform.hlsl",
+      "sourceSha256": "10145d230dd637a069b5a85b89e7169ec169f5c24b7a88ee1b6fe08442069ee6",
+      "importSha256": "10145d230dd637a069b5a85b89e7169ec169f5c24b7a88ee1b6fe08442069ee6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\ObjectTransform.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/ObjectTransform.hlsl.meta",
+      "sourceSha256": "4ae9eb47054775c27c264381fd99a38184524c6535d83bd80ac414a16a7818d0",
+      "importSha256": "4ae9eb47054775c27c264381fd99a38184524c6535d83bd80ac414a16a7818d0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\ShapeLight2D.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/ShapeLight2D.hlsl",
+      "sourceSha256": "3ec0f5648cad1cf0f65a3acd92d1f27b08b2e2fc6f2f192523822588c226545c",
+      "importSha256": "3ec0f5648cad1cf0f65a3acd92d1f27b08b2e2fc6f2f192523822588c226545c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\ShapeLight2D.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/ShapeLight2D.hlsl.meta",
+      "sourceSha256": "b5a1481af49c9932bbb74700fad6cb5ca9ae3b481cc373d9b4a4e417fd9226c8",
+      "importSha256": "b5a1481af49c9932bbb74700fad6cb5ca9ae3b481cc373d9b4a4e417fd9226c8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalBasic2D.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalBasic2D.hlsl",
+      "sourceSha256": "4f3c6f5ae6b5dddd4d6b64e4816306d69cc76d7749605c26aa11ce5d04159e8f",
+      "importSha256": "4f3c6f5ae6b5dddd4d6b64e4816306d69cc76d7749605c26aa11ce5d04159e8f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalBasic2D.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalBasic2D.hlsl.meta",
+      "sourceSha256": "1ce9868a6d96a4df73d620af938b9720ca5503546f8004b3b5baf57a3b8c29e0",
+      "importSha256": "1ce9868a6d96a4df73d620af938b9720ca5503546f8004b3b5baf57a3b8c29e0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBody.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBody.hlsl",
+      "sourceSha256": "d4ef900bc36140872f1f1833e464d4bd7989f9ad0237e0b5bc54afc9377f114c",
+      "importSha256": "d4ef900bc36140872f1f1833e464d4bd7989f9ad0237e0b5bc54afc9377f114c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBody.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBody.hlsl.meta",
+      "sourceSha256": "2a5e968090c09796af34c156339fbaa8f50ea5d17735f1aab5a076b97dabe505",
+      "importSha256": "2a5e968090c09796af34c156339fbaa8f50ea5d17735f1aab5a076b97dabe505",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBodyDoubleShadeWithFeather.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBodyDoubleShadeWithFeather.hlsl",
+      "sourceSha256": "0e657dea508a204bc6fa2516ce0d2e3fc525422bfd414f0cdb4386ca2588d565",
+      "importSha256": "0e657dea508a204bc6fa2516ce0d2e3fc525422bfd414f0cdb4386ca2588d565",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBodyDoubleShadeWithFeather.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBodyDoubleShadeWithFeather.hlsl.meta",
+      "sourceSha256": "25d8fa76508f1864136405431bb822474169286f0384d3e6a85f35ea9aaca3c9",
+      "importSha256": "25d8fa76508f1864136405431bb822474169286f0384d3e6a85f35ea9aaca3c9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBodyShadingGradeMap.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBodyShadingGradeMap.hlsl",
+      "sourceSha256": "aeb512696f57fb9d06e4dc9dabfcf35c63e201b75b7064c41c5ab7689614ff4f",
+      "importSha256": "aeb512696f57fb9d06e4dc9dabfcf35c63e201b75b7064c41c5ab7689614ff4f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonBodyShadingGradeMap.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonBodyShadingGradeMap.hlsl.meta",
+      "sourceSha256": "621dfc8e9e635cb17eee03914a1f294b3e3e347f3592f07976d9ead416c88cba",
+      "importSha256": "621dfc8e9e635cb17eee03914a1f294b3e3e347f3592f07976d9ead416c88cba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonHead.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonHead.hlsl",
+      "sourceSha256": "20fee821f1efa8e990e31cac0ab046d89a5f7642728995276e531f3435c52b00",
+      "importSha256": "20fee821f1efa8e990e31cac0ab046d89a5f7642728995276e531f3435c52b00",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonHead.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonHead.hlsl.meta",
+      "sourceSha256": "a4fb6af93ab556249e46c8bb95cdd53b3012e683b8470303644bc6e94977af69",
+      "importSha256": "a4fb6af93ab556249e46c8bb95cdd53b3012e683b8470303644bc6e94977af69",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonInput.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonInput.hlsl",
+      "sourceSha256": "a59ca0303d4a22bfd6539c653e9f92b9adbd7c5fa24069bae8c3b9074a289c5f",
+      "importSha256": "a59ca0303d4a22bfd6539c653e9f92b9adbd7c5fa24069bae8c3b9074a289c5f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonInput.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonInput.hlsl.meta",
+      "sourceSha256": "c0f30210fe72dbf6586888f4883be19b133629c4bd6caf100a7c5b15c151bac2",
+      "importSha256": "c0f30210fe72dbf6586888f4883be19b133629c4bd6caf100a7c5b15c151bac2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonOutline.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonOutline.hlsl",
+      "sourceSha256": "dcf8a8e477c0f388c1b4d624f0ae2bcb701c9e6253bb0755855460d8e1568415",
+      "importSha256": "dcf8a8e477c0f388c1b4d624f0ae2bcb701c9e6253bb0755855460d8e1568415",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonOutline.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonOutline.hlsl.meta",
+      "sourceSha256": "dfe85077656f9027c85b872372f3c9a00ac1eec1204e7a80c67364658f8ef8c4",
+      "importSha256": "dfe85077656f9027c85b872372f3c9a00ac1eec1204e7a80c67364658f8ef8c4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonSDF.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonSDF.hlsl",
+      "sourceSha256": "3e4558e0753fc63ffa81ffdfd433934532f90e3a2fe0db8f1f44a883ff0ae0b0",
+      "importSha256": "3e4558e0753fc63ffa81ffdfd433934532f90e3a2fe0db8f1f44a883ff0ae0b0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\UniversalToonSDF.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/UniversalToonSDF.hlsl.meta",
+      "sourceSha256": "6789525e86d721c4c8d36c58d2af64ed427d6da4076d44dc6040e75d8dd7005e",
+      "importSha256": "6789525e86d721c4c8d36c58d2af64ed427d6da4076d44dc6040e75d8dd7005e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\URPIncludeGuards.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/URPIncludeGuards.hlsl",
+      "sourceSha256": "8dbc481b3a6be44e91af3912e6519de3692357c1bf2f4bf930b70bde4c1c2d8f",
+      "importSha256": "8dbc481b3a6be44e91af3912e6519de3692357c1bf2f4bf930b70bde4c1c2d8f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\URP\\URPIncludeGuards.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/URP/URPIncludeGuards.hlsl.meta",
+      "sourceSha256": "fc38f868612574ae8979b8956ec31bfca7ae4091d7ed869197ae009ad4ccc258",
+      "importSha256": "fc38f868612574ae8979b8956ec31bfca7ae4091d7ed869197ae009ad4ccc258",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\UTSLighting.hlsl",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/UTSLighting.hlsl",
+      "sourceSha256": "6368b223f0dda755ba69a511d00c9968218716dad724b718b343c3e406b348c1",
+      "importSha256": "6368b223f0dda755ba69a511d00c9968218716dad724b718b343c3e406b348c1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Shaders\\ToonSDF\\UTSLighting.hlsl.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Shaders/ToonSDF/UTSLighting.hlsl.meta",
+      "sourceSha256": "0886bbc4eaa1560df56a0a6dd2d72f0c9e066ae6012e6099ae7ffdefec8dd764",
+      "importSha256": "0886bbc4eaa1560df56a0a6dd2d72f0c9e066ae6012e6099ae7ffdefec8dd764",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Body.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Body.png",
+      "sourceSha256": "1a35ae57f29f71817221fc007b13de644945e055cb4f20bf853f1ff535ba9bed",
+      "importSha256": "1a35ae57f29f71817221fc007b13de644945e055cb4f20bf853f1ff535ba9bed",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Body.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Body.png.meta",
+      "sourceSha256": "436e99e3ab1be5b9d5c385f52d483726c3c09fe8b796f7f826ea95f9a02907b8",
+      "importSha256": "436e99e3ab1be5b9d5c385f52d483726c3c09fe8b796f7f826ea95f9a02907b8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 1.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 1.png",
+      "sourceSha256": "9469117c35bbac2477c178d89944eccc7ea6827fd1d403841e5549800f35391d",
+      "importSha256": "9469117c35bbac2477c178d89944eccc7ea6827fd1d403841e5549800f35391d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 1.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 1.png.meta",
+      "sourceSha256": "065682d4519a7ade4e9b8ed28fcc0c8d202375e4e2f1bc44b0e56b2e3f000086",
+      "importSha256": "065682d4519a7ade4e9b8ed28fcc0c8d202375e4e2f1bc44b0e56b2e3f000086",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 2.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 2.png",
+      "sourceSha256": "613272b9090b6f642153813232329a384c54ef4147253cff0ffa3884a491c848",
+      "importSha256": "613272b9090b6f642153813232329a384c54ef4147253cff0ffa3884a491c848",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 2.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 2.png.meta",
+      "sourceSha256": "7fe85b77972d21f3cfa9404e7d768a70538c3ad2759016f9d01bdcd48df0a796",
+      "importSha256": "7fe85b77972d21f3cfa9404e7d768a70538c3ad2759016f9d01bdcd48df0a796",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 3.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 3.png",
+      "sourceSha256": "a23acd3f5b9b1b85604de08686d1d734e80e2ddb74c17277e55d8574bf6a5afe",
+      "importSha256": "a23acd3f5b9b1b85604de08686d1d734e80e2ddb74c17277e55d8574bf6a5afe",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 3.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 3.png.meta",
+      "sourceSha256": "9216e844f815bc24f175270528938b36098994a61d706e992c5021bb3f2e0077",
+      "importSha256": "9216e844f815bc24f175270528938b36098994a61d706e992c5021bb3f2e0077",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 4.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 4.png",
+      "sourceSha256": "1c67bbe9174f6fae48ad88d650af8a88331a9fa016561a08c4fc3bb9e98ffd9f",
+      "importSha256": "1c67bbe9174f6fae48ad88d650af8a88331a9fa016561a08c4fc3bb9e98ffd9f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 4.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 4.png.meta",
+      "sourceSha256": "3767c3b6c6861c0e1a27c01000122c83ccc7920d56aa29a2b05cb85483092ae7",
+      "importSha256": "3767c3b6c6861c0e1a27c01000122c83ccc7920d56aa29a2b05cb85483092ae7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 5.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 5.png",
+      "sourceSha256": "e8c9d905ddea8290261475bdff9d1e7e1c26184f5ece47697fd74b60351812ee",
+      "importSha256": "e8c9d905ddea8290261475bdff9d1e7e1c26184f5ece47697fd74b60351812ee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 5.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 5.png.meta",
+      "sourceSha256": "59657caa09b9ad7be76385a36c8a06aef03c6d70e0170b4ab8ea6cf7b16fdae6",
+      "importSha256": "59657caa09b9ad7be76385a36c8a06aef03c6d70e0170b4ab8ea6cf7b16fdae6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 6.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 6.png",
+      "sourceSha256": "45bb80905699441106715212f7292fb33a2fdf66cd89fb7aa01b9591798873ba",
+      "importSha256": "45bb80905699441106715212f7292fb33a2fdf66cd89fb7aa01b9591798873ba",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Eye 6.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Eye 6.png.meta",
+      "sourceSha256": "3217c7fc24bcbd46357c55969638805e7e7f7b15db55bc6e0358b223a57d1022",
+      "importSha256": "3217c7fc24bcbd46357c55969638805e7e7f7b15db55bc6e0358b223a57d1022",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face.png",
+      "sourceSha256": "f314be83cf5798f87857e57ca48d5ce5bb9034b28346d00f4be563fbfdc4493b",
+      "importSha256": "f314be83cf5798f87857e57ca48d5ce5bb9034b28346d00f4be563fbfdc4493b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face.png.meta",
+      "sourceSha256": "b52bbb50f9fd2a4cf659e0f917bc91a4678699643737e8c400ed7769765c53ec",
+      "importSha256": "b52bbb50f9fd2a4cf659e0f917bc91a4678699643737e8c400ed7769765c53ec",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face_12345.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face_12345.png",
+      "sourceSha256": "9e53927551f57a5f19b8a7d229d81cb9a6628cbae792f1fc906a42fb57d06508",
+      "importSha256": "9e53927551f57a5f19b8a7d229d81cb9a6628cbae792f1fc906a42fb57d06508",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face_12345.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face_12345.png.meta",
+      "sourceSha256": "452ef5be2f767cd687b34accaa4837b5ce2622db10da8b87fe6799a2b15ad87b",
+      "importSha256": "452ef5be2f767cd687b34accaa4837b5ce2622db10da8b87fe6799a2b15ad87b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face_mask 1.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face_mask 1.png",
+      "sourceSha256": "c89a2e2a44db9a2ed19f3ebc45f24025a88551c37d6372b841700fc9f67cb1a2",
+      "importSha256": "c89a2e2a44db9a2ed19f3ebc45f24025a88551c37d6372b841700fc9f67cb1a2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Body\\Face_mask 1.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Body/Face_mask 1.png.meta",
+      "sourceSha256": "a917467de5b7bd183dd0755459d015fb3b9ff9aaf2460a26f83375fbe04e96c2",
+      "importSha256": "a917467de5b7bd183dd0755459d015fb3b9ff9aaf2460a26f83375fbe04e96c2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_01.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_01.png",
+      "sourceSha256": "b28876a01b720a91909c6a67f2d7f84b03c15ecf81b727b043aba390f336dd95",
+      "importSha256": "b28876a01b720a91909c6a67f2d7f84b03c15ecf81b727b043aba390f336dd95",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_01.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_01.png.meta",
+      "sourceSha256": "4b3cbcc97a9bcd83e8c8230e4211506b044be889501360e00a3a60652b1b9e03",
+      "importSha256": "4b3cbcc97a9bcd83e8c8230e4211506b044be889501360e00a3a60652b1b9e03",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_02.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_02.png",
+      "sourceSha256": "0208a377269a74b0ff5fa69f0b84fbda136a3e340f616be2d12f2157edab33fa",
+      "importSha256": "0208a377269a74b0ff5fa69f0b84fbda136a3e340f616be2d12f2157edab33fa",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_02.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_02.png.meta",
+      "sourceSha256": "192cf62e39209772eaa24cc5c2027f3325a7dd1f45b232ba2ec5de0a4effcc03",
+      "importSha256": "192cf62e39209772eaa24cc5c2027f3325a7dd1f45b232ba2ec5de0a4effcc03",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_03.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_03.png",
+      "sourceSha256": "e5d1a58cd2d3dabbd29e90977b1d63f9b15d1d1002afbe89e2e371f2760fcea9",
+      "importSha256": "e5d1a58cd2d3dabbd29e90977b1d63f9b15d1d1002afbe89e2e371f2760fcea9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_03.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_03.png.meta",
+      "sourceSha256": "1c027e6dc37a35d15518c0292646a12599a5cd105867436080f58923799a6445",
+      "importSha256": "1c027e6dc37a35d15518c0292646a12599a5cd105867436080f58923799a6445",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_04.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_04.png",
+      "sourceSha256": "28ed7d8cfe4bc27c331abd6656f0056d2c0065753c7ec5354cb919e6c90602f7",
+      "importSha256": "28ed7d8cfe4bc27c331abd6656f0056d2c0065753c7ec5354cb919e6c90602f7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_04.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_04.png.meta",
+      "sourceSha256": "3c01e10e226441283ea0a047c6fd91b50f6dac4f1858f9d99d1309fe7920d5cd",
+      "importSha256": "3c01e10e226441283ea0a047c6fd91b50f6dac4f1858f9d99d1309fe7920d5cd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_05.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_05.png",
+      "sourceSha256": "aeeb691e7c468bdffcf058cefdc2c9acc667ef01c05d3b8628078335f51edc7e",
+      "importSha256": "aeeb691e7c468bdffcf058cefdc2c9acc667ef01c05d3b8628078335f51edc7e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_05.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_05.png.meta",
+      "sourceSha256": "6b27870f1f3d8f97727b0f62467cc2228f563c9859024bdff29e54ed6ef4907e",
+      "importSha256": "6b27870f1f3d8f97727b0f62467cc2228f563c9859024bdff29e54ed6ef4907e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_06.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_06.png",
+      "sourceSha256": "b6657cdc9689958ba20ea13276ed5a5515646654d82ab32ff21e10e949846b80",
+      "importSha256": "b6657cdc9689958ba20ea13276ed5a5515646654d82ab32ff21e10e949846b80",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_06.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_06.png.meta",
+      "sourceSha256": "19bec6631678bf3fde9e1ac47684ec63df3b52fd4465c141cf4489c25e699fac",
+      "importSha256": "19bec6631678bf3fde9e1ac47684ec63df3b52fd4465c141cf4489c25e699fac",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_Spec.png",
+      "sourceSha256": "38697e8f2ea628b861788ef1d1807d3f85e3637d81847324ad09908955714f96",
+      "importSha256": "38697e8f2ea628b861788ef1d1807d3f85e3637d81847324ad09908955714f96",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Outer_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Outer_Spec.png.meta",
+      "sourceSha256": "dc8ae4c605a895025cc4db7f9cbb51d45d26eef7adf4309a181fa1adab9dd9be",
+      "importSha256": "dc8ae4c605a895025cc4db7f9cbb51d45d26eef7adf4309a181fa1adab9dd9be",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Spec.png",
+      "sourceSha256": "29cc8a904fe4d27f2ab61f1203b6e0e7ce26a141d1927ac1cd6298149af72cee",
+      "importSha256": "29cc8a904fe4d27f2ab61f1203b6e0e7ce26a141d1927ac1cd6298149af72cee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Cloth_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Cloth_Spec.png.meta",
+      "sourceSha256": "0251a6c2257152df7371f5073954deb6dcacc000b0e2ef9fab900e4ce1a76581",
+      "importSha256": "0251a6c2257152df7371f5073954deb6dcacc000b0e2ef9fab900e4ce1a76581",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Glass.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Glass.png",
+      "sourceSha256": "28c753ac7cc1619bcdbd245087c0de0bdca4d80c945a90e0baf911ed8abfb2c6",
+      "importSha256": "28c753ac7cc1619bcdbd245087c0de0bdca4d80c945a90e0baf911ed8abfb2c6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_MachineGun_Glass.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_MachineGun_Glass.png.meta",
+      "sourceSha256": "a1c1f2c1981ea7512554f51d8d884856741f65d143cd8b7e58498c125e2c97ac",
+      "importSha256": "a1c1f2c1981ea7512554f51d8d884856741f65d143cd8b7e58498c125e2c97ac",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_01.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_01.png",
+      "sourceSha256": "02dbc9e230365f69a7b3c65dd49eb30bb1d095421e75728c763cf29b13c6fdae",
+      "importSha256": "02dbc9e230365f69a7b3c65dd49eb30bb1d095421e75728c763cf29b13c6fdae",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_01.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_01.png.meta",
+      "sourceSha256": "9291a6a907739f23f10cd09b211096c8cb6989dd0f0650aad2d4bc0b727248af",
+      "importSha256": "9291a6a907739f23f10cd09b211096c8cb6989dd0f0650aad2d4bc0b727248af",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_02.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_02.png",
+      "sourceSha256": "c3f10e0739b35bb36a3d96ad12a530810d9d14a83ba908c056262cda0f05b009",
+      "importSha256": "c3f10e0739b35bb36a3d96ad12a530810d9d14a83ba908c056262cda0f05b009",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_02.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_02.png.meta",
+      "sourceSha256": "db16ddc2d13a352a5e3810cf1cb2b3b8c82d193833d60987e783dcc5f131bf06",
+      "importSha256": "db16ddc2d13a352a5e3810cf1cb2b3b8c82d193833d60987e783dcc5f131bf06",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_03.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_03.png",
+      "sourceSha256": "d0849c5e1e2bde24d8002d5dd3033804d620712af370a296ca4e0f83ece21794",
+      "importSha256": "d0849c5e1e2bde24d8002d5dd3033804d620712af370a296ca4e0f83ece21794",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_03.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_03.png.meta",
+      "sourceSha256": "692c51c486b472181e5c4ffb5a75b19206d3b0f4d0987e1201e317ed53f3860d",
+      "importSha256": "692c51c486b472181e5c4ffb5a75b19206d3b0f4d0987e1201e317ed53f3860d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_04.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_04.png",
+      "sourceSha256": "783732528d91f1ced3b4428163311e39b53d4ae51a610b5a2763a8eae145d81a",
+      "importSha256": "783732528d91f1ced3b4428163311e39b53d4ae51a610b5a2763a8eae145d81a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_04.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_04.png.meta",
+      "sourceSha256": "ff277f7828f51ce696a5c70f7a1fdc3b467bceae59da12efc86cee4810634665",
+      "importSha256": "ff277f7828f51ce696a5c70f7a1fdc3b467bceae59da12efc86cee4810634665",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_05.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_05.png",
+      "sourceSha256": "c1a54ffa7101a6a947c4cb100dced7622ae5c1a2399445908fa6436afa9be75d",
+      "importSha256": "c1a54ffa7101a6a947c4cb100dced7622ae5c1a2399445908fa6436afa9be75d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_05.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_05.png.meta",
+      "sourceSha256": "fe3d2a04b9d3e95850216582f87fef8957fbe508f7ac6d1c8e8c9d4ef30c73b4",
+      "importSha256": "fe3d2a04b9d3e95850216582f87fef8957fbe508f7ac6d1c8e8c9d4ef30c73b4",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_06.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_06.png",
+      "sourceSha256": "1741ee36700016f77bee62ebd2ce629fd872717cfeaa45e0a6f9bf4dccf5f2a9",
+      "importSha256": "1741ee36700016f77bee62ebd2ce629fd872717cfeaa45e0a6f9bf4dccf5f2a9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_06.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_06.png.meta",
+      "sourceSha256": "006c2bda489002966a1c2c2726a6de4891107ca9fede046701cd1518d4c6fdb0",
+      "importSha256": "006c2bda489002966a1c2c2726a6de4891107ca9fede046701cd1518d4c6fdb0",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_Outer_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_Outer_Spec.png",
+      "sourceSha256": "38697e8f2ea628b861788ef1d1807d3f85e3637d81847324ad09908955714f96",
+      "importSha256": "38697e8f2ea628b861788ef1d1807d3f85e3637d81847324ad09908955714f96",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_Outer_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_Outer_Spec.png.meta",
+      "sourceSha256": "a326691a28222010e21df74985d2217a41e3da272af69eccc411581c76b867f8",
+      "importSha256": "a326691a28222010e21df74985d2217a41e3da272af69eccc411581c76b867f8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_Spec.png",
+      "sourceSha256": "29cc8a904fe4d27f2ab61f1203b6e0e7ce26a141d1927ac1cd6298149af72cee",
+      "importSha256": "29cc8a904fe4d27f2ab61f1203b6e0e7ce26a141d1927ac1cd6298149af72cee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Cloth\\CombatGirl_Minigun_Cloth_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Cloth/CombatGirl_Minigun_Cloth_Spec.png.meta",
+      "sourceSha256": "778c8111a1dfee62a79bf7acfd05aa784ef3d8ba5b794b2c240b5dd28bbf71d5",
+      "importSha256": "778c8111a1dfee62a79bf7acfd05aa784ef3d8ba5b794b2c240b5dd28bbf71d5",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_01.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_01.png",
+      "sourceSha256": "4aad9b81801a88428ed8598fa9e75e90ae2d3cba08e861e3e83ec69043aa31ed",
+      "importSha256": "4aad9b81801a88428ed8598fa9e75e90ae2d3cba08e861e3e83ec69043aa31ed",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_01.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_01.png.meta",
+      "sourceSha256": "6232c19c011e9dd485c50d2db64934c75283868fa672f9eeaea1b1d0990d4df1",
+      "importSha256": "6232c19c011e9dd485c50d2db64934c75283868fa672f9eeaea1b1d0990d4df1",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_02.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_02.png",
+      "sourceSha256": "5d41ace6e8b1059bf8332ae3e8b4c47d5a47d41f9af3b93a4ea1484926ff508c",
+      "importSha256": "5d41ace6e8b1059bf8332ae3e8b4c47d5a47d41f9af3b93a4ea1484926ff508c",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_02.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_02.png.meta",
+      "sourceSha256": "cbe419522e8ec7f85675d6a7197ee58caa663c460f267e16fd339e19b9538fee",
+      "importSha256": "cbe419522e8ec7f85675d6a7197ee58caa663c460f267e16fd339e19b9538fee",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_03.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_03.png",
+      "sourceSha256": "2aa4be0ea56025e6f96bc4e3f22667a9357781df2ccc9d1d663b40ce34ebeb7e",
+      "importSha256": "2aa4be0ea56025e6f96bc4e3f22667a9357781df2ccc9d1d663b40ce34ebeb7e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_03.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_03.png.meta",
+      "sourceSha256": "8dae9a4be17df3c93233dd56e3aa23221e9d50f89e72ae74998118e82bc08c3a",
+      "importSha256": "8dae9a4be17df3c93233dd56e3aa23221e9d50f89e72ae74998118e82bc08c3a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_04.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_04.png",
+      "sourceSha256": "3b3c357c1a27515365ad4423f810105309bffea0e3581c6ee9c29508bf3996e2",
+      "importSha256": "3b3c357c1a27515365ad4423f810105309bffea0e3581c6ee9c29508bf3996e2",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_04.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_04.png.meta",
+      "sourceSha256": "1caed9c37faab62af5bff6c9e2e13f9d9f44392ce46d66267717980ac21043ae",
+      "importSha256": "1caed9c37faab62af5bff6c9e2e13f9d9f44392ce46d66267717980ac21043ae",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_05.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_05.png",
+      "sourceSha256": "46d23dadc0e27efdb59deffd39c36b2dea779e58f78dab96c7495aa166e423cd",
+      "importSha256": "46d23dadc0e27efdb59deffd39c36b2dea779e58f78dab96c7495aa166e423cd",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_05.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_05.png.meta",
+      "sourceSha256": "dcff48e0ac76edf8591ad221db73da2262993953f8c11381b370c0a460c94bf9",
+      "importSha256": "dcff48e0ac76edf8591ad221db73da2262993953f8c11381b370c0a460c94bf9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_06.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_06.png",
+      "sourceSha256": "b2031303a7ec29eeb0f2c896e84280be6fce5f3f186e03f68ac020fb6c75559f",
+      "importSha256": "b2031303a7ec29eeb0f2c896e84280be6fce5f3f186e03f68ac020fb6c75559f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Hair\\CombatGirl_MachineGun_Hair_06.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Hair/CombatGirl_MachineGun_Hair_06.png.meta",
+      "sourceSha256": "1fbb714f27a3dd256f5e6aa182fe9ffb00960a6379b788a5f24411e0ccfaeec6",
+      "importSha256": "1fbb714f27a3dd256f5e6aa182fe9ffb00960a6379b788a5f24411e0ccfaeec6",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Metal_MatCap.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Metal_MatCap.png",
+      "sourceSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "importSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Metal_MatCap.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Metal_MatCap.png.meta",
+      "sourceSha256": "c974693c85e615c842c10e23ce2b77e2e6efe2495fc5f2fa99c2aa597300af1f",
+      "importSha256": "c974693c85e615c842c10e23ce2b77e2e6efe2495fc5f2fa99c2aa597300af1f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Sportswear\\Sportswear.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Sportswear/Sportswear.png",
+      "sourceSha256": "c06e9c1395c5bfd91cec7d4b389b10889645c04d1712422c2369163fb1a21695",
+      "importSha256": "c06e9c1395c5bfd91cec7d4b389b10889645c04d1712422c2369163fb1a21695",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Sportswear\\Sportswear.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Sportswear/Sportswear.png.meta",
+      "sourceSha256": "3c550eee85776b4817d5d2fcd7963347447e1603b188ba32e5067c59d7076be9",
+      "importSha256": "3c550eee85776b4817d5d2fcd7963347447e1603b188ba32e5067c59d7076be9",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_AO.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_AO.png",
+      "sourceSha256": "f36a7df96ce547564cfd6e90075bd28f21cd47c54613f7d14c7be8f0b94349b8",
+      "importSha256": "f36a7df96ce547564cfd6e90075bd28f21cd47c54613f7d14c7be8f0b94349b8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_AO.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_AO.png.meta",
+      "sourceSha256": "2028c6cce0f06a7c3551f62b77b438010439771153aedc2f00c700a8ddabc08b",
+      "importSha256": "2028c6cce0f06a7c3551f62b77b438010439771153aedc2f00c700a8ddabc08b",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Diffuse.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Diffuse.png",
+      "sourceSha256": "59d7b4445b02bd698d04e2a04fe6f3070ffad81870d27d4e6ba7ef85fc4b919a",
+      "importSha256": "59d7b4445b02bd698d04e2a04fe6f3070ffad81870d27d4e6ba7ef85fc4b919a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Diffuse.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Diffuse.png.meta",
+      "sourceSha256": "2001c61d7db1478931f2c8ef0fb0eb31c0da985db9b1fa8d5fdbc6942cbad906",
+      "importSha256": "2001c61d7db1478931f2c8ef0fb0eb31c0da985db9b1fa8d5fdbc6942cbad906",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Emissive.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Emissive.png",
+      "sourceSha256": "a3f41205ff05ec91de229ca484d7e0730c2a836089161a3e415a52ea9f32125e",
+      "importSha256": "a3f41205ff05ec91de229ca484d7e0730c2a836089161a3e415a52ea9f32125e",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Emissive.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Emissive.png.meta",
+      "sourceSha256": "5b4a262d34b3a1a89af0bf08b8932ae34b6f18947f52609aa98406943f0ade4d",
+      "importSha256": "5b4a262d34b3a1a89af0bf08b8932ae34b6f18947f52609aa98406943f0ade4d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_MetallicSmoothness.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_MetallicSmoothness.png",
+      "sourceSha256": "5011f430b82481d9db1ff8cadd400ee8bf917fd65f1eb2f4700b493431870696",
+      "importSha256": "5011f430b82481d9db1ff8cadd400ee8bf917fd65f1eb2f4700b493431870696",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_MetallicSmoothness.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_MetallicSmoothness.png.meta",
+      "sourceSha256": "714559d5f3cf8582bdc042180f735f60e1eec3edfb3468d92ebd6e72b953c05d",
+      "importSha256": "714559d5f3cf8582bdc042180f735f60e1eec3edfb3468d92ebd6e72b953c05d",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Norma.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Norma.png",
+      "sourceSha256": "2b2cf29e6b704f09e7ac87feaff8a36efeafc6e5633ec14bda07641f5125e394",
+      "importSha256": "2b2cf29e6b704f09e7ac87feaff8a36efeafc6e5633ec14bda07641f5125e394",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Norma.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Norma.png.meta",
+      "sourceSha256": "6eee553dd5fb7cf502c8a5dc5027a9eac42492dc9291168b05fa86759239db5f",
+      "importSha256": "6eee553dd5fb7cf502c8a5dc5027a9eac42492dc9291168b05fa86759239db5f",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Spec.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Spec.png",
+      "sourceSha256": "b550cbee212be143d8eb539802272cfd1c1f5c00903b425a7bc91cc92978da3a",
+      "importSha256": "b550cbee212be143d8eb539802272cfd1c1f5c00903b425a7bc91cc92978da3a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\CombatGirls_MachineGun\\Texture\\Weapon\\CombatGirl_Minigun_Weapon_MiniGun_Spec.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/CombatGirls_MachineGun/Texture/Weapon/CombatGirl_Minigun_Weapon_MiniGun_Spec.png.meta",
+      "sourceSha256": "0f0e224510bedf46f8359ca0b7f3484941966b53bc8d25d15814dfd79d63d70a",
+      "importSha256": "0f0e224510bedf46f8359ca0b7f3484941966b53bc8d25d15814dfd79d63d70a",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticW.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Body_PlasticW.mat",
+      "sourceSha256": "6246e698a25b808302bc2fd69530cac2644649e39f7558ce2c944957f9c57ec3",
+      "importSha256": "d02228e98f55935fc860d5b5dbac99bea847a4e221889d85d84e529b5ea1db83",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticW.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Body_PlasticW.mat.meta",
+      "sourceSha256": "e324d38a92d8c8c369908e7d5209089e084316310a4a1f134ad4a35eda9a8e45",
+      "importSha256": "4d273fd748c0c300f6e7a066b5ec07ae5048e509a58a2d25d960e3285f1b906f",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticY.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Body_PlasticY.mat",
+      "sourceSha256": "dbd257da6450d5a63db2644cd363e9478ba28156981b6abce091bccbbd48eb7c",
+      "importSha256": "d73962a7e1e85f07c104f5a9515919c98e1f471bcef6b4eff8588d1512be31ab",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Body_PlasticY.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Body_PlasticY.mat.meta",
+      "sourceSha256": "dc37ab0110d84b6e8e58c2a25aa107d11ed51c860a2dfa38f7c484274d34f434",
+      "importSha256": "2ba6f3a0930ff843a85a5eec733b696a6aa386a4dd9606b29907f88c6113dbdb",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Face.mat",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Face.mat",
+      "sourceSha256": "0e33defb2519a200cd2b97d6f44b4729e8797b40797e19e35042bb2de1974aae",
+      "importSha256": "0e33defb2519a200cd2b97d6f44b4729e8797b40797e19e35042bb2de1974aae",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Materials\\Humanoid_Face.mat.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Materials/Humanoid_Face.mat.meta",
+      "sourceSha256": "368f87fcba7efbd511e7c2881767beb647615831c0458db2313e9c3544377c67",
+      "importSha256": "7d7b7de5a8f128cd604714ec1e1f4c7ccb00ba3bd9fd7e8789f51d8fdf37b499",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Models\\Humanoid_F.fbx",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Models/Humanoid_F.fbx",
+      "sourceSha256": "9a3f0bb58f872cf031ce98867df3511fad5611b90a6a84e575ff454b8cf72427",
+      "importSha256": "9a3f0bb58f872cf031ce98867df3511fad5611b90a6a84e575ff454b8cf72427",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Models\\Humanoid_F.fbx.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Models/Humanoid_F.fbx.meta",
+      "sourceSha256": "fd225b904415af6b3d37308efbf8f414edd199e83787f80046a0cfdbffd3ac03",
+      "importSha256": "ac2ed435061cdf7927512acfb5dfecf120a976e6111cf98b4b9708d2eaa5ecc0",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Prefab\\Humanoid_F.prefab",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Prefab/Humanoid_F.prefab",
+      "sourceSha256": "60d1b223820e429dfd7890ec3b2aa6f90cad4798aa053869c188626a415e81a3",
+      "importSha256": "3866ea6e68867d10480f4eef663526d091bed4732b802795489006f3a15c9b3f",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Prefab\\Humanoid_F.prefab.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Prefab/Humanoid_F.prefab.meta",
+      "sourceSha256": "2ec81e387cbd9c7b08971a56f4531b9ec26054e2fd234a60518062e46ae2ddcb",
+      "importSha256": "7991810e92dbedae8bb2804328dc1e37bee95192c99f35ecbbd96ea17768d745",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Albedo.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_Albedo.png",
+      "sourceSha256": "400d838b024bab7d2b35ac4948f36269006a9bcf4a3aa9541c8a3cfc1878aeef",
+      "importSha256": "400d838b024bab7d2b35ac4948f36269006a9bcf4a3aa9541c8a3cfc1878aeef",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Albedo.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_Albedo.png.meta",
+      "sourceSha256": "2ab2986963c2124d378967c5c90d3031aad5b14273e85adc555d6e0d9f154966",
+      "importSha256": "68053b87a72993fb0e9e801046c32d7c7404e9745cfcfff1ec1c2fd1ca8b07e2",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_MetallicSmoothness.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_MetallicSmoothness.png",
+      "sourceSha256": "e8ae18c3b7af2827de5c6184001fd086d436799b6754a62018a86f16ed5ab5a7",
+      "importSha256": "e8ae18c3b7af2827de5c6184001fd086d436799b6754a62018a86f16ed5ab5a7",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_MetallicSmoothness.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_MetallicSmoothness.png.meta",
+      "sourceSha256": "4fee241a0b4a21e858c9fb42ee502e2b0a4547708b9032ac15c55d883f4552c0",
+      "importSha256": "47599cc3188f91bcbfd0c27e849f9d3dd6db87b0a45e95fc8df3ed52bed682a4",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Normal.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_Normal.png",
+      "sourceSha256": "fda20329aed82bc440e63affb1ac5fce3cc9be243b33f3c21bd1c691f16527b8",
+      "importSha256": "fda20329aed82bc440e63affb1ac5fce3cc9be243b33f3c21bd1c691f16527b8",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Humanoid_Bot\\Texture\\Humanoid_Body_Normal.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Humanoid_Bot/Texture/Humanoid_Body_Normal.png.meta",
+      "sourceSha256": "9b62bda5ac75452ae50c140ae280fdb9536573a6b26b4223cd8854c5e63a0a9c",
+      "importSha256": "9743db3adad24186ceab8b41bb6becd0695e73f30e9c5e9145358bca07822ab4",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Metal_MatCap.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/RifleGirl/Texture/Metal_MatCap.png",
+      "sourceSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "importSha256": "8ca8c22b6768d3cdfde94f9b8bab17980cebbf495ef2086ddf86f1dd94cb3d19",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\RifleGirl\\Texture\\Metal_MatCap.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/RifleGirl/Texture/Metal_MatCap.png.meta",
+      "sourceSha256": "bb44cc522abe7a86fa6cc05d247e3c5cc578921e655d0fd4a52a62625572a599",
+      "importSha256": "6ff3c34263dd6a52236bb1a8f3b737960d7f5e2b0593936ed559b38042025597",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Unity Chan Toon Shader - SDF - Texture\\Head_LightMap_SDF.png",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Unity Chan Toon Shader - SDF - Texture/Head_LightMap_SDF.png",
+      "sourceSha256": "c7f528579fdbf7f734598c60d8d7a4f0fb692af7d786e87680808ae32124d368",
+      "importSha256": "c7f528579fdbf7f734598c60d8d7a4f0fb692af7d786e87680808ae32124d368",
+      "changes": []
+    },
+    {
+      "source": "D:\\XPHUNITY\\CombatGirls\\Assets\\CombatGirlsCharacterPack\\Unity Chan Toon Shader - SDF - Texture\\Head_LightMap_SDF.png.meta",
+      "target": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/SharedMachineGun/Unity Chan Toon Shader - SDF - Texture/Head_LightMap_SDF.png.meta",
+      "sourceSha256": "e674c6467522724fbc482295b92e0f11e664ab385c7bcf705c1e329520e74b75",
+      "importSha256": "696884feb225ab8cbf57b06a004a7dd11c91df3697318ebff50aa3aa03ac0c60",
+      "changes": [
+        "Isolate changed shared dependencies from RifleGirl"
+      ]
+    }
+  ]
+}

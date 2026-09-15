@@ -31,7 +31,7 @@
     <var name="swimHealthRecoverRate" type="float" comment="移动恢复：己方潜墨回血（HP/秒）" />
     <var name="enemyInkDamageRate" type="float" comment="移动恢复：敌墨伤害（HP/秒）" />
     <var name="enemyInkHealthFloor" type="float" comment="移动恢复：敌墨非致死生命下限（HP）" />
-    <var name="fireMode" type="int" comment="发射：0全自动／1三连发／2蓄力松开发射／3半自动" />
+    <var name="fireMode" type="int" comment="发射：0全自动／1三连发／2蓄力松开发射／3半自动／4旋转枪" />
     <var name="fireRate" type="float" comment="发射：权威射速（发/秒）" />
     <var name="shotInk" type="float" comment="发射：每次有效发射总耗墨（霰弹整组）" />
     <var name="startFrames" type="int" comment="发射：人形起手（60Hz参考帧）" />
@@ -75,6 +75,21 @@
     <var name="pelletCount" type="int" comment="发射：每次有效发射的弹丸数量" />
     <var name="muzzleMode" type="int" comment="发射：枪口模式（0单枪／1右左交替）" />
     <var name="semiBufferFrames" type="int" comment="发射：半自动冷却末尾点击缓存（60Hz帧）" />
+    <var name="splatlingMinChargeFrames" type="int" comment="旋转枪：最小有效蓄力帧数" />
+    <var name="splatlingFirstChargeFrames" type="int" comment="旋转枪：第一圈蓄力帧数" />
+    <var name="splatlingFirstShootFrames" type="int" comment="旋转枪：第一圈射击窗口帧数（含第0帧首弹）" />
+    <var name="splatlingFullShootFrames" type="int" comment="旋转枪：满蓄射击窗口帧数（含末帧）" />
+    <var name="splatlingSlowChargeMultiplier" type="float" comment="旋转枪：空中或缺墨蓄力耗时倍率（不叠乘）" />
+    <var name="splatlingChargeMoveSpeed" type="float" comment="旋转枪：蓄力移动速度（米/秒）" />
+    <var name="splatlingChargeJumpSpeed" type="float" comment="旋转枪：蓄力起跳速度（米/秒）" />
+    <var name="splatlingPostFrames" type="int" comment="旋转枪：末弹后恢复帧数" />
+    <var name="splatlingPitchSpread" type="float" comment="旋转枪：地面垂直散布半角（度）" />
+    <var name="splatlingSpreadBias" type="float" comment="旋转枪：中心散布偏向（0到1）" />
+    <var name="splatlingSpeedBias" type="float" comment="旋转枪：初速随机中心偏向（0到1）" />
+    <var name="splatlingFootEvery" type="int" comment="旋转枪：脚下落墨间隔（发）" />
+    <var name="splatlingTrailCount" type="int" comment="旋转枪：每颗沿途最大落墨数" />
+    <var name="splatlingFootRadius" type="float" comment="旋转枪：脚下落墨半径（米）" />
+    <var name="splatlingPlayerRadius" type="float" comment="旋转枪：命中玩家扫掠半径（米）" />
   </bean>
   <table name="TbHero" value="HeroConfig" input="TbHero.xlsx" mode="map" index="id" />
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">

@@ -200,7 +200,8 @@ namespace Splatoon.Combat
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;
-            if (jump && grounded) s.VerticalSpeed = c.JumpSpeed;
+            if (jump && grounded) s.VerticalSpeed = WeaponSimulation.IsSplatling(c) && wantsFire && s.SplatlingRemaining == 0 && s.WeaponPhase != WeaponPhase.Ending
+                ? c.SplatlingChargeJumpSpeed : c.JumpSpeed;
             s.VerticalSpeed = AirSwimSimulation.VerticalSpeed(s.VerticalSpeed, airSwim, c, dt);
             var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;

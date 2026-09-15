@@ -1,6 +1,108 @@
 [
-  {"id":2,"pack":"DualPistol_Girl","name":"DualPistolGirl","weapon":"DualPistols","avatar":"Humanoid_FeDual_pistol","prefab":"Prefab/DualPistol_Girl_FullBody.prefab","scene":"DualPistol_Girl_Scene.unity","clips":["AimWalk_F","AimWalk_B","AimWalk_L","AimWalk_R","AimTurn_L90","AimTurn_R90","AimIdle","AimIdle_Shoot_R","AimIdle_Shoot_L","Die1","Die2"]},
-  {"id":3,"pack":"Shotgun_Girl","name":"ShotgunGirl","weapon":"Shotgun","avatar":"Humanoid_FePistol","prefab":"Prefab/ShotgunGirl_FullBody-Magica cloth2.prefab","scene":"Shotgun_Girl_Scene-Magica cloth2.unity","clips":["AimWalk_F","AimWalk_B","AimWalk_L","AimWalk_R","AimTurn_L90","AimTurn_R90","AimIdle","AimIdle_Shoot","Die1","Die2"]},
-  {"id":4,"pack":"Pistol_Girl","name":"PistolGirl","weapon":"Pistol","avatar":"Humanoid_F","prefab":"Prefab/PistolGirl_FullBody.prefab","scene":"Pistol_Girl_Scene.unity","clips":["AimWalk_F","AimWalk_B","AimWalk_L","AimWalk_R","AimTurn_L90","AimTurn_R90","AimIdle","AimIdle_Shoot","Die1","Die2"]},
-  {"id":5,"pack":"CombatGirls_Rocket_Launcher","name":"RocketLauncherGirl","weapon":"RocketLauncher","avatar":"Humanoid_F","prefab":"Prefab/RocketLauncher_Girl.prefab","scene":"Rocket_Launcher_Girl_Scene.unity","clips":["RL_AimWalk_F","RL_AimWalk_B","RL_AimWalk_FL","RL_AimWalk_BR","RL_AimTurn_L90","RL_AimTurn_R90","RL_AimIdle","RL_Shoot","RL_Die_F","RL_Die_B"]}
+  {
+    "id": 2,
+    "pack": "DualPistol_Girl",
+    "name": "DualPistolGirl",
+    "weapon": "DualPistols",
+    "avatar": "Humanoid_FeDual_pistol",
+    "prefab": "Prefab/DualPistol_Girl_FullBody.prefab",
+    "scene": "DualPistol_Girl_Scene.unity",
+    "clips": [
+      "AimWalk_F",
+      "AimWalk_B",
+      "AimWalk_L",
+      "AimWalk_R",
+      "AimTurn_L90",
+      "AimTurn_R90",
+      "AimIdle",
+      "AimIdle_Shoot_R",
+      "AimIdle_Shoot_L",
+      "Die1",
+      "Die2"
+    ]
+  },
+  {
+    "id": 3,
+    "pack": "Shotgun_Girl",
+    "name": "ShotgunGirl",
+    "weapon": "Shotgun",
+    "avatar": "Humanoid_FePistol",
+    "prefab": "Prefab/ShotgunGirl_FullBody-Magica cloth2.prefab",
+    "scene": "Shotgun_Girl_Scene-Magica cloth2.unity",
+    "clips": [
+      "AimWalk_F",
+      "AimWalk_B",
+      "AimWalk_L",
+      "AimWalk_R",
+      "AimTurn_L90",
+      "AimTurn_R90",
+      "AimIdle",
+      "AimIdle_Shoot",
+      "Die1",
+      "Die2"
+    ]
+  },
+  {
+    "id": 4,
+    "pack": "Pistol_Girl",
+    "name": "PistolGirl",
+    "weapon": "Pistol",
+    "avatar": "Humanoid_F",
+    "prefab": "Prefab/PistolGirl_FullBody.prefab",
+    "scene": "Pistol_Girl_Scene.unity",
+    "clips": [
+      "AimWalk_F",
+      "AimWalk_B",
+      "AimWalk_L",
+      "AimWalk_R",
+      "AimTurn_L90",
+      "AimTurn_R90",
+      "AimIdle",
+      "AimIdle_Shoot",
+      "Die1",
+      "Die2"
+    ]
+  },
+  {
+    "id": 5,
+    "pack": "CombatGirls_Rocket_Launcher",
+    "name": "RocketLauncherGirl",
+    "weapon": "RocketLauncher",
+    "avatar": "Humanoid_F",
+    "prefab": "Prefab/RocketLauncher_Girl.prefab",
+    "scene": "Rocket_Launcher_Girl_Scene.unity",
+    "clips": [
+      "RL_AimWalk_F",
+      "RL_AimWalk_B",
+      "RL_AimWalk_FL",
+      "RL_AimWalk_BR",
+      "RL_AimTurn_L90",
+      "RL_AimTurn_R90",
+      "RL_AimIdle",
+      "RL_Shoot",
+      "RL_Die_F",
+      "RL_Die_B"
+    ]
+  },
+  {
+    "id": 6,
+    "pack": "CombatGirls_MachineGun",
+    "name": "MachineGunGirl",
+    "weapon": "MachineGun",
+    "avatar": "Humanoid_F",
+    "prefab": "Prefab/MachineGun_Girl.prefab",
+    "scene": "MachineGun_Girl_Scene.unity",
+    "clips": [
+      "MG_AimWalk_F",
+      "MG_AimWalk_B",
+      "MG_AimWalk_FL",
+      "MG_AimWalk_BR",
+      "MG_AimTurn_L90",
+      "MG_AimTurn_R90",
+      "MG_AimIdle",
+      "MG_Shoot",
+      "MG_Die_F",
+      "MG_Die_B"
+    ]
+  }
 ]

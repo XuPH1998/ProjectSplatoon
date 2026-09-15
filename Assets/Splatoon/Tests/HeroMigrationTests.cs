@@ -33,17 +33,17 @@ namespace Splatoon.Tests
         {
             var baseline=JSONNode.Parse(File.ReadAllText("Tools/ValidationData/HeroMigration/Migration-Baseline.json"));
             var mapping=JSONNode.Parse(File.ReadAllText("Tools/ValidationData/HeroMigration/Field-Mapping.json"));
-            for(int i=0;i<rows.Count;i++)
+            for(int i=0;i<baseline["Weapon"].Count;i++)
             {
                 foreach(var item in mapping.Children) if(item["sourceTable"].Value=="Weapon" && item["heroField"].Value != "trailRadius") rows[i][item["heroField"].Value]=baseline["Weapon"][i][item["sourceField"].Value];
                 rows[i]["pelletCount"]=1;rows[i]["muzzleMode"]=0;rows[i]["semiBufferFrames"]=0;
             }
             // Pinned historical mechanics use their original fixed radius, only in this loader.
-            for (int i = 0; i < rows.Count; i++)
+            for (int i = 0; i < baseline["Weapon"].Count; i++)
                 rows[i]["trailRadiusMin"] = rows[i]["trailRadiusMax"] = baseline["Weapon"][i]["trailRadius"];
         });
-        static readonly string[] CharacterNames={"","RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl"};
-        static readonly string[] WeaponNames={"","RifleGirlRifle","DualPistols","Shotgun","Pistol","RocketLauncher"};
+        static readonly string[] CharacterNames={"","RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl","MachineGunGirl"};
+        static readonly string[] WeaponNames={"","RifleGirlRifle","DualPistols","Shotgun","Pistol","RocketLauncher","MachineGun"};
         static GameObject Character(int id)=>AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{CharacterNames[id]}/Prefabs/{CharacterNames[id]}Visual.prefab");
         static GameObject Weapon(int id)=>AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Weapons/{CharacterNames[id]}/Prefabs/{WeaponNames[id]}.prefab");
         [SetUp] public void Setup() => Load();
@@ -56,23 +56,15 @@ namespace Splatoon.Tests
         HeroContent Content(int id, GameObject character = null, GameObject weapon = null) => new(GameplayConfig.GetHero(id), character ?? Character(id), weapon ?? Weapon(id));
         static PlayerSnapshot State(int hero) => new() { HeroId = hero, Health = 100, Ink = 100, Team = 1, Grounded = true, Revision = 4 };
 
-        [Test] public void CurrentHeroValuesOnlyChangeTheTwoTrailRadiusFields()
+        [Test] public void MachineGunAdditionPreservesTheExistingFiveHeroes()
         {
-            var before = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/GameplayUpdate/Hero-Before.json"));
+            var before = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/MachineGun/Heroes-Before.json"));
             var actual = JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/tbhero.json"));
-            Assert.That(actual.Count, Is.EqualTo(before.Count));
+            Assert.That(actual.Count, Is.EqualTo(before.Count + 1));
             for (int i = 0; i < before.Count; i++)
-            {
                 foreach (var field in before[i].Keys)
-                {
-                    if (field == "trailRadius") continue;
-                    Assert.That(actual[i][field].ToString(), Is.EqualTo(before[i][field].ToString()), $"{i + 1}/{field}");
-                }
-                float radius = before[i]["trailRadius"].AsFloat;
-                Assert.That(actual[i]["trailRadiusMin"].AsFloat, Is.EqualTo(radius * .8f).Within(.00001));
-                Assert.That(actual[i]["trailRadiusMax"].AsFloat, Is.EqualTo(radius * 1.2f).Within(.00001));
-                Assert.That(actual[i].HasKey("trailRadius"), Is.False);
-            }
+                    if (before[i][field].IsNumber) Assert.That(actual[i][field].AsDouble, Is.EqualTo(before[i][field].AsDouble).Within(.00001), $"{i + 1}/{field}");
+                    else Assert.That(actual[i][field].Value, Is.EqualTo(before[i][field].Value), $"{i + 1}/{field}");
         }
         [Test] public void SelectedHeroDrivesMovementRecoveryAndDisplay()
         {
@@ -110,7 +102,7 @@ namespace Splatoon.Tests
             using var binder = new HeroViewBinder(Root("Hero view root").transform);
             binder.Apply(Content(1)); var first = binder.Visual;
             Assert.That(binder.Apply(Content(1)),Is.False);Assert.That(binder.Visual,Is.SameAs(first));
-            for (int id = 2; id <= 5; id++) { Assert.That(binder.Apply(Content(id)), Is.True); Assert.That(binder.Visual, Is.Not.SameAs(first)); }
+            for (int id = 2; id <= 6; id++) { Assert.That(binder.Apply(Content(id)), Is.True); Assert.That(binder.Visual, Is.Not.SameAs(first)); }
             Assert.That(binder.View.GetComponentsInChildren<HeroWeaponBindings>(true).Length, Is.EqualTo(1));
             var alternateCharacter = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPath)); _objects.Add(alternateCharacter); alternateCharacter.SetActive(false);
             var alternateWeapon = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(WeaponPath)); _objects.Add(alternateWeapon); alternateWeapon.SetActive(false);
@@ -137,7 +129,7 @@ namespace Splatoon.Tests
         static Assets Catalog()
         {
             var result=new Assets();
-            for(int id=1;id<=5;id++){result.Values["Character/"+CharacterNames[id]]=Character(id);result.Values["Weapon/"+WeaponNames[id]]=Weapon(id);}
+            for(int id=1;id<=6;id++){result.Values["Character/"+CharacterNames[id]]=Character(id);result.Values["Weapon/"+WeaponNames[id]]=Weapon(id);}
             return result;
         }
         [Test] public void CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation()
@@ -150,7 +142,7 @@ namespace Splatoon.Tests
             Assert.That(service.AssetCount, Is.Zero); Assert.That(service.All, Is.Empty);
             source.Fails = null; source.Loads = 0;
             service.InitializeAsync(rows, default).GetAwaiter().GetResult();
-            Assert.That(source.Loads, Is.EqualTo(10)); Assert.That(service.AssetCount, Is.EqualTo(10)); Assert.That(service.All.Count(), Is.EqualTo(5));
+            Assert.That(source.Loads, Is.EqualTo(12)); Assert.That(service.AssetCount, Is.EqualTo(12)); Assert.That(service.All.Count(), Is.EqualTo(6));
             using var cancel = new CancellationTokenSource(); cancel.Cancel();
             Assert.Throws<OperationCanceledException>(() => service.InitializeAsync(rows, cancel.Token).GetAwaiter().GetResult());
             Assert.That(service.All, Is.Empty); service.InitializeAsync(rows, default).GetAwaiter().GetResult(); Assert.That(service.Get(5).Config.Id, Is.EqualTo(5));
@@ -171,7 +163,7 @@ namespace Splatoon.Tests
             assets.Values["Test/AlternateCharacter"]=otherCharacter;assets.Values["Test/AlternateWeapon"]=otherWeapon;
             using var service=new HeroContentService(assets);
             service.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList,default).GetAwaiter().GetResult();
-            Assert.That(assets.Loads,Is.EqualTo(10));
+            Assert.That(assets.Loads,Is.EqualTo(12));
             using var binder=new HeroViewBinder(Root("Alternate address hero").transform);
             binder.Apply(service.Get(1));var first=binder.Visual;
             Assert.That(binder.Apply(service.Get(2)),Is.True);Assert.That(binder.Visual,Is.Not.SameAs(first));

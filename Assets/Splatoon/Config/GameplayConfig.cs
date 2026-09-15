@@ -34,7 +34,12 @@ namespace Splatoon.Config
             }
             foreach (var w in tables.TbHero.DataList)
             {
-                Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 3 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
+                Require(!string.IsNullOrWhiteSpace(w.DisplayName) && w.FireMode >= 0 && w.FireMode <= 4 && w.ShootMoveSpeed > 0 && w.BurstCount > 0, "武器名称、机制或移动配置无效");
+                if (w.FireMode == 4) Require(w.SplatlingMinChargeFrames > 0 && w.SplatlingFirstChargeFrames > w.SplatlingMinChargeFrames && w.ChargeFrames > w.SplatlingFirstChargeFrames &&
+                    w.SplatlingFullShootFrames > w.SplatlingFirstShootFrames && w.SplatlingSlowChargeMultiplier >= 1 && w.SplatlingChargeMoveSpeed > 0 && w.SplatlingChargeJumpSpeed > 0 &&
+                    w.SplatlingPostFrames > 0 && w.SplatlingFootEvery > 0 && w.SplatlingTrailCount > 0 && w.SplatlingFootRadius > 0 && w.SplatlingPlayerRadius >= w.CollisionRadius &&
+                    w.ChargePartialMaxDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.SplatlingSpeedBias > 0 && w.SplatlingSpeedBias < 1 &&
+                    w.SplatlingSpreadBias > 0 && w.SplatlingSpreadBias < 1 && w.ChargeMinSpeed > 0 && w.ChargeMinRange > 0, "旋转枪分段蓄力或弹道配置无效");
                 Require(w.PelletCount >= 1 && w.PelletCount <= 8 && w.MuzzleMode >= 0 && w.MuzzleMode <= 1 && w.SemiBufferFrames >= 0 && w.SemiBufferFrames * (double)w.FireRate <= 60 + .00001, "齐射、枪口或点击缓存配置无效");
                 Require(w.FireMode == 3 || (w.PelletCount == 1 && w.MuzzleMode == 0 && w.SemiBufferFrames == 0), "新增齐射和轮播仅用于半自动");
                 Require(w.MuzzleMode != 1 || w.PelletCount == 1, "双枪每次只发射一颗墨弹");
