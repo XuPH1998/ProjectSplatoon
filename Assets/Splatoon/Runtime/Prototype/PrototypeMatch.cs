@@ -110,6 +110,7 @@ namespace Splatoon.Prototype
             _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
             _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
+            ResetSnapshotTransfer(false);
             PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear(); InitialSyncComplete = true;
         }
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer && round > _paintRound) ResetPaint(round); }
@@ -143,19 +144,25 @@ namespace Splatoon.Prototype
         private void ServerTick()
         {
             var s = State.Value;
-            if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(Projectiles.Spawned.ToArray()); Projectiles.Spawned.Clear(); }
-            if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(Projectiles.Impacts.ToArray()); Projectiles.Impacts.Clear(); }
-            if (_pending.Count > 0) { PaintClientRpc(_pending.ToArray()); _pending.Clear(); }
+            if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(new NetworkBatch<InkShot>(Projectiles.Spawned)); Projectiles.Spawned.Clear(); }
+            if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(new NetworkBatch<InkImpact>(Projectiles.Impacts)); Projectiles.Impacts.Clear(); }
+            if (_pending.Count > 0) { PaintClientRpc(new NetworkBatch<PaintStamp>(_pending)); _pending.Clear(); }
             s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.PinkArea = Arena.PinkArea; s.BlueArea = Arena.BlueArea; State.Value = s;
         }
-        [ClientRpc] private void ShotsClientRpc(InkShot[] shots) { if (State.Value.Phase != MatchPhase.Finished) foreach (var shot in shots) if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); }
-        [ClientRpc] private void ImpactsClientRpc(InkImpact[] impacts) { foreach (var impact in impacts) if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); }
+        [ClientRpc] private void ShotsClientRpc(NetworkBatch<InkShot> shots)
+        { try { if (State.Value.Phase != MatchPhase.Finished) for (int i = 0; i < shots.Count; i++) { var shot = shots[i]; if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); } } finally { shots.Dispose(); } }
+        [ClientRpc] private void ImpactsClientRpc(NetworkBatch<InkImpact> impacts)
+        { try { for (int i = 0; i < impacts.Count; i++) { var impact = impacts[i]; if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); } } finally { impacts.Dispose(); } }
         [ClientRpc] private void ClearShotsClientRpc(uint round) { if (round == _paintRound) InkPresentation.Current?.Clear(); }
-        [ClientRpc] private void PaintClientRpc(PaintStamp[] stamps, ClientRpcParams targets = default)
+        [ClientRpc] private void PaintClientRpc(NetworkBatch<PaintStamp> stamps, ClientRpcParams targets = default)
         {
-            if (IsServer) return;
-            foreach (var stamp in stamps) if (stamp.Round == _paintRound && stamp.Sequence > _appliedSequence) _buffered[stamp.Sequence] = stamp;
-            DrainPaint();
+            try
+            {
+                if (IsServer) return;
+                for (int i = 0; i < stamps.Count; i++) { var stamp = stamps[i]; if (stamp.Round == _paintRound && stamp.Sequence > _appliedSequence) _buffered[stamp.Sequence] = stamp; }
+                DrainPaint();
+            }
+            finally { stamps.Dispose(); }
         }
         private void DrainPaint()
         {
@@ -168,6 +175,8 @@ namespace Splatoon.Prototype
             this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
             _captureGeneration++; Projectiles.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
+            _incoming = null; _checkpoint = null; _checkpointBytes = null; _pending.Clear(); _journal.Clear();
+            ResetSnapshotTransfer(true);
             if (Current == this) Current = null;
         }
     }

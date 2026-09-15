@@ -23,6 +23,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["displayName"].IsString) { throw new SerializationException(); }  DisplayName = _buf["displayName"]; }
+        { if(!_buf["weaponTypeName"].IsString) { throw new SerializationException(); }  WeaponTypeName = _buf["weaponTypeName"]; }
+        { if(!_buf["portraitAddress"].IsString) { throw new SerializationException(); }  PortraitAddress = _buf["portraitAddress"]; }
         { if(!_buf["weaponConfigPath"].IsString) { throw new SerializationException(); }  WeaponConfigPath = _buf["weaponConfigPath"]; }
         { if(!_buf["characterPrefabAddress"].IsString) { throw new SerializationException(); }  CharacterPrefabAddress = _buf["characterPrefabAddress"]; }
         { if(!_buf["maxHealth"].IsNumber) { throw new SerializationException(); }  MaxHealth = _buf["maxHealth"]; }
@@ -70,6 +72,14 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 英雄中文显示名
     /// </summary>
     public readonly string DisplayName;
+    /// <summary>
+    /// 主武器类型显示文案
+    /// </summary>
+    public readonly string WeaponTypeName;
+    /// <summary>
+    /// 英雄头像 Addressables 地址
+    /// </summary>
+    public readonly string PortraitAddress;
     /// <summary>
     /// 武器配置资产工程路径（Assets/.../*.asset）
     /// </summary>
@@ -196,6 +206,8 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "displayName:" + DisplayName + ","
+        + "weaponTypeName:" + WeaponTypeName + ","
+        + "portraitAddress:" + PortraitAddress + ","
         + "weaponConfigPath:" + WeaponConfigPath + ","
         + "characterPrefabAddress:" + CharacterPrefabAddress + ","
         + "maxHealth:" + MaxHealth + ","

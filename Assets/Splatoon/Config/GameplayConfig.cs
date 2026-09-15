@@ -29,6 +29,7 @@ namespace Splatoon.Config
                 Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.CharacterGravity > 0 && c.JumpSpeed > 0, "英雄角色数值无效");
                 Require(!string.IsNullOrWhiteSpace(c.WeaponConfigPath) && c.WeaponConfigPath.StartsWith("Assets/", StringComparison.Ordinal) && c.WeaponConfigPath.EndsWith(".asset", StringComparison.Ordinal), "武器配置路径必须为 Assets/.../*.asset");
                 Require(!string.IsNullOrWhiteSpace(c.CharacterPrefabAddress), "角色缺少外观地址");
+                Require(!string.IsNullOrWhiteSpace(c.DisplayName) && !string.IsNullOrWhiteSpace(c.WeaponTypeName) && !string.IsNullOrWhiteSpace(c.PortraitAddress), "英雄缺少名称、主武器类型或头像地址");
                 Require(c.NeutralSwimSpeed > 0 && c.NeutralSwimSpeed < c.MoveSpeed, "无色地面潜墨速度必须大于零且小于普通移动速度");
                 Require(c.AirSwimSpeed > 0 && c.AirSwimGravity > 0 && c.AirSwimGravity <= c.CharacterGravity &&
                     c.AirSwimFallSpeed > 0 && c.AirSwimBraking > 0, "空中弦化参数必须为正，缓降重力不得超过普通重力");
@@ -49,6 +50,7 @@ namespace Splatoon.Config
                 "瞄准远端收敛距离必须为有限正数且不小于近端距离（米）");
             Require(global.DefaultPort > 0 && global.DefaultPort <= 65535 && global.ConnectionTimeout > 0 && global.InputTimeout > 0, "网络超时或端口无效");
             Require(global.SnapshotChunkBytes >= 512 && global.SnapshotChunkBytes <= 8192 && global.ChunksPerFrame > 0 && global.ChunksPerFrame <= 32 && global.CheckpointStamps >= 32, "同步预算无效");
+            Require(global.SnapshotBytesPerSecond > 0 && global.SnapshotMaxInFlightRecords >= 1 && global.SnapshotMaxInFlightRecords <= 32, "补同步速率或在途窗口无效");
             Require(global.PaintThreshold > 0 && global.PaintThreshold <= 1 && global.MaxPaintMemoryMiB > 0 && global.PaintWorldUvScale > 0 && global.PaintWorldUvScale <= 1 && global.PaintShapeNoiseScale > 0 && global.PaintShapeNoiseScale <= 512, "涂色阈值或内存预算无效");
         }
         private static void Require(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }

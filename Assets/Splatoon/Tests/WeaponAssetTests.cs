@@ -37,7 +37,8 @@ namespace Splatoon.Tests
             {
                 var current = rows.Children.Single(r => r["id"].AsInt == old["id"].AsInt);
                 foreach (string key in old.Keys)
-                    if (old[key].IsNumber) Assert.That(current[key].AsDouble, Is.EqualTo(old[key].AsDouble).Within(.00002), $"{old["id"]}/{key}");
+                    if (key == "displayName") continue; // Renamed heroes are verified by the portrait selection tests.
+                    else if (old[key].IsNumber) Assert.That(current[key].AsDouble, Is.EqualTo(old[key].AsDouble).Within(.00002), $"{old["id"]}/{key}");
                     else Assert.That(current[key].Value, Is.EqualTo(old[key].Value), key);
             }
             var characterFields = typeof(cfg.HeroConfig).GetFields().Select(f => f.Name).ToArray();

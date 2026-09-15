@@ -99,6 +99,7 @@ namespace Splatoon.Editor
             var effects=root.AddComponent<InkPresentation>();
             effects.StreamPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab").GetComponent<ParticleSystem>();
             effects.ImpactPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab").GetComponent<ParticleSystem>();
+            HeroChangeZoneSetup.AddMissingZones(arena);
             Bake(arena); EditorSceneManager.SaveScene(scene,ScenePath); AssetDatabase.SaveAssets(); PrototypeBuilder.ConfigureAddressables();
             Debug.Log("[MAP] Created fixed TrainingGround scene.");
         }
@@ -201,6 +202,7 @@ namespace Splatoon.Editor
             arena.RegisterSurfaces();
             if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=4)throw new InvalidOperationException("需要 32×64 米、版本 4 地图");
             if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=2*TeamSelectionRules.Capacity||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("八个出生点未完整绑定");
+            HeroChangeZoneSetup.Validate(arena);
             long bytes=0;var sizes=new HashSet<Vector2Int>();
             foreach(var s in arena.Surfaces.Values)
             {
@@ -213,7 +215,7 @@ namespace Splatoon.Editor
             if(bytes>128L*1048576)throw new InvalidOperationException("涂色 RT 超过 128 MiB");
             if(arena.TotalArea<=0||arena.BakedTopology!=arena.ComputeTopology())throw new InvalidOperationException("地图拓扑未烘焙或没有可计分区域");
             foreach(var p in arena.SpawnPoints)
-                if(!Physics.Raycast(p.position+Vector3.up,Vector3.down,out var hit,2)||hit.collider.GetComponent<PaintSurface>()?.Scores!=true)throw new InvalidOperationException("出生点未落在可行走地面");
+                if(!Physics.Raycast(p.position+Vector3.up,Vector3.down,out var hit,2,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore)||hit.collider.GetComponent<PaintSurface>()?.Scores!=true)throw new InvalidOperationException("出生点未落在可行走地面");
             Debug.Log("[MAP] Validation PASS dimensions=32x64 surfaces="+arena.Surfaces.Count+" area="+arena.TotalArea+" rtMiB="+bytes/1048576f+" topology="+arena.BakedTopology);
         }
         [MenuItem("喷墨对战/地图/增补四人队伍出生点")]

@@ -1,0 +1,38 @@
+passed=True
+screenshot initial 2560x1080
+main menu DEBUG button opens
+main menu change hero disabled
+screenshot main-debug 2560x1080
+host connected
+H opens warmup selection
+all six portraits loaded before selection
+current hero confirmation disabled
+screenshot hero-1 2560x1080
+screenshot hero-2 2560x1080
+screenshot hero-3 2560x1080
+screenshot hero-4 2560x1080
+screenshot hero-5 2560x1080
+screenshot hero-6 2560x1080
+all six portrait clicks only preview
+portrait clicks do not fire
+list click only previews
+screenshot warmup-preview 2560x1080
+warmup hero switch refills ink
+hero switch keeps lifecycle
+hero switch keeps list open
+screenshot warmup-equipped 2560x1080
+dead hero confirmation disabled
+screenshot dead-disabled 2560x1080
+H closes warmup selection
+screenshot hero-gameplay 2560x1080
+H blocked during match
+match DEBUG button opens
+screenshot match-debug 2560x1080
+DEBUG opens shared hero list
+screenshot charge-preview 2560x1080
+DEBUG hero switch preserves ink
+UI clicks do not fire
+Esc returns from picker to DEBUG
+Esc returns from DEBUG to gameplay
+leave clears overlays
+error=

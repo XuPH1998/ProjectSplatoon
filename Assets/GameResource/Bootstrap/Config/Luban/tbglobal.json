@@ -9,6 +9,8 @@
     "inputTimeout": 0.3,
     "snapshotChunkBytes": 4096,
     "chunksPerFrame": 8,
+    "snapshotBytesPerSecond": 262144,
+    "snapshotMaxInFlightRecords": 8,
     "checkpointStamps": 512,
     "paintThreshold": 0.5,
     "paintWorldUvScale": 0.034424,

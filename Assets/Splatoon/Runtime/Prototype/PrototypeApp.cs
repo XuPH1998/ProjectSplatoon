@@ -197,7 +197,7 @@ namespace Splatoon.Prototype
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear();
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
-            Heroes.Clear(); WeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
+            Heroes.Clear(); _heroStats.Clear(); WeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
 #if UNITY_EDITOR
             ClearDebugWeaponChanges();
 #endif
@@ -322,6 +322,8 @@ namespace Splatoon.Prototype
                 ? "单机武器调试 · 无限热身\nH 选择英雄 · Esc 添加 / 移除 BOT 或定位武器资产"
                 : "H 选择英雄 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
+            if (state.Phase == MatchPhase.Playing && _overlay == GameplayOverlay.Game && HeroSelectionUnavailableReason(HeroSelectionOrigin.SpawnArea) == null)
+                GUI.Label(new Rect(390,129,580,38), "出生区 · H 更换英雄", _small);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
                 bool practice = state.Phase == MatchPhase.Practice;

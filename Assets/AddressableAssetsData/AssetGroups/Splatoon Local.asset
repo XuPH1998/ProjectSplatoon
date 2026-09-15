@@ -31,6 +31,16 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18eb073fc2635c9428a33d978e39271a
+    m_Address: Portrait/RifleGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2585147fc677375488044c3d4c638744
+    m_Address: Portrait/DualPistolGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39df9bcebf6341b419e63cf6d757120f
     m_Address: Weapon/Shotgun
     m_ReadOnly: 0
@@ -48,6 +58,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6099aec9a79bca34298597ce157343bd
     m_Address: Effects/InkImpact
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60d14181cb8168345819987b3c087c7c
+    m_Address: Portrait/ShotgunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6169902d7539db348996d156604b5c68
+    m_Address: Portrait/RocketLauncherGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -113,6 +133,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd490c87c0dc20446ab9c35799408496
+    m_Address: Portrait/MachineGunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c14e8a52956b46428618c47be7377881
     m_Address: Assets/GameResource/Weapons/PistolGirl/PistolGirlWeaponConfig.asset
     m_ReadOnly: 0
@@ -125,6 +150,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb40c19915243c44cac8eebfcf3bc7dd
     m_Address: Prototype/Match
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cbf34571780ef5143ac7d864ae4c70be
+    m_Address: Portrait/PistolGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

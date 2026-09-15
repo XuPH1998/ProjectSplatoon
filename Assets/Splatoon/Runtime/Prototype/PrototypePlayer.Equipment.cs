@@ -32,7 +32,8 @@ namespace Splatoon.Prototype
             if (!_heroRequest.HasValue) return;
             var request = _heroRequest.Value; _heroRequest = null;
             string error = HeroSelectionRules.Validate(s, request.Hero, request.Origin, request.Round,
-                PrototypeMatch.Current.State.Value.Round, request.Life, phase, HeroSelectionRules.Development);
+                PrototypeMatch.Current.State.Value.Round, request.Life, phase, HeroSelectionRules.Development,
+                PrototypeArena.Current != null && PrototypeArena.Current.IsInHeroChangeZone(s.Team, s.Position));
             if (error == null) HeroSelectionRules.Apply(ref s, request.Hero, phase == MatchPhase.Practice, _lastInput);
             HeroChangeReplyRpc(request.Id, s.HeroRevision, error ?? "当前英雄");
         }

@@ -13,12 +13,24 @@ namespace Splatoon.Combat
     public interface IHeroAssetSource
     {
         UniTask<GameObject> LoadAsync(string address, CancellationToken token);
+        UniTask<Texture2D> LoadPortraitAsync(string address, CancellationToken token);
         void ReleaseAll();
     }
 
     public sealed class AddressableHeroAssetSource : IHeroAssetSource
     {
         readonly List<AsyncOperationHandle<GameObject>> _handles = new();
+        readonly List<AsyncOperationHandle<Texture2D>> _portraits = new();
+        public async UniTask<Texture2D> LoadPortraitAsync(string address, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            var handle = Addressables.LoadAssetAsync<Texture2D>(address); _portraits.Add(handle);
+            while (!handle.IsDone) await UniTask.Yield(token);
+            token.ThrowIfCancellationRequested();
+            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+                throw new InvalidOperationException("英雄头像加载失败：" + address, handle.OperationException);
+            return handle.Result;
+        }
         public async UniTask<GameObject> LoadAsync(string address, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -41,6 +53,8 @@ namespace Splatoon.Combat
         {
             foreach (var handle in _handles) if (handle.IsValid()) Addressables.Release(handle);
             _handles.Clear();
+            foreach (var handle in _portraits) if (handle.IsValid()) Addressables.Release(handle);
+            _portraits.Clear();
         }
     }
 
@@ -51,8 +65,10 @@ namespace Splatoon.Combat
         public GameObject CharacterPrefab { get; }
         public GameObject WeaponPrefab { get; }
         public CharacterPresentationProfile Profile { get; }
-        public HeroContent(cfg.HeroConfig config, GameObject character, GameObject weapon, WeaponRuntimeConfig weaponConfig = null)
+        public Texture2D Portrait { get; }
+        public HeroContent(cfg.HeroConfig config, GameObject character, GameObject weapon, WeaponRuntimeConfig weaponConfig = null, Texture2D portrait = null)
         {
+            Portrait = portrait;
             WeaponConfig = weaponConfig ?? WeaponConfigService.Current.Get(config);
             Config = config; CharacterPrefab = character; WeaponPrefab = weapon;
             var view = character != null ? character.GetComponent<InkCharacterView>() : null;
@@ -82,9 +98,11 @@ namespace Splatoon.Combat
     {
         readonly IHeroAssetSource _source;
         readonly Dictionary<string, GameObject> _assets = new(StringComparer.Ordinal);
+        readonly Dictionary<string, Texture2D> _portraits = new(StringComparer.Ordinal);
         readonly Dictionary<int, HeroContent> _heroes = new();
         public IEnumerable<HeroContent> All => _heroes.Values.OrderBy(h => h.Config.Id);
         public int AssetCount => _assets.Count;
+        public int PortraitCount => _portraits.Count;
         public HeroContentService(IHeroAssetSource source = null) => _source = source ?? new AddressableHeroAssetSource();
         public HeroContent Get(int id) => _heroes.TryGetValue(id, out var hero) ? hero : throw new InvalidOperationException("英雄资源尚未准备就绪：" + id);
         public async UniTask InitializeAsync(IEnumerable<cfg.HeroConfig> heroes, CancellationToken token)
@@ -96,8 +114,15 @@ namespace Splatoon.Combat
                 {
                     var character = await Load(hero.CharacterPrefabAddress, token);
                     var weapon = await Load(WeaponConfigService.Current.Get(hero).WeaponPrefabAddress, token);
+                    if (!_portraits.TryGetValue(hero.PortraitAddress, out var portrait))
+                    {
+                        portrait = await _source.LoadPortraitAsync(hero.PortraitAddress, token);
+                        token.ThrowIfCancellationRequested();
+                        if (portrait == null) throw new InvalidOperationException("英雄头像为空：" + hero.PortraitAddress);
+                        _portraits.Add(hero.PortraitAddress, portrait);
+                    }
                     token.ThrowIfCancellationRequested();
-                    _heroes.Add(hero.Id, new HeroContent(hero, character, weapon));
+                    _heroes.Add(hero.Id, new HeroContent(hero, character, weapon, portrait: portrait));
                 }
             }
             catch { Clear(); throw; }
@@ -106,7 +131,7 @@ namespace Splatoon.Combat
         {
             var current = Get(heroId);
             var prefab = await Load(candidate.WeaponPrefabAddress, token);
-            return new HeroContent(current.Config, current.CharacterPrefab, prefab, candidate);
+            return new HeroContent(current.Config, current.CharacterPrefab, prefab, candidate, current.Portrait);
         }
         public void Replace(HeroContent content) => _heroes[content.Config.Id] = content;
         async UniTask<GameObject> Load(string address, CancellationToken token)
@@ -117,7 +142,7 @@ namespace Splatoon.Combat
             token.ThrowIfCancellationRequested();
             _assets[address] = asset; return asset;
         }
-        public void Clear() { _heroes.Clear(); _assets.Clear(); _source.ReleaseAll(); }
+        public void Clear() { _heroes.Clear(); _assets.Clear(); _portraits.Clear(); _source.ReleaseAll(); }
         public void Dispose() => Clear();
     }
 }

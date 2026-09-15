@@ -31,6 +31,8 @@ namespace Splatoon.Tests
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
             Assert.That(t.TbGlobal.Get(1).AimCorrectionDistance, Is.EqualTo(6));
             Assert.That(t.TbGlobal.Get(1).AimFarCorrectionDistance, Is.EqualTo(50));
+            Assert.That(t.TbGlobal.Get(1).SnapshotBytesPerSecond, Is.EqualTo(262144));
+            Assert.That(t.TbGlobal.Get(1).SnapshotMaxInFlightRecords, Is.EqualTo(8));
         }
         [Test] public void InvalidCrossTableReferenceIsRejected()
         {
@@ -39,6 +41,8 @@ namespace Splatoon.Tests
         }
         [Test] public void ImpossibleProjectileAndNetworkSettingsAreRejected()
         {
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["snapshotBytesPerSecond"] = 0)));
+            Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["snapshotMaxInFlightRecords"] = 33)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["lifetime"] = 0)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbglobal"][0]["projectileStepRate"] = 121)));
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbhero"][0]["speedMax"] = 10)));

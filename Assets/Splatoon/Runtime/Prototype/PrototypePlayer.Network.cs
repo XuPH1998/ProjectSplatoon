@@ -45,6 +45,8 @@ namespace Splatoon.Prototype
         PlayerInputFrame _lastInput;
         readonly SortedDictionary<uint, PlayerInputFrame> _serverInputs = new();
         readonly List<PlayerInputFrame> _history = new(128);
+        readonly InputBatchSender _inputSender = new();
+        readonly InputBatchAssembler _inputAssembler = new();
         uint _sequence, _jumpSequence, _fireSequence, _releaseSequence;
         readonly HashSet<(uint life, uint hero, ulong action)> _playedShotActions = new();
         readonly Queue<(uint life, uint hero, ulong action)> _playedShotOrder = new();
@@ -77,7 +79,7 @@ namespace Splatoon.Prototype
                 ShotSequence = old.ShotSequence, ConsumedFire = old.ConsumedFire, ConsumedJump = old.ConsumedJump };
             SpreadSimulation.Reset(ref s, GameplayConfig.GetWeapon(s.HeroId));
             s.BodyYaw = s.TurnStartYaw = s.Yaw; s.LastDamageAt = s.SimulatedAt;
-            _serverInputs.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, FireSequence = s.ConsumedFire, JumpSequence = s.ConsumedJump };
+            _serverInputs.Clear(); _inputAssembler.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, FireSequence = s.ConsumedFire, JumpSequence = s.ConsumedJump };
             _motor.Restore(s); Snapshot.Value = s;
             PrototypeMatch.Current?.CombatStats.BeginLife(PlayerId, team, s.Revision);
             if (PrototypeMatch.Current != null) Stats.Value = PrototypeMatch.Current.CombatStats.Get(PlayerId);
@@ -160,13 +162,19 @@ namespace Splatoon.Prototype
             if (ShooterMovementSmoke.SuppressInputSend(this)) return;
 #endif
             // Re-send unacknowledged commands; duplicates and stale lifecycle commands are ignored.
-            InputBatchRpc(_history.Take(32).ToArray());
+            _inputSender.Prepare(_history, NetworkManager.MaximumTransmissionUnitSize);
+            for (int i = 0; i < _inputSender.PartCount; i++) InputBatchRpc(_inputSender.GetPart(i));
         }
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable)]
-        void InputBatchRpc(PlayerInputFrame[] frames, RpcParams rpc = default)
+        void InputBatchRpc(InputBatchPart part, RpcParams rpc = default)
         {
-            if (IsTestBot || rpc.Receive.SenderClientId != OwnerClientId || frames == null || frames.Length > 32) return;
-            foreach (var frame in frames) AcceptInput(frame);
+            try
+            {
+                if (IsTestBot || rpc.Receive.SenderClientId != OwnerClientId) return;
+                if (_inputAssembler.Add(part, Snapshot.Value.Revision, NetworkManager.ServerTime.Time, GameplayConfig.Global.InputTimeout, out var frames, out int count))
+                    for (int i = 0; i < count; i++) AcceptInput(frames[i]);
+            }
+            finally { part.Dispose(); }
         }
         void AcceptInput(PlayerInputFrame frame)
         {
@@ -182,6 +190,7 @@ namespace Splatoon.Prototype
         public void Simulate(float dt, double now, MatchPhase phase)
         {
             if (!IsServer) return;
+            _inputAssembler.Expire(NetworkManager.ServerTime.Time, GameplayConfig.Global.InputTimeout);
             if (ApplyTeamRequest(phase)) return;
             var s = Snapshot.Value;
             ApplyHeroRequest(ref s, phase);
@@ -369,7 +378,7 @@ namespace Splatoon.Prototype
             _heroView?.Dispose(); _heroView = null;
             Snapshot.OnValueChanged -= Reconcile; ByOwner.Remove(PlayerId);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= SendInput;
-            _history.Clear(); _serverInputs.Clear(); if (_shotAudio != null) Destroy(_shotAudio); if (_hitAudio != null) Destroy(_hitAudio);
+            _history.Clear(); _serverInputs.Clear(); _inputAssembler.Clear(); _inputSender.Dispose(); if (_shotAudio != null) Destroy(_shotAudio); if (_hitAudio != null) Destroy(_hitAudio);
             if (Local == this) Local = null;
         }
     }

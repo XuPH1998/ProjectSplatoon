@@ -3,6 +3,8 @@
     <var name="id" type="int" comment="英雄 ID" />
     <var name="name" type="string" comment="英雄英文标识" />
     <var name="displayName" type="string" comment="英雄中文显示名" />
+    <var name="weaponTypeName" type="string" comment="主武器类型显示文案" />
+    <var name="portraitAddress" type="string" comment="英雄头像 Addressables 地址" />
     <var name="weaponConfigPath" type="string" comment="武器配置资产工程路径（Assets/.../*.asset）" />
     <var name="characterPrefabAddress" type="string" comment="模型：正式角色外观地址" />
     <var name="maxHealth" type="float" comment="角色属性：生命上限" />
@@ -63,6 +65,8 @@
     <var name="inputTimeout" type="float" comment="输入失联停止（秒）" />
     <var name="snapshotChunkBytes" type="int" comment="每个快照分块的最大字节数" />
     <var name="chunksPerFrame" type="int" comment="每帧最多发送的快照块数" />
+    <var name="snapshotBytesPerSecond" type="int" comment="全房间补同步载荷预算（字节/秒，必须大于0）" />
+    <var name="snapshotMaxInFlightRecords" type="int" comment="每客户端未确认补同步记录上限（条，1到32）" />
     <var name="checkpointStamps" type="int" comment="触发滚动检查点的涂色事件数" />
     <var name="paintThreshold" type="float" comment="地面归属阈值（0 到 1）" />
     <var name="paintWorldUvScale" type="float" comment="墨水细节坐标密度（UV/米），影响覆盖边缘" />

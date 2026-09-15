@@ -17,6 +17,7 @@ namespace Splatoon.Prototype
         private static float _connectedAt;
         private float _lastLog;
         private bool _started, _captured, _restarted, _dumped;
+        private bool _inkPerfRound;
         private float _captureAfter;
         private string _label;
         private float _finishedAt;
@@ -30,6 +31,7 @@ namespace Splatoon.Prototype
             var args = Environment.GetCommandLineArgs();
             _host = args.Contains("-lanSmokeHost"); Active = _host || args.Contains("-lanSmokeClient");
             _inkCase = Arg(args, "-inkSmokeCase", "combat");
+            _inkPerfRound = args.Contains("-inkPerfRound");
             _captureAfter = float.Parse(Arg(args, "-inkCaptureAfter", _inkCase == "combat" ? "43" : "6.5"), System.Globalization.CultureInfo.InvariantCulture);
             _label = Arg(args, "-inkLabel", _host ? "host" : "client");
             if (!Active) return;
@@ -56,7 +58,9 @@ namespace Splatoon.Prototype
         {
             if (!Active) return;
             float t=Time.realtimeSinceStartup-_connectedAt;
-            if (_inkCase == "inkperf") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 55); frame.Fire = true; frame.Swim = false; return; }
+            // A remote spawn/timeout can require release before firing. Exercise the same legal
+            // release/press sequence as a real player so every participant actually fires.
+            if (_inkCase == "inkperf") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 55); frame.Fire = t > 2 && !p.Snapshot.Value.AttackNeedsRelease; frame.Swim = false; return; }
             if (_inkCase == "observer") { frame.Move = Vector2.zero; frame.Look = new Vector2(0, 45); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "map") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 12); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "surfaces")
@@ -110,7 +114,9 @@ namespace Splatoon.Prototype
                 catch (Exception e) { Debug.LogException(e); Application.Quit(5); return; }
             }
             if(_leaveAfter>0&&t>_leaveAfter&&!_cycling){Cycle().Forget();return;}
-            if (_inkCase == "combat" && _host&&!_started&&s.PlayerCount>=2&&t>25) {match.StartRound();_started=true;}
+            if (_host && !_started && s.PlayerCount >= 2 &&
+                ((_inkCase == "combat" && t > 25) || (_inkCase == "inkperf" && _inkPerfRound && t > 5)))
+            { match.StartRound(); _started = true; }
             if (Time.realtimeSinceStartup-_lastLog>2)
             {
                 _lastLog=Time.realtimeSinceStartup;var p=PrototypePlayer.Local.Snapshot.Value;

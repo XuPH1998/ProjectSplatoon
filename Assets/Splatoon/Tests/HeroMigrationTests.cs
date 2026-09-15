@@ -98,7 +98,9 @@ namespace Splatoon.Tests
             Assert.That(actual.Count, Is.EqualTo(before.Count + 1));
             for (int i = 0; i < before.Count; i++)
                 foreach (var field in before[i].Keys)
-                    if (before[i][field].IsNumber) Assert.That(actual[i][field].AsDouble, Is.EqualTo(before[i][field].AsDouble).Within(.00001), $"{i + 1}/{field}");
+                    // Selection now uses character names; numeric migration invariants remain pinned.
+                    if (field == "displayName") continue;
+                    else if (before[i][field].IsNumber) Assert.That(actual[i][field].AsDouble, Is.EqualTo(before[i][field].AsDouble).Within(.00001), $"{i + 1}/{field}");
                     else Assert.That(actual[i][field].Value, Is.EqualTo(before[i][field].Value), $"{i + 1}/{field}");
         }
         [Test] public void SelectedHeroDrivesMovementRecoveryAndDisplay()
@@ -157,6 +159,9 @@ namespace Splatoon.Tests
         {
             public int Loads, Releases; public string Fails;
             public readonly Dictionary<string,GameObject> Values = new();
+            public int PortraitLoads;
+            public UniTask<Texture2D> LoadPortraitAsync(string address, CancellationToken token)
+            { token.ThrowIfCancellationRequested(); PortraitLoads++; if (address == Fails) throw new InvalidOperationException("test missing portrait"); return UniTask.FromResult(Texture2D.whiteTexture); }
             public UniTask<GameObject> LoadAsync(string address, CancellationToken token)
             { token.ThrowIfCancellationRequested(); Loads++; if (address == Fails) throw new InvalidOperationException("test missing model"); return UniTask.FromResult(Values[address]); }
             public void ReleaseAll() => Releases++;
@@ -178,6 +183,8 @@ namespace Splatoon.Tests
             source.Fails = null; source.Loads = 0;
             service.InitializeAsync(rows, default).GetAwaiter().GetResult();
             Assert.That(source.Loads, Is.EqualTo(12)); Assert.That(service.AssetCount, Is.EqualTo(12)); Assert.That(service.All.Count(), Is.EqualTo(6));
+            Assert.That(service.PortraitCount, Is.EqualTo(6));
+            Assert.That(service.All.All(h => h.Portrait != null), Is.True);
             using var cancel = new CancellationTokenSource(); cancel.Cancel();
             Assert.Throws<OperationCanceledException>(() => service.InitializeAsync(rows, cancel.Token).GetAwaiter().GetResult());
             Assert.That(service.All, Is.Empty); service.InitializeAsync(rows, default).GetAwaiter().GetResult(); Assert.That(service.Get(5).Config.Id, Is.EqualTo(5));
@@ -186,6 +193,22 @@ namespace Splatoon.Tests
         {
             var weapon = Root("Invalid hero weapon");
             Assert.Throws<InvalidOperationException>(() => Content(1, weapon: weapon));
+        }
+        [Test] public void MissingPortraitReleasesPartialCatalogAndCanRetry()
+        {
+            var source = Catalog();
+            using var service = new HeroContentService(source);
+            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            source.Fails = rows[2].PortraitAddress;
+            Assert.Throws<InvalidOperationException>(() => service.InitializeAsync(rows, default).GetAwaiter().GetResult());
+            Assert.That(service.PortraitCount, Is.Zero); Assert.That(service.AssetCount, Is.Zero); Assert.That(service.All, Is.Empty);
+            source.Fails = null;
+            service.InitializeAsync(rows, default).GetAwaiter().GetResult();
+            Assert.That(service.PortraitCount, Is.EqualTo(6));
+            var portrait = service.Get(1).Portrait;
+            var candidate = service.PrepareWeaponAsync(1, GameplayConfig.GetWeapon(1), default).GetAwaiter().GetResult();
+            Assert.That(candidate.Portrait, Is.SameAs(portrait));
+            service.Clear(); Assert.That(service.PortraitCount, Is.Zero);
         }
         [Test] public void AlternativeAddressesResolveAndAssembleTheirOwnModels()
         {

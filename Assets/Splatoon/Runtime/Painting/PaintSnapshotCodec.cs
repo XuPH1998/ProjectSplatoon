@@ -13,8 +13,9 @@ namespace Splatoon.Painting
     }
     public static class PaintSnapshotCodec
     {
-        public static uint Hash(byte[] bytes)
-        { uint hash = 2166136261; foreach (byte b in bytes) hash = unchecked((hash ^ b) * 16777619); return hash; }
+        public static uint Hash(byte[] bytes) => Hash(bytes, 0, bytes.Length);
+        public static uint Hash(byte[] bytes, int offset, int count)
+        { uint hash = 2166136261; for (int i = offset; i < offset + count; i++) hash = unchecked((hash ^ bytes[i]) * 16777619); return hash; }
         public static byte[] Encode(PaintCheckpoint checkpoint)
         {
             using var output = new MemoryStream();

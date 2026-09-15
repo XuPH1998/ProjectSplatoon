@@ -18,6 +18,15 @@ namespace Splatoon.Prototype
         public float OwnershipCellSize = .125f;
         public string BakedTopology;
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
+        HeroChangeZone[] _heroChangeZones;
+        public void RegisterHeroChangeZones() => _heroChangeZones = GetComponentsInChildren<HeroChangeZone>(true);
+        public bool IsInHeroChangeZone(byte team, Vector3 position)
+        {
+            if (_heroChangeZones == null) RegisterHeroChangeZones();
+            foreach (var zone in _heroChangeZones)
+                if (zone != null && zone.Contains(team, position)) return true;
+            return false;
+        }
         public double PinkArea => Surfaces.Values.Sum(s => s.Ownership?.PinkArea ?? 0);
         public double BlueArea => Surfaces.Values.Sum(s => s.Ownership?.BlueArea ?? 0);
         public double TotalArea => Surfaces.Values.Sum(s => s.Ownership?.TotalArea ?? 0);
@@ -36,6 +45,7 @@ namespace Splatoon.Prototype
             if (OwnershipCellSize != config.CellSize)
                 throw new InvalidOperationException("场景归属网格与配置不一致");
             RegisterSurfaces();
+            RegisterHeroChangeZones();
             if (SpawnPoints == null || SpawnPoints.Length != 2 * TeamSelectionRules.Capacity || SpawnPoints.Any(p => p == null)) throw new InvalidOperationException("场景需要八个出生点，每队四个");
             if (string.IsNullOrEmpty(BakedTopology) || BakedTopology != ComputeTopology()) throw new InvalidOperationException("地图已修改，请先执行：喷墨对战/地图/校验并烘焙当前地图");
             foreach (var surface in Surfaces.Values) { InkShapeAtlas.Configure(surface.ShapeAtlas); surface.InitializeOwnership(config.CellSize); }
@@ -82,6 +92,11 @@ namespace Splatoon.Prototype
                 { writer.Write(box.center.x); writer.Write(box.center.y); writer.Write(box.center.z); writer.Write(box.size.x); writer.Write(box.size.y); writer.Write(box.size.z); }
                 else if (c is MeshCollider meshCollider)
                 { writer.Write(meshCollider.convex); foreach (var v in meshCollider.sharedMesh.vertices) { writer.Write(v.x); writer.Write(v.y); writer.Write(v.z); } }
+            }
+            foreach (var zone in GetComponentsInChildren<HeroChangeZone>(true).OrderBy(z => HierarchyPath(z.transform), StringComparer.Ordinal))
+            {
+                writer.Write(HierarchyPath(zone.transform)); writer.Write(zone.Team);
+                writer.Write(zone.enabled); writer.Write(zone.gameObject.activeInHierarchy);
             }
             using var sha = SHA256.Create(); return BitConverter.ToString(sha.ComputeHash(stream.ToArray())).Replace("-", "");
         }

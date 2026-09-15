@@ -57,6 +57,10 @@ namespace Splatoon.Editor
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 AddAddress(settings, group, path, path);
             }
+            const string portraits = "Assets/GameResource/UI/HeroPortraits";
+            if (Directory.Exists(portraits))
+                foreach (string path in Directory.GetFiles(portraits, "*Portrait.png"))
+                    AddAddress(settings, group, path.Replace('\\', '/'), "Portrait/" + Path.GetFileNameWithoutExtension(path).Replace("Portrait", ""));
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab","Effects/InkStream");
             AddAddress(settings,group,"Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab","Effects/InkImpact");
             settings.BuildAddressablesWithPlayerBuild=AddressableAssetSettings.PlayerBuildOption.DoNotBuildWithPlayer;

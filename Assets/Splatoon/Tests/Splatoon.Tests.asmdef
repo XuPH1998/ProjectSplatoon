@@ -6,6 +6,7 @@
     "Splatoon.Skills.Data",
     "Splatoon.Skills.Support",
     "Splatoon.Config",
+    "Unity.Addressables.Editor",
     "Unity.Netcode.Runtime",
     "Unity.Collections",
     "Unity.InputSystem",

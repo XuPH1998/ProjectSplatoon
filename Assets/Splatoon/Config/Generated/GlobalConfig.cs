@@ -29,6 +29,8 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["inputTimeout"].IsNumber) { throw new SerializationException(); }  InputTimeout = _buf["inputTimeout"]; }
         { if(!_buf["snapshotChunkBytes"].IsNumber) { throw new SerializationException(); }  SnapshotChunkBytes = _buf["snapshotChunkBytes"]; }
         { if(!_buf["chunksPerFrame"].IsNumber) { throw new SerializationException(); }  ChunksPerFrame = _buf["chunksPerFrame"]; }
+        { if(!_buf["snapshotBytesPerSecond"].IsNumber) { throw new SerializationException(); }  SnapshotBytesPerSecond = _buf["snapshotBytesPerSecond"]; }
+        { if(!_buf["snapshotMaxInFlightRecords"].IsNumber) { throw new SerializationException(); }  SnapshotMaxInFlightRecords = _buf["snapshotMaxInFlightRecords"]; }
         { if(!_buf["checkpointStamps"].IsNumber) { throw new SerializationException(); }  CheckpointStamps = _buf["checkpointStamps"]; }
         { if(!_buf["paintThreshold"].IsNumber) { throw new SerializationException(); }  PaintThreshold = _buf["paintThreshold"]; }
         { if(!_buf["paintWorldUvScale"].IsNumber) { throw new SerializationException(); }  PaintWorldUvScale = _buf["paintWorldUvScale"]; }
@@ -81,6 +83,14 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// </summary>
     public readonly int ChunksPerFrame;
     /// <summary>
+    /// 全房间补同步载荷预算（字节/秒，必须大于0）
+    /// </summary>
+    public readonly int SnapshotBytesPerSecond;
+    /// <summary>
+    /// 每客户端未确认补同步记录上限（条，1到32）
+    /// </summary>
+    public readonly int SnapshotMaxInFlightRecords;
+    /// <summary>
     /// 触发滚动检查点的涂色事件数
     /// </summary>
     public readonly int CheckpointStamps;
@@ -132,6 +142,8 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "inputTimeout:" + InputTimeout + ","
         + "snapshotChunkBytes:" + SnapshotChunkBytes + ","
         + "chunksPerFrame:" + ChunksPerFrame + ","
+        + "snapshotBytesPerSecond:" + SnapshotBytesPerSecond + ","
+        + "snapshotMaxInFlightRecords:" + SnapshotMaxInFlightRecords + ","
         + "checkpointStamps:" + CheckpointStamps + ","
         + "paintThreshold:" + PaintThreshold + ","
         + "paintWorldUvScale:" + PaintWorldUvScale + ","
