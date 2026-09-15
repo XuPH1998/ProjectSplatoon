@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.InkFlightProfile
   FlightPrefab: {fileID: 949289641, guid: 47980a190ffa408cb281e025d62bd381, type: 3}
   MuzzlePrefab: {fileID: 276323219, guid: b7b134bd6bed4ccf9f9e960d33dad3ae, type: 3}
-  BurstInterval: 0.03
+  BurstInterval: 0.02
   ParticlesPerBurst: 2
-  VisualLifetime: 1
-  MuzzleInterval: 0.13
-  MuzzleBurstCount: 40
-  MaxRibbonGap: 1.25
-  SatelliteSpread: 0.035
+  VisualLifetime: 10
+  MuzzleInterval: 0.06
+  MuzzleBurstCount: 50
+  MaxRibbonGap: 1.5
+  SatelliteSpread: 0.1

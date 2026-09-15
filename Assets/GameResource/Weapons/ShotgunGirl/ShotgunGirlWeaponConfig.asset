@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: ShotgunGirlWeaponConfig
   m_EditorClassIdentifier: 
-  weaponPrefabAddress: "Weapon/Shotgun"
+  weaponPrefabAddress: Weapon/Shotgun
   fireMode: 3
   fireRate: 2.5
   shotInk: 4
@@ -21,7 +21,7 @@ MonoBehaviour:
   inkRecoverLockSeconds: 0.5
   shootMoveSpeed: 3.2
   burstCount: 1
-  burstRecoverySeconds: 0.0
+  burstRecoverySeconds: 0
   speedMin: 30
   speedMax: 30
   projectileGravity: 8
@@ -46,7 +46,7 @@ MonoBehaviour:
   trailRadiusMin: 0.45
   trailRadiusMax: 0.85
   trailMaxDrop: 2.4
-  chargeSeconds: 0.0
+  chargeSeconds: 0
   chargeMinDamage: 0
   chargePartialMaxDamage: 0
   chargeMinInk: 0
@@ -57,14 +57,14 @@ MonoBehaviour:
   pelletCount: 8
   muzzleMode: 0
   semiBufferSeconds: 0.1
-  splatlingMinChargeSeconds: 0.0
-  splatlingFirstChargeSeconds: 0.0
-  splatlingFirstShootSeconds: 0.0
-  splatlingFullShootSeconds: 0.0
+  splatlingMinChargeSeconds: 0
+  splatlingFirstChargeSeconds: 0
+  splatlingFirstShootSeconds: 0
+  splatlingFullShootSeconds: 0
   splatlingSlowChargeMultiplier: 0
   splatlingChargeMoveSpeed: 0
   splatlingChargeJumpSpeed: 0
-  splatlingPostSeconds: 0.0
+  splatlingPostSeconds: 0
   splatlingPitchSpread: 0
   splatlingSpreadBias: 0
   splatlingSpeedBias: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
   splatlingTrailCount: 0
   splatlingFootRadius: 0
   splatlingPlayerRadius: 0
-  spreadExpandSeconds: 1
-  spreadRecoverSeconds: 0.5
-  baseSpreadDegrees: 2
-  baseJumpSpreadDegrees: 4
+  spreadExpandSeconds: 0
+  spreadRecoverSeconds: 0
+  baseSpreadDegrees: 5
+  baseJumpSpreadDegrees: 10
