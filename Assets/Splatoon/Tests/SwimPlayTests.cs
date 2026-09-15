@@ -127,7 +127,7 @@ namespace Splatoon.Tests
                 player.Snapshot.Value = start;
                 for (int i = 0; i < 8; i++) Tick(player, false);
                 uint shotsBefore = player.Snapshot.Value.ShotSequence;
-                int firingTicks = GameplayConfig.GetWeapon(w.Id).StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
+                int firingTicks = WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(w.Id).StartSeconds) + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
                 for (int i = 0; i < firingTicks; i++) Tick(player, false, fire: true);
                 var fired = player.Snapshot.Value;
                 Assert.That(fired.ShotSequence, Is.GreaterThan(shotsBefore));

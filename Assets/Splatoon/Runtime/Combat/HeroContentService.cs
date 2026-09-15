@@ -64,11 +64,11 @@ namespace Splatoon.Combat
             if (bindings == null || bindings.Nozzle == null || !bindings.Nozzle.IsChildOf(weapon.transform) ||
                 (bindings.SupportLeftHand && (bindings.LeftGrip == null || !bindings.LeftGrip.IsChildOf(weapon.transform))))
                 throw new InvalidOperationException($"英雄 {config.Id} 武器模型缺少有效枪口或左手握点：{WeaponConfig.WeaponPrefabAddress}");
-            if (WeaponConfig.MuzzleMode == 1 && (view.LeftWeaponSocket == null || !view.Profile.DualWield || bindings.SupportLeftHand ||
+            if (WeaponConfig.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft && (view.LeftWeaponSocket == null || !view.Profile.DualWield || bindings.SupportLeftHand ||
                 bindings.LeftPart == null || bindings.LeftNozzle == null || !bindings.LeftPart.IsChildOf(weapon.transform) || !bindings.LeftNozzle.IsChildOf(bindings.LeftPart)))
                 throw new InvalidOperationException($"英雄 {config.Id} 双枪挂点、部件或枪口绑定无效");
             Profile = view.Profile;
-            if (WeaponConfig.FireMode == (int)WeaponFireMode.Splatling && (!Profile.Splatling || Profile.SingleShot ||
+            if (WeaponConfig.FireMode == WeaponFireMode.Splatling && (!Profile.Splatling || Profile.SingleShot ||
                 Profile.ShootDuration <= 0 || Profile.ShootEndDuration <= 0 || !bindings.SupportLeftHand))
                 throw new InvalidOperationException($"英雄 {config.Id} 缺少旋转枪循环、结束动作或支撑握持配置");
             if (Profile.Paper == null || Profile.Paper.CapturePrefab == null || Profile.Paper.DisplayMesh == null ||

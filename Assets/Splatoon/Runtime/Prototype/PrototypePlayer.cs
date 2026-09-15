@@ -9,8 +9,9 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 20;
-        public float SplatlingCharge, SplatlingReservedInk, SplatlingReleasedCharge;
+        public const uint ProtocolVersion = 21;
+        public double SplatlingChargeSeconds, ChargeElapsedSeconds;
+        public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
         public double SplatlingUpdatedAt, SplatlingReleasedAt, SplatlingEndedAt;
         public bool SplatlingSlow;
@@ -34,7 +35,7 @@ namespace Splatoon.Prototype
         public bool SwimWasHeld, SemiHoldStarted;
         public double RightShotAt, LeftShotAt;
         public ulong RightShotAction, LeftShotAction;
-        public int HeroId, BurstRemaining, ChargeTicks;
+        public int HeroId, BurstRemaining;
         public uint HeroRevision, ConsumedRelease;
         public bool AttackNeedsRelease, ChargeReleasePending;
         public double ChargeStartedAt, BurstReadyAt, FireVisualUntil;
@@ -64,7 +65,7 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
-            s.SerializeValue(ref SplatlingCharge); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
+            s.SerializeValue(ref SplatlingChargeSeconds); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
             s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);
             s.SerializeValue(ref SplatlingUpdatedAt); s.SerializeValue(ref SplatlingReleasedAt); s.SerializeValue(ref SplatlingEndedAt);
             s.SerializeValue(ref PaperPose); s.SerializeValue(ref PaperCenter);
@@ -76,7 +77,7 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref RightShotAt); s.SerializeValue(ref LeftShotAt);
             s.SerializeValue(ref RightShotAction); s.SerializeValue(ref LeftShotAction);
             s.SerializeValue(ref HeroId); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref ConsumedRelease);
-            s.SerializeValue(ref BurstRemaining); s.SerializeValue(ref ChargeTicks); s.SerializeValue(ref AttackNeedsRelease); s.SerializeValue(ref ChargeReleasePending);
+            s.SerializeValue(ref BurstRemaining); s.SerializeValue(ref ChargeElapsedSeconds); s.SerializeValue(ref AttackNeedsRelease); s.SerializeValue(ref ChargeReleasePending);
             s.SerializeValue(ref ChargeStartedAt); s.SerializeValue(ref BurstReadyAt); s.SerializeValue(ref FireVisualUntil); s.SerializeValue(ref LastShotCharge);
             s.SerializeValue(ref Position); s.SerializeValue(ref Yaw); s.SerializeValue(ref Pitch);
             s.SerializeValue(ref Health); s.SerializeValue(ref Ink); s.SerializeValue(ref RespawnsAt);

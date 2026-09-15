@@ -16,28 +16,28 @@ MonoBehaviour:
   fireMode: 3
   fireRate: 10
   shotInk: 0.7
-  startFrames: 2
-  emergeStartFrames: 10
-  inkRecoverLockFrames: 15
+  startSeconds: 0.03333333333333333
+  emergeStartSeconds: 0.16666666666666666
+  inkRecoverLockSeconds: 0.25
   shootMoveSpeed: 4.2
   burstCount: 1
-  burstRecoveryFrames: 0
+  burstRecoverySeconds: 0.0
   speedMin: 24
   speedMax: 24
   projectileGravity: 16
   lifetime: 10
   collisionRadius: 0.025
   spreadDegrees: 3
-  straightFrames: 10
-  brakeFrames: 8
+  straightSeconds: 0.16666666666666666
+  brakeSeconds: 0.13333333333333333
   brakeSpeedMultiplier: 0.66
   jumpSpreadDegrees: 6
-  spreadRecoverFrames: 12
+  landingSpreadRecoverSeconds: 0.2
   effectiveRange: 8.4
   damage: 32
   damageMin: 16
-  damageReduceStartFrames: 8
-  damageReduceEndFrames: 40
+  damageReduceStartSeconds: 0.13333333333333333
+  damageReduceEndSeconds: 0.6666666666666666
   paintRadiusMin: 1.2
   paintRadiusMax: 1.6
   paintHardness: 0.55
@@ -46,7 +46,7 @@ MonoBehaviour:
   trailRadiusMin: 0.55
   trailRadiusMax: 0.9
   trailMaxDrop: 2.4
-  chargeFrames: 0
+  chargeSeconds: 0.0
   chargeMinDamage: 0
   chargePartialMaxDamage: 0
   chargeMinInk: 0
@@ -56,15 +56,15 @@ MonoBehaviour:
   chargeMinJumpSpread: 0
   pelletCount: 1
   muzzleMode: 1
-  semiBufferFrames: 6
-  splatlingMinChargeFrames: 0
-  splatlingFirstChargeFrames: 0
-  splatlingFirstShootFrames: 0
-  splatlingFullShootFrames: 0
+  semiBufferSeconds: 0.1
+  splatlingMinChargeSeconds: 0.0
+  splatlingFirstChargeSeconds: 0.0
+  splatlingFirstShootSeconds: 0.0
+  splatlingFullShootSeconds: 0.0
   splatlingSlowChargeMultiplier: 0
   splatlingChargeMoveSpeed: 0
   splatlingChargeJumpSpeed: 0
-  splatlingPostFrames: 0
+  splatlingPostSeconds: 0.0
   splatlingPitchSpread: 0
   splatlingSpreadBias: 0
   splatlingSpeedBias: 0

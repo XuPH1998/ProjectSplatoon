@@ -1,0 +1,62 @@
+[
+  {
+    "test": "Splatoon.Tests.GameplayUpdateTests.EveryTrailStampUsesAnAdvancingReproducibleRadius",
+    "matchesBaseline": true,
+    "message": "  Expected: True\n  But was:  False\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative",
+    "matchesBaseline": true,
+    "message": "  Expected: 108\n  But was:  117\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk",
+    "matchesBaseline": true,
+    "message": "  Expected: 31.5f\n  But was:  31.0f\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)",
+    "matchesBaseline": true,
+    "message": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)",
+    "matchesBaseline": true,
+    "message": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)",
+    "matchesBaseline": true,
+    "message": "  Expected: 100\n  But was:  117\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown",
+    "matchesBaseline": true,
+    "message": "  Expected: greater than or equal to 6\n  But was:  4\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)",
+    "matchesBaseline": true,
+    "message": "  Expected: 6\n  But was:  4\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)",
+    "matchesBaseline": true,
+    "message": "  Expected: 6\n  But was:  4\n"
+  },
+  {
+    "test": "Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock",
+    "matchesBaseline": true,
+    "message": "  Expected: 40.5555573f +/- 0.0001d\n  But was:  40.1666679f\n"
+  },
+  {
+    "test": "Splatoon.Tests.WeaponReferenceTests.GatedPhysicsAndPaintParametersRetainBaseline",
+    "matchesBaseline": true,
+    "message": "  Expected: 9.80000019f\n  But was:  43.133503f\n"
+  },
+  {
+    "test": "Splatoon.Tests.WeaponReferenceTests.ZeroAbilityFullInkRecoveryMatchesPinnedCommonData(True,180)",
+    "matchesBaseline": true,
+    "message": "  Expected: 100 +/- 0.001d\n  But was:  29.999958f\n"
+  }
+]

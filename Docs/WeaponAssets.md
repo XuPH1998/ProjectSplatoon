@@ -13,7 +13,24 @@ TbHero 只配置英雄标识、角色模型、生命与墨量、资源恢复、�
 | baseSpreadDegrees | 霰弹 2°，其他 0° | 地面最小半角 |
 | baseJumpSpreadDegrees | 霰弹 4°，其他 0° | 空中最小半角 |
 
-数值必须有限且非负，并满足 Inspector 下方的武器规则校验。无效修改不会替换调试房上一份有效配置。既有 `spreadRecoverFrames` 仅用于蓄力火箭筒落地收紧，不叠加到动态武器。
+数值必须有限且非负，并满足 Inspector 下方的武器规则校验。无效修改不会替换调试房上一份有效配置。`landingSpreadRecoverSeconds` 仅用于蓄力火箭筒落地收紧，不叠加到动态武器的 `spreadRecoverSeconds`。
+
+## 中文参数、模式与时间单位
+
+Inspector 显式显示中文参数名、单位、提示和错误信息。发射模式使用全自动、三连发、蓄力松开发射、半自动（支持长按）、旋转枪五个枚举选项；枪口模式使用单枪口、右左交替两个枚举选项，原资产数字映射保持不变。
+
+以下 16 个原参考帧字段已按当前资产数值除以 60，迁入真正的 `double` 秒字段。完整精度参与保存和模拟；可以直接填写小数秒，不需要先计算整数帧。
+
+| 参数 | 秒字段 |
+|---|---|
+| 人形起手、出墨起手、末发后回墨锁定 | `startSeconds`、`emergeStartSeconds`、`inkRecoverLockSeconds` |
+| 组间恢复、半自动点击缓存 | `burstRecoverySeconds`、`semiBufferSeconds` |
+| 直行、减速过渡、火箭筒落地散布恢复 | `straightSeconds`、`brakeSeconds`、`landingSpreadRecoverSeconds` |
+| 伤害衰减开始、结束 | `damageReduceStartSeconds`、`damageReduceEndSeconds` |
+| 满蓄、旋转枪最短有效蓄力、第一圈蓄力 | `chargeSeconds`、`splatlingMinChargeSeconds`、`splatlingFirstChargeSeconds` |
+| 旋转枪第一圈、满蓄射击窗口及末弹后恢复 | `splatlingFirstShootSeconds`、`splatlingFullShootSeconds`、`splatlingPostSeconds` |
+
+例如 8 帧对应约 0.13333333333333333 秒，120/150 帧对应 2/2.5 秒，130/260 帧窗口对应约 2.1666666666666665/4.333333333333333 秒。发数、落墨次数继续使用整数；射速继续使用发/秒。火箭筒的中间蓄力保留 1/60 秒参考精度，任意小数秒的满蓄端点在达到后钳制为满蓄。旋转枪的最短门槛、两圈端点、包含首末弹的窗口以及慢蓄和退款规则保持原有含义。
 
 ## 散布和准星
 
@@ -35,18 +52,20 @@ TbHero 只配置英雄标识、角色模型、生命与墨量、资源恢复、�
 | 调整项目 | 应用边界 |
 |---|---|
 | 散布端点/扩大/恢复时长 | 下一模拟步，保留当前进度 |
-| 伤害/初速/重力/碰撞/涂墨 | 后续弹丸使用新配置，在途弹丸与视觉保留旧快照 |
+| 伤害及衰减时间/初速/直行及减速时间/重力/碰撞/涂墨 | 后续弹丸使用新配置，在途弹丸与视觉保留旧快照 |
 | 射击/蓄力移动与蓄力起跳 | 下一模拟步，沿用角色移动模拟 |
 | 射速/耗墨/模式/蓄力阶段与窗口/起手/冷却/弹丸数/枪口模式 | 取消旧动作、实际预留余额退款一次，松开后重新按下 |
 | 武器模型地址 | 加载并验证成功后才取消及切换，失败保留旧配置和模型 |
 
-合法候选作为一份完整不可变配置在模拟步边界替换。调试房是本地 Host；不向联网房广播实时资产修改。普通入房内容签名包含全部武器参数和资产路径，玩家协议为 19，武器模拟版本为 2。散布进度、双轴角度、发射状态与每发散布参与预测和网络校正。
+合法候选作为一份完整不可变配置在模拟步边界替换。调试房是本地 Host；不向联网房广播实时资产修改。普通入房内容签名包含全部武器参数和资产路径，玩家协议为 21，武器模拟版本为 3。散布进度、双轴角度、发射状态、每发散布及以双精度秒表示的蓄力状态参与预测和网络校正。
 
 ## 复建和检查
 
 - `Tools/CombatGirls/update_machinegun.py` 只补齐缺失的旋转枪注册/资产，保留现有调参值，不会恢复已删除的表字段；缺失资产的默认值取自迁移基线。
+- `python Tools/CombatGirls/migrate_weapon_seconds.py` 预览旧武器资产的秒制迁移；加 `--apply` 执行。所有资产先校验，混合或缺失新旧时间字段时报错；已迁移资产跳过。首次转换前记录当前值与元数据校验值至 `Reports/WeaponSeconds/migration.json`，重复执行不覆盖该记录。本次迁移证据保存在 `Tools/ValidationData/WeaponSeconds/Migration.json`。禁止将旧字段直接改名而不换算数值。
+- `python Tools/CombatGirls/test_weapon_seconds_migration.py` 检查当前数值等效、异常资产阻止写入、重复运行及元数据保持。历史测试夹具通过 `WeaponTimeFixture` 在测试入口换算，原始参考数据保持不变。
 - Unity 的 `Splatoon.Editor.PrototypeBuilder.ConfigureAddressables` 注册六个完整资产路径；正式安装/构建入口会调用它。
 - `python Tools/CombatGirls/validate_weapon_assets.py` 审核源表、生成字段、原始数值、六份资产及 Addressables。迁移基线位于 `Tools/ValidationData/WeaponAssets/Migration-Baseline.json`。
-- Unity 定向测试为 `WeaponAssetTests`、`WeaponDebugPlayTests`、`MachineGunTests`、`MachineGunPlayTests`。最新结论见 [验收记录](WeaponAssets/Acceptance.md)，完整输出在 `Reports/WeaponAssets/`；原 MachineGun 报告保留为历史记录，不能代替当前版本验收。
+- Unity 定向测试为 `WeaponSecondsTests`、`WeaponInspectorEditorTests`、`WeaponAssetTests`、`WeaponDebugPlayTests`、`MachineGunTests`、`MachineGunPlayTests`。秒制变更结论见 [秒制迁移验收记录](WeaponAssets/Seconds-Acceptance.md)，完整输出在 `Reports/WeaponSeconds/`；[原资产改造验收](WeaponAssets/Acceptance.md)与 MachineGun 报告保留为历史记录。
 
 真实双机、独立客户端及目标设备性能需要各自验收；Editor Host 的通过结果不覆盖这些环境。

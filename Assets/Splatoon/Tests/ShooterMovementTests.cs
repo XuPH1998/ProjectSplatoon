@@ -95,9 +95,9 @@ namespace Splatoon.Tests
         }
         [Test] public void HorizontalBallisticsUsesCurrentStraightAndBrakeTimings()
         {
-            float age=(float)WeaponSimulation.Seconds(W.StraightFrames)+Mathf.Sqrt(2*1.4f/W.ProjectileGravity);
+            float age=(float)W.StraightSeconds+Mathf.Sqrt(2*1.4f/W.ProjectileGravity);
             var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*W.SpeedMin,W,age);
-            float straight=(float)WeaponSimulation.Seconds(W.StraightFrames),brake=(float)WeaponSimulation.Seconds(W.BrakeFrames);
+            float straight=(float)W.StraightSeconds,brake=(float)W.BrakeSeconds;
             Assert.That(age,Is.GreaterThan(straight+brake));
             // Integrate the three speed phases independently to derive horizontal paint range.
             float expected=W.SpeedMin*(straight+brake*(1+W.BrakeSpeedMultiplier)*.5f+(age-straight-brake)*W.BrakeSpeedMultiplier);

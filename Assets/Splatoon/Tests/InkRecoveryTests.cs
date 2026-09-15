@@ -20,7 +20,7 @@ namespace Splatoon.Tests
         {
             var w = GameplayConfig.GetHero(1);
             var s = new PlayerSnapshot { HeroId = 1, Team = 1, Health = w.MaxHealth, Ink = 20, Grounded = true };
-            releaseTick = GameplayConfig.GetWeapon(w.Id).StartFrames + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
+            releaseTick = WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(w.Id).StartSeconds) + (int)Math.Ceiling(3 * WeaponSimulation.FireInterval(GameplayConfig.GetWeapon(w.Id)) * 60) + 1;
             for (int tick = 0; tick < releaseTick; tick++)
                 WeaponSimulation.Step(ref s, new PlayerInputFrame { Sequence = (uint)tick + 1, Fire = true, FireSequence = 1 }, GameplayConfig.GetWeapon(w.Id), tick / 60.0, false, true);
             Assert.That(s.ShotSequence, Is.GreaterThan(0));
@@ -121,12 +121,12 @@ namespace Splatoon.Tests
             var press = new PlayerInputFrame { Fire = true, FireSequence = 1 };
             WeaponSimulation.Step(ref s, press, GameplayConfig.GetWeapon(w.Id), 0, false, true);
             var release = new PlayerInputFrame { FireSequence = 1, ReleaseSequence = 1 };
-            for (int tick = 1; tick <= GameplayConfig.GetWeapon(w.Id).StartFrames + 5; tick++)
+            for (int tick = 1; tick <= WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(w.Id).StartSeconds) + 5; tick++)
             {
                 Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), tick / 60.0, false, false), Is.False);
                 Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Starting));
             }
-            double now = (GameplayConfig.GetWeapon(w.Id).StartFrames + 6) / 60.0;
+            double now = (WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(w.Id).StartSeconds) + 6) / 60.0;
             Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), now, false, true), Is.True);
             for (int tick = 1; tick <= 120; tick++)
                 Assert.That(WeaponSimulation.Step(ref s, release, GameplayConfig.GetWeapon(w.Id), now + tick / 60.0, false, false), Is.False);

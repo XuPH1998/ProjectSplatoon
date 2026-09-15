@@ -1,0 +1,38 @@
+{
+  "baselineCommit": "bf8dd192e266ecc4fcb84842b2ecf0bcfb051f2d",
+  "baseline": {
+    "total": 371,
+    "passed": 358,
+    "failed": 13,
+    "skipped": 0
+  },
+  "finalRegression": {
+    "total": 386,
+    "passed": 374,
+    "failed": 12,
+    "skipped": 0
+  },
+  "normalEditor": {
+    "total": 42,
+    "passed": 42,
+    "failed": 0,
+    "skipped": 0
+  },
+  "migrationTests": {
+    "total": 6,
+    "passed": 6
+  },
+  "remainingBaselineFailures": 12,
+  "newOrChangedFailures": 0,
+  "fixedBaselineTests": [
+    "Splatoon.Tests.CombatGirlsWeaponTests.NewProtocolAndHeroSchemaRejectInvalidGunAssemblies"
+  ],
+  "playerProtocol": 21,
+  "weaponSimulation": 3,
+  "inspectorCapture": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  }
+}

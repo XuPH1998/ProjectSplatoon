@@ -1,0 +1,1 @@
+PASS: debug loopback host, six heroes, bots, infinite warmup, remote approval rejection; live charge/firing edits cancel and refund once; fresh press gate; spread progress preserved; old/new projectile gravity boundary; invalid config/model retention; model path replacement; normal-room frozen snapshot; exit clears cache.

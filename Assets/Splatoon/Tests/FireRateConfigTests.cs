@@ -24,7 +24,7 @@ namespace Splatoon.Tests
             HeroMigrationTests.Load(rows => rows[hero - 1]["fireRate"] = rate);
             GameplayConfig.Validate();
             var w = GameplayConfig.GetWeapon(hero); var s = Player(hero);
-            double startup = w.StartFrames / 60.0, interval = 1.0 / rate;
+            double startup = WeaponTimeFixture.ReferenceFrames(w.StartSeconds) / 60.0, interval = 1.0 / rate;
             Assert.That(Fire(ref s, 0), Is.False);
             Assert.That(Fire(ref s, startup), Is.True);
             Assert.That(s.NextShotAt, Is.EqualTo(startup + interval).Within(1e-10));
@@ -32,13 +32,13 @@ namespace Splatoon.Tests
             Assert.That(Fire(ref s, startup + interval), Is.True);
             Assert.That(s.ShotSequence, Is.EqualTo(2));
             Assert.That(WeaponDisplay.SustainedRate(w), Is.EqualTo(rate));
-            Assert.That(s.InkRecoverAt, Is.EqualTo(startup + interval + w.InkRecoverLockFrames / 60.0).Within(1e-8));
+            Assert.That(s.InkRecoverAt, Is.EqualTo(startup + interval + WeaponTimeFixture.ReferenceFrames(w.InkRecoverLockSeconds) / 60.0).Within(1e-8));
         }
 
         [Test] public void BurstUsesConfiguredRateWithinTheGroupAndPreservesGroupRecovery()
         {
             HeroMigrationTests.Load(rows => { rows[0]["fireMode"] = 1; rows[0]["burstCount"] = 3; rows[0]["burstRecoveryFrames"] = 30; rows[0]["fireRate"] = 12; });
-            GameplayConfig.Validate(); var s = Player(1); double first = GameplayConfig.GetWeapon(1).StartFrames / 60.0;
+            GameplayConfig.Validate(); var s = Player(1); double first = WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(1).StartSeconds) / 60.0;
             Fire(ref s, 0);
             Assert.That(Fire(ref s, first), Is.True);
             Assert.That(Fire(ref s, first + 1.0 / 12), Is.True);

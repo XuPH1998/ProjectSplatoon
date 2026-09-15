@@ -44,7 +44,7 @@ namespace Splatoon.Tests
         {
             var s=Player();
             for(int t=0;t<=300;t++) { Assert.That(Step(ref s,t,true),Is.False); ResourceSimulation.Step(ref s,Hero,false,false,1f/60,t/60.0); }
-            Assert.That(s.SplatlingCharge,Is.EqualTo(150));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(150));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
             Assert.That(s.Ink,Is.EqualTo(65).Within(.0003));Assert.That(s.SplatlingReservedInk,Is.EqualTo(35).Within(.0003));
             Assert.That(Step(ref s,301,false),Is.True);Assert.That(s.LastShotCharge,Is.EqualTo(1));
         }
@@ -77,7 +77,7 @@ namespace Splatoon.Tests
         {
             var s=Player(ink,ground);
             for(int t=0;t<=450;t++) Assert.That(Step(ref s,t,true),Is.False);
-            Assert.That(s.SplatlingCharge,Is.EqualTo(150).Within(.001));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(150).Within(.001));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
             Assert.That(s.Ink,Is.GreaterThanOrEqualTo(0));Assert.That(s.Ink+s.SplatlingReservedInk,Is.LessThanOrEqualTo(100.001));
             Step(ref s,451,false);
             Assert.That(s.LastShotCharge,Is.EqualTo(1),"450 slow ticks must preserve full-charge damage");
@@ -92,7 +92,7 @@ namespace Splatoon.Tests
                 Assert.That(s.Ink+s.SplatlingReservedInk,Is.GreaterThanOrEqualTo(priorTotal-.0001));
                 priorTotal=s.Ink+s.SplatlingReservedInk;
             }
-            Assert.That(s.SplatlingCharge,Is.LessThan(150));
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.LessThan(150));
             WeaponSimulation.Cancel(ref s,default);Assert.That(s.Ink,Is.EqualTo(priorTotal).Within(.0001));
             WeaponSimulation.Cancel(ref s,default);Assert.That(s.Ink,Is.EqualTo(priorTotal).Within(.0001));
         }
@@ -128,7 +128,7 @@ namespace Splatoon.Tests
                 if(reason==1)Step(ref s,80,true,1,true);
                 if(reason==2){s.Health=0;Step(ref s,80,false);}
                 if(reason==3)HeroSelectionRules.Apply(ref s,1,false,default);
-                Assert.That(s.SplatlingCharge,Is.Zero);Assert.That(s.SplatlingReservedInk,Is.Zero);
+                Assert.That((s.SplatlingChargeSeconds * 60),Is.Zero);Assert.That(s.SplatlingReservedInk,Is.Zero);
                 Assert.That(s.Ink,Is.EqualTo(100).Within(.0003));Assert.That(s.Firing,Is.False);
             }
         }

@@ -227,7 +227,7 @@ namespace Splatoon.Tests
             player.Simulate(1f / 60, now, match.State.Value.Phase);
             input.Fire = true; input.FireSequence++;
             typeof(PrototypePlayer).GetField("_lastInput", Private).SetValue(player, input);
-            for (int tick = 1; tick <= GameplayConfig.GetWeapon(1).StartFrames + 3; tick++)
+            for (int tick = 1; tick <= WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(1).StartSeconds) + 3; tick++)
                 player.Simulate(1f / 60, now + tick / 60.0, match.State.Value.Phase);
             Assert.That(player.Snapshot.Value.ShotSequence, Is.GreaterThan(before.ShotSequence));
             Assert.That(player.Snapshot.Value.Position.x, Is.GreaterThan(before.Position.x));

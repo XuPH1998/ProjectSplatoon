@@ -53,7 +53,7 @@ namespace Splatoon.Tests
                 await Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 2, "Hero selection");
                 app.CloseOverlay(); app.CaptureMouse(false);
                 var state = player.Snapshot.Value; state.Health = 34; state.Ink = 12;
-                state.ChargeTicks = 30; state.WeaponPhase = WeaponPhase.Charging;
+                state.ChargeElapsedSeconds = 30 / 60.0; state.WeaponPhase = WeaponPhase.Charging;
                 state.LastDamageAt = state.InkRecoverAt = player.NetworkManager.ServerTime.Time + 100;
                 player.Snapshot.Value = state;
                 uint life = state.Revision, shots = state.ShotSequence; var visual = player.Visual;
@@ -76,7 +76,7 @@ namespace Splatoon.Tests
                 Assert.That(switched.Revision, Is.EqualTo(life + 1)); Assert.That(switched.HeroId, Is.EqualTo(2));
                 Assert.That(switched.Health, Is.EqualTo(GameplayConfig.GetHero(2).MaxHealth));
                 Assert.That(switched.Ink, Is.EqualTo(GameplayConfig.GetHero(2).MaxInk));
-                Assert.That(switched.ChargeTicks, Is.Zero); Assert.That(switched.ShotSequence, Is.EqualTo(shots));
+                Assert.That((switched.ChargeElapsedSeconds * 60), Is.Zero); Assert.That(switched.ShotSequence, Is.EqualTo(shots));
                 Assert.That(Vector3.Distance(switched.Position, PrototypeArena.Spawn(2, switched.Slot)), Is.LessThan(.15));
                 Assert.That(switched.Yaw, Is.EqualTo(180)); Assert.That(player.Visual, Is.SameAs(visual));
                 Assert.That(switched.ProtectedUntil, Is.GreaterThan(player.NetworkManager.ServerTime.Time));

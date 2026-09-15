@@ -84,8 +84,8 @@ namespace Splatoon.Tests
             foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
             {
                 var w = GameplayConfig.GetWeapon(hero.Id);
-                Assert.That(w.ProjectileGravity, Is.EqualTo(9.8f)); Assert.That(w.StraightFrames, Is.EqualTo(4));
-                Assert.That(w.BrakeFrames, Is.EqualTo(8)); Assert.That(w.BrakeSpeedMultiplier, Is.EqualTo(.66f));
+                Assert.That(w.ProjectileGravity, Is.EqualTo(9.8f)); Assert.That(WeaponTimeFixture.ReferenceFrames(w.StraightSeconds), Is.EqualTo(4));
+                Assert.That(WeaponTimeFixture.ReferenceFrames(w.BrakeSeconds), Is.EqualTo(8)); Assert.That(w.BrakeSpeedMultiplier, Is.EqualTo(.66f));
                 Assert.That(w.PaintRadiusMin, Is.EqualTo(.65f)); Assert.That(w.PaintRadiusMax, Is.EqualTo(.8f));
                 Assert.That(w.PaintHardness, Is.EqualTo(.55f)); Assert.That(w.PaintStrength, Is.EqualTo(1));
                 Assert.That(w.TrailSpacing, Is.EqualTo(.7f)); Assert.That(w.TrailRadiusMin, Is.EqualTo(.58f)); Assert.That(w.TrailRadiusMax, Is.EqualTo(.58f)); Assert.That(w.TrailMaxDrop, Is.EqualTo(2.4f));

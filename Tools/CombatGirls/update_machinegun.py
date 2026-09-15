@@ -11,19 +11,20 @@ import json
 import re
 import uuid
 import openpyxl
+from migrate_weapon_seconds import TIME_FIELDS, seconds_values
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = 'Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset'
 
 def main():
     baseline = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/Migration-Baseline.json').read_text('utf-8'))
-    original = next(h for h in baseline if h['id'] == 6)
+    original = seconds_values(next(h for h in baseline if h['id'] == 6))
     path = ROOT/'Config/Luban/source/TbHero.xlsx'
     book = openpyxl.load_workbook(path); sheet = book['Hero']
     columns = {c.value:c.column for c in sheet[1] if c.value and not c.value.startswith('##')}
     if 'weaponConfigPath' not in columns:
         raise RuntimeError('Expected migrated TbHero with weaponConfigPath. Use the matching historical checkout for the old installer.')
-    fields = re.findall(r'public (string|int|float) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
+    fields = re.findall(r'public (string|int|float|double|WeaponFireMode|WeaponMuzzleMode) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
     assert len(fields) == 64, 'Review installer for the changed weapon schema'
     assert not (set(columns) & {name for _,name in fields}), 'Weapon columns must not be present in TbHero'
     row = next((r for r in range(4,sheet.max_row+1) if sheet.cell(r,columns['id']).value == 6), None)

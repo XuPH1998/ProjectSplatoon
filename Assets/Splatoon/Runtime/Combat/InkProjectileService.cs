@@ -62,23 +62,23 @@ namespace Splatoon.Combat
         { float t = (float)age; return origin + velocity * t + Vector3.down * (.5f * gravity * t * t); }
         public static float TravelTime(WeaponRuntimeConfig w, double age)
         {
-            float t = Mathf.Max(0, (float)age), straight = (float)WeaponSimulation.Seconds(w.StraightFrames);
+            float t = Mathf.Max(0, (float)age), straight = (float)w.StraightSeconds;
             if (t <= straight) return t;
-            float brake = Mathf.Max(.0001f, (float)WeaponSimulation.Seconds(w.BrakeFrames));
+            float brake = Mathf.Max(.0001f, (float)w.BrakeSeconds);
             float b = Mathf.Min(t - straight, brake);
             return straight + b - .5f * (1 - w.BrakeSpeedMultiplier) * b * b / brake + Mathf.Max(0, t - straight - brake) * w.BrakeSpeedMultiplier;
         }
         public static Vector3 Position(Vector3 origin, Vector3 velocity, WeaponRuntimeConfig w, double age)
         {
-            float fall = Mathf.Max(0, (float)(age - WeaponSimulation.Seconds(w.StraightFrames)));
+            float fall = Mathf.Max(0, (float)(age - w.StraightSeconds));
             return origin + velocity * TravelTime(w, age) + Vector3.down * (.5f * w.ProjectileGravity * fall * fall);
         }
         public static double AgeAtDistance(WeaponRuntimeConfig w, float speed, float distance)
         {
             double travel = Math.Max(0, distance) / Math.Max(.0001, speed);
-            double straight = WeaponSimulation.Seconds(w.StraightFrames);
+            double straight = w.StraightSeconds;
             if (travel <= straight) return travel;
-            double brake = Math.Max(.0001, WeaponSimulation.Seconds(w.BrakeFrames));
+            double brake = Math.Max(.0001, w.BrakeSeconds);
             double multiplier = w.BrakeSpeedMultiplier, extra = travel - straight;
             double brakingTravel = brake * (1 + multiplier) * .5;
             if (extra >= brakingTravel) return straight + brake + (extra - brakingTravel) / multiplier;
@@ -94,7 +94,7 @@ namespace Splatoon.Combat
             shot.PostCorrectionVelocity = shot.Velocity;
             shot.FirstSegmentLength = aim.FirstSegmentLength;
             // Convergence distance does not change the weapon's gravity clock.
-            shot.GravityStartAge = (float)WeaponSimulation.Seconds(w.StraightFrames);
+            shot.GravityStartAge = (float)w.StraightSeconds;
         }
         public static Vector3 Position(InkShot shot, WeaponRuntimeConfig w, double age)
         {
@@ -108,8 +108,8 @@ namespace Splatoon.Combat
         }
         public static Vector3 Velocity(InkShot shot, WeaponRuntimeConfig w, double age)
         {
-            float straight = (float)WeaponSimulation.Seconds(w.StraightFrames);
-            float brake = Mathf.Max(.0001f, (float)WeaponSimulation.Seconds(w.BrakeFrames));
+            float straight = (float)w.StraightSeconds;
+            float brake = Mathf.Max(.0001f, (float)w.BrakeSeconds);
             float multiplier = Mathf.Lerp(1, w.BrakeSpeedMultiplier, Mathf.Clamp01(((float)age - straight) / brake));
             bool corrected = shot.PostCorrectionVelocity.sqrMagnitude > 0;
             Vector3 velocity = corrected && age >= CorrectionAge(shot, w) ? shot.PostCorrectionVelocity : shot.Velocity;

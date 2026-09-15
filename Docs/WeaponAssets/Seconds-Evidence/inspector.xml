@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.9540382">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="504" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.954038" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1630" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon-WeaponAssets-Validation-20260915/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="503" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.927299" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14332" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1631" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="503" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.912007" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1632" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="503" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.896004" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1591" name="WeaponInspectorEditorTests" fullname="Splatoon.Tests.WeaponInspectorEditorTests" classname="Splatoon.Tests.WeaponInspectorEditorTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.876331" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1592" name="ChineseInspectorDrawsAndSerializedEditsUndoAndPersist" fullname="Splatoon.Tests.WeaponInspectorEditorTests.ChineseInspectorDrawsAndSerializedEditsUndoAndPersist" methodname="ChineseInspectorDrawsAndSerializedEditsUndoAndPersist" classname="Splatoon.Tests.WeaponInspectorEditorTests" runstate="Runnable" seed="1272811310" result="Passed" start-time="2026-09-15 06:05:17Z" end-time="2026-09-15 06:05:19Z" duration="1.862050" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

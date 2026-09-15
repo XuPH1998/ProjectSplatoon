@@ -33,7 +33,7 @@ namespace Splatoon.Combat
                 float charge = WeaponSimulation.ChargeRatio(s, w);
                 float ground = WeaponSimulation.Spread(w, false, charge), air = WeaponSimulation.Spread(w, true, charge);
                 s.CurrentSpread = !s.Grounded ? air : Mathf.MoveTowards(s.CurrentSpread, ground,
-                    Mathf.Abs(air - ground) * dt / Mathf.Max(.001f, (float)WeaponSimulation.Seconds(w.SpreadRecoverFrames)));
+                    Mathf.Abs(air - ground) * dt / Mathf.Max(.001f, (float)w.LandingSpreadRecoverSeconds));
                 s.CurrentVerticalSpread = s.CurrentSpread;
                 return;
             }
@@ -52,7 +52,7 @@ namespace Splatoon.Combat
             {
                 bool active = canShoot && s.Health > 0 && !input.CancelFire && !s.AttackNeedsRelease;
                 active &= WeaponSimulation.IsSplatling(w) ? s.SplatlingRemaining > 0 && s.WeaponPhase == WeaponPhase.Firing :
-                    s.BurstRemaining > 0 && w.FireMode == (int)WeaponFireMode.Burst ||
+                    s.BurstRemaining > 0 && w.FireMode == WeaponFireMode.Burst ||
                     input.Fire && (emitted || s.SpreadFiring) && s.Ink + .00001f >= w.ShotInk &&
                     (s.WeaponPhase == WeaponPhase.Firing || s.WeaponPhase == WeaponPhase.BurstCooldown || WeaponSimulation.IsSemi(w));
                 // Zero expansion takes effect on the first emitted shot, including a one-round magazine.

@@ -6,6 +6,7 @@ import math
 import re
 import subprocess
 import openpyxl
+from migrate_weapon_seconds import TIME_FIELDS
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'Reports/CombatGirls/MachineGunGirl'
@@ -34,7 +35,7 @@ def main():
     for old in before:
         current=next(h for h in heroes if h['id']==old['id'])
         for k,v in old.items():
-            if not equal(v,current[k]):errors.append(f'Existing hero changed: {old["id"]}/{k}')
+            if not equal(v / 60.0 if k in TIME_FIELDS else v,current.get(TIME_FIELDS.get(k,k))):errors.append(f'Existing hero changed: {old["id"]}/{k}')
     book=openpyxl.load_workbook(ROOT/'Config/Luban/source/TbHero.xlsx',data_only=False)
     sheet=book['Hero'];columns={c.value:c.column for c in sheet[1] if c.value and not c.value.startswith('##')}
     rows=[{k:sheet.cell(r,c).value for k,c in columns.items()} for r in range(4,sheet.max_row+1) if sheet.cell(r,columns['id']).value]

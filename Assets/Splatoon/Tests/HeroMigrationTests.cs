@@ -37,6 +37,7 @@ namespace Splatoon.Tests
                 var asset = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(row["weaponConfigPath"].Value);
                 Assert.That(asset, Is.Not.Null, row["weaponConfigPath"].Value);
                 var weapon = JSONNode.Parse(JsonUtility.ToJson(asset));
+                WeaponTimeFixture.ToReferenceFrames(weapon);
                 foreach (string key in weapon.Keys) if (key != "name") row[key] = weapon[key];
             }
             return rows;
@@ -49,7 +50,13 @@ namespace Splatoon.Tests
                 var copy = ScriptableObject.CreateInstance<WeaponConfigAsset>();
                 try
                 {
-                    JsonUtility.FromJsonOverwrite(row.ToString(), copy);
+                    var current = JSONNode.Parse(row.ToString());
+                    WeaponTimeFixture.ToSeconds(current);
+                    JsonUtility.FromJsonOverwrite(current.ToString(), copy);
+                    // SimpleJSON's textual formatter rounds doubles. Preserve the
+                    // full numeric value when adapting the historical frame fixtures.
+                    foreach (var field in typeof(WeaponConfigAsset).GetFields())
+                        if (field.FieldType == typeof(double)) field.SetValue(copy, current[field.Name].AsDouble);
                     WeaponConfigService.Current.SetForEditor(row["id"].AsInt, copy.Snapshot());
                 }
                 finally { UnityEngine.Object.DestroyImmediate(copy); }
@@ -118,11 +125,11 @@ namespace Splatoon.Tests
         [Test] public void HeroSwitchClampsResourcesWithoutResettingLifeOrPosition()
         {
             Load(rows => { rows[1]["maxHealth"] = 80; rows[1]["maxInk"] = 60; });
-            var state = State(5); state.Position = new Vector3(3, 4, 5); state.ChargeTicks = 30; state.WeaponPhase = WeaponPhase.Charging;
+            var state = State(5); state.Position = new Vector3(3, 4, 5); state.ChargeElapsedSeconds = 30 / 60.0; state.WeaponPhase = WeaponPhase.Charging;
             HeroSelectionRules.Apply(ref state, 2, false, new PlayerInputFrame { Fire = true });
             Assert.That(state.Health, Is.EqualTo(80)); Assert.That(state.Ink, Is.EqualTo(60)); Assert.That(state.HeroRevision, Is.EqualTo(1));
             Assert.That(state.Revision, Is.EqualTo(4)); Assert.That(state.Position, Is.EqualTo(new Vector3(3,4,5))); Assert.That(state.Team, Is.EqualTo(1));
-            Assert.That(state.ChargeTicks, Is.Zero); Assert.That(state.AttackNeedsRelease, Is.True);
+            Assert.That((state.ChargeElapsedSeconds * 60), Is.Zero); Assert.That(state.AttackNeedsRelease, Is.True);
             state.Ink = 10; HeroSelectionRules.Apply(ref state, 1, true, default); Assert.That(state.Ink, Is.EqualTo(100));
         }
         [Test] public void BinderReusesSharedModelsAndReplacesAlternativeModelsWithoutLeftovers()

@@ -165,7 +165,7 @@ namespace Splatoon.Tests
             var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, Vector3.left * .6f, 6, 14, float.PositiveInfinity);
             var shot = Shot(aim, hero); var w = GameplayConfig.GetWeapon(hero);
             double bend = InkBallistics.CorrectionAge(shot, w);
-            double straight = WeaponSimulation.Seconds(w.StraightFrames);
+            double straight = w.StraightSeconds;
             Assert.That(bend, Is.GreaterThan(straight));
             Assert.That(shot.GravityStartAge, Is.EqualTo(straight).Within(1e-7));
             Assert.That(InkBallistics.Position(shot, w, straight).y, Is.Zero.Within(.00001));
@@ -188,7 +188,7 @@ namespace Splatoon.Tests
         {
             var aim = TpsAimSolver.Geometry(Vector3.zero, Vector3.forward, new Vector3(-.6f, 0, 4.5f), 6, 6, float.PositiveInfinity);
             var shot = Shot(aim, hero); var w = GameplayConfig.GetWeapon(hero);
-            double straight = WeaponSimulation.Seconds(w.StraightFrames), bend = InkBallistics.CorrectionAge(shot, w);
+            double straight = w.StraightSeconds, bend = InkBallistics.CorrectionAge(shot, w);
             Assert.That(bend, Is.LessThan(straight));
             Assert.That(InkBallistics.Position(shot, w, (straight + bend) * .5).y, Is.Zero.Within(.00001));
             Assert.That(InkBallistics.Position(shot, w, straight + .1).y, Is.EqualTo(-.5f * w.ProjectileGravity * .01f).Within(.00001));

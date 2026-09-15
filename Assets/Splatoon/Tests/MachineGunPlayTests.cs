@@ -104,7 +104,7 @@ namespace Splatoon.Tests
                 foreach(var shot in match.Projectiles.Spawned)emitted[shot.Id]=shot;
                 timings.Add(watch.Elapsed.TotalMilliseconds);
                 var state=host.Snapshot.Value;
-                rows.AppendLine($"{tick},{state.SplatlingCharge:R},{state.Ink:R},{state.SplatlingReservedInk:R},{state.SplatlingRemaining},{state.ShotSequence},{state.WeaponPhase}");
+                rows.AppendLine($"{tick},{(state.SplatlingChargeSeconds * 60):R},{state.Ink:R},{state.SplatlingReservedInk:R},{state.SplatlingRemaining},{state.ShotSequence},{state.WeaponPhase}");
                 if(tick==120||tick==160||tick==400||tick==413)Capture(camera,host,"phase-"+tick);
                 if(tick%30==0)yield return null;
             }

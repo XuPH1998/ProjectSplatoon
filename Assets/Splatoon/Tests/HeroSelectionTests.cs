@@ -71,7 +71,7 @@ namespace Splatoon.Tests
             Assert.That(WeaponSimulation.WantsFire(s,swimInput),Is.False,"a released charge must immediately allow swimming, including during cooldown");
             Assert.That(s.BurstRemaining,Is.Zero);
             Assert.That(s.NextShotAt,Is.EqualTo(release/60.0+1.0/w.FireRate).Within(.000001));
-            Assert.That(s.InkRecoverAt,Is.EqualTo((release+w.InkRecoverLockFrames)/60.0).Within(.000001));
+            Assert.That(s.InkRecoverAt,Is.EqualTo((release+WeaponTimeFixture.ReferenceFrames(w.InkRecoverLockSeconds))/60.0).Within(.000001));
             for(int i=release+1;i<release+150;i++)
             {
                 Assert.That(Step(ref s,i,false),Is.False);
@@ -82,7 +82,7 @@ namespace Splatoon.Tests
         {
             var s=Alive(5);
             for(int i=0;i<120;i++)Assert.That(Step(ref s,i),Is.False);
-            Assert.That(s.ChargeTicks,Is.EqualTo(60));Assert.That(Step(ref s,120,false),Is.True);
+            Assert.That((s.ChargeElapsedSeconds * 60),Is.EqualTo(60));Assert.That(Step(ref s,120,false),Is.True);
             for(int i=121;i<150;i++)Assert.That(Step(ref s,i,true,2),Is.False);
             for(int i=150;i<170;i++)Assert.That(Step(ref s,i,true,2),Is.False,"cooldown press must not queue");
             Assert.That(Step(ref s,170,false,2),Is.False);Assert.That(Step(ref s,171,true,3),Is.False);
@@ -93,14 +93,14 @@ namespace Splatoon.Tests
         {
             var s=Alive(5);s.Ink=ink;
             for(int i=0;i<100;i++)Step(ref s,i);
-            Assert.That(s.ChargeTicks,Is.EqualTo(expectedTicks));Assert.That(Step(ref s,100,false),Is.True);
+            Assert.That((s.ChargeElapsedSeconds * 60),Is.EqualTo(expectedTicks));Assert.That(Step(ref s,100,false),Is.True);
             Assert.That(s.Ink,Is.Zero.Within(.0001));
         }
         [Test] public void UiCancellationDoesNotDischargeOrSpendAndRequiresRelease()
         {
             var s=Alive(5);for(int i=0;i<63;i++)Step(ref s,i);
             Assert.That(Step(ref s,63,false,1,true),Is.False);Assert.That(s.Ink,Is.EqualTo(100));
-            Assert.That(s.ChargeTicks,Is.Zero);Assert.That(Step(ref s,64,true,2),Is.False);
+            Assert.That((s.ChargeElapsedSeconds * 60),Is.Zero);Assert.That(Step(ref s,64,true,2),Is.False);
             Assert.That(Step(ref s,65,false,2),Is.False);Assert.That(Step(ref s,66,true,3),Is.False);
             Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Starting));
         }
@@ -108,9 +108,9 @@ namespace Splatoon.Tests
         public void EachRegularGunUsesItsConfiguredDamageFalloff(int id,float near,float far)
         {
             var w=GameplayConfig.GetWeapon(id);
-            Assert.That(WeaponSimulation.Damage(w,w.DamageReduceStartFrames/60.0),Is.EqualTo(near));
-            Assert.That(WeaponSimulation.Damage(w,(w.DamageReduceStartFrames+w.DamageReduceEndFrames)/120.0),Is.EqualTo((near+far)/2).Within(.001));
-            Assert.That(WeaponSimulation.Damage(w,w.DamageReduceEndFrames/60.0),Is.EqualTo(far));
+            Assert.That(WeaponSimulation.Damage(w,WeaponTimeFixture.ReferenceFrames(w.DamageReduceStartSeconds)/60.0),Is.EqualTo(near));
+            Assert.That(WeaponSimulation.Damage(w,(WeaponTimeFixture.ReferenceFrames(w.DamageReduceStartSeconds)+WeaponTimeFixture.ReferenceFrames(w.DamageReduceEndSeconds))/120.0),Is.EqualTo((near+far)/2).Within(.001));
+            Assert.That(WeaponSimulation.Damage(w,WeaponTimeFixture.ReferenceFrames(w.DamageReduceEndSeconds)/60.0),Is.EqualTo(far));
         }
         [Test] public void HeldChargeDoesNotRecoverInkAndCannotStartBelowMinimum()
         {
@@ -120,9 +120,9 @@ namespace Splatoon.Tests
                 Step(ref s,i);
                 ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,true,1f/60,i/60.0);
             }
-            Assert.That(s.Ink,Is.EqualTo(5));Assert.That(s.ChargeTicks,Is.EqualTo(30));
+            Assert.That(s.Ink,Is.EqualTo(5));Assert.That((s.ChargeElapsedSeconds * 60),Is.EqualTo(30));
             s=Alive(5);s.Ink=1.99f;for(int i=0;i<100;i++)Assert.That(Step(ref s,i),Is.False);
-            Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Idle));Assert.That(s.ChargeTicks,Is.Zero);
+            Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Idle));Assert.That((s.ChargeElapsedSeconds * 60),Is.Zero);
         }
         [Test] public void CancellingShotFeedbackCannotReviveOldFireLoop()
         {

@@ -294,22 +294,22 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            if (weapon.FireMode != 4 || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
-                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(weapon) ? (weapon.FireMode == 4 ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(820,625,440,82),(weapon.FireMode == 4 ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择英雄 · 调试房保持热身" : "回车开始（房主）"),_small);
+            if (weapon.FireMode != WeaponFireMode.Splatling || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
+                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(weapon) ? (weapon.FireMode == WeaponFireMode.Splatling ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(820,625,440,82),(weapon.FireMode == WeaponFireMode.Splatling ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择英雄 · 调试房保持热身" : "回车开始（房主）"),_small);
             if (_captured && player.Health>0)
             {
-                if (weapon.FireMode == 2)
+                if (weapon.FireMode == WeaponFireMode.Charge)
                 {
                     float charge = Splatoon.Combat.WeaponSimulation.ChargeRatio(player, weapon);
                     Panel(new Rect(570, 440, 140, 7), new Color(.2f,.23f,.27f));
                     Panel(new Rect(570, 440, 140 * charge, 7), PrototypeArena.TeamColor(player.Team));
                     bool limited = player.WeaponPhase == Splatoon.Combat.WeaponPhase.Charging && player.Ink < weapon.ShotInk &&
-                        charge >= Mathf.Floor((player.Ink - weapon.ChargeMinInk) / (weapon.ShotInk - weapon.ChargeMinInk) * weapon.ChargeFrames) / weapon.ChargeFrames;
+                        charge >= WeaponSimulation.AffordableChargeSeconds(weapon, player.Ink) / weapon.ChargeSeconds;
                     GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
                 }
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
-                if (weapon.FireMode == 4) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
+                if (weapon.FireMode == WeaponFireMode.Splatling) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
                 DrawSpreadReticle(local, player, weapon, reticleCenter);
                 if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(reticleCenter.x-12,reticleCenter.y-13,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
                 if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);

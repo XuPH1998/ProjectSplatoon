@@ -5,6 +5,7 @@ import math
 import re
 import xml.etree.ElementTree as ET
 import openpyxl
+from migrate_weapon_seconds import TIME_FIELDS, seconds_values
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -29,7 +30,7 @@ def main():
     book.close()
     generated = json.loads((ROOT/'Assets/GameResource/Bootstrap/Config/Luban/tbhero.json').read_text('utf-8-sig'))
     baseline = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/Migration-Baseline.json').read_text('utf-8'))
-    weapon_fields = re.findall(r'public (?:float|int|string) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
+    weapon_fields = re.findall(r'public (?:float|int|string|double|WeaponFireMode|WeaponMuzzleMode) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
     schema = ET.parse(ROOT/'Config/Luban/source/Defines/gameplay.xml')
     hero_fields = {node.attrib['name'] for bean in schema.iter('bean') if bean.attrib.get('name') == 'HeroConfig' for node in bean.findall('var')}
     check(hero_fields == set(columns), 'Source columns do not match Luban HeroConfig schema')
@@ -52,7 +53,7 @@ def main():
         guid = re.search(r'^guid: (\w+)', meta, re.M)[1]
         check(entries.get(guid) == row['weaponConfigPath'], f'Addressables full path missing: {path}')
         check(list(entries.values()).count(row['weaponConfigPath']) == 1, f'Duplicate address: {path}')
-        old = next(h for h in baseline if h['id'] == row['id'])
+        old = seconds_values(next(h for h in baseline if h['id'] == row['id']))
         combined = dict(gen, **values)
         for key, value in old.items():
             checked += 1

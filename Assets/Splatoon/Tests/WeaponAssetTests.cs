@@ -78,7 +78,7 @@ namespace Splatoon.Tests
         }
         [Test] public void CommittedBurstKeepsGrowingAfterReleaseUntilItsFinalRound()
         {
-            var w = Changed(1, a => { a.fireMode = 1; a.burstCount = 3; a.fireRate = 15; a.startFrames = 0; a.burstRecoveryFrames = 8; });
+            var w = Changed(1, a => { a.fireMode = WeaponFireMode.Burst; a.burstCount = 3; a.fireRate = 15; a.startSeconds = 0 / 60.0; a.burstRecoverySeconds = 8 / 60.0; });
             var s = Alive(1);
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, t == 0);
             Assert.That(s.ShotSequence, Is.EqualTo(3)); Assert.That(s.SpreadFiring, Is.False);
@@ -87,7 +87,7 @@ namespace Splatoon.Tests
             Assert.That(s.SpreadProgress, Is.EqualTo(.1f).Within(.00001));
         }
         [TestCase("spreadExpandSeconds")] [TestCase("spreadRecoverSeconds")] [TestCase("splatlingPitchSpread")]
-        [TestCase("damage")] [TestCase("fireRate")] [TestCase("splatlingFullShootFrames")]
+        [TestCase("damage")] [TestCase("fireRate")] [TestCase("splatlingFullShootSeconds")]
         public void RoomSignatureIncludesWeaponAssetParameters(string field)
         {
             var hero = GameplayConfig.GetHero(6);
@@ -99,7 +99,8 @@ namespace Splatoon.Tests
             var candidate = Changed(6, a =>
             {
                 var f = typeof(WeaponConfigAsset).GetField(field);
-                if (f.FieldType == typeof(int)) f.SetValue(a, (int)f.GetValue(a) + 1);
+                if (f.FieldType == typeof(double)) f.SetValue(a, (double)f.GetValue(a) + .1);
+                else if (f.FieldType == typeof(int)) f.SetValue(a, (int)f.GetValue(a) + 1);
                 else f.SetValue(a, (float)f.GetValue(a) + .1f);
             });
             var changed = new HeroContent(hero, character, weapon, candidate);
@@ -127,8 +128,8 @@ namespace Splatoon.Tests
             Assert.That(SpreadSimulation.Angles(shotgun, true, 0), Is.EqualTo(Vector2.one * 4));
             Assert.That(SpreadSimulation.Angles(shotgun, false, 1), Is.EqualTo(Vector2.one * 5));
             var rocket = GameplayConfig.GetWeapon(5); var s = Alive(5);
-            for (int t = 0; t <= rocket.ChargeFrames + rocket.StartFrames; t++) Tick(ref s, rocket, t, true);
-            Assert.That(Tick(ref s, rocket, rocket.ChargeFrames + rocket.StartFrames + 1, false), Is.True);
+            for (int t = 0; t <= WeaponTimeFixture.ReferenceFrames(rocket.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(rocket.StartSeconds); t++) Tick(ref s, rocket, t, true);
+            Assert.That(Tick(ref s, rocket, WeaponTimeFixture.ReferenceFrames(rocket.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(rocket.StartSeconds) + 1, false), Is.True);
             Assert.That(s.LastShotSpread, Is.EqualTo(rocket.SpreadDegrees)); Assert.That(s.SpreadProgress, Is.Zero);
             Assert.That(WeaponSimulation.Spread(rocket, false, 0), Is.GreaterThan(s.LastShotSpread));
         }
@@ -156,7 +157,7 @@ namespace Splatoon.Tests
             var old = GameplayConfig.GetWeapon(6); var s = Alive();
             for (int t = 0; t <= at; t++) Tick(ref s, old, t, t < 150);
             float expected = s.Ink + s.SplatlingReservedInk;
-            var next = Changed(6, a => { a.fireRate = 12; a.shotInk = .9f; a.splatlingFullShootFrames = 300; });
+            var next = Changed(6, a => { a.fireRate = 12; a.shotInk = .9f; a.splatlingFullShootSeconds = 300 / 60.0; });
             Assert.That(old.RequiresRestart(next), Is.True);
             WeaponSimulation.Cancel(ref s, new PlayerInputFrame { FireSequence = 1 }, true);
             WeaponConfigService.Current.Replace(6, next);

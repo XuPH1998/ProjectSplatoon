@@ -116,13 +116,15 @@ namespace Splatoon.Tests
             Assert.That(match.AddTestBot(prefab), Is.Not.Null); match.ClearTestBots();
             Assert.That(match.Players.Count(p => p != null && p.IsSpawned && p.IsTestBot), Is.Zero);
             app.CaptureMouse(false); match.enabled = false; player.enabled = false;
-            var asset = WeaponConfigService.Current.Source(6); string saved = JsonUtility.ToJson(asset);
+            var asset = WeaponConfigService.Current.Source(6);
+            var savedAsset = UnityEngine.Object.Instantiate(asset); savedAsset.name = asset.name;
+            bool originallyDirty = EditorUtility.IsDirty(asset);
             var original = GameplayConfig.GetWeapon(6);
             try
             {
                 // Freeze the host driver while real Update observes the edited asset. Each pending
                 // transaction is applied at the same boundary used by Match.FixedUpdate.
-                foreach (int until in new[] { 60, 174 })
+                foreach (int until in new[] { 60, 174, 61 })
                 {
                     var w = GameplayConfig.GetWeapon(6);
                     var s = player.Snapshot.Value;
@@ -133,7 +135,13 @@ namespace Splatoon.Tests
                     Assert.That(s.SplatlingReservedInk, Is.GreaterThan(0));
                     float expected = s.Ink + s.SplatlingReservedInk;
                     player.Snapshot.Value = s;
-                    asset.fireRate = until == 60 ? 12 : 15; asset.shotInk += .1f; asset.splatlingFullShootFrames += 20;
+                    // Exercise the same SerializedProperty path as the Chinese Inspector.
+                    using var edited = new SerializedObject(asset);
+                    edited.FindProperty("fireRate").floatValue = until == 60 ? 12 : 15;
+                    edited.FindProperty("shotInk").floatValue += .1f;
+                    edited.FindProperty("splatlingFullShootSeconds").doubleValue += .337123456789;
+                    if (until == 61) edited.FindProperty("fireMode").intValue = (int)WeaponFireMode.Automatic;
+                    edited.ApplyModifiedProperties();
                     uint revision = WeaponConfigService.Current.Revision(6);
                     yield return Applied(app, () => WeaponConfigService.Current.Revision(6) > revision);
                     var after = player.Snapshot.Value;
@@ -142,7 +150,7 @@ namespace Splatoon.Tests
                     for (int t = 1; t <= 5; t++) Assert.That(WeaponSimulation.Step(ref after, new PlayerInputFrame { Fire = true, FireSequence = 1 }, GameplayConfig.GetWeapon(6), after.SimulatedAt + t / 60.0, false, true), Is.False);
                     WeaponSimulation.Step(ref after, default, GameplayConfig.GetWeapon(6), 10, false, true);
                     WeaponSimulation.Step(ref after, new PlayerInputFrame { Fire = true, FireSequence = 2 }, GameplayConfig.GetWeapon(6), 10.1, false, true);
-                    Assert.That(after.WeaponPhase, Is.EqualTo(WeaponPhase.Charging));
+                    Assert.That(after.WeaponPhase, Is.EqualTo(until == 61 ? WeaponPhase.Firing : WeaponPhase.Charging));
                 }
                 var before = GameplayConfig.GetWeapon(6); var visual = player.CharacterView;
                 uint oldRevision = WeaponConfigService.Current.Revision(6);
@@ -176,14 +184,14 @@ namespace Splatoon.Tests
                 Assert.That(player.Snapshot.Value.AttackNeedsRelease, Is.True);
                 Assert.That(player.CharacterView, Is.Not.SameAs(visual), "A different validated weapon prefab rebuilds the assembly");
                 uint restoreRevision = WeaponConfigService.Current.Revision(6);
-                JsonUtility.FromJsonOverwrite(saved, asset);
+                EditorUtility.CopySerialized(savedAsset, asset);
                 yield return Applied(app, () => WeaponConfigService.Current.Revision(6) > restoreRevision);
                 // Capture the real Game HUD with three progress levels, including bottom charge rings.
                 app.CaptureMouse(true);
                 foreach (float progress in new[] { 0f, .5f, 1f })
                 {
                     var s = player.Snapshot.Value; s.SpreadProgress = progress; s.AttackNeedsRelease = false;
-                    s.WeaponPhase = WeaponPhase.Charging; s.SplatlingCharge = 130; s.SplatlingReservedInk = 20; s.Ink = 80;
+                    s.WeaponPhase = WeaponPhase.Charging; s.SplatlingChargeSeconds = 130 / 60.0; s.SplatlingReservedInk = 20; s.Ink = 80;
                     SpreadSimulation.Refresh(ref s, GameplayConfig.GetWeapon(6)); player.Snapshot.Value = s;
                     yield return null; yield return null;
                     yield return CaptureGameView("reticle-" + progress.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), 1280, 720, 60);
@@ -203,7 +211,9 @@ namespace Splatoon.Tests
             }
             finally
             {
-                JsonUtility.FromJsonOverwrite(saved, asset);
+                EditorUtility.CopySerialized(savedAsset, asset);
+                if (!originallyDirty) EditorUtility.ClearDirty(asset);
+                UnityEngine.Object.Destroy(savedAsset);
                 match.Projectiles.TraceObserved = null; match.Projectiles.Clear();
             }
             yield return app.Leave().ToCoroutine();

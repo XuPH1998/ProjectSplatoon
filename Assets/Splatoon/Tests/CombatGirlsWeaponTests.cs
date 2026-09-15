@@ -31,7 +31,7 @@ namespace Splatoon.Tests
                 for(int tick=0;tick<240;tick++)if(Step(ref s,tick,1,held))shots.Add(tick);
                 var w = GameplayConfig.GetWeapon(id);
                 int intervalTicks = (int)Math.Ceiling(60.0 / w.FireRate - 1e-6);
-                var expected = held ? Enumerable.Range(0, 1 + (239 - w.StartFrames) / intervalTicks).Select(n => w.StartFrames + n * intervalTicks).ToArray() : new[] { w.StartFrames };
+                var expected = held ? Enumerable.Range(0, 1 + (239 - WeaponTimeFixture.ReferenceFrames(w.StartSeconds)) / intervalTicks).Select(n => WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + n * intervalTicks).ToArray() : new[] { WeaponTimeFixture.ReferenceFrames(w.StartSeconds) };
                 Assert.That(shots,Is.EqualTo(expected));Assert.That(s.Ink,Is.EqualTo(100-shots.Count*w.ShotInk).Within(.0002));
             }
         }
@@ -105,7 +105,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(19));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(21));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }

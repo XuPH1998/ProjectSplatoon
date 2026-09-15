@@ -26,7 +26,7 @@ namespace Splatoon.Tests
         public void ReleaseBeforeCooldownNeverQueuesAnAutomaticShot(int hero)
         {
             var s = Player(hero); var w = GameplayConfig.GetWeapon(hero);
-            for (int t = 0; t < 100; t++) Fire(ref s, t, t / 60.0 < w.StartFrames / 60.0 + 1.0 / w.FireRate - 1e-8);
+            for (int t = 0; t < 100; t++) Fire(ref s, t, t / 60.0 < WeaponTimeFixture.ReferenceFrames(w.StartSeconds) / 60.0 + 1.0 / w.FireRate - 1e-8);
             Assert.That(s.ShotSequence, Is.EqualTo(1));
         }
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
@@ -48,8 +48,8 @@ namespace Splatoon.Tests
             Fire(ref s, 8, true, 1, true); uint count = s.ShotSequence;
             for (int t = 9; t < 60; t++) Assert.That(Fire(ref s, t, true), Is.False);
             Fire(ref s, 60, false);
-            for (int t = 61; t < 61 + GameplayConfig.GetWeapon(hero).StartFrames; t++) Assert.That(Fire(ref s, t, true, 2), Is.False);
-            Assert.That(Fire(ref s, 61 + GameplayConfig.GetWeapon(hero).StartFrames, true, 2), Is.True);
+            for (int t = 61; t < 61 + WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(hero).StartSeconds); t++) Assert.That(Fire(ref s, t, true, 2), Is.False);
+            Assert.That(Fire(ref s, 61 + WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(hero).StartSeconds), true, 2), Is.True);
             Assert.That(s.ShotSequence, Is.EqualTo(count + 1));
         }
         [Test] public void HeldStateRoundTripReplaysIdenticalShotsHandsAndInk()
@@ -70,7 +70,7 @@ namespace Splatoon.Tests
             var actions = new List<ulong>();
             for (int tick = 0; tick < 120; tick++)
                 if (WeaponSimulation.Step(ref s, input, w, tick / 60.0, false, true)) actions.Add(s.ShotActionId);
-            Assert.That(actions.Count, Is.EqualTo(1 + (119 - w.StartFrames) / (int)Math.Ceiling(60.0 / w.FireRate - 1e-6)));
+            Assert.That(actions.Count, Is.EqualTo(1 + (119 - WeaponTimeFixture.ReferenceFrames(w.StartSeconds)) / (int)Math.Ceiling(60.0 / w.FireRate - 1e-6)));
             Assert.That(actions.Distinct().Count(), Is.EqualTo(actions.Count), "Repeated input packets must not deduplicate new shots");
         }
         [TestCase(0f, .5f)] [TestCase(-1f, .5f)] [TestCase(.6f, .5f)]

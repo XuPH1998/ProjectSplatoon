@@ -122,7 +122,7 @@ namespace Splatoon.Tests
                     Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
                     CurrentSpread=WeaponSimulation.Spread(w,false,charge), BurstShotIndex=1 };
                 int launched = 0; double nextShot = 0;
-                double fullDuration = shotCount * ((w.StartFrames + w.ChargeFrames + w.BurstRecoveryFrames) / 60.0 + WeaponSimulation.FireInterval(w)) + w.Lifetime + 1;
+                double fullDuration = shotCount * ((WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + WeaponTimeFixture.ReferenceFrames(w.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(w.BurstRecoverySeconds)) / 60.0 + WeaponSimulation.FireInterval(w)) + w.Lifetime + 1;
                 for (int frame = 0; frame <= (int)Math.Ceiling(fullDuration * rate); frame++)
                 {
                     double now = frame / (double)rate;
@@ -130,14 +130,14 @@ namespace Splatoon.Tests
                     {
                         launched++;
                         state.ShotSequence=(uint)launched; state.FireBurstSequence=(uint)launched;
-                        state.LastShotMuzzle=(byte)(w.MuzzleMode==1?(launched-1)%2:0);
+                        state.LastShotMuzzle=(byte)(w.MuzzleMode==WeaponMuzzleMode.AlternatingRightLeft?(launched-1)%2:0);
                         // Explicit per-shot spread, independent of the external projectile driver rate.
                         var spread = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, false, charge)
                             : SpreadSimulation.Angles(w, false, w.SpreadExpandSeconds <= 0 ? 1 : (float)nextShot / w.SpreadExpandSeconds);
                         state.LastShotSpread = spread.x; state.LastShotVerticalSpread = spread.y;
                         service.Spawn(player,state,nextShot,1);
-                        double gap = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Seconds(w.StartFrames + w.ChargeFrames) + WeaponSimulation.FireInterval(w) :
-                            w.FireMode == 1 && launched % w.BurstCount == 0 ? WeaponSimulation.Seconds(w.BurstRecoveryFrames) : WeaponSimulation.FireInterval(w);
+                        double gap = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Seconds(WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + WeaponTimeFixture.ReferenceFrames(w.ChargeSeconds)) + WeaponSimulation.FireInterval(w) :
+                            w.FireMode == WeaponFireMode.Burst && launched % w.BurstCount == 0 ? w.BurstRecoverySeconds : WeaponSimulation.FireInterval(w);
                         nextShot += gap;
                     }
                     result.peakProjectiles = Math.Max(result.peakProjectiles, service.ActiveCount);
@@ -217,12 +217,12 @@ namespace Splatoon.Tests
             Assert.That(PrototypeApp.Current.Ready, Is.True, PrototypeApp.Current.Error);
             Assert.That(LubanConfigService.Current.ContentSignature, Has.Length.EqualTo(32));
             Assert.That(GameplayConfig.GetWeapon(2).ShotInk, Is.EqualTo(.7f));
-            Assert.That(GameplayConfig.GetWeapon(2).InkRecoverLockFrames, Is.EqualTo(15));
+            Assert.That(WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(2).InkRecoverLockSeconds), Is.EqualTo(15));
             Assert.That(GameplayConfig.GetWeapon(3).ShotInk, Is.EqualTo(4));
             Assert.That(GameplayConfig.GetWeapon(3).FireRate, Is.EqualTo(2.5f));
             Assert.That(GameplayConfig.GetWeapon(3).PelletCount, Is.EqualTo(8));
             Assert.That(GameplayConfig.GetWeapon(4).ShotInk, Is.EqualTo(1.4f));
-            Assert.That(GameplayConfig.GetWeapon(4).InkRecoverLockFrames, Is.EqualTo(22));
+            Assert.That(WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(4).InkRecoverLockSeconds), Is.EqualTo(22));
             Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(160));
             Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
             Directory.CreateDirectory("Reports/WeaponReference/PlayMode");
