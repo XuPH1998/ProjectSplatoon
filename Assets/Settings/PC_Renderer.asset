@@ -25,6 +25,35 @@ MonoBehaviour:
   BlurShader: {fileID: 4800000, guid: c2cce5cab35b66c4482bc5a1d6f4ad99, type: 3}
   BlitMaterial: {fileID: 2100000, guid: 95391282e3f31ef4dada9756b388d99d, type: 2}
   WriteDepthMaterial: {fileID: 2100000, guid: 3abad26229f1dfe418d9152127d1e435, type: 2}
+  FlightComposite: 0
+  BlurPasses: 3
+  BlurDistance: 0.54
+--- !u!114 &-1076917854864243682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99924fc21a1264e4898a2a384f5b1183, type: 3}
+  m_Name: InkFlightMetaballs
+  m_EditorClassIdentifier: Splatoon::RenderMetaballsScreenSpace
+  m_Active: 1
+  PassTag: InkFlightMetaballs
+  Event: 500
+  FilterSettings:
+    RenderQueueType: 1
+    LayerMask:
+      serializedVersion: 2
+      m_Bits: 2048
+    PassNames: []
+  CopyDepthShader: {fileID: 4800000, guid: a18dc30dbe78448ba10bdc97765a4866, type: 3}
+  BlurShader: {fileID: 4800000, guid: c2cce5cab35b66c4482bc5a1d6f4ad99, type: 3}
+  BlitMaterial: {fileID: 2100000, guid: cb100f701d5d95e4f814e755a56fdee7, type: 2}
+  WriteDepthMaterial: {fileID: 2100000, guid: 3abad26229f1dfe418d9152127d1e435, type: 2}
+  FlightComposite: 1
   BlurPasses: 3
   BlurDistance: 0.54
 --- !u!114 &11400000
@@ -55,6 +84,7 @@ MonoBehaviour:
   - {fileID: 7833122117494664109}
   - {fileID: -6438597939077283483}
   - {fileID: 2644738981832810963}
+  - {fileID: -1076917854864243682}
   m_RendererFeatureMap: ad6b866f10d7b46c
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
@@ -65,10 +95,10 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 4294964735
   m_TransparentLayerMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 4294964735
   m_DefaultStencilState:
     overrideStencilState: 0
     stencilReference: 1

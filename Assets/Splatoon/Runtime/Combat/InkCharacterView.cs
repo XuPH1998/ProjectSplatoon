@@ -17,8 +17,8 @@ namespace Splatoon.Combat
         public ParticleSystem SwimEffect;
         public Vector2 CameraKick { get; private set; }
         private float _kick;
-        private ParticleSystem _muzzleEffect;
-        private ParticleSystem _leftMuzzleEffect;
+        private InkMuzzleEmitter _muzzleEffect;
+        private InkMuzzleEmitter _leftMuzzleEffect;
         private MaterialPropertyBlock _block;
         public readonly struct OutlineDraw
         {
@@ -91,29 +91,29 @@ namespace Splatoon.Combat
                 if (LeftWeapon != null) { _leftWeaponPosition = LeftWeapon.localPosition; _leftWeaponRotation = LeftWeapon.localRotation; }
             }
         }
-        public void Shot(byte muzzleIndex = 0)
+        public void Shot(byte muzzleIndex = 0, ulong actionId = 0, double born = double.NaN)
         {
             _kick = 1;
             var nozzle = muzzleIndex == 1 ? LeftNozzle : Nozzle;
-            if (nozzle == null || SwimEffect == null) return;
+            if (nozzle == null || InkPresentation.Current == null) return;
             var effect = muzzleIndex == 1 ? _leftMuzzleEffect : _muzzleEffect;
             if (effect == null)
             {
-                var go = new GameObject("LocalMuzzleFeedback"); go.transform.SetParent(nozzle, false);
-                effect = go.AddComponent<ParticleSystem>(); effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                var main = effect.main; main.playOnAwake = false; main.loop = false; main.startLifetime = .07f; main.startSpeed = 2; main.startSize = .07f; main.maxParticles = 24; main.simulationSpace = ParticleSystemSimulationSpace.World;
-                var emission = effect.emission; emission.enabled = false;
-                var shape = effect.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.angle = 8; shape.radius = .01f;
-                go.GetComponent<ParticleSystemRenderer>().sharedMaterial = SwimEffect.GetComponent<ParticleSystemRenderer>().sharedMaterial;
-                SetInkMesh(effect, SwimEffect.GetComponent<ParticleSystemRenderer>().mesh);
+                effect = InkPresentation.Current.CreateMuzzle(nozzle);
                 if (muzzleIndex == 1) _leftMuzzleEffect = effect; else _muzzleEffect = effect;
             }
-            var settings = effect.main; settings.startColor = PrototypeArena.TeamColor(_state.Team); effect.Emit(3);
+            double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : Time.timeAsDouble;
+            var weapon = GameplayConfig.GetWeapon(_state.HeroId);
+            effect?.Shot((uint)(actionId ^ (actionId >> 32)) + muzzleIndex + 1u, _state.Team,
+                InkFlightPresentation.IsContinuous(weapon), now, double.IsNaN(born) ? now : born);
         }
         public void Present(PlayerSnapshot state, float dt, double now)
         {
             if (Profile == null || Animator == null) return;
             _state = state;
+            bool allowMuzzle = state.Health > 0 && !state.Swimming;
+            _muzzleEffect?.Present(state.Firing, allowMuzzle, now);
+            _leftMuzzleEffect?.Present(state.Firing, allowMuzzle, now);
             if(Profile.Splatling && Application.isPlaying)
             {
                 if(_splatlingFeedback==null)_splatlingFeedback=gameObject.AddComponent<SplatlingFeedback>();

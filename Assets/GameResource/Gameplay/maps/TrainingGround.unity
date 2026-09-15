@@ -10677,9 +10677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.InkPresentation
   StreamPrefab: {fileID: 4838304108438969096, guid: 44d8719a2225d96458480952313d3ed4, type: 3}
   ImpactPrefab: {fileID: 3102718741573700365, guid: 6099aec9a79bca34298597ce157343bd, type: 3}
-  BlobSize: 0.17
-  BlobsPerShot: 2
-  BlobsPerMeter: 10
+  FlightProfile: {fileID: 11400000, guid: 3b6a31c3b6f37aa4a8fab3988fca2808, type: 2}
 --- !u!114 &1690681425
 MonoBehaviour:
   m_ObjectHideFlags: 0

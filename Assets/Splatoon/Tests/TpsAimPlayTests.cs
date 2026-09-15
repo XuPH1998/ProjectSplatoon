@@ -81,7 +81,7 @@ namespace Splatoon.Tests
             Vector3 feet = new(0, 5.54f, 0);
             var report = new List<string>();
             var csv = new List<string> { "hero,age,old_x,old_y,old_z,new_x,new_y,new_z" };
-            var streams = (ParticleSystem[])typeof(InkPresentation).GetField("_streams", Private).GetValue(InkPresentation.Current);
+            var flightPresentation = InkPresentation.Current.Flight;
             int visiblePixels = 0;
             foreach (int hero in new[] { 1, 2, 3, 4, 5 })
             {
@@ -97,6 +97,8 @@ namespace Splatoon.Tests
                     var impacts = new List<InkImpact>();
                     var lastTrace = new Dictionary<uint, string>();
                     match.Projectiles.Clear(); InkPresentation.Current.Clear();
+                // This fixture deliberately backdates subsequent synthetic shots.
+                InkPresentation.Current.Flight.Clear();
                     double born = player.NetworkManager.ServerTime.Time;
                     match.Projectiles.Spawn(player, state, born, match.State.Value.Round);
                     var shots = match.Projectiles.Spawned.ToArray();
@@ -147,12 +149,15 @@ namespace Splatoon.Tests
                 Assert.That(miss.AimHit.Collider, Is.Null, "Clear-air case has no hit within 100 metres");
                 Assert.That(Vector3.Distance(miss.CorrectionPoint, miss.CameraOrigin + miss.Forward * 50), Is.LessThan(.0001f));
                 match.Projectiles.Clear(); InkPresentation.Current.Clear();
+                // This fixture deliberately backdates subsequent synthetic shots.
+                InkPresentation.Current.Flight.Clear();
                 match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time - .05, match.State.Value.Round);
                 var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetWeapon(hero);
                 // GPU captures can take longer than a projectile's lifetime on an importing editor.
                 // Sample a fixed live age without yielding between host RPC dispatch and capture.
                 FlushPresentation(match);
-                var stream = streams[live.Team - 1]; var particles = new ParticleSystem.Particle[1024]; int count = stream.GetParticles(particles);
+                var particles = new ParticleSystem.Particle[2048]; int count = flightPresentation.CopyParticles(live.Team, particles);
+                var stream = flightPresentation.Streams.First(p => p.particleCount > 0);
                 Assert.That(count, Is.GreaterThanOrEqualTo(w.PelletCount));
                 var camera = new GameObject("Flight evidence camera").AddComponent<Camera>(); camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1;
                 Vector3 center = particles.Take(count).Aggregate(Vector3.zero, (sum, p) => sum + p.position) / count;
@@ -186,6 +191,8 @@ namespace Splatoon.Tests
             // Sample before a six-metre convergence point, after the weapon straight period.
             // Flush the real host RPC and render in this frame so clock scheduling cannot skip the interval.
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
+                // This fixture deliberately backdates subsequent synthetic shots.
+                InkPresentation.Current.Flight.Clear();
             var gravityWeapon = GameplayConfig.GetWeapon(3);
             var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, 6, float.PositiveInfinity);
             var gravityShot = new InkShot { Id = uint.MaxValue, HeroId = 3, Team = player.Snapshot.Value.Team,
@@ -198,9 +205,9 @@ namespace Splatoon.Tests
             gravityShot.Born = player.NetworkManager.ServerTime.Time - gravityAge;
             match.Projectiles.SpawnForMeasurement(gravityShot);
             FlushPresentation(match);
-            var gravityStream = streams[gravityShot.Team - 1];
+            var gravityStream = flightPresentation;
             var gravityParticles = new ParticleSystem.Particle[32];
-            Assert.That(gravityStream.GetParticles(gravityParticles), Is.GreaterThan(0), "Host RPC delivered shot before convergence");
+            Assert.That(gravityStream.CopyParticles(gravityShot.Team, gravityParticles), Is.GreaterThan(0), "Host RPC delivered shot before convergence");
             var expectedPosition = InkBallistics.Position(gravityShot, gravityWeapon, gravityAge);
             Assert.That(Vector3.Distance(gravityParticles[0].position, expectedPosition), Is.LessThan(.0001f), "GPU stream uses complete authority trajectory");
             var noGravity = gravityShot; noGravity.GravityStartAge = 100;
@@ -213,6 +220,8 @@ namespace Splatoon.Tests
             Object.Destroy(gravityCamera.gameObject);
             report.Add($"GPU particle before convergence: age={gravityAge:F6}s, targetAge={convergenceAge:F6}s, gravityStart={gravityShot.GravityStartAge:F6}s, drop={drop:F6}m; RPC and authority position agree");
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
+                // This fixture deliberately backdates subsequent synthetic shots.
+                InkPresentation.Current.Flight.Clear();
             player.RequestHeroChange(1, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 1, "Return to rifle");
             SetPose(player, feet);
@@ -254,6 +263,8 @@ namespace Splatoon.Tests
             SetPose(player, PrototypeArena.Spawn(player.Snapshot.Value.Team, player.Snapshot.Value.Slot));
             var paintState = player.Snapshot.Value; paintState.Pitch = 55; paintState.CurrentSpread=paintState.LastShotSpread=.000001f;paintState.LastShotVerticalSpread=.000001f;
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
+                // This fixture deliberately backdates subsequent synthetic shots.
+                InkPresentation.Current.Flight.Clear();
             match.Projectiles.Spawn(player, paintState, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
             uint paintBeforeFlight = match.PaintSequence;
             yield return Wait(() => match.PaintSequence > paintBeforeFlight, "Corrected flight paints authored arena surface", 3);

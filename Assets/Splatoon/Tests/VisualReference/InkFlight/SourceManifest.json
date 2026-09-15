@@ -1,0 +1,35 @@
+{
+  "reference": "D:\\XPHUNITY\\Splatoon-Ink",
+  "assets": [
+    {
+      "path": "Assets\\Scenes\\MixAndJam.unity",
+      "sha256": "eba75e24a91c41113a952b34162218ceb65ccc5c11a7c7baab2897ae3e4ec5de"
+    },
+    {
+      "path": "Assets\\Materials\\ParticleMaterial 1.mat",
+      "sha256": "eebc4316a3aa53d3923e773d35052f15c2e4884b2a35bdea66e2bbf717cc9e08"
+    },
+    {
+      "path": "Assets\\Metaballs\\Shaders\\StepAndClip.shadergraph",
+      "sha256": "e44ede628b4cf2ddc744d6ad36225d548dc72f1cad9dbdedf89893f06eb867b9"
+    },
+    {
+      "path": "Assets\\Metaballs\\Shaders\\KawaseBlur.shader",
+      "sha256": "4e9fb07a6c68d190153a1573c898071cff88d085d8a64783617bc529dce6def8"
+    },
+    {
+      "path": "Assets\\Metaballs\\RendererFeatures\\RenderMetaballsScreenSpace.cs",
+      "sha256": "b0baa1910b8151256ffca57db6fddb7d02313602efe3542377c488a8deb1250c"
+    }
+  ],
+  "particleFileIds": {
+    "flight": 949289641,
+    "muzzle": 276323219
+  },
+  "extractionAdaptations": [
+    "standalone transform",
+    "source collision/splash subemitters detached",
+    "runtime layer 11",
+    "fixture material uses original source color"
+  ]
+}

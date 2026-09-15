@@ -11,30 +11,18 @@ namespace Splatoon.Combat
     {
         public static InkPresentation Current { get; private set; }
         public ParticleSystem StreamPrefab, ImpactPrefab;
-        [Tooltip("飞行墨水视觉尺寸")] public float BlobSize = .17f;
-        [Tooltip("补充墨流密度的每发粒子数")] public int BlobsPerShot = 2;
-        [Tooltip("移动时每米补充的视觉粒子；不增加权威墨弹")] public float BlobsPerMeter = 10;
-        private readonly Dictionary<uint, InkShot> _shots = new(256);
-        private readonly Dictionary<uint, int> _blobCounts = new(256);
-        private readonly Dictionary<ulong, (Vector3 position, double born, float remainder)> _emitters = new();
-        private readonly List<uint> _expired = new(256);
-        private readonly ParticleSystem.Particle[] _particles = new ParticleSystem.Particle[1024];
-        private ParticleSystem[] _streams;
+        public InkFlightProfile FlightProfile;
+        public InkFlightPresentation Flight { get; private set; }
+        Camera _camera;
+        readonly List<InkMuzzleEmitter> _muzzles = new(16);
         private readonly Queue<InkImpactEffect> _pool = new();
         private readonly List<(InkImpactEffect effect, float until)> _effects = new(96);
         private void Awake()
         {
             Current = this;
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return;
-            _streams = new[] { Instantiate(StreamPrefab, transform), Instantiate(StreamPrefab, transform) };
-            foreach (var stream in _streams)
-            {
-                var emission = stream.emission; emission.enabled = false;
-                var collision = stream.collision; collision.enabled = false;
-                var sub = stream.subEmitters; sub.enabled = false;
-                var main = stream.main; main.simulationSpace = ParticleSystemSimulationSpace.World; main.maxParticles = 1024; main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate; main.startSpeed = 0; main.gravityModifier = 0;
-                stream.Play();
-            }
+            Flight = new InkFlightPresentation(transform, FlightProfile != null ? FlightProfile.FlightPrefab : StreamPrefab, FlightProfile);
+            _camera = Camera.main;
             for (int i = 0; i < 96; i++)
             {
                 var effect = Instantiate(ImpactPrefab, transform).GetComponent<InkImpactEffect>();
@@ -43,23 +31,17 @@ namespace Splatoon.Combat
         }
         public void Spawn(InkShot shot)
         {
-            if (_streams == null || _shots.ContainsKey(shot.Id)) return;
+            if (Flight == null) return;
             shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
-            _shots.Add(shot.Id, shot);
-            float extra = 0;
-            if (_emitters.TryGetValue(shot.Shooter, out var previous) && shot.Born - previous.born < .1)
-                extra = previous.remainder + Vector3.Distance(previous.position, shot.Origin) * BlobsPerMeter;
-            int added = Mathf.FloorToInt(extra);
-            _blobCounts[shot.Id] = Mathf.Clamp(BlobsPerShot + added, 1, 32);
-            _emitters[shot.Shooter] = (shot.Origin, shot.Born, extra - added);
+            double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : shot.Born;
+            if (!Flight.Spawn(shot, now)) return;
             if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.PredictShotFeedback(shot);
         }
         public void Impact(InkImpact impact)
         {
             if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact);
-            _shots.Remove(impact.Id);
-            _blobCounts.Remove(impact.Id);
-            if (_streams == null || !impact.Hit || _pool.Count == 0) return;
+            Flight?.Complete(impact);
+            if (Flight == null || !impact.Hit || _pool.Count == 0) return;
             var effect = _pool.Dequeue(); effect.gameObject.SetActive(true);
             var normal = impact.Normal.sqrMagnitude > .01f ? impact.Normal.normalized : Vector3.up;
             effect.transform.SetPositionAndRotation(impact.Position + normal * .02f, Quaternion.LookRotation(normal));
@@ -69,27 +51,10 @@ namespace Splatoon.Combat
         private void LateUpdate()
         {
             RecycleImpacts();
-            if (_streams == null || PrototypeMatch.Current == null) return;
+            if (Flight == null || PrototypeMatch.Current == null) return;
             double now = PrototypeMatch.Current.NetworkManager.ServerTime.Time;
-            _expired.Clear();
-            for (byte team = 1; team <= 2; team++)
-            {
-                int count = 0;
-                foreach (var pair in _shots)
-                {
-                    var shot = pair.Value; if (shot.Team != team) continue;
-                    var w = shot.Configuration; double age = now - shot.Born;
-                    if (age > w.Lifetime + .05) { _expired.Add(pair.Key); continue; }
-                    int blobs = _blobCounts[pair.Key];
-                    for (int n = 0; n < blobs && count < _particles.Length; n++)
-                    {
-                        double t = System.Math.Max(0, System.Math.Min(w.Lifetime, age - n * .018 / blobs));
-                        _particles[count++] = new ParticleSystem.Particle { position = InkBallistics.Position(shot, w, t), startColor = PrototypeArena.TeamColor(team), startSize = BlobSize, remainingLifetime = 1, startLifetime = 1, randomSeed = shot.Seed + (uint)n, velocity = Vector3.zero };
-                    }
-                }
-                _streams[team - 1].SetParticles(_particles, count);
-            }
-            foreach (uint id in _expired) { _shots.Remove(id); _blobCounts.Remove(id); }
+            if (_camera == null) _camera = Camera.main;
+            Flight.Update(now, _camera);
         }
         private void RecycleImpacts()
         {
@@ -102,12 +67,20 @@ namespace Splatoon.Combat
         }
         public void Clear()
         {
-            _shots.Clear();
-            _blobCounts.Clear(); _emitters.Clear();
-            if (_streams != null) foreach (var stream in _streams) stream.Clear();
+            Flight?.Clear(PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : double.NegativeInfinity);
+            for (int i = _muzzles.Count - 1; i >= 0; i--) if (_muzzles[i] != null) _muzzles[i].Stop(); else _muzzles.RemoveAt(i);
             foreach (var pair in _effects) { pair.effect.Stop(); pair.effect.gameObject.SetActive(false); _pool.Enqueue(pair.effect); }
             _effects.Clear();
         }
-        private void OnDestroy() { if (Current == this) Current = null; }
+        public InkMuzzleEmitter CreateMuzzle(Transform nozzle)
+        {
+            if (Flight == null || FlightProfile == null || FlightProfile.MuzzlePrefab == null || nozzle == null) return null;
+            var ps = Instantiate(FlightProfile.MuzzlePrefab, nozzle);
+            ps.transform.localPosition = Vector3.zero; ps.transform.localRotation = Quaternion.identity;
+            var emitter = ps.gameObject.AddComponent<InkMuzzleEmitter>(); emitter.Initialize(FlightProfile);
+            _muzzles.RemoveAll(MuzzleDestroyed); _muzzles.Add(emitter); return emitter;
+        }
+        static bool MuzzleDestroyed(InkMuzzleEmitter muzzle) => muzzle == null;
+        private void OnDestroy() { Flight?.Dispose(); if (Current == this) Current = null; }
     }
 }

@@ -289,9 +289,9 @@ namespace Splatoon.Prototype
                 if (s.Health <= 0) match.PublishCombatStats();
             }
         }
-        public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision);
-        public void PredictShotFeedback(InkShot shot) => PlayShotFeedback(shot.ActionId, shot.MuzzleIndex, shot.HeroId, shot.Lifecycle, shot.HeroRevision);
-        void PlayShotFeedback(ulong actionId, byte muzzle, int heroId, uint lifecycle, uint heroRevision)
+        public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision, state.LastShotMuzzle == 1 ? state.LeftShotAt : state.RightShotAt);
+        public void PredictShotFeedback(InkShot shot) => PlayShotFeedback(shot.ActionId, shot.MuzzleIndex, shot.HeroId, shot.Lifecycle, shot.HeroRevision, shot.Born);
+        void PlayShotFeedback(ulong actionId, byte muzzle, int heroId, uint lifecycle, uint heroRevision, double born)
         {
             var current = PresentedState;
             if (heroId != current.HeroId || lifecycle != current.Revision || heroRevision != current.HeroRevision || current.Health <= 0 || current.Swimming) return;
@@ -299,7 +299,7 @@ namespace Splatoon.Prototype
             if (!_playedShotActions.Add(key)) return;
             _playedShotOrder.Enqueue(key);
             while (_playedShotOrder.Count > 256) _playedShotActions.Remove(_playedShotOrder.Dequeue());
-            CharacterView?.Shot(muzzle); if (ControlsLocalPlayer && _audio != null) _audio.PlayOneShot(_shotAudio, .13f);
+            CharacterView?.Shot(muzzle, actionId, born); if (ControlsLocalPlayer && _audio != null) _audio.PlayOneShot(_shotAudio, .13f);
         }
         public void ConfirmHit(InkImpact impact)
         {

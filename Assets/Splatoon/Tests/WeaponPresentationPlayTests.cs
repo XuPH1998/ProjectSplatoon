@@ -21,7 +21,7 @@ namespace Splatoon.Tests
 {
     public sealed class WeaponPresentationPlayTests
     {
-        const string Output = "Reports/WeaponPresentationRepair/PlayMode";
+        const string Output = "Reports/InkFlightReference/WeaponPlayMode";
         static IEnumerator Wait(Func<bool> condition, string message, double seconds = 20)
         {
             double end = Time.realtimeSinceStartupAsDouble + seconds;
@@ -51,7 +51,7 @@ namespace Splatoon.Tests
             yield return Wait(() => PrototypePlayer.Local != null && InkPresentation.Current != null, "Host player and ink presentation");
             var player = PrototypePlayer.Local;
             var match = PrototypeMatch.Current;
-            var streams = (ParticleSystem[])typeof(InkPresentation).GetField("_streams", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(InkPresentation.Current);
+            var flightPresentation = InkPresentation.Current.Flight;
             var camera = new GameObject("Weapon repair capture").AddComponent<Camera>();
             camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1; camera.fieldOfView = 35;
             var report = new List<string>();
@@ -66,9 +66,9 @@ namespace Splatoon.Tests
             match.Projectiles.Spawn(player, live, live.SimulatedAt, match.State.Value.Round);
             File.WriteAllText(Output + "/clock.txt", "new shot age at spawn=" + clockAge.ToString("F6") + "s\n");
             Assert.That(clockAge, Is.InRange(-.04, .05), "Simulation and presentation clocks after hitch");
-            yield return Wait(() => streams[live.Team-1].particleCount > 0, "Newly fired ink visible after an editor hitch; initial age=" + clockAge, 2);
+            yield return Wait(() => flightPresentation.ParticleCount > 0, "Newly fired ink visible after an editor hitch; initial age=" + clockAge, 2);
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
-            foreach (int hero in new[] { 1, 2, 3, 4, 5 })
+            foreach (int hero in new[] { 1, 2, 3, 4, 5, 6 })
             {
                 player.RequestHeroChange(hero, HeroSelectionOrigin.Warmup);
                 yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == hero, "Select hero " + hero);
@@ -90,11 +90,21 @@ namespace Splatoon.Tests
                         camera.transform.LookAt(player.transform.position + new Vector3(0, 1.15f, .3f));
                         Capture(camera, "shotgun-aim-" + pitch);
                     }
+                    // Unfocused batch Editors cancel live input. Release once through authority
+                    // before this explicit press, as required after cancellation / hero changes.
+                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                    var released = player.Snapshot.Value;
+                    var neutral = new PlayerInputFrame { Revision = released.Revision, HeroRevision = released.HeroRevision,
+                        FireSequence = released.ConsumedFire, ReleaseSequence = released.ConsumedRelease };
+                    ((SortedDictionary<uint, PlayerInputFrame>)typeof(PrototypePlayer).GetField("_serverInputs", flags).GetValue(player)).Clear();
+                    typeof(PrototypePlayer).GetField("_lastInput", flags).SetValue(player, neutral);
+                    typeof(PrototypePlayer).GetField("_lastReceivedAt", flags).SetValue(player, player.NetworkManager.ServerTime.Time);
+                    player.Simulate(1f / 60, player.NetworkManager.ServerTime.Time, match.State.Value.Phase);
+                    Assert.That(player.Snapshot.Value.AttackNeedsRelease, Is.False);
                     var beforeShot = player.Snapshot.Value;
                     var input = new PlayerInputFrame { Fire = true, FireSequence = beforeShot.ConsumedFire + 1,
                         Revision = beforeShot.Revision, HeroRevision = beforeShot.HeroRevision,
                         Look = new Vector2(0, 15), Move = Vector2.right };
-                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
                     ((SortedDictionary<uint, PlayerInputFrame>)typeof(PrototypePlayer).GetField("_serverInputs", flags).GetValue(player)).Clear();
                     typeof(PrototypePlayer).GetField("_lastInput", flags).SetValue(player, input);
                     typeof(PrototypePlayer).GetField("_lastReceivedAt", flags).SetValue(player, player.NetworkManager.ServerTime.Time);
@@ -121,10 +131,11 @@ namespace Splatoon.Tests
                             HeroId = hero, Team = team, Shooter = ulong.MaxValue, Round = match.State.Value.Round,
                             ActionId = (ulong)(100 + hero), PelletIndex = pellet, Seed = (uint)(100 + pellet), Born = born,
                             Origin = origin, Velocity = (hero == 3 ? InkBallistics.PelletVelocity(Vector3.forward, w, w.SpreadDegrees, pellet, 123) : Vector3.forward * w.SpeedMin) });
-                    var stream = streams[team - 1];
-                    yield return Wait(() => stream.particleCount > 0, "Live flying particles hero=" + hero + " team=" + team, 2);
-                    yield return null;
-                    var particles = new ParticleSystem.Particle[1024]; int count = stream.GetParticles(particles);
+
+                    yield return Wait(() => flightPresentation.ParticleCount > 0, "Live flying particles hero=" + hero + " team=" + team, 2);
+                    var particles = new ParticleSystem.Particle[2048]; int count = flightPresentation.CopyParticles(team, particles);
+                    var stream = flightPresentation.Streams.FirstOrDefault(p => p.particleCount > 0);
+                    Assert.That(stream, Is.Not.Null, "Native particle state must match active flight state hero=" + hero + " team=" + team);
                     Assert.That(count, Is.GreaterThanOrEqualTo(w.PelletCount));
                     Vector3 center = particles.Take(count).Aggregate(Vector3.zero, (sum, p) => sum + p.position) / count;
                     camera.transform.position = center + new Vector3(2, .7f, -2); camera.transform.LookAt(center);

@@ -13,6 +13,7 @@ public class RenderMetaballsScreenSpace : ScriptableRendererFeature
     public Shader CopyDepthShader, BlurShader;
     public Material BlitMaterial;
     public Material WriteDepthMaterial;
+    public bool FlightComposite;
     [Range(1, 15)] public int BlurPasses = 1;
     [Range(0f, 1f)] public float BlurDistance = 0.5f;
 
@@ -24,7 +25,7 @@ public class RenderMetaballsScreenSpace : ScriptableRendererFeature
         _pass = null;
         if (BlitMaterial == null || WriteDepthMaterial == null || CopyDepthShader == null || BlurShader == null) return;
         _pass = new MetaballsRenderGraphPass(PassTag, Event, FilterSettings,
-            BlitMaterial, WriteDepthMaterial, 1, BlurPasses, BlurDistance, CopyDepthShader, BlurShader);
+            BlitMaterial, WriteDepthMaterial, 1, BlurPasses, BlurDistance, CopyDepthShader, BlurShader, FlightComposite);
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -53,6 +54,7 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
     readonly int _downsampling;
     readonly int _blurPasses;
     readonly float _blurDistance;
+    readonly bool _flightComposite;
 
     class PassData
     {
@@ -60,14 +62,14 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
         public TextureHandle ink, inkDepth, blurA, blurB, linearDepth;
         public RendererListHandle inkRenderers, depthRenderers;
         public Material composite, copyDepth, blur;
-        public bool screenSpace;
+        public bool screenSpace, flightComposite;
         public int blurPasses;
         public float blurDistance;
     }
 
     public MetaballsRenderGraphPass(string passTag, RenderPassEvent passEvent,
         RenderObjects.FilterSettings filter, Material composite, Material writeDepth,
-        int downsampling, int blurPasses, float blurDistance, Shader copyDepthShader, Shader blurShader)
+        int downsampling, int blurPasses, float blurDistance, Shader copyDepthShader, Shader blurShader, bool flightComposite = false)
     {
         _passTag = passTag;
         renderPassEvent = passEvent;
@@ -77,6 +79,7 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
         _downsampling = Mathf.Clamp(downsampling, 1, 16);
         _blurPasses = Mathf.Clamp(blurPasses, 1, 15);
         _blurDistance = Mathf.Clamp01(blurDistance);
+        _flightComposite = flightComposite;
         _copyDepth = CoreUtils.CreateEngineMaterial(copyDepthShader);
         _blur = CoreUtils.CreateEngineMaterial(blurShader);
         var tags = filter.PassNames;
@@ -133,7 +136,10 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
         descriptor.name = "_MetaballBlurB";
         var blurB = graph.CreateTexture(descriptor);
         descriptor.name = "_MetaballDepthRT";
+        // Flight's final occlusion needs unquantized eye-depth / far-plane distance.
+        if (_flightComposite) descriptor.colorFormat = GraphicsFormat.R32_SFloat;
         var linearDepth = graph.CreateTexture(descriptor);
+        descriptor.colorFormat = GraphicsFormat.R8G8B8A8_UNorm;
         descriptor.width = Mathf.Max(1, descriptor.width / _downsampling);
         descriptor.height = Mathf.Max(1, descriptor.height / _downsampling);
         descriptor.name = "_MetaballRT";
@@ -154,6 +160,7 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
             data.linearDepth = linearDepth;
             data.inkRenderers = CreateRendererList(graph, frameData, null);
             data.screenSpace = _writeDepth != null;
+            data.flightComposite = _flightComposite;
             if (data.screenSpace)
             {
                 data.depthRenderers = CreateRendererList(graph, frameData, _writeDepth);
@@ -206,6 +213,7 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
         // Existing Shader Graph materials consume _MainTex and the mesh blit vertex layout.
         // Keep that contract inside an unsafe pass, with every resource declared above.
         cmd.SetGlobalTexture("_MetaballDepthRT", linearDepth.nameID);
+        if (data.flightComposite) { RTHandle sceneDepth = data.cameraDepth; cmd.SetGlobalTexture("_FlightSceneDepth", sceneDepth.nameID); }
         cmd.SetGlobalFloat("_BlurDistance", data.blurDistance);
         RTHandle source = ink;
         if (!data.screenSpace)
