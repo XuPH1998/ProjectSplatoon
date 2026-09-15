@@ -32,6 +32,10 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["moveSpeed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _buf["moveSpeed"]; }
         { if(!_buf["swimSpeed"].IsNumber) { throw new SerializationException(); }  SwimSpeed = _buf["swimSpeed"]; }
         { if(!_buf["neutralSwimSpeed"].IsNumber) { throw new SerializationException(); }  NeutralSwimSpeed = _buf["neutralSwimSpeed"]; }
+        { if(!_buf["airSwimSpeed"].IsNumber) { throw new SerializationException(); }  AirSwimSpeed = _buf["airSwimSpeed"]; }
+        { if(!_buf["airSwimGravity"].IsNumber) { throw new SerializationException(); }  AirSwimGravity = _buf["airSwimGravity"]; }
+        { if(!_buf["airSwimFallSpeed"].IsNumber) { throw new SerializationException(); }  AirSwimFallSpeed = _buf["airSwimFallSpeed"]; }
+        { if(!_buf["airSwimBraking"].IsNumber) { throw new SerializationException(); }  AirSwimBraking = _buf["airSwimBraking"]; }
         { if(!_buf["enemyInkMultiplier"].IsNumber) { throw new SerializationException(); }  EnemyInkMultiplier = _buf["enemyInkMultiplier"]; }
         { if(!_buf["jumpSpeed"].IsNumber) { throw new SerializationException(); }  JumpSpeed = _buf["jumpSpeed"]; }
         { if(!_buf["characterGravity"].IsNumber) { throw new SerializationException(); }  CharacterGravity = _buf["characterGravity"]; }
@@ -146,6 +150,22 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 移动恢复：无色地面潜墨速度（米/秒，须小于普通移动速度）
     /// </summary>
     public readonly float NeutralSwimSpeed;
+    /// <summary>
+    /// 空中弦化：水平速度（米/秒，大于0）
+    /// </summary>
+    public readonly float AirSwimSpeed;
+    /// <summary>
+    /// 空中弦化：下降重力（米/秒&#178;，大于0且不超过角色重力，上升阶段保持原重力）
+    /// </summary>
+    public readonly float AirSwimGravity;
+    /// <summary>
+    /// 空中弦化：稳定下落速度（米/秒，大于0）
+    /// </summary>
+    public readonly float AirSwimFallSpeed;
+    /// <summary>
+    /// 空中弦化：高速下落制动（米/秒&#178;，大于0，不产生上升）
+    /// </summary>
+    public readonly float AirSwimBraking;
     /// <summary>
     /// 移动恢复：敌方墨水速度倍率
     /// </summary>
@@ -405,6 +425,10 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "moveSpeed:" + MoveSpeed + ","
         + "swimSpeed:" + SwimSpeed + ","
         + "neutralSwimSpeed:" + NeutralSwimSpeed + ","
+        + "airSwimSpeed:" + AirSwimSpeed + ","
+        + "airSwimGravity:" + AirSwimGravity + ","
+        + "airSwimFallSpeed:" + AirSwimFallSpeed + ","
+        + "airSwimBraking:" + AirSwimBraking + ","
         + "enemyInkMultiplier:" + EnemyInkMultiplier + ","
         + "jumpSpeed:" + JumpSpeed + ","
         + "characterGravity:" + CharacterGravity + ","

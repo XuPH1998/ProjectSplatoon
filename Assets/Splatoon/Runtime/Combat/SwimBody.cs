@@ -115,6 +115,8 @@ namespace Splatoon.Combat
             _color ??= new MaterialPropertyBlock();
             BodyRenderer.GetPropertyBlock(_color);
             _color.SetColor("_BaseColor", PrototypeArena.TeamColor(state.Team));
+            var viewer = PrototypePlayer.Local;
+            _color.SetFloat("_EnemyOutline", viewer != null && EnemyOutlineRules.IsEnemy(state, viewer.PresentedState.Team) ? 1 : 0);
             if (_capture?.Texture != null)
             {
                 var texture = _capture.Texture;

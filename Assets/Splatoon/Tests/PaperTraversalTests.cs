@@ -156,7 +156,9 @@ namespace Splatoon.Tests
                 Rotation=original.Rotation,Size=new Vector2(3.96f,4),Climbable=true };
             wall.WallRegions=new[]{Half(2,-2.02f),Half(3,2.02f)}; wall.InitializeOwnership(.125f); PaintWall(1);
             state.Position.x=-.07f; var before=state; double time=now; motor.Restore(state);
-            Tick(Vector2.right); Tick(Vector2.right);
+            Tick(Vector2.right);
+            Assert.That(state.HasInkRecovery,Is.False,"coplanar seam has no ink contact even while traversal grace remains");
+            Tick(Vector2.right);
             Assert.That(state.Movement,Is.EqualTo(MovementMode.WallInk));
             Assert.That(state.Position.x,Is.GreaterThan(.04f));
             foreach(var r in wall.WallRegions) if(r.Id==3) for(int i=0;i<r.Grid.Cells.Length;i++) r.Grid.Set(i,2);
@@ -230,7 +232,7 @@ namespace Splatoon.Tests
                 CollectionAssert.AreNotEqual(baseline,GameplayContentSignature.Compute(new byte[]{1},"paper-test",player));
             }
             finally { Physics.IgnoreLayerCollision(SwimBody.HitProxyLayer,0,ignored); }
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(16));
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(17));
         }
         [Test] public void WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall()
         {

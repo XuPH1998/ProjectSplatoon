@@ -81,11 +81,23 @@ namespace Splatoon.Combat
         {
             var previous = s;
             StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
+            // Traversal source may survive takeoff or seam grace; recovery requires fresh contact.
+            s.FriendlyInkContact = HasFriendlyInkContact(s);
             var profile = _root.GetComponent<PrototypePlayer>()?.SwimBody?.Profile;
             // The capsule alone decides traversal. Paper geometry follows the
             // completed simulation and never rolls it back at a surface edge.
             PaperPoseSimulation.Resolve(ref s, previous, profile, now);
             PaperAnimation.Step(ref s, previous, dt, profile);
+        }
+
+        bool HasFriendlyInkContact(PlayerSnapshot s)
+        {
+            if (s.Health <= 0 || !s.Swimming || s.Team == 0 || s.Team == 255) return false;
+            if (s.Movement == MovementMode.GroundInk && s.Grounded)
+                return PrototypeArena.TryGetGround(s.Position, out byte owner, _controller.slopeLimit) && owner == s.Team;
+            if (s.Movement != MovementMode.WallInk) return false;
+            return Query(s.Position + Vector3.up * .35f, -s.WallNormal, _controller.radius + .065f, out var contact) &&
+                contact.Owner == s.Team && contact.Climbable && Vector3.Dot(contact.Normal, s.WallNormal) > .99f;
         }
 
         void StepMovement(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed, bool shootingMovement)
@@ -181,14 +193,15 @@ namespace Splatoon.Combat
                 s.CompactBody = false;
                 SetShape(true); return;
             }
-            float speed = useInk ? (s.SwimSource == SwimSurface.Neutral ? c.NeutralSwimSpeed : c.SwimSpeed)
+            bool airSwim = useInk && (!grounded || jump);
+            float speed = airSwim ? c.AirSwimSpeed : useInk ? (s.SwimSource == SwimSurface.Neutral ? c.NeutralSwimSpeed : c.SwimSpeed)
                 : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : c.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;
             if (jump && grounded) s.VerticalSpeed = c.JumpSpeed;
-            s.VerticalSpeed -= c.CharacterGravity * dt;
+            s.VerticalSpeed = AirSwimSimulation.VerticalSpeed(s.VerticalSpeed, airSwim, c, dt);
             var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;

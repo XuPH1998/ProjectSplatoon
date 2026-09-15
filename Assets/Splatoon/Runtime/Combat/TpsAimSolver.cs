@@ -35,7 +35,7 @@ namespace Splatoon.Combat
             Vector3 pivot = state.Position + PrototypePlayer.CameraPivotOffset(state, player.Presentation);
             Vector3 camera = PrototypePlayer.CameraPosition(pivot, rotation, player.Presentation);
             Vector3 forward = rotation * Vector3.forward;
-            bool hit = ClosestCast(camera, forward, ProbeDistance, 0, player.OwnerClientId, out var aimHit);
+            bool hit = ClosestCast(camera, forward, ProbeDistance, 0, player.PlayerId, out var aimHit);
             Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch, muzzleIndex);
             var result = Geometry(camera, forward, muzzle, GameplayConfig.Global.AimCorrectionDistance,
                 GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
@@ -43,9 +43,9 @@ namespace Splatoon.Combat
             result.AimHit = aimHit;
             float radius = GameplayConfig.GetHero(state.HeroId).CollisionRadius;
             // Detect an embedded pivot too: casts do not report an origin inside a collider.
-            result.MuzzleBlocked = Overlap(pivot, radius, player.OwnerClientId, -forward, out result.MuzzleHit)
-                || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.OwnerClientId, out result.MuzzleHit)
-                || Overlap(muzzle, radius, player.OwnerClientId, -result.InitialDirection, out result.MuzzleHit);
+            result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit)
+                || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.PlayerId, out result.MuzzleHit)
+                || Overlap(muzzle, radius, player.PlayerId, -result.InitialDirection, out result.MuzzleHit);
             return result;
         }
 
@@ -160,7 +160,7 @@ namespace Splatoon.Combat
             }
             var player = collider.GetComponentInParent<PrototypePlayer>();
             if (player != null && collider is CharacterController && player.SwimBody != null && player.SwimBody.UsesHitProxy) return false;
-            return player == null || (player.OwnerClientId != shooter && player.Snapshot.Value.Health > 0);
+            return player == null || (player.PlayerId != shooter && player.Snapshot.Value.Health > 0);
         }
     }
 }

@@ -74,16 +74,17 @@ namespace Splatoon.Tests
             Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(5 * GameplayConfig.DefaultHero.EnemyInkMultiplier).Within(.002));
         }
         [TestCase(0)] [TestCase(1)]
-        public void JumpKeepsSourceAndSpeedUntilLanding(byte source)
+        public void JumpKeepsSourceButUsesGlideSpeedUntilLanding(byte source)
         {
             Paint(source); Run(60); input.JumpSequence = 1; Tick();
             Assert.That(state.Grounded, Is.False); Assert.That(state.Swimming, Is.True); Assert.That(state.Movement, Is.EqualTo(MovementMode.Air));
             var origin = state.SwimSource; Paint(source == 0 ? (byte)1 : (byte)0);
+            Run(4); // Air acceleration transitions either takeoff speed to the configured glide speed.
             for (int i = 0; i < 12; i++)
             {
                 Tick(); Assert.That(state.SwimSource, Is.EqualTo(origin)); Assert.That(state.Swimming, Is.True);
                 Assert.That(state.ShowsSwimBody, Is.True); Assert.That(state.HasInkRecovery, Is.False);
-                Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(source == 0 ? 3 : 8).Within(.002));
+                Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(GameplayConfig.DefaultHero.AirSwimSpeed).Within(.002));
             }
             for (int i = 0; i < 120 && !state.Grounded; i++) Tick();
             Assert.That(state.Grounded, Is.True); Assert.That(state.SwimSource, Is.Not.EqualTo(origin));
@@ -116,11 +117,13 @@ namespace Splatoon.Tests
             for(int cycle=0;cycle<3;cycle++) foreach(bool swim in new[]{false,true})
             {
                 input.Swim=swim; var before=state; Tick();
-                float target=swim ? source==SwimSurface.Friendly ? 8 : 3 : 5;
+                float target=swim ? GameplayConfig.DefaultHero.AirSwimSpeed : 5;
                 float acceleration=swim ? GameplayConfig.DefaultHero.SwimAcceleration : GameplayConfig.DefaultHero.MoveAcceleration;
                 var expected=Vector3.MoveTowards(before.PlanarVelocity,Vector3.forward*target,acceleration*Dt);
                 Assert.That(Vector3.Distance(state.PlanarVelocity,expected),Is.LessThan(.0001f));
-                Assert.That(state.VerticalSpeed,Is.EqualTo(before.VerticalSpeed-GameplayConfig.DefaultHero.CharacterGravity*Dt).Within(.0001f));
+                if (!swim || before.VerticalSpeed > 0)
+                    Assert.That(state.VerticalSpeed,Is.EqualTo(before.VerticalSpeed-GameplayConfig.DefaultHero.CharacterGravity*Dt).Within(.0001f));
+                else Assert.That(state.VerticalSpeed,Is.LessThanOrEqualTo(0),"glide cannot add a jump");
                 Assert.That(state.Position.y,Is.EqualTo(before.Position.y+state.VerticalSpeed*Dt).Within(.002f));
                 Assert.That(state.Swimming,Is.EqualTo(swim)); Assert.That(state.AirSwimSource,Is.EqualTo(source));
                 Assert.That(state.HasInkRecovery,Is.False);
@@ -180,7 +183,7 @@ namespace Splatoon.Tests
             input.Move = Vector2.up; Run(8); input.JumpSequence++; Tick(); Assert.That(InkCharacterView.ShouldEmitSwimEffect(state), Is.False);
             state.SwimSource = SwimSurface.Neutral; state.Grounded = true; Assert.That(InkCharacterView.ShouldEmitSwimEffect(state), Is.False);
             state.SwimSource = SwimSurface.Friendly; state.Grounded = false; state.Movement = MovementMode.WallInk;
-            state.WallNormal = Vector3.right; state.Velocity = Vector3.up; Assert.That(InkCharacterView.ShouldEmitSwimEffect(state), Is.True);
+            state.FriendlyInkContact = true; state.WallNormal = Vector3.right; state.Velocity = Vector3.up; Assert.That(InkCharacterView.ShouldEmitSwimEffect(state), Is.True);
         }
         [TestCase(0)] [TestCase(5)] [TestCase(-1)]
         public void InvalidNeutralSpeedRejected(float value)

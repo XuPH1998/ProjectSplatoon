@@ -18,12 +18,12 @@ namespace Splatoon.Prototype
         public readonly InkProjectileService Projectiles = new();
         public readonly MatchCombatStats CombatStats = new();
         public bool CanStartRound => PrototypeRules.CanStart(
-            Players.Count(p => p != null && p.IsSpawned && p.Snapshot.Value.Team == 1),
-            Players.Count(p => p != null && p.IsSpawned && p.Snapshot.Value.Team == 2), State.Value.Phase, GameplayConfig.Mode.MinPlayers);
+            Players.Count(p => p != null && p.IsSpawned && !p.IsTestBot && p.Snapshot.Value.Team == 1),
+            Players.Count(p => p != null && p.IsSpawned && !p.IsTestBot && p.Snapshot.Value.Team == 2), State.Value.Phase, GameplayConfig.Mode.MinPlayers);
         public void PublishCombatStats()
         {
             if (!IsServer) return;
-            foreach (var player in Players) if (player != null && player.IsSpawned) player.Stats.Value = CombatStats.Get(player.OwnerClientId);
+            foreach (var player in Players) if (player != null && player.IsSpawned) player.Stats.Value = CombatStats.Get(player.PlayerId);
         }
         public uint PaintSequence { get; private set; }
         public uint AppliedPaintSequence => IsServer ? PaintSequence : _appliedSequence;
@@ -62,8 +62,15 @@ namespace Splatoon.Prototype
         }
         public void AddPlayer(ulong clientId, GameObject prefab)
         {
-            if (!IsServer || Players.Exists(p => p.OwnerClientId == clientId)) return;
+            if (!IsServer) return;
             Players.RemoveAll(p => p == null || !p.IsSpawned);
+            if (Players.Exists(p => !p.IsTestBot && p.OwnerClientId == clientId)) return;
+            // A connected human must never be left without a player because a test target occupies the final slot.
+            if (Players.Count >= GameplayConfig.Mode.MaxPlayers)
+            {
+                var bot = Players.FirstOrDefault(p => p.IsTestBot);
+                if (bot != null) RemoveTestBot(bot);
+            }
             if (Players.Count >= GameplayConfig.Mode.MaxPlayers) return;
             int pink = Players.FindAll(p => p.Snapshot.Value.Team == 1).Count;
             byte team = PrototypeRules.ChooseTeam(pink, Players.Count - pink);
@@ -73,10 +80,11 @@ namespace Splatoon.Prototype
             go.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true); Players.Add(p);
             Debug.Log($"[LAN] Player joined id={clientId} team={team} slot={slot}");
         }
-        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || p.OwnerClientId == id); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
+        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
         public void StartRound()
         {
             if (!IsServer || !CanStartRound) return;
+            ClearTestBots();
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing;
             s.StartsAt = NetworkManager.ServerTime.Time; s.EndsAt = s.StartsAt + GameplayConfig.Mode.MatchSeconds;
             s.PinkArea = s.BlueArea = 0; State.Value = s;

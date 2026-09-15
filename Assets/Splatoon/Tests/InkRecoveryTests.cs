@@ -38,6 +38,7 @@ namespace Splatoon.Tests
             s.Swimming = swim && !WeaponSimulation.WantsFire(s, input, w, tick / 60.0);
             s.SwimSource = s.Swimming ? source : SwimSurface.None;
             s.Grounded = grounded;
+            s.FriendlyInkContact = s.Swimming && grounded && source == SwimSurface.Friendly;
             s.Movement = !grounded ? MovementMode.Air : s.Swimming ? MovementMode.GroundInk : MovementMode.Human;
             WeaponSimulation.Step(ref s, input, w, tick / 60.0, wasSwimming, !s.Swimming && clearance);
             ResourceSimulation.Step(ref s, w, false, false, Dt, tick / 60.0);

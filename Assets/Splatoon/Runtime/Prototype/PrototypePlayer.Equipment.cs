@@ -14,14 +14,14 @@ namespace Splatoon.Prototype
         public string HeroChangeMessage { get; private set; } = "";
         public void RequestHeroChange(int heroId, HeroSelectionOrigin origin)
         {
-            if (!IsOwner || !IsSpawned || HeroChangePending || TeamChangePending || PrototypeMatch.Current == null) return;
+            if (!ControlsLocalPlayer || !IsSpawned || HeroChangePending || TeamChangePending || PrototypeMatch.Current == null) return;
             HeroChangePending = true; _heroReplyReceived = false; HeroChangeMessage = "切换中…";
             ChangeHeroRpc(heroId, origin, ++_heroRequestId, PrototypeMatch.Current.State.Value.Round, Snapshot.Value.Revision);
         }
         [Rpc(SendTo.Server)]
         void ChangeHeroRpc(int heroId, HeroSelectionOrigin origin, uint request, uint round, uint life, RpcParams rpc = default)
         {
-            if (rpc.Receive.SenderClientId != OwnerClientId || request <= _lastHeroRequest) return;
+            if (IsTestBot || rpc.Receive.SenderClientId != OwnerClientId || request <= _lastHeroRequest) return;
             _lastHeroRequest = request;
             if (_heroRequest.HasValue || _teamRequest.HasValue)
             { HeroChangeReplyRpc(request, Snapshot.Value.HeroRevision, "正在处理切换请求"); return; }

@@ -12,6 +12,10 @@
     <var name="moveSpeed" type="float" comment="移动恢复：移动速度（米/秒）" />
     <var name="swimSpeed" type="float" comment="移动恢复：潜墨速度（米/秒）" />
     <var name="neutralSwimSpeed" type="float" comment="移动恢复：无色地面潜墨速度（米/秒，须小于普通移动速度）" />
+    <var name="airSwimSpeed" type="float" comment="空中弦化：水平速度（米/秒，大于0）" />
+    <var name="airSwimGravity" type="float" comment="空中弦化：下降重力（米/秒²，大于0且不超过角色重力，上升阶段保持原重力）" />
+    <var name="airSwimFallSpeed" type="float" comment="空中弦化：稳定下落速度（米/秒，大于0）" />
+    <var name="airSwimBraking" type="float" comment="空中弦化：高速下落制动（米/秒²，大于0，不产生上升）" />
     <var name="enemyInkMultiplier" type="float" comment="移动恢复：敌方墨水速度倍率" />
     <var name="jumpSpeed" type="float" comment="移动恢复：起跳速度（米/秒）" />
     <var name="characterGravity" type="float" comment="移动恢复：角色重力（米/秒²）" />

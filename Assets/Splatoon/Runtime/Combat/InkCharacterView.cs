@@ -20,6 +20,13 @@ namespace Splatoon.Combat
         private ParticleSystem _muzzleEffect;
         private ParticleSystem _leftMuzzleEffect;
         private MaterialPropertyBlock _block;
+        public readonly struct OutlineDraw
+        {
+            public readonly Renderer Renderer;
+            public readonly int Submeshes;
+            public OutlineDraw(Renderer renderer, int submeshes) { Renderer = renderer; Submeshes = submeshes; }
+        }
+        public readonly System.Collections.Generic.List<OutlineDraw> OutlineDraws = new();
         private Renderer[] _renderers;
         private bool[] _rendererEnabled;
         private bool _presented, _alive, _supportGrip = true;
@@ -57,7 +64,14 @@ namespace Splatoon.Combat
             if (_renderers != null) return;
             _block = new MaterialPropertyBlock(); _renderers = GetComponentsInChildren<Renderer>(true);
             _rendererEnabled = new bool[_renderers.Length];
-            for (int i = 0; i < _renderers.Length; i++) _rendererEnabled[i] = _renderers[i].enabled;
+            OutlineDraws.Clear();
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                var renderer = _renderers[i]; _rendererEnabled[i] = renderer.enabled;
+                if (!renderer.enabled || renderer == TeamMarker || renderer is ParticleSystemRenderer) continue;
+                var mesh = renderer is SkinnedMeshRenderer skin ? skin.sharedMesh : renderer.GetComponent<MeshFilter>()?.sharedMesh;
+                if (mesh != null) OutlineDraws.Add(new OutlineDraw(renderer, mesh.subMeshCount));
+            }
             if (SwimEffect != null)
             {
                 ConfigureSwimEffect(SwimEffect);

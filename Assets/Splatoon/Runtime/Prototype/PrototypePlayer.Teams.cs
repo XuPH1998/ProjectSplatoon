@@ -18,7 +18,7 @@ namespace Splatoon.Prototype
             get
             {
                 var match = PrototypeMatch.Current;
-                if (!IsOwner || !IsSpawned || match == null || !match.InitialSyncComplete) return "正在同步房间";
+                if (!ControlsLocalPlayer || !IsSpawned || match == null || !match.InitialSyncComplete) return "正在同步房间";
                 if (TeamChangePending || HeroChangePending) return "正在处理切换请求";
                 var s = Snapshot.Value;
                 return TeamSelectionRules.Validate(s, (byte)(3 - s.Team), match.State.Value.Round,
@@ -37,7 +37,7 @@ namespace Splatoon.Prototype
         [Rpc(SendTo.Server)]
         void ChangeTeamRpc(byte target, uint request, uint round, uint life, RpcParams rpc = default)
         {
-            if (rpc.Receive.SenderClientId != OwnerClientId || request <= _lastTeamRequest) return;
+            if (IsTestBot || rpc.Receive.SenderClientId != OwnerClientId || request <= _lastTeamRequest) return;
             _lastTeamRequest = request;
             if (_teamRequest.HasValue || _heroRequest.HasValue)
             { TeamChangeReplyRpc(request, Snapshot.Value.Revision, "正在处理切换请求"); return; }

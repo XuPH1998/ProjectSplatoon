@@ -277,7 +277,7 @@ namespace Splatoon.Prototype
             GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
             Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.Swimming ? "潜墨中 / 快速回墨" : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
+            GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(equipped) ? (Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
             GUI.Label(new Rect(820,625,440,82),(Splatoon.Combat.WeaponSimulation.IsSemi(equipped) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(equipped) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n回车开始（房主）",_small);
             if (_captured && player.Health>0)
             {
@@ -299,17 +299,17 @@ namespace Splatoon.Prototype
                 if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),"H 选择英雄 · 双方各有人后，房主按回车开始。",_small);
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58),"H 选择英雄 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
             if(player.Health<=0) GUI.Label(new Rect(475,275,460,64),$"已被击倒！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
                 bool practice = state.Phase == MatchPhase.Practice;
-                float top = practice ? 158 : 222;
-                Panel(new Rect(430,top,420,practice ? 360 : 295),new Color(.055f,.075f,.1f,.97f));
+                float top = practice ? (Manager.IsHost ? 104 : 158) : 222;
+                Panel(new Rect(430,top,420,practice ? (Manager.IsHost ? 416 : 360) : 295),new Color(.055f,.075f,.1f,.97f));
                 string winner=PrototypeRules.Winner(state.PinkArea,state.BlueArea) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};
                 GUI.Label(new Rect(463,top+20,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
                 if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,top+70,350,44),"继续游戏",_button)) CaptureMouse(true);
-                float extra = practice ? 56 : 0;
+                float extra = practice ? (Manager.IsHost ? 112 : 56) : 0;
                 if (practice)
                 {
                     byte target = (byte)(3 - local.Snapshot.Value.Team);
@@ -318,7 +318,14 @@ namespace Splatoon.Prototype
                     GUI.enabled = !Busy && reason == null;
                     string label = local.TeamChangePending ? "更换中…" : $"更换队伍 · {(target == 1 ? "粉队" : "蓝队")} {count}/{TeamSelectionRules.Capacity}";
                     if (GUI.Button(new Rect(465,top+126,350,44),label,_button)) local.RequestTeamChange();
-                    GUI.Label(new Rect(463,top+304,360,50),reason ?? local.TeamChangeMessage,_small);
+                    if (Manager.IsHost)
+                    {
+                        GUI.enabled = !Busy && match.CanAddTestBot;
+                        if (GUI.Button(new Rect(465,top+182,172,44),"添加敌方 BOT",_button)) match.AddTestBot(_playerPrefab.Result);
+                        GUI.enabled = !Busy && match.TestBotCount > 0;
+                        if (GUI.Button(new Rect(643,top+182,172,44),"清除 BOT",_button)) match.ClearTestBots();
+                    }
+                    GUI.Label(new Rect(463,top+248+extra,360,50),reason ?? (!string.IsNullOrEmpty(local.TeamChangeMessage) ? local.TeamChangeMessage : match.TestBotMessage),_small);
                 }
                 bool finished = state.Phase == MatchPhase.Finished;
                 GUI.enabled = !Busy && Manager.IsServer && (finished || match.CanStartRound);

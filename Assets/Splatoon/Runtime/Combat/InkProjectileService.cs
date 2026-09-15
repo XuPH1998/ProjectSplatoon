@@ -155,13 +155,13 @@ namespace Splatoon.Combat
         {
             var w = GameplayConfig.GetHero(state.HeroId);
             var aim = _aim.Resolve(player, state, state.LastShotMuzzle);
-            uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.OwnerClientId ^ state.HeroRevision);
+            uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.PlayerId ^ state.HeroRevision);
             if (groupSeed == 0) groupSeed = 1;
             for (byte pellet = 0; pellet < w.PelletCount; pellet++)
             {
-            uint seed = unchecked(++_id * 747796405u + round * 2891336453u + (uint)player.OwnerClientId + 1u);
+            uint seed = unchecked(++_id * 747796405u + round * 2891336453u + (uint)player.PlayerId + 1u);
             if (seed == 0) seed = 1;
-            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.OwnerClientId, HeroId = w.Id, Team = state.Team, Born = born, Origin = aim.MuzzleBlocked ? aim.Pivot : aim.Muzzle };
+            var shot = new InkShot { Id = _id, Round = round, Seed = seed, ShotSequence = state.ShotSequence, Shooter = player.PlayerId, HeroId = w.Id, Team = state.Team, Born = born, Origin = aim.MuzzleBlocked ? aim.Pivot : aim.Muzzle };
             shot.ActionId = state.ShotActionId;
             shot.Lifecycle = state.Revision; shot.HeroRevision = state.HeroRevision;
             shot.MuzzleIndex = state.LastShotMuzzle; shot.PelletIndex = pellet;
@@ -289,7 +289,7 @@ namespace Splatoon.Combat
             }
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
-                Shooter = shot.Shooter, Victim = victim != null ? victim.OwnerClientId : 0, Damage = actualDamage, Killed = killed });
+                Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });
         }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();
         public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); _shapes.Clear(); }

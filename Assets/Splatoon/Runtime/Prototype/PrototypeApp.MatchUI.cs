@@ -69,7 +69,7 @@ namespace Splatoon.Prototype
             GUI.color = color; GUI.Label(new Rect(x + 12, 191, 280, 40), team == 1 ? "粉队" : "蓝队", _scoreHeading); GUI.color = Color.white;
             for (int i = 0; i < 3; i++) GUI.Label(new Rect(x + 320 + i * 56, 191, 56, 40), new[] { "K", "D", "A" }[i], _scoreNumber);
             var players = PrototypePlayer.ByOwner.Values.Where(p => p != null && p.IsSpawned && p.Snapshot.Value.Team == team)
-                .OrderBy(p => p.Snapshot.Value.Slot).ThenBy(p => p.OwnerClientId);
+                .OrderBy(p => p.Snapshot.Value.Slot).ThenBy(p => p.PlayerId);
             int row = 0;
             foreach (var player in players)
             {
@@ -78,7 +78,7 @@ namespace Splatoon.Prototype
                 bool local = player == PrototypePlayer.Local;
                 Panel(new Rect(x, y, 500, 60), local ? new Color(color.r, color.g, color.b, .18f) : new Color(1, 1, 1, .04f));
                 if (local) Panel(new Rect(x, y, 4, 60), color);
-                GUI.Label(new Rect(x + 14, y + 2, 300, 30), $"玩家 {player.OwnerClientId + 1}" + (local ? "  ·  你" : ""), _label);
+                GUI.Label(new Rect(x + 14, y + 2, 300, 30), (player.IsTestBot ? $"测试 BOT {player.Snapshot.Value.Slot + 1}" : $"玩家 {player.OwnerClientId + 1}") + (local ? "  ·  你" : ""), _label);
                 GUI.Label(new Rect(x + 14, y + 33, 300, 25), GameplayConfig.GetHero(player.Snapshot.Value.HeroId).DisplayName, _small);
                 var stats = player.Stats.Value;
                 if (stats.Round != PrototypeMatch.Current.State.Value.Round) stats = default;

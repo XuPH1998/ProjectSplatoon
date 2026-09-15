@@ -5,6 +5,7 @@ Shader "Splatoon/PaperBody"
         _BaseMap("Character", 2D) = "white" {}
         _BaseColor("Team accent", Color) = (1,1,1,1)
         _Cutoff("Alpha cutoff", Range(0,1)) = .5
+        _EnemyOutline("Enemy outline", Float) = 0
     }
     SubShader
     {
@@ -15,7 +16,7 @@ Shader "Splatoon/PaperBody"
         TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
         CBUFFER_START(UnityPerMaterial)
         float4 _BaseMap_ST, _BaseColor, _BaseMap_TexelSize;
-        float _Cutoff;
+        float _Cutoff, _EnemyOutline;
         CBUFFER_END
         struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
         struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; };
@@ -39,7 +40,8 @@ Shader "Splatoon/PaperBody"
                     SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv-float2(t.x,0)).a),
                     min(SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv+float2(0,t.y)).a,
                     SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv-float2(0,t.y)).a));
-                c.rgb = lerp(c.rgb, _BaseColor.rgb, (1-edge) * (.65 + .08*sin(_Time.y*3)));
+                half3 edgeColor = lerp(_BaseColor.rgb, half3(1,.035,.025), _EnemyOutline);
+                c.rgb = lerp(c.rgb, edgeColor, (1-edge) * lerp(.65 + .08*sin(_Time.y*3), 1, _EnemyOutline));
                 return half4(c.rgb, 1);
             }
             ENDHLSL
