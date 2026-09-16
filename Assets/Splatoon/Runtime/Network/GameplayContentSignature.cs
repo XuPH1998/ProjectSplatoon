@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 8;
-        public const int WeaponSimulationVersion = 3; // Typed modes and second-based weapon/charge configuration.
+        public const int WeaponSimulationVersion = 4; // Per-weapon ammo snapshots and explosion rules.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);

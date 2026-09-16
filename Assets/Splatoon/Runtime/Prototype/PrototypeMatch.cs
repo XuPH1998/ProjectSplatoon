@@ -146,6 +146,7 @@ namespace Splatoon.Prototype
             var s = State.Value;
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(new NetworkBatch<InkShot>(Projectiles.Spawned)); Projectiles.Spawned.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(new NetworkBatch<InkImpact>(Projectiles.Impacts)); Projectiles.Impacts.Clear(); }
+            if (Projectiles.Explosions.Count > 0) { ExplosionsClientRpc(new NetworkBatch<InkExplosionEvent>(Projectiles.Explosions)); Projectiles.Explosions.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(new NetworkBatch<PaintStamp>(_pending)); _pending.Clear(); }
             s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.PinkArea = Arena.PinkArea; s.BlueArea = Arena.BlueArea; State.Value = s;
         }
@@ -153,6 +154,8 @@ namespace Splatoon.Prototype
         { try { if (State.Value.Phase != MatchPhase.Finished) for (int i = 0; i < shots.Count; i++) { var shot = shots[i]; if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); } } finally { shots.Dispose(); } }
         [ClientRpc] private void ImpactsClientRpc(NetworkBatch<InkImpact> impacts)
         { try { for (int i = 0; i < impacts.Count; i++) { var impact = impacts[i]; if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); } } finally { impacts.Dispose(); } }
+        [ClientRpc] private void ExplosionsClientRpc(NetworkBatch<InkExplosionEvent> explosions)
+        { try { for (int i = 0; i < explosions.Count; i++) { var explosion = explosions[i]; if (explosion.Round == _paintRound) InkPresentation.Current?.Explosion(explosion); } } finally { explosions.Dispose(); } }
         [ClientRpc] private void ClearShotsClientRpc(uint round) { if (round == _paintRound) InkPresentation.Current?.Clear(); }
         [ClientRpc] private void PaintClientRpc(NetworkBatch<PaintStamp> stamps, ClientRpcParams targets = default)
         {

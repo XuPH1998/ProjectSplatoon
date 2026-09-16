@@ -24,7 +24,7 @@ namespace Splatoon.Networking
     internal static class NetworkBatchTraffic<T>
     {
         public static readonly NetworkTrafficKind Kind = typeof(T) == typeof(PlayerInputFrame) ? NetworkTrafficKind.Input :
-            typeof(T) == typeof(InkShot) ? NetworkTrafficKind.Shots : typeof(T) == typeof(InkImpact) ? NetworkTrafficKind.Impacts :
+            typeof(T) == typeof(InkShot) ? NetworkTrafficKind.Shots : typeof(T) == typeof(InkImpact) || typeof(T) == typeof(InkExplosionEvent) ? NetworkTrafficKind.Impacts :
             typeof(T) == typeof(PaintStamp) ? NetworkTrafficKind.LivePaint : throw new InvalidOperationException("Unclassified network batch.");
     }
 }

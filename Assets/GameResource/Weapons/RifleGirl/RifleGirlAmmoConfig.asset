@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4fb864519a46f7af76d3fb3f1f3769, type: 3}
+  m_Name: RifleGirlAmmoConfig
+  m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
+  ammoId: 1
+  flightProfile: {fileID: 11400000, guid: f81e98f2b708491381dfbf8272c2d7a9, type: 2}
+  flightPrefab: {fileID: 949289641, guid: a3c6bd43d07743089a19e7f52d4666ed, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: 97c471cf026647bb9187e530a6080f51, type: 3}
+  explosionEnabled: 0
+  explosionPrefab: {fileID: 0}
+  explosionRadius: 0
+  explosionDamage: 0
+  explosionPaint: 0
+  explosionPaintRadiusMin: 0
+  explosionPaintRadiusMax: 0

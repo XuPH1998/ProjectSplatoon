@@ -7,6 +7,8 @@ namespace Splatoon.Config
     {
         [Header("模型")]
         [InspectorName("正式武器地址"), Tooltip("模型：正式武器地址")] public string weaponPrefabAddress = "";
+        [Header("弹药")]
+        [InspectorName("弹药配置"), Tooltip("该武器独立的弹药、飞行墨水和爆炸配置")] public AmmoConfigAsset ammoConfig;
         [Header("发射")]
         [InspectorName("发射模式"), Tooltip("发射模式")] public WeaponFireMode fireMode;
         [InspectorName("权威射速（发/秒）"), Tooltip("发射：权威射速（发/秒）")] public float fireRate;

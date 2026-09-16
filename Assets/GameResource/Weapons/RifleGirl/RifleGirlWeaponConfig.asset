@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: RifleGirlWeaponConfig
   m_EditorClassIdentifier: 
+  ammoConfig: {fileID: 11400000, guid: b53feddf01ac46c29b615ccd8b3cf3c9, type: 2}
   weaponPrefabAddress: "Weapon/RifleGirlRifle"
   fireMode: 0
   fireRate: 15

@@ -16,3 +16,4 @@ namespace Splatoon.Combat
         public const int Layer = 11;
     }
 }
+

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50f83b983ff642f8962c3ebc46ec8ad4, type: 3}
+  m_Name: ShotgunGirlInkFlightProfile
+  m_EditorClassIdentifier: Splatoon::Splatoon.Combat.InkFlightProfile
+  FlightPrefab: {fileID: 949289641, guid: 7ed237d6026f4ca0ac049af070544cf8, type: 3}
+  MuzzlePrefab: {fileID: 276323219, guid: 494a0ec8689349b4be7fa147f89f9781, type: 3}
+  BurstInterval: 0.02
+  ParticlesPerBurst: 2
+  VisualLifetime: 10
+  MuzzleInterval: 0.06
+  MuzzleBurstCount: 50
+  MaxRibbonGap: 1.5
+  SatelliteSpread: 0.1

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: RocketLauncherGirlWeaponConfig
   m_EditorClassIdentifier: 
+  ammoConfig: {fileID: 11400000, guid: 271e419cb2f040619ef6abceca79d96b, type: 2}
   weaponPrefabAddress: "Weapon/RocketLauncher"
   fireMode: 2
   fireRate: 2

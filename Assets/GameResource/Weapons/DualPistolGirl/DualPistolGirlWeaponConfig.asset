@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: DualPistolGirlWeaponConfig
   m_EditorClassIdentifier: 
+  ammoConfig: {fileID: 11400000, guid: c37f636a6a084521ae1bbea51f8db649, type: 2}
   weaponPrefabAddress: "Weapon/DualPistols"
   fireMode: 3
   fireRate: 10

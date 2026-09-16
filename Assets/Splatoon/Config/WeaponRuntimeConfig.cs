@@ -70,8 +70,10 @@ namespace Splatoon.Config
         public readonly float SpreadRecoverSeconds;
         public readonly float BaseSpreadDegrees;
         public readonly float BaseJumpSpreadDegrees;
+        public readonly AmmoRuntimeConfig Ammo;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            Ammo = new AmmoRuntimeConfig(source != null ? source.ammoConfig : null);
             WeaponPrefabAddress = source.weaponPrefabAddress;
             FireMode = source.fireMode;
             FireRate = source.fireRate;
@@ -203,6 +205,7 @@ namespace Splatoon.Config
             writer.Write(SpreadRecoverSeconds);
             writer.Write(BaseSpreadDegrees);
             writer.Write(BaseJumpSpreadDegrees);
+            Ammo?.Write(writer);
         }
         public bool SameValues(WeaponRuntimeConfig other)
         {
@@ -213,6 +216,6 @@ namespace Splatoon.Config
             return a.ToArray().AsSpan().SequenceEqual(b.ToArray());
         }
         public bool RequiresRestart(WeaponRuntimeConfig other) => other == null ||
-            WeaponPrefabAddress != other.WeaponPrefabAddress || FireMode != other.FireMode || FireRate != other.FireRate || ShotInk != other.ShotInk || StartSeconds != other.StartSeconds || EmergeStartSeconds != other.EmergeStartSeconds || InkRecoverLockSeconds != other.InkRecoverLockSeconds || BurstCount != other.BurstCount || BurstRecoverySeconds != other.BurstRecoverySeconds || ChargeSeconds != other.ChargeSeconds || ChargeMinInk != other.ChargeMinInk || PelletCount != other.PelletCount || MuzzleMode != other.MuzzleMode || SemiBufferSeconds != other.SemiBufferSeconds || SplatlingMinChargeSeconds != other.SplatlingMinChargeSeconds || SplatlingFirstChargeSeconds != other.SplatlingFirstChargeSeconds || SplatlingFirstShootSeconds != other.SplatlingFirstShootSeconds || SplatlingFullShootSeconds != other.SplatlingFullShootSeconds || SplatlingSlowChargeMultiplier != other.SplatlingSlowChargeMultiplier || SplatlingPostSeconds != other.SplatlingPostSeconds;
+            WeaponPrefabAddress != other.WeaponPrefabAddress || FireMode != other.FireMode || FireRate != other.FireRate || ShotInk != other.ShotInk || StartSeconds != other.StartSeconds || EmergeStartSeconds != other.EmergeStartSeconds || InkRecoverLockSeconds != other.InkRecoverLockSeconds || BurstCount != other.BurstCount || BurstRecoverySeconds != other.BurstRecoverySeconds || ChargeSeconds != other.ChargeSeconds || ChargeMinInk != other.ChargeMinInk || PelletCount != other.PelletCount || MuzzleMode != other.MuzzleMode || SemiBufferSeconds != other.SemiBufferSeconds || SplatlingMinChargeSeconds != other.SplatlingMinChargeSeconds || SplatlingFirstChargeSeconds != other.SplatlingFirstChargeSeconds || SplatlingFirstShootSeconds != other.SplatlingFirstShootSeconds || SplatlingFullShootSeconds != other.SplatlingFullShootSeconds || SplatlingSlowChargeMultiplier != other.SplatlingSlowChargeMultiplier || SplatlingPostSeconds != other.SplatlingPostSeconds || Ammo?.AmmoId != other.Ammo?.AmmoId || Ammo?.ExplosionEnabled != other.Ammo?.ExplosionEnabled || Ammo?.ExplosionRadius != other.Ammo?.ExplosionRadius || Ammo?.ExplosionDamage != other.Ammo?.ExplosionDamage || Ammo?.ExplosionPaint != other.Ammo?.ExplosionPaint || Ammo?.ExplosionPaintRadiusMin != other.Ammo?.ExplosionPaintRadiusMin || Ammo?.ExplosionPaintRadiusMax != other.Ammo?.ExplosionPaintRadiusMax;
     }
 }

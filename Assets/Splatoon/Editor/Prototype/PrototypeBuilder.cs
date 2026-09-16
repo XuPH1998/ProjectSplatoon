@@ -57,6 +57,17 @@ namespace Splatoon.Editor
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 AddAddress(settings, group, path, path);
             }
+            // Weapon configs own their AmmoConfig and visual dependencies. Registering
+            // the leaves explicitly keeps local content builds deterministic even when
+            // Addressables dependency collection is configured to pack by entry.
+            foreach (string guid in AssetDatabase.FindAssets("t:AmmoConfigAsset", new[] { "Assets/GameResource/Weapons" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid); AddAddress(settings, group, path, path);
+                var ammo = AssetDatabase.LoadAssetAtPath<Splatoon.Config.AmmoConfigAsset>(path);
+                if (ammo == null) continue;
+                AddAsset(ammo.flightProfile); AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
+                void AddAsset(UnityEngine.Object asset) { if (asset != null) { var p = AssetDatabase.GetAssetPath(asset); if (!string.IsNullOrEmpty(p)) AddAddress(settings, group, p, p); } }
+            }
             const string portraits = "Assets/GameResource/UI/HeroPortraits";
             if (Directory.Exists(portraits))
                 foreach (string path in Directory.GetFiles(portraits, "*Portrait.png"))

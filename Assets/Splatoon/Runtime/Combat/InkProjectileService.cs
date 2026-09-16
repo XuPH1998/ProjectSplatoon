@@ -56,6 +56,16 @@ namespace Splatoon.Combat
           s.SerializeValue(ref Shooter); s.SerializeValue(ref Victim); s.SerializeValue(ref Damage); s.SerializeValue(ref Killed);
           s.SerializeValue(ref ActionId); s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref PelletIndex); }
     }
+    public struct InkExplosionEvent : INetworkSerializable
+    {
+        public uint Round, ShotId, ConfigurationRevision, Seed;
+        public ulong ActionId, Shooter;
+        public byte Team;
+        public int HeroId;
+        public Vector3 Position, Normal;
+        public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
+        { s.SerializeValue(ref Round); s.SerializeValue(ref ShotId); s.SerializeValue(ref ActionId); s.SerializeValue(ref Shooter); s.SerializeValue(ref Team); s.SerializeValue(ref HeroId); s.SerializeValue(ref ConfigurationRevision); s.SerializeValue(ref Seed); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); }
+    }
     public static class InkBallistics
     {
         public static Vector3 Position(Vector3 origin, Vector3 velocity, float gravity, double age)
@@ -154,6 +164,11 @@ namespace Splatoon.Combat
         private uint _id;
         public readonly List<InkShot> Spawned = new(16);
         public readonly List<InkImpact> Impacts = new(32);
+        public readonly List<InkExplosionEvent> Explosions = new(16);
+        readonly HashSet<(uint round, uint shot)> _exploded = new();
+        readonly Collider[] _explosionHits = new Collider[128];
+        readonly ulong[] _explosionPlayers = new ulong[32];
+        readonly int[] _explosionSurfaces = new int[128];
         public int ActiveCount => _active.Count;
 #if UNITY_EDITOR
         // Opt-in observations of the real simulation; never sent over the network.
@@ -234,7 +249,13 @@ namespace Splatoon.Combat
                 }
                 if (hit || end >= a.Shot.Born + w.Lifetime - 1e-8)
                 {
-                    if (!hit) Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = InkBallistics.Position(a.Shot, w, w.Lifetime), Hit = false });
+                    if (!hit)
+                    {
+                        var position = InkBallistics.Position(a.Shot, w, w.Lifetime);
+                        ResolveExplosion(a.Shot, position, Vector3.up);
+                        Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = position, Hit = false,
+                            ActionId = a.Shot.ActionId, Lifecycle = a.Shot.Lifecycle, HeroRevision = a.Shot.HeroRevision, PelletIndex = a.Shot.PelletIndex, Shooter = a.Shot.Shooter });
+                    }
                     _active.RemoveAt(i);
                 }
                 else _active[i] = a;
@@ -329,11 +350,56 @@ namespace Splatoon.Combat
                     ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
+            ResolveExplosion(shot, point, normal);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });
         }
+        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal)
+        {
+            var ammo = shot.Configuration?.Ammo;
+            if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
+            var radius = ammo.ExplosionRadius;
+            if (radius > 0)
+            {
+                int count = Physics.OverlapSphereNonAlloc(position, radius, _explosionHits, ~(1 << 8), QueryTriggerInteraction.Collide);
+                int seenCount = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    var player = _explosionHits[i] != null ? _explosionHits[i].GetComponentInParent<PrototypePlayer>() : null;
+                    if (player == null || player.Snapshot.Value.Team == shot.Team) continue;
+                    bool duplicate = false; for (int p = 0; p < seenCount; p++) if (_explosionPlayers[p] == player.PlayerId) { duplicate = true; break; }
+                    if (duplicate || seenCount >= _explosionPlayers.Length) continue; _explosionPlayers[seenCount++] = player.PlayerId;
+                    Vector3 target = player.transform.position + Vector3.up * .8f, delta = target - position;
+                    float distance = delta.magnitude; if (distance > radius) continue;
+                    if (Physics.Raycast(position, delta.normalized, out var block, distance, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) && block.collider.GetComponentInParent<PrototypePlayer>() != player) continue;
+                    float damage = ammo.ExplosionDamage * (1f - distance / radius);
+                    if (damage <= 0) continue;
+                    player.ReceiveDamage(shot.Team, damage, delta.normalized, shot.Shooter);
+                }
+            }
+            if (ammo.ExplosionPaint && radius > 0 && PrototypeMatch.Current != null && PrototypeArena.Current != null)
+            {
+                int count = Physics.OverlapSphereNonAlloc(position, radius, _explosionHits, ~(1 << 8), QueryTriggerInteraction.Ignore);
+                int surfaceCount = 0;
+                uint baseSeed = InkShapeAtlas.Hash(shot.Seed ^ shot.Id ^ 0xA511E9B3u);
+                for (int i = 0; i < count; i++)
+                {
+                    var surface = _explosionHits[i] != null ? _explosionHits[i].GetComponentInParent<PaintSurface>() : null;
+                    if (surface == null) continue;
+                    bool duplicate = false; for (int s = 0; s < surfaceCount; s++) if (_explosionSurfaces[s] == surface.SurfaceId) { duplicate = true; break; }
+                    if (duplicate || surfaceCount >= _explosionSurfaces.Length) continue; _explosionSurfaces[surfaceCount++] = surface.SurfaceId;
+                    Vector3 point = _explosionHits[i].ClosestPoint(position);
+                    Vector3 n = (point - position).sqrMagnitude > .0001f ? (point - position).normalized : normal;
+                    uint seed = InkShapeAtlas.Hash(baseSeed ^ (uint)surface.SurfaceId * 0x9e3779b9u);
+                    float r = Mathf.Lerp(ammo.ExplosionPaintRadiusMin, ammo.ExplosionPaintRadiusMax, (seed & 0xffffff) / 16777216f);
+                    ApplyPaint(surface, shot, point, n, r, shot.Configuration, seed, true);
+                }
+            }
+            Explosions.Add(new InkExplosionEvent { Round = shot.Round, ShotId = shot.Id, ActionId = shot.ActionId, Shooter = shot.Shooter,
+                Team = shot.Team, HeroId = shot.HeroId, ConfigurationRevision = shot.ConfigurationRevision, Seed = shot.Seed, Position = position, Normal = normal });
+        }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();
-        public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); _shapes.Clear(); }
+        public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); Explosions.Clear(); _exploded.Clear(); _shapes.Clear(); }
     }
 }

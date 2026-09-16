@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: MachineGunGirlWeaponConfig
   m_EditorClassIdentifier: 
+  ammoConfig: {fileID: 11400000, guid: 48d1adeafd3444198a2c13b3b395a791, type: 2}
   weaponPrefabAddress: "Weapon/MachineGun"
   fireMode: 4
   fireRate: 15

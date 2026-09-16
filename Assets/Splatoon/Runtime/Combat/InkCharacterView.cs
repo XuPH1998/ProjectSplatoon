@@ -19,6 +19,7 @@ namespace Splatoon.Combat
         private float _kick;
         private InkMuzzleEmitter _muzzleEffect;
         private InkMuzzleEmitter _leftMuzzleEffect;
+        private ushort _muzzleAmmoId, _leftMuzzleAmmoId;
         private MaterialPropertyBlock _block;
         public readonly struct OutlineDraw
         {
@@ -94,16 +95,23 @@ namespace Splatoon.Combat
         public void Shot(byte muzzleIndex = 0, ulong actionId = 0, double born = double.NaN)
         {
             _kick = 1;
+            var weapon = GameplayConfig.GetWeapon(_state.HeroId);
             var nozzle = muzzleIndex == 1 ? LeftNozzle : Nozzle;
             if (nozzle == null || InkPresentation.Current == null) return;
             var effect = muzzleIndex == 1 ? _leftMuzzleEffect : _muzzleEffect;
+            ushort ammoId = weapon?.Ammo?.AmmoId ?? 0;
+            if (effect != null && (muzzleIndex == 1 ? _leftMuzzleAmmoId : _muzzleAmmoId) != ammoId)
+            {
+                effect.Stop(); Destroy(effect.gameObject); effect = null;
+                if (muzzleIndex == 1) _leftMuzzleEffect = null; else _muzzleEffect = null;
+            }
             if (effect == null)
             {
-                effect = InkPresentation.Current.CreateMuzzle(nozzle);
+                effect = InkPresentation.Current.CreateMuzzle(nozzle, weapon);
                 if (muzzleIndex == 1) _leftMuzzleEffect = effect; else _muzzleEffect = effect;
+                if (muzzleIndex == 1) _leftMuzzleAmmoId = ammoId; else _muzzleAmmoId = ammoId;
             }
             double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : Time.timeAsDouble;
-            var weapon = GameplayConfig.GetWeapon(_state.HeroId);
             effect?.Shot((uint)(actionId ^ (actionId >> 32)) + muzzleIndex + 1u, _state.Team,
                 InkFlightPresentation.IsContinuous(weapon), now, double.IsNaN(born) ? now : born);
         }
