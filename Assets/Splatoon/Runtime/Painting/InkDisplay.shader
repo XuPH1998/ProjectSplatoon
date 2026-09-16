@@ -21,14 +21,14 @@ Shader "Splatoon/InkDisplay"
             float4 frag(v2f_img i):SV_Target
             {
                 float4 state=tex2D(_MainTex,i.uv);
-                if(tex2D(_UVIslands,i.uv).b<.99)
+                if(tex2D(_UVIslands,i.uv).r<.99)
                 {
                     // Copy a complete neighbour, never component-wise max two team states.
                     for(int y=-2;y<=2;y++) for(int x=-2;x<=2;x++)
                     {
                         float2 uv=i.uv+float2(x,y)*_MainTex_TexelSize.xy;
                         float4 candidate=tex2D(_MainTex,uv);
-                        if(tex2D(_UVIslands,uv).b>.99 && candidate.a>state.a) state=candidate;
+                        if(tex2D(_UVIslands,uv).r>.99 && candidate.a>state.a) state=candidate;
                     }
                 }
                 float3 color=round(state.b*255)==1 ? _InkPink.rgb : _InkBlue.rgb;

@@ -63,6 +63,7 @@ namespace Splatoon.Editor
             var noise=AssetImporter.GetAtPath("Assets/GameResource/Environment/Ink/Textures/noise_texture_0002.png") as TextureImporter;
             if(noise!=null&&!noise.mipmapEnabled){noise.mipmapEnabled=true;noise.filterMode=FilterMode.Trilinear;noise.anisoLevel=4;noise.SaveAndReimport();}
             ConfigureLight(arena);
+            InkEdgeUpgrade.Apply(arena);
             TrainingGroundBuilder.Bake(arena);EditorSceneManager.MarkSceneDirty(arena.gameObject.scene);EditorSceneManager.SaveScene(arena.gameObject.scene);AssetDatabase.SaveAssets();
             Debug.Log("[INK-LOOK] Upgrade complete.");
         }

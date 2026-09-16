@@ -48,7 +48,7 @@ namespace Splatoon.Editor
             var mesh = surface.GetComponent<MeshFilter>().sharedMesh; surface.ReleaseGraphics();
             UnityEngine.Object.DestroyImmediate(surface.gameObject); UnityEngine.Object.DestroyImmediate(mesh);
         }
-        static void ValidateTiles()
+        public static void ValidateTiles(string output = Output)
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var material = Material(); int maxDelta = 0, samples = 0;
@@ -83,7 +83,7 @@ namespace Splatoon.Editor
                 Destroy(surface);
             }
             UnityEngine.Object.DestroyImmediate(material);
-            File.WriteAllText(Output + "/tile-gpu.txt", $"samples={samples} maxByteDelta={maxDelta} floor/wall x 32 indices x 3 rotations; mirrors and snapshot continuation PASS");
+            File.WriteAllText(output + "/tile-gpu.txt", $"samples={samples} maxByteDelta={maxDelta} floor/wall x 32 indices x 3 rotations; mirrors and snapshot continuation PASS");
             Debug.Log($"[INK32] tiles samples={samples} maxByteDelta={maxDelta} PASS");
         }
         struct Measurement { public int Width, Height, Pixels; }

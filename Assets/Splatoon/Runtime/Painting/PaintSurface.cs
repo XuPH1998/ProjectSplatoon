@@ -2,6 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering;
 using Splatoon.Config;
 using Splatoon.Prototype;
 
@@ -59,6 +60,8 @@ namespace Splatoon.Painting
         public RenderTexture Mask { get; private set; }
         public bool HasPaint { get; private set; }
         public static long AllocatedBytes { get; private set; }
+        public static long CheckpointBytes { get; private set; }
+        public GraphicsFormat IslandFormat => _islands != null ? _islands.graphicsFormat : GraphicsFormat.None;
         private RenderTexture _support, _islands;
         private static readonly System.Collections.Generic.Dictionary<Vector2Int, RenderTexture> Scratch = new();
         private static int _instances;
@@ -66,40 +69,55 @@ namespace Splatoon.Painting
         private bool _displayDirty;
         private bool _diagnosticScheduled;
         private bool _firstStampDiagnostic;
+        private bool _registeredGraphics;
         private MeshRenderer _renderer;
         private MaterialPropertyBlock _properties;
         public bool GraphicsEnabled => SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
         private void OnEnable() { if (Application.isPlaying && GraphicsEnabled) Initialize(); }
-        private RenderTexture Texture(string suffix)
+        private RenderTexture Texture(string suffix, GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm)
         {
-            var texture = new RenderTexture(Resolution, Height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { name = "Ink " + SurfaceId + suffix, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp, useMipMap = false };
-            texture.Create(); AllocatedBytes += (long)TextureBytes; return texture;
+            // Set Linear at construction as well: otherwise descriptor copies can retain the
+            // default sRGB creation flag even after assigning a UNorm graphicsFormat.
+            var texture = new RenderTexture(Resolution, Height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { graphicsFormat = format, name = "Ink " + SurfaceId + suffix, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp, useMipMap = false, autoGenerateMips = false, antiAliasing = 1 };
+            if (!texture.Create() || texture.graphicsFormat != format || texture.sRGB)
+            {
+                texture.Release(); DisposeObject(texture);
+                throw new InvalidOperationException("无法创建指定格式的喷涂纹理：" + format);
+            }
+            AllocatedBytes += PaintTextureMemory.Bytes(texture); return texture;
         }
         private void Initialize()
         {
             if (Mask != null) return;
             if (PainterShader == null || DisplayShader == null) throw new InvalidOperationException("喷涂 Shader 缺失：" + name);
-            _renderer = GetComponent<MeshRenderer>(); _properties = new MaterialPropertyBlock();
-            InkShapeAtlas.Configure(ShapeAtlas);
-            _painter = new Material(PainterShader); _extend = new Material(DisplayShader);
-            if (!_painter.HasProperty("_ShapeAtlas")) throw new InvalidOperationException("落墨绘制 Shader 缺少 _ShapeAtlas 属性：" + PainterShader.name);
-            _extend.SetColor("_InkPink", PrototypeArena.Pink); _extend.SetColor("_InkBlue", PrototypeArena.Blue);
-            Mask = Texture(" State"); Mask.filterMode = FilterMode.Point; DisplayMask = Texture(" Display"); _islands = Texture(" Islands");
-            var size = new Vector2Int(Resolution, Height);
-            if (!Scratch.TryGetValue(size, out _support)) { _support = Texture(" SharedScratch"); Scratch.Add(size, _support); }
-            _instances++; Clear();
-            var command = CommandBufferPool.Get("Ink UV islands");
-            command.SetRenderTarget(_islands); command.ClearRenderTarget(false, true, Color.clear); _painter.SetFloat("_PrepareUV", 1);
-            command.DrawMesh(GetComponent<MeshFilter>().sharedMesh, transform.localToWorldMatrix, _painter);
-            Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
-            _renderer.GetPropertyBlock(_properties); _properties.SetTexture("_MaskTexture", DisplayMask);
-            _properties.SetFloat("_InkWorldScale", GameplayConfig.Global.PaintWorldUvScale);
-            _properties.SetFloat("_InkShapeNoiseScale", GameplayConfig.Global.PaintShapeNoiseScale);
-            _properties.SetFloat("_InkThreshold", GameplayConfig.Global.PaintThreshold); _renderer.SetPropertyBlock(_properties);
+            var islandFormat = PaintTextureMemory.SelectIslandFormat();
+            try
+            {
+                _renderer = GetComponent<MeshRenderer>(); _properties = new MaterialPropertyBlock();
+                InkShapeAtlas.Configure(ShapeAtlas);
+                _painter = new Material(PainterShader); _extend = new Material(DisplayShader);
+                if (!_painter.HasProperty("_ShapeAtlas")) throw new InvalidOperationException("落墨绘制 Shader 缺少 _ShapeAtlas 属性：" + PainterShader.name);
+                _extend.SetColor("_InkPink", PrototypeArena.Pink); _extend.SetColor("_InkBlue", PrototypeArena.Blue);
+                _instances++; _registeredGraphics = true;
+                Mask = Texture(" State"); CheckpointBytes += TextureBytes;
+                Mask.filterMode = FilterMode.Point; DisplayMask = Texture(" Display"); _islands = Texture(" Islands", islandFormat);
+                var size = new Vector2Int(Resolution, Height);
+                if (!Scratch.TryGetValue(size, out _support)) { _support = Texture(" SharedScratch"); Scratch.Add(size, _support); }
+                Clear();
+                var command = CommandBufferPool.Get("Ink UV islands");
+                command.SetRenderTarget(_islands); command.ClearRenderTarget(false, true, Color.clear); _painter.SetFloat("_PrepareUV", 1);
+                command.DrawMesh(GetComponent<MeshFilter>().sharedMesh, transform.localToWorldMatrix, _painter);
+                Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
+                _renderer.GetPropertyBlock(_properties); _properties.SetTexture("_MaskTexture", DisplayMask);
+                _properties.SetFloat("_InkWorldScale", GameplayConfig.Global.PaintWorldUvScale);
+                _properties.SetFloat("_InkShapeNoiseScale", GameplayConfig.Global.PaintShapeNoiseScale);
+                _properties.SetFloat("_InkThreshold", GameplayConfig.Global.PaintThreshold); _renderer.SetPropertyBlock(_properties);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-            Debug.Log($"[INK-GPU] surface={SurfaceId} atlas={ShapeAtlas.name} hash={InkShapeAtlas.ContentHash} shapeProperty={_painter.HasProperty("_ShapeAtlas")} displayMask={DisplayMask.width}x{DisplayMask.height}");
+                Debug.Log($"[INK-GPU] surface={SurfaceId} atlas={ShapeAtlas.name} hash={InkShapeAtlas.ContentHash} shapeProperty={_painter.HasProperty("_ShapeAtlas")} displayMask={DisplayMask.width}x{DisplayMask.height}");
 #endif
-            if (AllocatedBytes > GameplayConfig.Global.MaxPaintMemoryMiB * 1024L * 1024L) throw new InvalidOperationException("喷涂 RT 超过全局内存预算");
+                if (AllocatedBytes + CheckpointBytes > GameplayConfig.Global.MaxPaintMemoryMiB * 1024L * 1024L) throw new InvalidOperationException("喷涂 RT 含检查点拷贝超过全局内存预算");
+            }
+            catch { ReleaseGraphics(); throw; }
         }
         public void Clear()
         {
@@ -157,7 +175,9 @@ namespace Splatoon.Painting
         private void OnDisable() => ReleaseGraphics();
         public void ReleaseGraphics()
         {
-            if (Mask != null && --_instances == 0) { foreach (var texture in Scratch.Values) Release(texture); Scratch.Clear(); }
+            if (_registeredGraphics && --_instances == 0) { foreach (var texture in Scratch.Values) Release(texture); Scratch.Clear(); }
+            _registeredGraphics = false;
+            if (Mask != null) CheckpointBytes -= (long)Mask.width * Mask.height * 4;
             Release(Mask); Release(DisplayMask); Release(_islands); Mask = DisplayMask = _support = _islands = null;
             if (_painter != null) DisposeObject(_painter); if (_extend != null) DisposeObject(_extend);
             _painter = _extend = null; _displayDirty = false;
@@ -187,7 +207,7 @@ namespace Splatoon.Painting
         }
 #endif
         private static void Release(RenderTexture texture)
-        { if (texture == null) return; if (RenderTexture.active == texture) RenderTexture.active = null; AllocatedBytes -= (long)texture.width * texture.height * 4; texture.Release(); DisposeObject(texture); }
+        { if (texture == null) return; if (RenderTexture.active == texture) RenderTexture.active = null; AllocatedBytes -= PaintTextureMemory.Bytes(texture); texture.Release(); DisposeObject(texture); }
         private static void DisposeObject(UnityEngine.Object value)
         { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
     }

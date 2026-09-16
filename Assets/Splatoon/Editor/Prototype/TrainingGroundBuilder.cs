@@ -204,15 +204,14 @@ namespace Splatoon.Editor
             if(arena.Dimensions!=new Vector2(32,64)||arena.LayoutVersion!=4)throw new InvalidOperationException("需要 32×64 米、版本 4 地图");
             if(arena.SpawnPoints==null||arena.SpawnPoints.Length!=2*TeamSelectionRules.Capacity||arena.SpawnPoints.Any(p=>p==null))throw new InvalidOperationException("八个出生点未完整绑定");
             HeroChangeZoneSetup.Validate(arena);
-            long bytes=0;var sizes=new HashSet<Vector2Int>();
+            long bytes=PaintTextureMemory.PeakBytes(arena.Surfaces.Values);
             foreach(var s in arena.Surfaces.Values)
             {
                 var mesh=s.GetComponent<MeshFilter>().sharedMesh;
                 if(mesh==null||mesh.uv2.Length!=mesh.vertexCount||s.GetComponent<Collider>()==null||s.PainterShader==null||s.DisplayShader==null)throw new InvalidOperationException("表面资源缺失："+s.name);
                 if(s.Scores&&(Vector3.Distance(s.transform.lossyScale,Vector3.one)>.0001f||s.WalkableSize.x<=0||s.WalkableSize.y<=0))throw new InvalidOperationException("可行走面尺寸或缩放无效："+s.name);
-                s.InitializeOwnership(arena.OwnershipCellSize);bytes+=4L*s.TextureBytes;sizes.Add(new Vector2Int(s.Resolution,s.Height));
+                s.InitializeOwnership(arena.OwnershipCellSize);
             }
-            foreach(var size in sizes)bytes+=(long)size.x*size.y*4;
             if(bytes>128L*1048576)throw new InvalidOperationException("涂色 RT 超过 128 MiB");
             if(arena.TotalArea<=0||arena.BakedTopology!=arena.ComputeTopology())throw new InvalidOperationException("地图拓扑未烘焙或没有可计分区域");
             foreach(var p in arena.SpawnPoints)

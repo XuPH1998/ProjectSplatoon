@@ -85,6 +85,9 @@ Material:
     - Vector1_b5cc7f6f25194a778cb438f45fbbce66: 25
     - Vector1_dcd729e4cd23406784678484c17def53: 1
     - Vector1_f6677799b193415b8be7686b658a6e85: 9
+    - _InkEdgeAAScale: 1
+    - _InkEdgeNormalStrength: 0.12
+    - _InkEdgeSmoothness: 0.55
     - _InkShapeNoiseScale: 110
     - _InkThreshold: 0.5
     - _InkWorldScale: 0.034424

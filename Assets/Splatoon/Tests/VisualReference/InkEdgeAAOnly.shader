@@ -1,4 +1,5 @@
-Shader "Splatoon/InkSurface"
+// Frozen comparison fixture for ink edge validation.
+Shader "Hidden/Splatoon/InkEdgeAAOnly"
 {
     Properties
     {
@@ -43,7 +44,7 @@ Shader "Splatoon/InkSurface"
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "InkCoverage.hlsl"
+            #include "../../Runtime/Painting/InkCoverage.hlsl"
             TEXTURE2D(_MaskTexture); SAMPLER(sampler_MaskTexture);
             float4 _MaskTexture_TexelSize;
             TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705); SAMPLER(sampler_Texture2D_41271c3c5f484ca2a435c65087a81705);
@@ -103,12 +104,12 @@ Shader "Splatoon/InkSurface"
                     +SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV+float2(0,texel.y)).a
                     +SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV-float2(0,texel.y)).a);
                 float noise=InkNoise(uv,Vector1_b5cc7f6f25194a778cb438f45fbbce66);
-                float height=.3+heightAlpha*noise*noise;
+                float height=.3+mask.a*noise*noise;
                 float3 dx=ddx(i.positionWS),dy=ddy(i.positionWS);
                 float3 cx=cross(n,dx),cy=cross(dy,n);
                 float det=dot(dx,cy);
                 float3 gradient=(ddx(height)*cy+ddy(height)*cx)*((det<0?-1:1)/max(abs(det),1e-12));
-                float normalStrength=lerp(_InkEdgeNormalStrength,Vector1_8e760635099b4147956bb9600d13cac2,interior);
+                float normalStrength=Vector1_8e760635099b4147956bb9600d13cac2;
                 float3 inkNormal=normalize(n-normalStrength*gradient);
                 float3 baseColor=SAMPLE_TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705,sampler_Texture2D_41271c3c5f484ca2a435c65087a81705,uv*Vector2_e97cb9b7b5564bc9857e7669e2d0b82f.xy).rgb*Color_863351f5ceea4c998ef51baab6dd758b.rgb;
                 float sparkle=FilteredGlitter(uv*Vector2_55edcb19ba1d459dbb3c027e66abbc1e.xy,n,view);
@@ -117,7 +118,7 @@ Shader "Splatoon/InkSurface"
                 float3 inkColor=mask.a>1e-5 ? mask.rgb/max(mask.a,1e-5) : baseColor;
                 surface.albedo=lerp(baseColor,inkColor,visible);surface.alpha=1;surface.occlusion=1;surface.normalTS=float3(0,0,1);
                 surface.metallic=lerp(Vector1_b160a6374fb04a77b114bb611b8c55e4,Vector1_0de750b9c41b4a5daef844a1599f5ac7,visible);
-                float inkSmoothness=lerp(_InkEdgeSmoothness,Vector1_7bf270fe91494824b4209d2dc1faae23,interior);
+                float inkSmoothness=Vector1_7bf270fe91494824b4209d2dc1faae23;
                 surface.smoothness=lerp(Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,inkSmoothness,visible);
                 surface.emission=visible*sparkle*Color_1bf9c5e6f5c34360a490da1c94e6a7c1.rgb;
                 InputData input=(InputData)0;input.positionWS=i.positionWS;input.normalWS=normalize(lerp(n,inkNormal,visible));input.viewDirectionWS=view;

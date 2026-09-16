@@ -38,7 +38,7 @@ Shader "Splatoon/InkTexturePainter"
             }
             float4 frag(Output i):SV_Target
             {
-                if (_PrepareUV>0) return float4(0,0,1,1);
+                if (_PrepareUV>0) return float4(1,0,0,1);
                 float4 old=tex2D(_MainTex,i.uv);
                 // Registered convex arena meshes have hard, disconnected faces in the atlas.
                 if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return old;

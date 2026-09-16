@@ -1089,8 +1089,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 192
+  Resolution: 512
+  ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -3117,8 +3117,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 192
+  Resolution: 512
+  ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -4520,8 +4520,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 320
+  Resolution: 512
+  ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -6816,8 +6816,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 192
+  Resolution: 512
+  ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -9327,8 +9327,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 320
+  Resolution: 512
+  ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -10702,7 +10702,7 @@ MonoBehaviour:
   LayoutVersion: 4
   Dimensions: {x: 32, y: 64}
   OwnershipCellSize: 0.125
-  BakedTopology: A260E4020FDFCD5D02EF9691F8C0E6832996F5A13B0914CA9F754CDB2A7D6A6C
+  BakedTopology: 77CDAEA3B1C1D080C0FE6265EFC084FAA9C7106D054214BBA3F1EDEFCC33C640
 --- !u!4 &1690681426
 Transform:
   m_ObjectHideFlags: 0
@@ -10809,8 +10809,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 320
+  Resolution: 512
+  ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -11199,8 +11199,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 192
+  Resolution: 512
+  ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}
@@ -13567,8 +13567,8 @@ MonoBehaviour:
   Scores: 0
   WalkableSize: {x: 0, y: 0}
   BlockedCells: 
-  Resolution: 256
-  ResolutionHeight: 320
+  Resolution: 512
+  ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
   PainterShader: {fileID: 4800000, guid: 5d2df3ac14da58eeb785b9083df22911, type: 3}
   ExtendShader: {fileID: 4800000, guid: 30512f6167fa0784ab310b688406279d, type: 3}

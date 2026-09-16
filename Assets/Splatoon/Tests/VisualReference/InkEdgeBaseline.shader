@@ -1,4 +1,5 @@
-Shader "Splatoon/InkSurface"
+// Frozen comparison fixture for ink edge validation.
+Shader "Hidden/Splatoon/InkEdgeBaseline"
 {
     Properties
     {
@@ -19,9 +20,6 @@ Shader "Splatoon/InkSurface"
         _InkWorldScale("Detail UV / metre",Float)=.034424
         _InkShapeNoiseScale("Shape noise scale",Float)=110
         _InkThreshold("Coverage threshold",Float)=.5
-        _InkEdgeAAScale("Edge antialiasing width",Range(0.25,2))=1
-        _InkEdgeNormalStrength("Edge normal strength",Range(0,1))=.12
-        _InkEdgeSmoothness("Edge smoothness",Range(0,1))=.55
     }
     SubShader
     {
@@ -43,9 +41,8 @@ Shader "Splatoon/InkSurface"
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "InkCoverage.hlsl"
+            #include "../../Runtime/Painting/InkCoverage.hlsl"
             TEXTURE2D(_MaskTexture); SAMPLER(sampler_MaskTexture);
-            float4 _MaskTexture_TexelSize;
             TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705); SAMPLER(sampler_Texture2D_41271c3c5f484ca2a435c65087a81705);
             TEXTURE2D(Texture2D_01612b2f09a24a9c9879c83799445b96); SAMPLER(sampler_Texture2D_01612b2f09a24a9c9879c83799445b96);
             float4 Texture2D_01612b2f09a24a9c9879c83799445b96_TexelSize;
@@ -56,7 +53,6 @@ Shader "Splatoon/InkSurface"
                 float Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,Vector1_b160a6374fb04a77b114bb611b8c55e4;
                 float Vector1_8e760635099b4147956bb9600d13cac2,Vector1_b5cc7f6f25194a778cb438f45fbbce66,Vector1_f6677799b193415b8be7686b658a6e85;
                 float _InkWorldScale,_InkShapeNoiseScale,_InkThreshold;
-                float _InkEdgeAAScale,_InkEdgeNormalStrength,_InkEdgeSmoothness;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 paintUV:TEXCOORD1; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS:SV_POSITION; float3 positionWS:TEXCOORD0; float3 normalWS:TEXCOORD1; float2 paintUV:TEXCOORD2; float fog:TEXCOORD3; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
@@ -90,35 +86,20 @@ Shader "Splatoon/InkSurface"
                 float4 mask=SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV);
                 // Mask alpha now includes the authored irregular splat silhouette; retain the
                 // existing wet edge/noise treatment on top of that silhouette.
-                // Display-only coverage: keep InkVisible and the CPU ownership threshold exact.
-                float coverageField=mask.a*(1+.5*InkNoise(uv,_InkShapeNoiseScale));
-                float edgeHalfWidth=max(.5*fwidth(coverageField)*_InkEdgeAAScale,1e-5);
-                float visible=smoothstep(_InkThreshold-edgeHalfWidth,_InkThreshold+edgeHalfWidth,coverageField);
-                float interior=smoothstep(_InkThreshold,_InkThreshold+max(.15,2*edgeHalfWidth),coverageField);
-                // Filter height only. Filtering the silhouette would grow/shrink gameplay ink.
-                float2 texel=_MaskTexture_TexelSize.xy;
-                float heightAlpha=mask.a*.5;
-                heightAlpha+=.125*(SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV+float2(texel.x,0)).a
-                    +SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV-float2(texel.x,0)).a
-                    +SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV+float2(0,texel.y)).a
-                    +SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV-float2(0,texel.y)).a);
+                float visible=InkVisible(mask.a,uv,_InkShapeNoiseScale,_InkThreshold);
                 float noise=InkNoise(uv,Vector1_b5cc7f6f25194a778cb438f45fbbce66);
-                float height=.3+heightAlpha*noise*noise;
+                float height=.3+mask.a*noise*noise;
                 float3 dx=ddx(i.positionWS),dy=ddy(i.positionWS);
                 float3 cx=cross(n,dx),cy=cross(dy,n);
                 float det=dot(dx,cy);
                 float3 gradient=(ddx(height)*cy+ddy(height)*cx)*((det<0?-1:1)/max(abs(det),1e-12));
-                float normalStrength=lerp(_InkEdgeNormalStrength,Vector1_8e760635099b4147956bb9600d13cac2,interior);
-                float3 inkNormal=normalize(n-normalStrength*gradient);
+                float3 inkNormal=normalize(n-Vector1_8e760635099b4147956bb9600d13cac2*gradient);
                 float3 baseColor=SAMPLE_TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705,sampler_Texture2D_41271c3c5f484ca2a435c65087a81705,uv*Vector2_e97cb9b7b5564bc9857e7669e2d0b82f.xy).rgb*Color_863351f5ceea4c998ef51baab6dd758b.rgb;
                 float sparkle=FilteredGlitter(uv*Vector2_55edcb19ba1d459dbb3c027e66abbc1e.xy,n,view);
                 SurfaceData surface=(SurfaceData)0;
-                // InkDisplay stores premultiplied color; do not multiply edge opacity twice.
-                float3 inkColor=mask.a>1e-5 ? mask.rgb/max(mask.a,1e-5) : baseColor;
-                surface.albedo=lerp(baseColor,inkColor,visible);surface.alpha=1;surface.occlusion=1;surface.normalTS=float3(0,0,1);
+                surface.albedo=lerp(baseColor,mask.rgb,visible);surface.alpha=1;surface.occlusion=1;surface.normalTS=float3(0,0,1);
                 surface.metallic=lerp(Vector1_b160a6374fb04a77b114bb611b8c55e4,Vector1_0de750b9c41b4a5daef844a1599f5ac7,visible);
-                float inkSmoothness=lerp(_InkEdgeSmoothness,Vector1_7bf270fe91494824b4209d2dc1faae23,interior);
-                surface.smoothness=lerp(Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,inkSmoothness,visible);
+                surface.smoothness=lerp(Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,Vector1_7bf270fe91494824b4209d2dc1faae23,visible);
                 surface.emission=visible*sparkle*Color_1bf9c5e6f5c34360a490da1c94e6a7c1.rgb;
                 InputData input=(InputData)0;input.positionWS=i.positionWS;input.normalWS=normalize(lerp(n,inkNormal,visible));input.viewDirectionWS=view;
                 input.shadowCoord=TransformWorldToShadowCoord(i.positionWS);input.bakedGI=SampleSH(input.normalWS);input.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(i.positionCS);
