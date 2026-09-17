@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "heroes": 1,
+  "characterFields": 32,
+  "weaponPathFields": 1,
+  "originalWeaponFields": 60,
+  "newWeaponFields": 4,
+  "originalValuesCompared": 0,
+  "errors": []
+}

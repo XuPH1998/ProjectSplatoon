@@ -9,7 +9,7 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 24;
+        public const uint ProtocolVersion = 29;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
@@ -39,6 +39,7 @@ namespace Splatoon.Prototype
         public uint HeroRevision, ConsumedRelease;
         public bool AttackNeedsRelease, ChargeReleasePending;
         public double ChargeStartedAt, BurstReadyAt, FireVisualUntil;
+        public double AttackRecoveryUntil;
         public float LastShotCharge;
         public Vector3 Position, Velocity;
         public float Yaw, Pitch, Health, Ink;
@@ -57,6 +58,9 @@ namespace Splatoon.Prototype
         public double SimulatedAt, WeaponReadyAt, NextShotAt, InkRecoverAt, LastDamageAt, WallSeenAt, MantleStartedAt;
         public float VerticalSpeed, CurrentSpread, CurrentVerticalSpread;
         public float SpreadProgress, LastShotSpread, LastShotVerticalSpread;
+        public float DualiesGroundBias, LastShotSpreadBias;
+        public double DualiesJumpAge;
+        public bool DualiesWasGrounded;
         public double SpreadUpdatedAt;
         public bool SpreadInitialized, SpreadFiring;
         public Vector3 PlanarVelocity, WallNormal, WallPoint, MantleFrom, MantleTo;
@@ -65,6 +69,7 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref AttackRecoveryUntil);
             s.SerializeValue(ref SplatlingChargeSeconds); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
             s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);
             s.SerializeValue(ref SplatlingUpdatedAt); s.SerializeValue(ref SplatlingReleasedAt); s.SerializeValue(ref SplatlingEndedAt);
@@ -92,6 +97,8 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref SimulatedAt); s.SerializeValue(ref WeaponReadyAt); s.SerializeValue(ref NextShotAt); s.SerializeValue(ref InkRecoverAt); s.SerializeValue(ref LastDamageAt);
             s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread); s.SerializeValue(ref CurrentVerticalSpread);
             s.SerializeValue(ref SpreadProgress); s.SerializeValue(ref LastShotSpread); s.SerializeValue(ref LastShotVerticalSpread);
+            s.SerializeValue(ref DualiesGroundBias); s.SerializeValue(ref LastShotSpreadBias);
+            s.SerializeValue(ref DualiesJumpAge); s.SerializeValue(ref DualiesWasGrounded);
             s.SerializeValue(ref SpreadUpdatedAt); s.SerializeValue(ref SpreadInitialized); s.SerializeValue(ref SpreadFiring);
             s.SerializeValue(ref PlanarVelocity); s.SerializeValue(ref WallNormal); s.SerializeValue(ref WallPoint); s.SerializeValue(ref MantleFrom); s.SerializeValue(ref MantleTo);
             s.SerializeValue(ref WallSurfaceId); s.SerializeValue(ref WallRegionId); s.SerializeValue(ref Movement); s.SerializeValue(ref WeaponPhase);

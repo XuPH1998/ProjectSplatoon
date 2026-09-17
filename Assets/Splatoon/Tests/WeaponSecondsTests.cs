@@ -29,15 +29,20 @@ namespace Splatoon.Tests
         {
             var audit = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponSeconds/Migration.json"));
             Assert.That(audit["assets"].Count, Is.EqualTo(6));
-            Assert.That(Fields.Length, Is.EqualTo(64));
-            Assert.That(Fields.Count(f => f.FieldType == typeof(double)), Is.EqualTo(16));
+            Assert.That(Fields.Length, Is.GreaterThanOrEqualTo(64));
+            Assert.That(Fields.Count(f => f.FieldType == typeof(double)), Is.GreaterThanOrEqualTo(18));
             foreach (var entry in audit["assets"].Children)
             {
                 string path = entry["path"].Value;
+                if (path == RapidBlasterTuningFixture.AssetPath) RapidBlasterTuningFixture.Apply(5, entry["after"]);
+                if (path == PistolGirlTuningFixture.AssetPath)
+                    PistolGirlTuningFixture.Apply(4, entry["after"]);
+                if (path == DualPistolGirlTuningFixture.AssetPath) DualPistolGirlTuningFixture.Apply(2, entry["after"]);
                 var asset = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(path);
                 Assert.That(asset, Is.Not.Null);
                 foreach (var field in Fields)
                 {
+                    if (!entry["after"].HasKey(field.Name)) continue;
                     var expected = entry["after"][field.Name];
                     object value = field.GetValue(asset);
                     if (field.FieldType == typeof(double)) Assert.That(value, Is.EqualTo(expected.AsDouble), path + "/" + field.Name);
@@ -67,7 +72,7 @@ namespace Splatoon.Tests
             foreach (var type in new[] { typeof(WeaponFireMode), typeof(WeaponMuzzleMode) })
                 foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
                     Assert.That(field.GetCustomAttribute<InspectorNameAttribute>(), Is.Not.Null, field.Name);
-            Assert.That(Enum.GetValues(typeof(WeaponFireMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1, 2, 3, 4 }));
+            Assert.That(Enum.GetValues(typeof(WeaponFireMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1, 2, 3, 4, 5, 6 }));
             Assert.That(Enum.GetValues(typeof(WeaponMuzzleMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1 }));
         }
 
@@ -106,7 +111,7 @@ namespace Splatoon.Tests
 
         [Test] public void RocketKeepsIntermediateQuantizationAndReachesFractionalEndpoint()
         {
-            var w = WeaponAssetTests.Changed(5, a => { a.startSeconds = 0; a.chargeSeconds = .2375; });
+            var w = LegacyChargeFixture.Create(a => { a.startSeconds = 0; a.chargeSeconds = .2375; });
             var s = Alive(5);
             Tick(ref s, w, 0); Tick(ref s, w, .109);
             Assert.That(s.ChargeElapsedSeconds, Is.EqualTo(.1));

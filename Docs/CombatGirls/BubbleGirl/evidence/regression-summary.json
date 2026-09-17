@@ -1,0 +1,72 @@
+{
+  "note": "The seven-hero count assertion has subsequently passed. Fifteen legacy balance or fixture assertions remain unresolved.",
+  "passed": 191,
+  "total": 207,
+  "failed": 16,
+  "failures": [
+    {
+      "detail": "  Expected: 80\n  But was:  128.0f\nat Splatoon.Tests.CombatGirlsWeaponTests.ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets () [0x00084] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\CombatGirlsWeaponTests.cs:118\n",
+      "name": "Splatoon.Tests.CombatGirlsWeaponTests.ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets"
+    },
+    {
+      "detail": "  Expected: 2\n  But was:  0.0f\nat Splatoon.Tests.HeroSelectionPresentationTests.OnlyFourStatsAndCorrectWeaponSpecificUnits (System.Int32 id) [0x000e6] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\HeroSelectionPresentationTests.cs:59\n",
+      "name": "Splatoon.Tests.HeroSelectionPresentationTests.OnlyFourStatsAndCorrectWeaponSpecificUnits(5)"
+    },
+    {
+      "detail": "  Expected is <System.String[6]>, actual is <System.Linq.Enumerable+SelectListIterator`2[cfg.HeroConfig,System.String]>\n  Values differ at index [6]\nat Splatoon.Tests.HeroSelectionPresentationTests.SixHeroesHaveDistinctNamedPortraitsRegisteredForPlayers () [0x0004d] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\HeroSelectionPresentationTests.cs:36\n",
+      "name": "Splatoon.Tests.HeroSelectionPresentationTests.SixHeroesHaveDistinctNamedPortraitsRegisteredForPlayers"
+    },
+    {
+      "detail": "  Expected: 32.0f\n  But was:  24.0f\nat Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff (System.Int32 id, System.Single near, System.Single far) [0x00008] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\HeroSelectionTests.cs:110\n",
+      "name": "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(2,32,16)"
+    },
+    {
+      "detail": "  Expected: 10.0f\n  But was:  52.0f\nat Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff (System.Int32 id, System.Single near, System.Single far) [0x00008] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\HeroSelectionTests.cs:110\n",
+      "name": "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(3,10,4)"
+    },
+    {
+      "detail": "  Expected: 52.0f\n  But was:  34.0f\nat Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff (System.Int32 id, System.Single near, System.Single far) [0x00008] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\HeroSelectionTests.cs:110\n",
+      "name": "Splatoon.Tests.HeroSelectionTests.EachRegularGunUsesItsConfiguredDamageFalloff(4,52,26)"
+    },
+    {
+      "detail": "  Expected is <System.Int32[33]>, actual is <System.Collections.Generic.List`1[System.Int32]> with 49 elements\n  Values differ at index [33]\n  Extra:    < 251, 255, 259... >at Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound (System.Int32 release, System.Int32 rounds, System.Int32 first) [0x00029] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\MachineGunTests.cs:38\n",
+      "name": "Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(119,33,119)"
+    },
+    {
+      "detail": "  Expected is <System.Int32[33]>, actual is <System.Collections.Generic.List`1[System.Int32]> with 49 elements\n  Values differ at index [33]\n  Extra:    < 252, 256, 260... >at Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound (System.Int32 release, System.Int32 rounds, System.Int32 first) [0x00029] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\MachineGunTests.cs:38\n",
+      "name": "Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(120,33,120)"
+    },
+    {
+      "detail": "  Expected is <System.Int32[34]>, actual is <System.Collections.Generic.List`1[System.Int32]> with 50 elements\n  Values differ at index [34]\n  Extra:    < 257, 261, 265... >at Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound (System.Int32 release, System.Int32 rounds, System.Int32 first) [0x00029] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\MachineGunTests.cs:38\n",
+      "name": "Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(121,34,121)"
+    },
+    {
+      "detail": "  Expected is <System.Int32[64]>, actual is <System.Collections.Generic.List`1[System.Int32]> with 65 elements\n  Values differ at index [64]\n  Extra:    < 405 >at Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound (System.Int32 release, System.Int32 rounds, System.Int32 first) [0x00029] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\MachineGunTests.cs:38\n",
+      "name": "Splatoon.Tests.MachineGunTests.ChargeBoundariesAndInclusiveLastRound(149,64,149)"
+    },
+    {
+      "detail": "  Expected: 3\n  But was:  1.5f\nat Splatoon.Tests.WeaponAssetTests.HalfProgressRecoversInHalfTheConfiguredTimeAndKeepsAirProgress () [0x00034] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponAssetTests.cs:76\n",
+      "name": "Splatoon.Tests.WeaponAssetTests.HalfProgressRecoversInHalfTheConfiguredTimeAndKeepsAirProgress"
+    },
+    {
+      "detail": "  Expected: (2.00, 2.00)\n  But was:  (5.00, 5.00)\nat Splatoon.Tests.WeaponAssetTests.ShotgunRetainsBaseAndRocketStillTightensWithCharge () [0x00008] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponAssetTests.cs:131\n",
+      "name": "Splatoon.Tests.WeaponAssetTests.ShotgunRetainsBaseAndRocketStillTightensWithCharge"
+    },
+    {
+      "detail": "  3/projectileGravity\n  Expected: 8.0d +/- 2.0000000000000002E-05d\n  But was:  14.0d\nat Splatoon.Tests.WeaponAssetTests.SixAssetsExactlyPreserveOriginalWeaponValues () [0x00155] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponAssetTests.cs:44\n",
+      "name": "Splatoon.Tests.WeaponAssetTests.SixAssetsExactlyPreserveOriginalWeaponValues"
+    },
+    {
+      "detail": "  Expected: 2\n  But was:  3.0f\nat Splatoon.Tests.WeaponAssetTests.SplatlingReleaseGrowsThroughLastRoundAndEndingImmediatelyRecovers () [0x000dc] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponAssetTests.cs:120\n",
+      "name": "Splatoon.Tests.WeaponAssetTests.SplatlingReleaseGrowsThroughLastRoundAndEndingImmediatelyRecovers"
+    },
+    {
+      "detail": "  Expected: 2\n  But was:  3.0f\nat Splatoon.Tests.WeaponAssetTests.ZeroDurationUsesMaxForFinalShotBeforeImmediateRecovery () [0x0007b] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponAssetTests.cs:144\n",
+      "name": "Splatoon.Tests.WeaponAssetTests.ZeroDurationUsesMaxForFinalShotBeforeImmediateRecovery"
+    },
+    {
+      "detail": "  Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset/projectileGravity\n  Expected: 43.133503f\n  But was:  3.5f\nat Splatoon.Tests.WeaponSecondsTests.SixAuthoredAssetsKeepEveryPreMigrationValueAndReference () [0x0020f] in D:\\XPHUNITY\\ProjectSplatoon_BubbleValidation\\Assets\\Splatoon\\Tests\\WeaponSecondsTests.cs:49\n",
+      "name": "Splatoon.Tests.WeaponSecondsTests.SixAuthoredAssetsKeepEveryPreMigrationValueAndReference"
+    }
+  ]
+}

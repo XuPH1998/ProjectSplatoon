@@ -1136,7 +1136,7 @@ MonoBehaviour:
   DieBackwardDuration: 1.7333335
   SingleShot: 1
   DualWield: 0
-  ShotPlaybackSeconds: 0.24
+  ShotPlaybackSeconds: 0.075
   CameraPivot: {x: 0, y: 1.3151984, z: 0}
   CameraOffset: {x: 0.65, y: 0.15, z: -3.8}
   AimPivot: {x: 0, y: 1.2503409, z: 0}

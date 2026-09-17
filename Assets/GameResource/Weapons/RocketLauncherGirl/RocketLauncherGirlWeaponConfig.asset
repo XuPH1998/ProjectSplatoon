@@ -14,47 +14,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammoConfig: {fileID: 11400000, guid: 271e419cb2f040619ef6abceca79d96b, type: 2}
   weaponPrefabAddress: "Weapon/RocketLauncher"
-  fireMode: 2
-  fireRate: 2
-  shotInk: 8
-  startSeconds: 0.03333333333333333
-  emergeStartSeconds: 0.16666666666666666
-  inkRecoverLockSeconds: 0.75
-  shootMoveSpeed: 2.4
+  fireMode: 6
+  fireRate: 1.7142857142857142
+  shotInk: 7
+  startSeconds: 0.13333333333333333
+  emergeStartSeconds: 0.2
+  inkRecoverLockSeconds: 0.7833333333333333
+  shootMoveSpeed: 2.8645833333333335
   burstCount: 1
   burstRecoverySeconds: 0.0
-  speedMin: 70
-  speedMax: 70
-  projectileGravity: 2
-  lifetime: 10
-  collisionRadius: 0.075
-  spreadDegrees: 0.2
-  straightSeconds: 0.16666666666666666
-  brakeSeconds: 0.13333333333333333
-  brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 0.4
+  speedMin: 53.916878146191294
+  speedMax: 53.916878146191294
+  projectileGravity: 43.13350251695304
+  lifetime: 0.25
+  collisionRadius: 0.14976910596164247
+  spreadDegrees: 0
+  straightSeconds: 0.18333333333333332
+  brakeSeconds: 0.06666666666666667
+  brakeSpeedMultiplier: 0.64
+  jumpSpreadDegrees: 8
   landingSpreadRecoverSeconds: 0.2
-  effectiveRange: 18
-  damage: 160
-  damageMin: 120
-  damageReduceStartSeconds: 0.13333333333333333
-  damageReduceEndSeconds: 0.6666666666666666
-  paintRadiusMin: 1.5
-  paintRadiusMax: 2
+  effectiveRange: 11.140100017955
+  damage: 85
+  damageMin: 85
+  damageReduceStartSeconds: 0
+  damageReduceEndSeconds: 1.65
+  paintRadiusMin: 1.4228065066356035
+  paintRadiusMax: 1.4228065066356035
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 0.2
-  trailRadiusMin: 0.65
-  trailRadiusMax: 0.9
+  trailSpacing: 1.2131297582893041
+  trailRadiusMin: 1.0873237092815244
+  trailRadiusMax: 1.0873237092815244
   trailMaxDrop: 2.4
-  chargeSeconds: 1.0
-  chargeMinDamage: 40
-  chargePartialMaxDamage: 80
-  chargeMinInk: 2
-  chargeMinRange: 8
-  chargeMinSpeed: 25
-  chargeMinSpread: 2
-  chargeMinJumpSpread: 6
+  chargeSeconds: 0
+  chargeMinDamage: 0
+  chargePartialMaxDamage: 0
+  chargeMinInk: 0
+  chargeMinRange: 0
+  chargeMinSpeed: 0
+  chargeMinSpread: 0
+  chargeMinJumpSpread: 0
   pelletCount: 1
   muzzleMode: 0
   semiBufferSeconds: 0.0
@@ -73,7 +73,15 @@ MonoBehaviour:
   splatlingTrailCount: 0
   splatlingFootRadius: 0
   splatlingPlayerRadius: 0
-  spreadExpandSeconds: 1
-  spreadRecoverSeconds: 0.5
+  spreadExpandSeconds: 0
+  spreadRecoverSeconds: 0
   baseSpreadDegrees: 0
   baseJumpSpreadDegrees: 0
+  motionMode: 2
+  blasterRepeatSeconds: 0.5833333333333334
+  blasterPostSeconds: 0.3333333333333333
+  blasterPlayerRadius: 0.1759786995049299
+  blasterBrakeEndSpeed: 50.90876565295169
+  blasterBrakeDrag: 0.36
+  blasterBrakeGravity: 188.70907351166954
+  blasterTrailCount: 11

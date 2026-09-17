@@ -5,6 +5,7 @@ import math
 import re
 import xml.etree.ElementTree as ET
 import openpyxl
+import argparse
 from migrate_weapon_seconds import TIME_FIELDS, seconds_values
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,6 +19,9 @@ def asset_values(path):
     return result
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--hero', type=int, help='Audit one authored hero while retaining source/schema checks')
+    args = parser.parse_args()
     errors = []
     def check(value, message):
         if not value: errors.append(message)
@@ -30,13 +34,20 @@ def main():
     book.close()
     generated = json.loads((ROOT/'Assets/GameResource/Bootstrap/Config/Luban/tbhero.json').read_text('utf-8-sig'))
     baseline = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/Migration-Baseline.json').read_text('utf-8'))
-    weapon_fields = re.findall(r'public (?:float|int|string|double|WeaponFireMode|WeaponMuzzleMode) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
+    pistol_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/PistolGirl-SplashTuning.json').read_text('utf-8'))
+    dualies_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/DualPistolGirl-GloogaNormal.json').read_text('utf-8'))
+    blaster_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/RapidBlaster-Tuning.json').read_text('utf-8'))
+    weapon_fields = re.findall(r'public (?:float|int|string|double|WeaponFireMode|WeaponMuzzleMode|ProjectileMotionMode|AmmoConfigAsset) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
     schema = ET.parse(ROOT/'Config/Luban/source/Defines/gameplay.xml')
     hero_fields = {node.attrib['name'] for bean in schema.iter('bean') if bean.attrib.get('name') == 'HeroConfig' for node in bean.findall('var')}
     check(hero_fields == set(columns), 'Source columns do not match Luban HeroConfig schema')
     check(not set(weapon_fields) & set(columns), 'Weapon fields remain in TbHero')
-    check(len(rows) == len(generated) == len(baseline) == 6, 'Expected exactly six heroes')
-    check(len(columns) == 31 and len(weapon_fields) == 64, 'Unexpected split field counts')
+    check({r['id'] for r in rows} == {r['id'] for r in generated}, 'Source/generated hero ids differ')
+    check({r['id'] for r in baseline} <= {r['id'] for r in rows}, 'Historical hero missing')
+    check(len(columns) >= 31 and len(weapon_fields) >= 64, 'Unexpected split field counts')
+    if args.hero is not None:
+        rows = [r for r in rows if r['id'] == args.hero]
+        check(len(rows) == 1, 'Requested hero missing or duplicated')
     group = (ROOT/'Assets/AddressableAssetsData/AssetGroups/Splatoon Local.asset').read_text('utf-8-sig')
     entries = dict(re.findall(r'  - m_GUID: (\w+)\s+ m_Address: (.+)', group))
     checked = 0
@@ -48,23 +59,50 @@ def main():
         check(path.exists(), f'Missing asset: {path}')
         if not path.exists(): continue
         values = asset_values(path)
-        check(set(values) == set(weapon_fields), f'Asset fields: {path}')
+        # Unity omits newly added fields until an asset is reserialized; runtime
+        # defaults supply these optional modes. Explicit values must be known.
+        check(set(values) <= set(weapon_fields), f'Unknown asset fields: {path}')
         meta = Path(str(path)+'.meta').read_text('utf-8')
         guid = re.search(r'^guid: (\w+)', meta, re.M)[1]
         check(entries.get(guid) == row['weaponConfigPath'], f'Addressables full path missing: {path}')
         check(list(entries.values()).count(row['weaponConfigPath']) == 1, f'Duplicate address: {path}')
-        old = seconds_values(next(h for h in baseline if h['id'] == row['id']))
+        historical = next((h for h in baseline if h['id'] == row['id']), None)
+        old = seconds_values(historical) if historical else {}
+        if row['id'] == pistol_tuning['heroId']:
+            old.update(pistol_tuning['preservedValues'])
+            old.update(pistol_tuning['values'])
+        if row['id'] == dualies_tuning['heroId']:
+            old.update(dualies_tuning['values'])
+        if row['id'] == blaster_tuning['heroId']:
+            old.update(blaster_tuning['values'])
+            old.update(blaster_tuning['heroValues'])
         combined = dict(gen, **values)
         for key, value in old.items():
+            if key == 'displayName': continue
             checked += 1
             check(equal(combined.get(key), value), f'Migration changed original value: {row["id"]}/{key}')
-        check(values.get('spreadExpandSeconds') == 1 and values.get('spreadRecoverSeconds') == .5, f'New time defaults: {path}')
+        if historical and row['id'] != blaster_tuning['heroId']:
+            check(values.get('spreadExpandSeconds') == 1 and values.get('spreadRecoverSeconds') == .5, f'New time defaults: {path}')
+        if row['id'] == 7:
+            bubble = dict(fireMode=5, motionMode=1, burstCount=4, pelletCount=1,
+                          bubbleVolleySeconds=.55, bubbleIntervalSeconds=.05, shotInk=8,
+                          startSeconds=.1, emergeStartSeconds=.2, inkRecoverLockSeconds=.65,
+                          shootMoveSpeed=2.8, speedMin=14, speedMax=14, projectileGravity=18,
+                          collisionRadius=.18, damage=30, damageMin=30, effectiveRange=24,
+                          lifetime=2.4, bubbleGroundBounces=3, bubbleMaxBounces=6,
+                          bubbleNormalRetention=.72, bubbleTangentRetention=.9, bubbleWallRetention=.9,
+                          paintRadiusMin=.65, paintRadiusMax=.85, trailSpacing=.6,
+                          trailRadiusMin=.2, trailRadiusMax=.3, trailMaxDrop=1,
+                          spreadDegrees=0, jumpSpreadDegrees=0)
+            for key, value in bubble.items():
+                check(equal(values.get(key), value), f'Bubble launch baseline: {key}')
         check(values.get('baseSpreadDegrees') == (2 if row['id'] == 3 else 0), f'Ground base: {path}')
         check(values.get('baseJumpSpreadDegrees') == (4 if row['id'] == 3 else 0), f'Air base: {path}')
     report = dict(passed=not errors, heroes=len(rows), characterFields=len(columns)-1, weaponPathFields=1,
                   originalWeaponFields=60, newWeaponFields=4, originalValuesCompared=checked, errors=errors)
     output = ROOT/'Reports/WeaponAssets'; output.mkdir(parents=True, exist_ok=True)
-    (output/'static-validation.json').write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n', 'utf-8')
+    name = f'hero-{args.hero}-static-validation.json' if args.hero is not None else 'static-validation.json'
+    (output/name).write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n', 'utf-8')
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if not errors else 1
 

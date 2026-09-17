@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 8;
-        public const int WeaponSimulationVersion = 5; // Per-weapon ammo snapshots and explosion rules.
+        public const int WeaponSimulationVersion = 9; // Includes normal dualies, bubble segments and timed terminal events.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);

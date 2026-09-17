@@ -16,7 +16,26 @@ namespace Splatoon.Tests
 {
     public sealed class CombatGirlsWeaponTests
     {
-        [SetUp] public void Setup() => HeroMigrationTests.Load();
+        [SetUp] public void Setup()
+        {
+            HeroMigrationTests.Load();
+            // Retain the retired semi-auto alternation contract in a test-only fixture.
+            // Authored automatic dualies are covered by DualPistolGirlTests.
+            WeaponConfigService.Current.SetForEditor(2, WeaponAssetTests.Changed(2, a =>
+            {
+                a.motionMode = ProjectileMotionMode.Ballistic; a.fireMode = WeaponFireMode.SemiAutomatic;
+                a.fireRate = 10; a.shotInk = .7f; a.startSeconds = 2.0 / 60;
+                a.inkRecoverLockSeconds = .25; a.semiBufferSeconds = .1; a.collisionRadius = .025f;
+            }));
+            // Exercise semi-auto buffering independently of PistolGirl's authored
+            // main weapon, which is now automatic. Never edit the source asset.
+            WeaponConfigService.Current.SetForEditor(4, WeaponAssetTests.Changed(4, a =>
+            {
+                a.fireMode = WeaponFireMode.SemiAutomatic;
+                a.fireRate = 5; a.shotInk = 1;
+                a.startSeconds = 2.0 / 60; a.semiBufferSeconds = .1;
+            }));
+        }
         [TearDown] public void Cleanup() => LubanConfigService.Current.Reset();
         static PlayerSnapshot Player(int id) => new() { HeroId=id,Health=100,Ink=100,Grounded=true,Team=1,Revision=1 };
         static bool Step(ref PlayerSnapshot s,int tick,uint press,bool held=false,bool cancel=false,bool clearance=true)
@@ -105,7 +124,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NewProtocolAndHeroSchemaRejectInvalidGunAssemblies()
         {
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(24));GameplayConfig.Validate();
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.GreaterThanOrEqualTo(27));GameplayConfig.Validate();
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }

@@ -160,18 +160,22 @@ namespace Splatoon.Prototype
                 var player=PrototypePlayer.Local;var match=PrototypeMatch.Current;var before=player.Snapshot.Value;before.Health=70;before.Ink=20;player.Snapshot.Value=before;
                 await Key(UnityEngine.InputSystem.Key.H);Check(app.Overlay==GameplayOverlay.Heroes,
                     "H opens warmup selection" + (app.Overlay==GameplayOverlay.Heroes ? "" : $" (overlay={app.Overlay}, focused={Application.isFocused}, reason={app.HeroSelectionUnavailableReason(HeroSelectionOrigin.Warmup)})"));
-                Check(app.Heroes.PortraitCount == 6, "all six portraits loaded before selection");
+                int heroCount = Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.Count;
+                Check(app.Heroes.PortraitCount == heroCount, "all portraits loaded before selection");
                 await ConfirmHero(); Check(!player.HeroChangePending, "current hero confirmation disabled");
                 uint beforePreviewShots = player.Snapshot.Value.ShotSequence;
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < heroCount; i++)
                 {
                     await ClickHero(i);
                     Check((int)typeof(PrototypeApp).GetField("_previewHeroId", Flags).GetValue(app) == i + 1, "portrait click previews hero " + (i + 1));
                     await Capture("hero-" + (i + 1));
                 }
-                Check(player.Snapshot.Value.HeroId == 1, "all six portrait clicks only preview");
+                Check(player.Snapshot.Value.HeroId == 1, "all portrait clicks only preview");
                 Check(player.Snapshot.Value.ShotSequence == beforePreviewShots, "portrait clicks do not fire");
-                await ClickHero(2);Check(player.Snapshot.Value.HeroId==1,"list click only previews");await Capture("warmup-preview");
+                await ClickHero(6); await ConfirmHero();
+                await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==7).Timeout(TimeSpan.FromSeconds(5));
+                Check(player.Snapshot.Value.HeroId == 7, "seventh card confirms BubbleGirl"); await Capture("bubble-equipped");
+                await ClickHero(2);Check(player.Snapshot.Value.HeroId==7,"list click only previews");await Capture("warmup-preview");
                 uint life=player.Snapshot.Value.Revision;await ConfirmHero();
                 await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==3).Timeout(TimeSpan.FromSeconds(5));
                 Check(player.Snapshot.Value.Ink==100,"warmup hero switch refills ink");Check(player.Snapshot.Value.Revision==life,"hero switch keeps lifecycle");Check(app.Overlay==GameplayOverlay.Heroes,"hero switch keeps list open");await Capture("warmup-equipped");
@@ -188,7 +192,7 @@ namespace Splatoon.Prototype
                 await Capture("spawn-area-hud");
                 await Key(UnityEngine.InputSystem.Key.Escape);await Click(80,37);Check(app.Overlay==GameplayOverlay.Debug,"match DEBUG button opens");await Capture("match-debug");
                 await Click(175,144);Check(app.Overlay==GameplayOverlay.Heroes,"DEBUG opens shared hero list");
-                await ClickHero(4);await Capture("charge-preview");
+                await ClickHero(4);await Capture("rapid-blaster-preview");
                 before=player.Snapshot.Value;before.Ink=20;before.InkRecoverAt=player.NetworkManager.ServerTime.Time+100;player.Snapshot.Value=before;
                 uint shots=before.ShotSequence;await ConfirmHero();
                 await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==5).Timeout(TimeSpan.FromSeconds(5));

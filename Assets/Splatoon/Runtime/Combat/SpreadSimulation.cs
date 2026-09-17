@@ -10,6 +10,7 @@ namespace Splatoon.Combat
     {
         public static Vector2 Angles(WeaponRuntimeConfig w, bool airborne, float progress)
         {
+            if (WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)) return Vector2.one * (airborne ? w.JumpSpreadDegrees : w.SpreadDegrees);
             float p = Mathf.Clamp01(progress);
             float min = airborne ? w.BaseJumpSpreadDegrees : w.BaseSpreadDegrees;
             float max = airborne ? w.JumpSpreadDegrees : w.SpreadDegrees;
@@ -20,14 +21,18 @@ namespace Splatoon.Combat
         public static void Reset(ref PlayerSnapshot s, WeaponRuntimeConfig w)
         {
             s.SpreadProgress = 0; s.SpreadFiring = false; s.SpreadInitialized = false; s.SpreadUpdatedAt = 0;
+            if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.Reset(ref s, w); return; }
             var angles = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, !s.Grounded, 0) : Angles(w, !s.Grounded, 0);
             s.CurrentSpread = angles.x; s.CurrentVerticalSpread = angles.y;
             s.LastShotSpread = s.LastShotVerticalSpread = 0;
         }
         public static void Before(ref PlayerSnapshot s, WeaponRuntimeConfig w, double now)
         {
+            if (WeaponSimulation.IsBlaster(w))
+            { s.SpreadProgress = 0; s.SpreadFiring = false; s.SpreadUpdatedAt = now; Refresh(ref s, w); return; }
             float dt = s.SpreadInitialized ? (float)Math.Max(0, now - s.SpreadUpdatedAt) : 0;
             s.SpreadInitialized = true; s.SpreadUpdatedAt = now;
+            if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.Before(ref s, w, now, dt); return; }
             if (WeaponSimulation.IsCharge(w))
             {
                 float charge = WeaponSimulation.ChargeRatio(s, w);
@@ -43,6 +48,13 @@ namespace Splatoon.Combat
         }
         public static void After(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, bool emitted, float charge, bool canShoot)
         {
+            if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.After(ref s, input, w, emitted, canShoot); return; }
+            if (WeaponSimulation.IsBlaster(w))
+            {
+                s.SpreadFiring = false; Refresh(ref s, w);
+                if (emitted) { s.LastShotSpread = s.CurrentSpread; s.LastShotVerticalSpread = s.CurrentVerticalSpread; }
+                return;
+            }
             if (WeaponSimulation.IsCharge(w))
             {
                 if (emitted) s.CurrentSpread = WeaponSimulation.Spread(w, !s.Grounded, charge);
@@ -66,6 +78,7 @@ namespace Splatoon.Combat
         }
         public static void Refresh(ref PlayerSnapshot s, WeaponRuntimeConfig w)
         {
+            if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.Refresh(ref s, w); return; }
             if (WeaponSimulation.IsCharge(w)) return;
             var angles = Angles(w, !s.Grounded, s.SpreadProgress);
             s.CurrentSpread = angles.x; s.CurrentVerticalSpread = angles.y;

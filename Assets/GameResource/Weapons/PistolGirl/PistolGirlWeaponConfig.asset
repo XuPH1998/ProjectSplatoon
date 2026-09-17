@@ -14,38 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefabAddress: Weapon/Pistol
   ammoConfig: {fileID: 11400000, guid: 87e2eaa701d945b4a43315528b8cdf45, type: 2}
-  fireMode: 3
-  fireRate: 5
-  shotInk: 1
+  fireMode: 0
+  fireRate: 12
+  shotInk: 0.8
   startSeconds: 0.03333333333333333
   emergeStartSeconds: 0.16666666666666666
-  inkRecoverLockSeconds: 0.36666666666666664
-  shootMoveSpeed: 3.4
+  inkRecoverLockSeconds: 0.3333333333333333
+  shootMoveSpeed: 3.6
   burstCount: 1
   burstRecoverySeconds: 0
   speedMin: 35
   speedMax: 35
-  projectileGravity: 7.5
+  projectileGravity: 18
   lifetime: 10
   collisionRadius: 0.025
-  spreadDegrees: 2
+  spreadDegrees: 0
   straightSeconds: 0.075
   brakeSeconds: 0.13333333333333333
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 2
+  jumpSpreadDegrees: 0
   landingSpreadRecoverSeconds: 0.2
-  effectiveRange: 12
-  damage: 52
-  damageMin: 26
-  damageReduceStartSeconds: 0.3
-  damageReduceEndSeconds: 0.7
-  paintRadiusMin: 0.8
-  paintRadiusMax: 1.4
+  effectiveRange: 9
+  damage: 28
+  damageMin: 14
+  damageReduceStartSeconds: 0.16666666666666666
+  damageReduceEndSeconds: 0.3333333333333333
+  paintRadiusMin: 0.65
+  paintRadiusMax: 1
   paintHardness: 0.55
   paintStrength: 1
   trailSpacing: 0.2
   trailRadiusMin: 0.35
-  trailRadiusMax: 0.75
+  trailRadiusMax: 0.55
   trailMaxDrop: 2.4
   chargeSeconds: 0
   chargeMinDamage: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   chargeMinJumpSpread: 0
   pelletCount: 1
   muzzleMode: 0
-  semiBufferSeconds: 0.1
+  semiBufferSeconds: 0
   splatlingMinChargeSeconds: 0
   splatlingFirstChargeSeconds: 0
   splatlingFirstShootSeconds: 0

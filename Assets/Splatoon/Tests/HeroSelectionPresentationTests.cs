@@ -29,12 +29,12 @@ namespace Splatoon.Tests
             string name = GameplayConfig.GetHero(id).CharacterPrefabAddress.Split('/').Last();
             return AssetDatabase.LoadAssetAtPath<CharacterPresentationProfile>($"Assets/GameResource/Characters/{name}/{name}Presentation.asset");
         }
-        [Test] public void SixHeroesHaveDistinctNamedPortraitsRegisteredForPlayers()
+        [Test] public void SevenHeroesHaveDistinctNamedPortraitsRegisteredForPlayers()
         {
-            string[] names = {"紫苑", "夜雀", "白凛", "隼音", "月兔", "焰橙"};
+            string[] names = {"紫苑", "夜雀", "白凛", "隼音", "月兔", "焰橙", "沫澜"};
             var heroes = LubanConfigService.Current.Tables.TbHero.DataList;
             Assert.That(heroes.Select(h => h.DisplayName), Is.EqualTo(names));
-            Assert.That(heroes.Select(h => h.PortraitAddress).Distinct().Count(), Is.EqualTo(6));
+            Assert.That(heroes.Select(h => h.PortraitAddress).Distinct().Count(), Is.EqualTo(7));
             foreach (var hero in heroes)
             {
                 Assert.That(hero.WeaponTypeName, Is.Not.Empty);
@@ -48,7 +48,7 @@ namespace Splatoon.Tests
                 Assert.That(png[16] * 16777216 + png[17] * 65536 + png[18] * 256 + png[19], Is.EqualTo(1024));
             }
         }
-        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)] [TestCase(6)]
+        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)] [TestCase(6)] [TestCase(7)]
         public void OnlyFourStatsAndCorrectWeaponSpecificUnits(int id)
         {
             var w = GameplayConfig.GetWeapon(id); var g = GameplayConfig.Global;
@@ -58,11 +58,12 @@ namespace Splatoon.Tests
             if (id == 3) { Assert.That(values[0].Note, Does.Contain("8 颗")); Assert.That(values[1].Value, Does.Contain("次齐射/秒")); }
             if (id == 5) { Assert.That(HeroSelectionStats.MaximumGroundSpread(w), Is.EqualTo(2)); Assert.That(HeroSelectionStats.FullChargeRate(w), Is.LessThan(w.FireRate)); }
             if (id == 6) Assert.That(values[1].Note, Is.EqualTo("连射阶段"));
+            if (id == 7) { Assert.That(values[0].Note, Does.Contain("4 颗")); Assert.That(values[1].Value, Does.Contain("组/秒")); Assert.That(values[3].Note, Does.Contain("弹跳")); }
             Directory.CreateDirectory("Reports/HeroSelection");
             File.WriteAllLines($"Reports/HeroSelection/stats-{id}.txt", new[] { GameplayConfig.GetHero(id).DisplayName }
                 .Concat(values.Select(s => s.Label + ": " + s.Value + " (" + s.Note + ")")));
         }
-        [TestCase(1,0)] [TestCase(2,0)] [TestCase(3,0)] [TestCase(4,0)] [TestCase(5,0)] [TestCase(5,1)] [TestCase(6,0)] [TestCase(6,1)]
+        [TestCase(1,0)] [TestCase(2,0)] [TestCase(3,0)] [TestCase(4,0)] [TestCase(5,0)] [TestCase(5,1)] [TestCase(6,0)] [TestCase(6,1)] [TestCase(7,0)]
         public void CalculatedRangeMatchesRealProjectileGroundCollision(int id, int full)
         {
             var w = GameplayConfig.GetWeapon(id); var g = GameplayConfig.Global; var profile = Profile(id);

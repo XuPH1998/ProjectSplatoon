@@ -23,12 +23,15 @@ namespace Splatoon.Combat
     {
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
-        public static double FireInterval(WeaponRuntimeConfig w) => 1.0 / w.FireRate;
+        public static double FireInterval(WeaponRuntimeConfig w) => IsBlaster(w) ? w.BlasterRepeatSeconds : IsBubble(w) ? w.BubbleVolleySeconds : 1.0 / w.FireRate;
+        public static bool IsBubble(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.BubbleVolley;
         public static bool IsCharge(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Charge;
-        public static bool IsSemi(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.SemiAutomatic;
+        public static bool IsBlaster(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Blaster;
+        public static bool IsSemi(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.SemiAutomatic || IsBlaster(w);
+        public static bool RecoveryLocked(PlayerSnapshot s, double now) => now + 1e-8 < s.AttackRecoveryUntil;
         public static bool IsSplatling(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Splatling;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now)
-            => IsSplatling(w) ? SplatlingSimulation.WantsFire(s, input, now) : !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
+            => IsBubble(w) ? BubbleVolleySimulation.WantsFire(s, input, w, now) : IsSplatling(w) ? SplatlingSimulation.WantsFire(s, input, now) : !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
                 (s.WeaponPhase == WeaponPhase.Starting || (s.Ink + .00001f >= w.ShotInk &&
                 (input.Fire || (input.FireSequence != s.ConsumedFire && now + w.SemiBufferSeconds + 1e-8 >= s.NextShotAt))));
         public static void ResetPresentation(ref PlayerSnapshot s)
@@ -91,6 +94,7 @@ namespace Splatoon.Combat
             bool edge = input.FireSequence != s.ConsumedFire;
             bool release = input.ReleaseSequence != s.ConsumedRelease;
             s.ConsumedRelease = input.ReleaseSequence;
+            if (IsBubble(w)) return BubbleVolleySimulation.Step(ref s, input, w, now, emerged, canShoot, edge, out result);
             if (IsSplatling(w)) return SplatlingSimulation.Step(ref s, input, GameplayConfig.GetHero(s.HeroId), w, now, emerged, canShoot, edge, release, out result);
             if (IsSemi(w)) return StepSemi(ref s, input, w, now, emerged, canShoot, edge, out result);
             bool chargeWeapon = IsCharge(w), burst = w.FireMode == WeaponFireMode.Burst;
@@ -198,6 +202,7 @@ namespace Splatoon.Combat
             else { s.LeftShotAt = now; s.LeftShotAction = s.ShotActionId; }
             if (w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft) s.NextMuzzle = (byte)(1 - s.LastShotMuzzle);
             s.NextShotAt = now + FireInterval(w);
+            if (IsBlaster(w)) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.BlasterPostSeconds);
             s.InkRecoverAt = now + w.InkRecoverLockSeconds; s.ProtectedUntil = 0;
             result = new WeaponFireResult(s.HeroId, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);
             return true;

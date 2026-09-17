@@ -11,6 +11,11 @@ namespace Splatoon.Combat
     {
         public static InkPresentation Current { get; private set; }
         public ParticleSystem StreamPrefab, ImpactPrefab;
+        BubbleFlightPresentation _bubbles;
+        BubbleFlightPresentation Bubbles => _bubbles ??= new BubbleFlightPresentation(transform);
+        readonly List<(InkImpact impact, AmmoRuntimeConfig ammo)> _bubbleCompletions = new(384);
+        public int BubbleRestoredCount { get; private set; }
+        public int BubbleBounceCount { get; private set; }
         public const int VersionPoolLimit = 12;
         public int VersionPoolCount => _flights.Count;
         public int ParticleCount { get; private set; }
@@ -78,14 +83,38 @@ namespace Splatoon.Combat
             if (_shotAmmo.ContainsKey((shot.Round, shot.Id))) return;
             shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
             if (shot.Configuration?.Ammo != null) _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo;
+            if (shot.Configuration?.MotionMode == ProjectileMotionMode.BouncingBubble)
+            {
+                double bubbleNow = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : shot.Born;
+                if (Bubbles.Spawn(shot, bubbleNow) && PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var bubblePlayer)) bubblePlayer.PredictShotFeedback(shot);
+                return;
+            }
             var flight = ForAmmo(shot.Configuration?.Ammo);
             double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : shot.Born;
             if (flight == null || !flight.Spawn(shot, now)) return;
             if (PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var player)) player.PredictShotFeedback(shot);
         }
+        public void Bounce(InkBounce bounce)
+        {
+            if (bounce.Round < _round || bounce.Time < _cutoff || _completed.Contains((bounce.Round, bounce.Id))) return;
+            BubbleBounceCount++;
+            Bubbles.Bounce(bounce);
+        }
+        public void RestoreBubble(InkBubbleState state)
+        {
+            if (state.Shot.Round < _round || state.Segment.Time < _cutoff || _completed.Contains((state.Shot.Round, state.Shot.Id))) return;
+            // Snapshot restoration must not replay old gunfire feedback.
+            var shot = state.Shot; shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
+            if (shot.Configuration == null) return;
+            _round = shot.Round; _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo;
+            double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : state.Segment.Time;
+            if (Bubbles.Spawn(shot, now)) BubbleRestoredCount++;
+            if (state.Segment.Sequence > 0) Bubbles.Bounce(state.Segment, false);
+        }
         public void Impact(InkImpact impact)
         {
             if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact);
+            if (_completed.Contains((impact.Round, impact.Id))) return;
             _shotAmmo.TryGetValue((impact.Round, impact.Id), out var ammo);
             if (_completed.Add((impact.Round, impact.Id)))
             {
@@ -93,9 +122,20 @@ namespace Splatoon.Combat
                 _completionOrder.Enqueue((impact.Round, impact.Id));
             }
             FindFlight(ammo)?.Complete(impact);
-            if (ammo != null && ammo.HasExplosion) { _shotAmmo.Remove((impact.Round, impact.Id)); return; }
+            if (ammo != null && ammo.HasExplosionVisual) { _shotAmmo.Remove((impact.Round, impact.Id)); return; }
             _shotAmmo.Remove((impact.Round, impact.Id));
-            if (!impact.Hit || _pool.Count == 0) return;
+            if (ammo?.BubblePrefab != null)
+            {
+                // Damage confirmation is immediate; visible popping shares the delayed segment clock.
+                _bubbleCompletions.Add((impact, ammo));
+                return;
+            }
+            PlayImpact(impact, ammo);
+        }
+        void PlayImpact(InkImpact impact, AmmoRuntimeConfig ammo)
+        {
+            _bubbles?.Complete(impact);
+            if ((!impact.Hit && ammo?.BubblePrefab == null) || _pool.Count == 0) return;
             var effect = _pool.Dequeue(); effect.gameObject.SetActive(true);
             var normal = impact.Normal.sqrMagnitude > .01f ? impact.Normal.normalized : Vector3.up;
             effect.transform.SetPositionAndRotation(impact.Position + normal * .02f, Quaternion.LookRotation(normal));
@@ -114,17 +154,26 @@ namespace Splatoon.Combat
         }
         public void Explosion(InkExplosionEvent explosion)
         {
-            if (!_seenExplosions.Add((explosion.Round, explosion.ShotId))) return;
             if (PrototypeMatch.Current == null || explosion.Round != PrototypeMatch.Current.State.Value.Round) return;
+            if (explosion.Time < _cutoff || !_seenExplosions.Add((explosion.Round, explosion.ShotId))) return;
             var ammo = WeaponConfigService.Current.ForShot(explosion.HeroId, explosion.ConfigurationRevision)?.Ammo;
-            if (ammo == null || !ammo.HasExplosion) return;
+            if (ammo == null || !ammo.HasExplosionVisual) return;
             var rotation = explosion.Normal.sqrMagnitude > .01f ? Quaternion.LookRotation(explosion.Normal) : Quaternion.identity;
             GameObject go;
             if (_explosionPool.TryGetValue(ammo.ExplosionPrefab, out var pool) && pool.Count > 0) { go = pool.Dequeue(); go.transform.SetPositionAndRotation(explosion.Position, rotation); go.SetActive(true); }
             else go = Instantiate(ammo.ExplosionPrefab, explosion.Position, rotation, transform);
             go.name = "Ink explosion";
-            foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true)) { ps.useAutoRandomSeed = false; ps.randomSeed = explosion.Seed == 0 ? 1u : explosion.Seed; ps.Play(true); }
-            _explosionEffects.Add((go, Time.time + 3f, ammo.ExplosionPrefab));
+            go.transform.localScale = Vector3.one * InkExplosionRules.Radius(ammo, explosion.Collision);
+            var teamColor = PrototypeArena.TeamColor(explosion.Team);
+            foreach (var particles in go.GetComponentsInChildren<ParticleSystem>(true))
+            { var main = particles.main; main.startColor = teamColor; }
+            float lifetime = .05f;
+            foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                lifetime = Mathf.Max(lifetime, ps.main.duration + ps.main.startLifetime.constantMax);
+                ps.useAutoRandomSeed = false; ps.randomSeed = explosion.Seed == 0 ? 1u : explosion.Seed; ps.Play(true);
+            }
+            _explosionEffects.Add((go, Time.time + Mathf.Min(lifetime, 3f), ammo.ExplosionPrefab));
         }
         private void RecycleImpacts()
         {
@@ -147,7 +196,7 @@ namespace Splatoon.Combat
         }
         public void ClearFlights(double cutoff = double.NegativeInfinity)
         {
-            _cutoff = cutoff;
+            _cutoff = cutoff; _bubbles?.Clear(); _bubbleCompletions.Clear();
             foreach (var version in _flights) version.Flight.Clear(cutoff);
             _shotAmmo.Clear(); _completed.Clear(); _completionOrder.Clear();
             ParticleCount = ActiveGroups = ActiveShots = DroppedSamples = 0;
@@ -155,12 +204,16 @@ namespace Splatoon.Combat
         public void UpdateFlights(double now, Camera camera)
         {
             ParticleCount = ActiveGroups = ActiveShots = DroppedSamples = 0;
+            for (int i = _bubbleCompletions.Count - 1; i >= 0; i--)
+                if (now >= _bubbleCompletions[i].impact.Time + BubbleFlightPresentation.RenderDelay)
+                { var item = _bubbleCompletions[i]; PlayImpact(item.impact, item.ammo); _bubbleCompletions.RemoveAt(i); }
             foreach (var version in _flights)
             {
                 version.Flight.Update(now, camera);
                 ParticleCount += version.Flight.ParticleCount; ActiveGroups += version.Flight.ActiveGroups;
                 ActiveShots += version.Flight.ActiveShots; DroppedSamples += version.Flight.DroppedSamples;
             }
+            _bubbles?.Update(now); ActiveShots += _bubbles?.ActiveCount ?? 0; ParticleCount += _bubbles?.ActiveCount ?? 0; DroppedSamples += _bubbles?.Dropped ?? 0;
             PruneFlights();
         }
         public int CopyParticles(byte team, ParticleSystem.Particle[] destination)
@@ -215,6 +268,7 @@ namespace Splatoon.Combat
         static bool MuzzleDestroyed(InkMuzzleEmitter muzzle) => muzzle == null;
         private void OnDestroy()
         {
+            _bubbles?.Dispose();
             foreach (var version in _flights) version.Flight.Dispose();
             _flights.Clear();
             foreach (var muzzle in _muzzles) if (muzzle != null) HeroViewBinder.Destroy(muzzle.gameObject);

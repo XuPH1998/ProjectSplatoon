@@ -17,7 +17,7 @@ namespace Splatoon.Editor
     {
         public const string Root = "Assets/GameResource/Characters/Shared/Paper";
         public const string Output = "Reports/PaperBody";
-        public static readonly string[] Heroes = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl" };
+        public static readonly string[] Heroes = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl", "BubbleGirl" };
         public static void ConfigureHero(string hero) => Configure(hero, Shader.Find("Splatoon/PaperBody"));
         static PaperBodyBuilder() => EditorApplication.update += Poll;
         static void Poll()

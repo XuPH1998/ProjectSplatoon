@@ -73,7 +73,7 @@ namespace Splatoon.Tests
             host.RequestHeroChange(6,HeroSelectionOrigin.Warmup);
             yield return Wait(()=>!host.HeroChangePending&&host.Snapshot.Value.HeroId==6,"Select ID 6 through real request");
             yield return null;
-            Assert.That(app.Heroes.All.Count(),Is.EqualTo(6));Assert.That(app.Heroes.AssetCount,Is.EqualTo(12));
+            Assert.That(app.Heroes.All.Count(),Is.EqualTo(7));Assert.That(app.Heroes.AssetCount,Is.EqualTo(14));
             Assert.That(host.CharacterView.Profile.Splatling,Is.True);Assert.That(host.SwimBody.Profile,Is.Not.Null);
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var players=new List<PrototypePlayer>{host};

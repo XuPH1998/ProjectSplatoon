@@ -70,13 +70,75 @@ namespace Splatoon.Config
         public readonly float SpreadRecoverSeconds;
         public readonly float BaseSpreadDegrees;
         public readonly float BaseJumpSpreadDegrees;
+        public readonly ProjectileMotionMode MotionMode;
+        public readonly double BubbleVolleySeconds;
+        public readonly double BubbleIntervalSeconds;
+        public readonly int BubbleGroundBounces;
+        public readonly int BubbleMaxBounces;
+        public readonly float BubbleNormalRetention;
+        public readonly float BubbleTangentRetention;
+        public readonly float BubbleWallRetention;
+        public readonly double BlasterRepeatSeconds;
+        public readonly double BlasterPostSeconds;
+        public readonly float BlasterPlayerRadius;
+        public readonly float BlasterBrakeEndSpeed;
+        public readonly float BlasterBrakeDrag;
+        public readonly float BlasterBrakeGravity;
+        public readonly int BlasterTrailCount;
+        public readonly float DualiesBrakeEndSpeed;
+        public readonly float DualiesBrakeDrag;
+        public readonly float DualiesBrakeGravity;
+        public readonly float DualiesPlayerRadius;
+        public readonly float DualiesSpreadMinBias;
+        public readonly float DualiesSpreadMaxBias;
+        public readonly float DualiesSpreadPerShot;
+        public readonly float DualiesSpreadRecoverPerSecond;
+        public readonly float DualiesJumpBias;
+        public readonly double DualiesJumpRecoverStartSeconds;
+        public readonly double DualiesJumpRecoverEndSeconds;
+        public readonly float DualiesTrailStartDistance;
+        public readonly int DualiesTrailCount;
+        public readonly int DualiesFootEvery;
+        public readonly float DualiesFootRadius;
         public readonly AmmoRuntimeConfig Ammo;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            DualiesBrakeEndSpeed = source.dualiesBrakeEndSpeed;
+            DualiesBrakeDrag = source.dualiesBrakeDrag;
+            DualiesBrakeGravity = source.dualiesBrakeGravity;
+            DualiesPlayerRadius = source.dualiesPlayerRadius;
+            DualiesSpreadMinBias = source.dualiesSpreadMinBias;
+            DualiesSpreadMaxBias = source.dualiesSpreadMaxBias;
+            DualiesSpreadPerShot = source.dualiesSpreadPerShot;
+            DualiesSpreadRecoverPerSecond = source.dualiesSpreadRecoverPerSecond;
+            DualiesJumpBias = source.dualiesJumpBias;
+            DualiesJumpRecoverStartSeconds = source.dualiesJumpRecoverStartSeconds;
+            DualiesJumpRecoverEndSeconds = source.dualiesJumpRecoverEndSeconds;
+            DualiesTrailStartDistance = source.dualiesTrailStartDistance;
+            DualiesTrailCount = source.dualiesTrailCount;
+            DualiesFootEvery = source.dualiesFootEvery;
+            DualiesFootRadius = source.dualiesFootRadius;
+            BlasterRepeatSeconds = source.blasterRepeatSeconds;
+            BlasterPostSeconds = source.blasterPostSeconds;
+            BlasterPlayerRadius = source.blasterPlayerRadius;
+            BlasterBrakeEndSpeed = source.blasterBrakeEndSpeed;
+            BlasterBrakeDrag = source.blasterBrakeDrag;
+            BlasterBrakeGravity = source.blasterBrakeGravity;
+            BlasterBrakeGravity = source.blasterBrakeGravity;
+            BlasterTrailCount = source.blasterTrailCount;
+            MotionMode = source.motionMode;
+            BubbleVolleySeconds = source.bubbleVolleySeconds;
+            BubbleIntervalSeconds = source.bubbleIntervalSeconds;
+            BubbleGroundBounces = source.bubbleGroundBounces;
+            BubbleMaxBounces = source.bubbleMaxBounces;
+            BubbleNormalRetention = source.bubbleNormalRetention;
+            BubbleTangentRetention = source.bubbleTangentRetention;
+            BubbleWallRetention = source.bubbleWallRetention;
             Ammo = new AmmoRuntimeConfig(source != null ? source.ammoConfig : null);
             WeaponPrefabAddress = source.weaponPrefabAddress;
             FireMode = source.fireMode;
-            FireRate = source.fireRate;
+            FireRate = source.fireMode == WeaponFireMode.Blaster && source.blasterRepeatSeconds > 0
+                ? (float)(1.0 / source.blasterRepeatSeconds) : source.fireRate;
             ShotInk = source.shotInk;
             StartSeconds = source.startSeconds;
             EmergeStartSeconds = source.emergeStartSeconds;
@@ -141,6 +203,28 @@ namespace Splatoon.Config
         }
         public void Write(BinaryWriter writer)
         {
+            writer.Write(DualiesBrakeEndSpeed);
+            writer.Write(DualiesBrakeDrag);
+            writer.Write(DualiesBrakeGravity);
+            writer.Write(DualiesPlayerRadius);
+            writer.Write(DualiesSpreadMinBias);
+            writer.Write(DualiesSpreadMaxBias);
+            writer.Write(DualiesSpreadPerShot);
+            writer.Write(DualiesSpreadRecoverPerSecond);
+            writer.Write(DualiesJumpBias);
+            writer.Write(DualiesJumpRecoverStartSeconds);
+            writer.Write(DualiesJumpRecoverEndSeconds);
+            writer.Write(DualiesTrailStartDistance);
+            writer.Write(DualiesTrailCount);
+            writer.Write(DualiesFootEvery);
+            writer.Write(DualiesFootRadius);
+            writer.Write(BlasterRepeatSeconds);
+            writer.Write(BlasterPostSeconds);
+            writer.Write(BlasterPlayerRadius);
+            writer.Write(BlasterBrakeEndSpeed);
+            writer.Write(BlasterBrakeDrag);
+            writer.Write(BlasterBrakeGravity);
+            writer.Write(BlasterTrailCount);
             writer.Write(WeaponPrefabAddress ?? "");
             writer.Write((int)FireMode);
             writer.Write(FireRate);
@@ -205,6 +289,14 @@ namespace Splatoon.Config
             writer.Write(SpreadRecoverSeconds);
             writer.Write(BaseSpreadDegrees);
             writer.Write(BaseJumpSpreadDegrees);
+            writer.Write((int)MotionMode);
+            writer.Write(BubbleVolleySeconds);
+            writer.Write(BubbleIntervalSeconds);
+            writer.Write(BubbleGroundBounces);
+            writer.Write(BubbleMaxBounces);
+            writer.Write(BubbleNormalRetention);
+            writer.Write(BubbleTangentRetention);
+            writer.Write(BubbleWallRetention);
             Ammo?.Write(writer);
         }
         public bool SameValues(WeaponRuntimeConfig other)
@@ -216,6 +308,7 @@ namespace Splatoon.Config
             return a.ToArray().AsSpan().SequenceEqual(b.ToArray());
         }
         public bool RequiresRestart(WeaponRuntimeConfig other) => other == null ||
-            WeaponPrefabAddress != other.WeaponPrefabAddress || FireMode != other.FireMode || FireRate != other.FireRate || ShotInk != other.ShotInk || StartSeconds != other.StartSeconds || EmergeStartSeconds != other.EmergeStartSeconds || InkRecoverLockSeconds != other.InkRecoverLockSeconds || BurstCount != other.BurstCount || BurstRecoverySeconds != other.BurstRecoverySeconds || ChargeSeconds != other.ChargeSeconds || ChargeMinInk != other.ChargeMinInk || PelletCount != other.PelletCount || MuzzleMode != other.MuzzleMode || SemiBufferSeconds != other.SemiBufferSeconds || SplatlingMinChargeSeconds != other.SplatlingMinChargeSeconds || SplatlingFirstChargeSeconds != other.SplatlingFirstChargeSeconds || SplatlingFirstShootSeconds != other.SplatlingFirstShootSeconds || SplatlingFullShootSeconds != other.SplatlingFullShootSeconds || SplatlingSlowChargeMultiplier != other.SplatlingSlowChargeMultiplier || SplatlingPostSeconds != other.SplatlingPostSeconds;
+            BlasterRepeatSeconds != other.BlasterRepeatSeconds || BlasterPostSeconds != other.BlasterPostSeconds ||
+            MotionMode != other.MotionMode || BubbleVolleySeconds != other.BubbleVolleySeconds || BubbleIntervalSeconds != other.BubbleIntervalSeconds || WeaponPrefabAddress != other.WeaponPrefabAddress || FireMode != other.FireMode || FireRate != other.FireRate || ShotInk != other.ShotInk || StartSeconds != other.StartSeconds || EmergeStartSeconds != other.EmergeStartSeconds || InkRecoverLockSeconds != other.InkRecoverLockSeconds || BurstCount != other.BurstCount || BurstRecoverySeconds != other.BurstRecoverySeconds || ChargeSeconds != other.ChargeSeconds || ChargeMinInk != other.ChargeMinInk || PelletCount != other.PelletCount || MuzzleMode != other.MuzzleMode || SemiBufferSeconds != other.SemiBufferSeconds || SplatlingMinChargeSeconds != other.SplatlingMinChargeSeconds || SplatlingFirstChargeSeconds != other.SplatlingFirstChargeSeconds || SplatlingFirstShootSeconds != other.SplatlingFirstShootSeconds || SplatlingFullShootSeconds != other.SplatlingFullShootSeconds || SplatlingSlowChargeMultiplier != other.SplatlingSlowChargeMultiplier || SplatlingPostSeconds != other.SplatlingPostSeconds;
     }
 }

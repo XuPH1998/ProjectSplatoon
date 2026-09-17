@@ -8,6 +8,39 @@ namespace Splatoon.Config
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
             w.Ammo.Validate();
+            if (w.MotionMode == ProjectileMotionMode.DualiesNormal)
+            {
+                Require(w.FireMode == WeaponFireMode.Automatic && w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft &&
+                    w.PelletCount == 1 && !w.Ammo.ExplosionEnabled, "普通双枪须全自动交替单发，不启用爆炸");
+                Require(w.DualiesBrakeEndSpeed > 0 && w.DualiesBrakeEndSpeed <= w.SpeedMin &&
+                    w.DualiesBrakeDrag > 0 && w.DualiesBrakeDrag < 1 && w.DualiesBrakeGravity > 0 &&
+                    w.DualiesPlayerRadius >= w.CollisionRadius, "双枪制动或玩家半径无效");
+                Require(w.DualiesSpreadMinBias > 0 && w.DualiesSpreadMinBias <= w.DualiesSpreadMaxBias &&
+                    w.DualiesSpreadMaxBias <= w.DualiesJumpBias && w.DualiesJumpBias < 1 &&
+                    w.DualiesSpreadPerShot > 0 && w.DualiesSpreadRecoverPerSecond > 0 &&
+                    w.DualiesJumpRecoverEndSeconds > w.DualiesJumpRecoverStartSeconds, "双枪散布偏置或恢复时间无效");
+                Require(w.DualiesFootEvery > 0 && w.DualiesFootRadius > 0 && w.DualiesTrailCount > 0 &&
+                    w.DualiesTrailCount <= 16 && w.DualiesTrailStartDistance > 0, "双枪落墨配置无效");
+            }
+            if (w.FireMode == WeaponFireMode.Blaster || w.MotionMode == ProjectileMotionMode.TimedBlaster)
+                Require(w.FireMode == WeaponFireMode.Blaster && w.MotionMode == ProjectileMotionMode.TimedBlaster &&
+                    w.BlasterRepeatSeconds >= 1.0 / 60 && w.BlasterPostSeconds > 0 && w.BlasterPostSeconds < w.BlasterRepeatSeconds &&
+                    Math.Abs(w.BlasterRepeatSeconds * w.FireRate - 1) < .00001 &&
+                    w.BlasterPlayerRadius >= w.CollisionRadius && w.BlasterBrakeEndSpeed > 0 && w.BlasterBrakeEndSpeed <= w.SpeedMin &&
+                    w.BlasterBrakeDrag >= 0 && w.BlasterBrakeDrag < 1 && w.BlasterBrakeGravity > 0 &&
+                    w.BlasterTrailCount > 0 && w.BlasterTrailCount <= 64 && w.Lifetime > w.StraightSeconds &&
+                    w.Ammo.ExplosionEnabled && w.Ammo.ExplosionRadius > 0 && w.Ammo.ExplosionConstantDamage && w.Ammo.ExcludeDirectHitFromExplosion &&
+                    w.Damage == w.DamageMin && w.ChargeSeconds == 0 && w.PelletCount == 1 && w.BurstCount == 1,
+                    "爆破枪发射、制动、碰撞或爆风配置无效");
+            if (w.FireMode == WeaponFireMode.BubbleVolley || w.MotionMode == ProjectileMotionMode.BouncingBubble)
+                Require(w.FireMode == WeaponFireMode.BubbleVolley && w.MotionMode == ProjectileMotionMode.BouncingBubble &&
+                    w.BurstCount >= 1 && w.BurstCount <= 8 && w.BubbleIntervalSeconds >= 1.0 / 60 &&
+                    w.BubbleVolleySeconds > (w.BurstCount - 1) * w.BubbleIntervalSeconds &&
+                    w.BubbleGroundBounces >= 0 && w.BubbleMaxBounces >= w.BubbleGroundBounces && w.BubbleMaxBounces <= 16 &&
+                    w.BubbleNormalRetention > 0 && w.BubbleNormalRetention <= 1 && w.BubbleTangentRetention > 0 && w.BubbleTangentRetention <= 1 &&
+                    w.BubbleWallRetention > 0 && w.BubbleWallRetention <= 1 && !w.Ammo.ExplosionEnabled && w.PelletCount == 1 &&
+                    w.Damage == w.DamageMin && w.SpreadDegrees == 0 && w.JumpSpreadDegrees == 0 &&
+                    w.StraightSeconds == 0 && w.BrakeSpeedMultiplier == 1 && w.Ammo.BubblePrefab != null, "泡泡连发、弹跳或伤害配置无效");
             foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
             {
                 string name = WeaponConfigLabels.Name(f.Name);
@@ -23,9 +56,9 @@ namespace Splatoon.Config
                     w.ChargePartialMaxDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.SplatlingSpeedBias > 0 && w.SplatlingSpeedBias < 1 &&
                     w.SplatlingSpreadBias > 0 && w.SplatlingSpreadBias < 1 && w.ChargeMinSpeed > 0 && w.ChargeMinRange > 0, "旋转枪分段蓄力或弹道配置无效");
                 Require(w.PelletCount >= 1 && w.PelletCount <= 8 && w.SemiBufferSeconds * w.FireRate <= 1 + .00001 / 60, "弹丸数量须为1至8，点击缓存时长不得超过一次射击间隔");
-                Require(w.FireMode == WeaponFireMode.SemiAutomatic || (w.PelletCount == 1 && w.MuzzleMode == WeaponMuzzleMode.Single && w.SemiBufferSeconds == 0), "新增齐射和轮播仅用于半自动");
+                Require(w.FireMode == WeaponFireMode.SemiAutomatic || (w.PelletCount == 1 && w.SemiBufferSeconds == 0 && (w.MuzzleMode == WeaponMuzzleMode.Single || w.FireMode == WeaponFireMode.Automatic)), "齐射和点击缓存仅用于半自动；交替枪口支持半自动或全自动");
                 Require(w.MuzzleMode != WeaponMuzzleMode.AlternatingRightLeft || w.PelletCount == 1, "双枪每次只发射一颗墨弹");
-                Require(w.FireMode == WeaponFireMode.Burst || w.BurstCount == 1, "非三连发武器每次只发射一颗");
+                Require(w.FireMode == WeaponFireMode.Burst || w.FireMode == WeaponFireMode.BubbleVolley || w.BurstCount == 1, "非三连发武器每次只发射一颗");
                 if (w.FireMode == WeaponFireMode.Burst) Require(w.BurstCount == 3 && w.BurstRecoverySeconds * w.FireRate >= 1 - .00001 / 60, "三连发须为每组3发，组间恢复时长不得短于一次射击间隔");
                 if (w.FireMode == WeaponFireMode.Charge) Require(w.ChargeSeconds > 0 && w.ChargeMinDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.ChargePartialMaxDamage >= w.ChargeMinDamage && w.ChargeMinInk > 0 && w.ChargeMinInk < w.ShotInk && w.ChargeMinRange > 0 && w.ChargeMinRange <= w.EffectiveRange && w.ChargeMinSpeed > 0 && w.ChargeMinSpeed <= w.SpeedMin && w.ChargeMinJumpSpread >= w.ChargeMinSpread, "蓄力端点配置无效");
                 Require(w.FireRate > 0 && w.FireRate <= 240 && w.Lifetime > 0 && w.Lifetime <= 10 && w.ShotInk > 0 && w.Damage > 0, "武器射击配置无效");

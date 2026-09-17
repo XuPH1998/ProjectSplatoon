@@ -93,8 +93,8 @@ namespace Splatoon.Combat
         }
         public void Shot(byte muzzleIndex = 0, ulong actionId = 0, double born = double.NaN)
         {
-            _kick = 1;
             var weapon = GameplayConfig.GetWeapon(_state.HeroId);
+            if (!WeaponSimulation.IsBubble(weapon) || (uint)actionId == 1) _kick = 1;
             var nozzle = muzzleIndex == 1 ? LeftNozzle : Nozzle;
             if (nozzle == null || InkPresentation.Current == null) return;
             var effect = muzzleIndex == 1 ? _leftMuzzleEffect : _muzzleEffect;

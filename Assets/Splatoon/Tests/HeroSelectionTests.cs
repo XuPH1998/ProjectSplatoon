@@ -16,8 +16,7 @@ namespace Splatoon.Tests
 {
     public sealed class HeroSelectionTests
     {
-        [SetUp] public void Setup() => typeof(LubanConfigService).GetProperty("Tables").SetValue(LubanConfigService.Current,
-            new cfg.Tables(n => SimpleJSON.JSONNode.Parse(File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/" + n + ".json"))));
+        [SetUp] public void Setup() { HeroMigrationTests.LoadHistoricalWeapons(); LegacyChargeFixture.Install(); }
         [TearDown] public void Cleanup() { LubanConfigService.Current.Reset(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
         static PlayerSnapshot Alive(int id = 1) => new() { HeroId = id, Health = 100, Ink = 100, Team = 1, Grounded = true, Revision = 1 };
         static PlayerInputFrame Input(int tick, bool held = true, uint press = 1, bool cancel = false) => new() { Sequence = (uint)tick + 1, Fire = held, FireSequence = press, CancelFire = cancel };
@@ -104,7 +103,7 @@ namespace Splatoon.Tests
             Assert.That(Step(ref s,65,false,2),Is.False);Assert.That(Step(ref s,66,true,3),Is.False);
             Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Starting));
         }
-        [TestCase(1,36,18)] [TestCase(2,32,16)] [TestCase(3,10,4)] [TestCase(4,52,26)]
+        [TestCase(1,36,18)] [TestCase(2,24,12)] [TestCase(3,52,26)] [TestCase(4,34,17)]
         public void EachRegularGunUsesItsConfiguredDamageFalloff(int id,float near,float far)
         {
             var w=GameplayConfig.GetWeapon(id);

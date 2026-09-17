@@ -148,7 +148,8 @@ namespace Splatoon.Prototype
             RifleGirlSmoke.ModifyInput(this, ref frame);
             ShooterMovementSmoke.ModifyInput(this, ref frame);
             HeroSelectionSmoke.ModifyInput(this, ref frame);
-            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
+            BubbleNetworkSmoke.ModifyInput(this, ref frame);
+            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active || BubbleNetworkSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
 #endif
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1);
             if (frame.Fire && !_fireWasHeld && frame.FireSequence == PresentedState.ConsumedFire) frame.FireSequence = ++_fireSequence;
@@ -245,7 +246,7 @@ namespace Splatoon.Prototype
             if ((WeaponSimulation.IsSemi(w) || WeaponSimulation.IsSplatling(w)) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
             bool fire = WeaponSimulation.WantsFire(s, input, w, now);
             _motor.Step(ref s, input, dt, now, fire, WeaponSimulation.IsSplatling(w) ? SplatlingSimulation.MovementSpeed(s, w) : w.ShootMoveSpeed,
-                WeaponSimulation.IsSemi(w) && s.FireVisualUntil > now);
+                ((WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsBlaster(w)) || WeaponSimulation.IsBubble(w)) && s.FireVisualUntil > now);
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
             if (s.Health <= 0) { if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
@@ -295,7 +296,7 @@ namespace Splatoon.Prototype
                 if (s.Health <= 0) match.PublishCombatStats();
             }
         }
-        public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision, state.LastShotMuzzle == 1 ? state.LeftShotAt : state.RightShotAt);
+        public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision, WeaponSimulation.IsBubble(GameplayConfig.GetWeapon(state.HeroId)) ? state.SimulatedAt : state.LastShotMuzzle == 1 ? state.LeftShotAt : state.RightShotAt);
         public void PredictShotFeedback(InkShot shot) => PlayShotFeedback(shot.ActionId, shot.MuzzleIndex, shot.HeroId, shot.Lifecycle, shot.HeroRevision, shot.Born);
         void PlayShotFeedback(ulong actionId, byte muzzle, int heroId, uint lifecycle, uint heroRevision, double born)
         {
@@ -305,7 +306,14 @@ namespace Splatoon.Prototype
             if (!_playedShotActions.Add(key)) return;
             _playedShotOrder.Enqueue(key);
             while (_playedShotOrder.Count > 256) _playedShotActions.Remove(_playedShotOrder.Dequeue());
-            CharacterView?.Shot(muzzle, actionId, born); if (ControlsLocalPlayer && _audio != null) _audio.PlayOneShot(_shotAudio, .13f);
+            CharacterView?.Shot(muzzle, actionId, born);
+            if (ControlsLocalPlayer && _audio != null)
+            {
+                var ammo = GameplayConfig.GetWeapon(heroId).Ammo;
+                var bubble = ammo.BubbleShotAudio;
+                _audio.pitch = bubble != null ? .96f + (uint)actionId % 4 * .025f : 1;
+                _audio.PlayOneShot(bubble != null ? bubble : _shotAudio, .13f);
+            }
         }
         public void ConfirmHit(InkImpact impact)
         {

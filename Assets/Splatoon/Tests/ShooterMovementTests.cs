@@ -112,7 +112,7 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(32)] [TestCase(62)]
         public void ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(int release)
         {
-            var arena=LoadArena();var w=GameplayConfig.GetWeapon(5);
+            var arena=LoadArena();var w=LegacyChargeFixture.Create();
             // Keep this firing/swimming test off the tile seam and the spawn shield.
             var s=Alive();s.HeroId=5;s.Position=arena.SpawnPoints[0].position+Vector3.forward;
             Assert.That(Physics.Raycast(s.Position+Vector3.up*.2f,Vector3.down,out var hit,1,PlayerMotorSimulation.WorldMask),Is.True);

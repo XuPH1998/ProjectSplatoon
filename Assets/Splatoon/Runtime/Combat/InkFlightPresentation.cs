@@ -125,7 +125,7 @@ namespace Splatoon.Combat
             _ammo = ammo ?? throw new ArgumentNullException(nameof(ammo));
             for (int i = 0; i < GroupLimit; i++) { _groups[i] = new Group(ammo.FlightPrefab, parent); _streams[i] = _groups[i].System; }
         }
-        public static bool IsContinuous(WeaponRuntimeConfig w) => w.PelletCount == 1 &&
+        public static bool IsContinuous(WeaponRuntimeConfig w) => !WeaponSimulation.IsBubble(w) && !WeaponSimulation.IsBlaster(w) && w.PelletCount == 1 &&
             w.FireMode != WeaponFireMode.SemiAutomatic && w.FireMode != WeaponFireMode.Charge;
         float Lifetime => _ammo.VisualLifetime;
         float Rate => _ammo.ParticlesPerBurst / _ammo.BurstInterval;

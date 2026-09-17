@@ -1,0 +1,31 @@
+{
+  "heroId": 4,
+  "weaponConfigPath": "Assets/GameResource/Weapons/PistolGirl/PistolGirlWeaponConfig.asset",
+  "date": "2026-09-17",
+  "reference": "https://sendou.ink/params/splash-o-matic",
+  "description": "Approved approximate main-weapon tuning; spatial values are project meters, not original-game units. Historical migration snapshots remain unchanged.",
+  "preservedValues": {
+    "speedMin": 35,
+    "speedMax": 35,
+    "straightSeconds": 0.075
+  },
+  "values": {
+    "fireMode": 0,
+    "fireRate": 12,
+    "shotInk": 0.8,
+    "inkRecoverLockSeconds": 0.3333333333333333,
+    "shootMoveSpeed": 3.6,
+    "projectileGravity": 18,
+    "spreadDegrees": 0,
+    "jumpSpreadDegrees": 0,
+    "effectiveRange": 9,
+    "damage": 28,
+    "damageMin": 14,
+    "damageReduceStartSeconds": 0.16666666666666666,
+    "damageReduceEndSeconds": 0.3333333333333333,
+    "paintRadiusMin": 0.65,
+    "paintRadiusMax": 1,
+    "trailRadiusMax": 0.55,
+    "semiBufferSeconds": 0
+  }
+}

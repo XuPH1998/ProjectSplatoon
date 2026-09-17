@@ -52,7 +52,7 @@ namespace Splatoon.Tests
         [TestCase(.1)] [TestCase(.5)] [TestCase(1.1)]
         public void ChargeReleaseUsesConfiguredRateAndDoesNotBlockSwimming(double release)
         {
-            HeroMigrationTests.Load(rows => rows[4]["fireRate"] = 4);
+            WeaponConfigService.Current.SetForEditor(5, LegacyChargeFixture.Create(a => a.fireRate = 4));
             GameplayConfig.Validate(); var s = Player(5);
             Fire(ref s, 0); Assert.That(Fire(ref s, release, false), Is.True);
             Assert.That(s.NextShotAt, Is.EqualTo(release + .25).Within(1e-9));

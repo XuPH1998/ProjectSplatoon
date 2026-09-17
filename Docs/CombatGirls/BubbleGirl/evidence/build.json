@@ -1,0 +1,10 @@
+{
+  "result": "Succeeded",
+  "simulation": 9,
+  "entryPoint": "Splatoon.Editor.PrototypeBuilder.BuildWindows",
+  "executable": "D:/XPHUNITY/ProjectSplatoon_BubbleValidation/Builds/Windows/InkLan.exe",
+  "recordedUtc": "2026-09-17T05:56:20.1014522Z",
+  "assemblySha256": "71C0955C07EEDAEB75405B77AE76A15A9179878EC00C466C372D4B0708652582",
+  "protocol": 29,
+  "log": "Reports/BubbleGirl/windows-build-accepted.log"
+}

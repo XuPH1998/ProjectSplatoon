@@ -71,6 +71,7 @@ namespace Splatoon.Tests
             for(int i=0;i<baseline["Weapon"].Count;i++)
             {
                 foreach(var item in mapping.Children) if(item["sourceTable"].Value=="Weapon" && item["heroField"].Value != "trailRadius") rows[i][item["heroField"].Value]=baseline["Weapon"][i][item["sourceField"].Value];
+                rows[i]["motionMode"] = (int)ProjectileMotionMode.Ballistic;
                 rows[i]["pelletCount"]=1;rows[i]["muzzleMode"]=0;rows[i]["semiBufferFrames"]=0;
             }
             // Pinned historical mechanics use their original fixed radius, only in this loader.

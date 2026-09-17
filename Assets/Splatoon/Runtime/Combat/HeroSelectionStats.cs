@@ -51,6 +51,7 @@ namespace Splatoon.Combat
 
         public static FlatShotRange Calculate(InkShot shot, WeaponRuntimeConfig w)
         {
+            if (WeaponSimulation.IsBubble(w)) return CalculateBubble(shot, w);
             if (shot.Origin.y <= w.CollisionRadius) return new FlatShotRange(0, 0, true);
             double end = w.Lifetime;
             bool hit = InkBallistics.Position(shot, w, end).y <= w.CollisionRadius;
@@ -70,6 +71,40 @@ namespace Splatoon.Combat
             Vector3 delta = InkBallistics.Position(shot, w, end) - shot.Origin;
             return new FlatShotRange(new Vector2(delta.x, delta.z).magnitude, end, hit);
         }
+        static FlatShotRange CalculateBubble(InkShot shot, WeaponRuntimeConfig w)
+        {
+            Vector3 position = shot.Origin, velocity = shot.Velocity;
+            double time = 0, step = 1.0 / GameplayConfig.Global.ProjectileStepRate;
+            float travelled = 0; int bounces = 0; bool grounded = false;
+            while (time < w.Lifetime - 1e-8)
+            {
+                double dt = Math.Min(step, w.Lifetime - time);
+                var next = InkBallistics.Position(position, velocity, w.ProjectileGravity, dt);
+                float distance = Vector3.Distance(position, next);
+                bool limited = travelled + distance >= w.EffectiveRange;
+                if (limited && distance > 0)
+                { float fraction = (w.EffectiveRange - travelled) / distance; next = Vector3.Lerp(position, next, fraction); dt *= fraction; distance *= fraction; }
+                if (next.y <= w.CollisionRadius)
+                {
+                    float fraction = Mathf.Clamp01((position.y - w.CollisionRadius) / Mathf.Max(.000001f, position.y - next.y));
+                    next = Vector3.Lerp(position, next, fraction); dt *= fraction; travelled += distance * fraction;
+                    time += dt; position = next;
+                    if (bounces >= w.BubbleGroundBounces || bounces >= w.BubbleMaxBounces || travelled >= w.EffectiveRange)
+                    { grounded = true; break; }
+                    velocity += Vector3.down * (w.ProjectileGravity * (float)dt);
+                    velocity = InkProjectileService.ReflectBubble(velocity, Vector3.up, w, out _);
+                    position.y = w.CollisionRadius + .002f; bounces++;
+                }
+                else
+                {
+                    time += dt; travelled += distance; position = next;
+                    velocity += Vector3.down * (w.ProjectileGravity * (float)dt);
+                    if (limited) break;
+                }
+            }
+            Vector3 delta = position - shot.Origin;
+            return new FlatShotRange(new Vector2(delta.x, delta.z).magnitude, time, grounded);
+        }
     }
 
     public readonly struct HeroStat
@@ -87,6 +122,16 @@ namespace Splatoon.Combat
         public static double FullChargeRate(WeaponRuntimeConfig w) => 1 / (w.StartSeconds + w.ChargeSeconds + WeaponSimulation.FireInterval(w));
         public static HeroStat[] Create(WeaponRuntimeConfig w, CharacterPresentationProfile profile, float near, float far)
         {
+            if (WeaponSimulation.IsBubble(w))
+            {
+                var flight = HeroFlatRange.Calculate(w, profile, 0, near, far);
+                return new[] {
+                    new HeroStat("伤害", $"{w.Damage:0.#}", $"每颗伤害 · 每组 {w.BurstCount} 颗"),
+                    new HeroStat("射速", $"{1 / w.BubbleVolleySeconds:0.##} 组/秒", $"颗间 {w.BubbleIntervalSeconds:0.###} 秒"),
+                    new HeroStat("最大散布", "0°", "方向由准星控制"),
+                    new HeroStat("平射射程", $"{flight.Distance:0.0} 米", "平地弹跳至破裂 · 参考射程")
+                };
+            }
             bool charge = WeaponSimulation.IsCharge(w), spinner = WeaponSimulation.IsSplatling(w);
             string damage = charge ? $"{w.ChargeMinDamage:0.#}–{w.ChargePartialMaxDamage:0.#} / {w.Damage:0.#}"
                 : spinner ? $"{w.ChargePartialMaxDamage:0.#} / {w.Damage:0.#} → {w.DamageMin:0.#}"

@@ -102,6 +102,8 @@ namespace Splatoon.Combat
         static float WallSpeed(SwimSurface source, cfg.HeroConfig hero) => source == SwimSurface.Neutral ? hero.NeutralSwimSpeed : hero.WallSwimSpeed;
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
+            // Committed recovery survives trigger release, cancellation and UI focus changes.
+            if (WeaponSimulation.RecoveryLocked(s, now)) { input.Swim = false; shootingMovement = true; }
             var previous = s;
             s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
             StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);

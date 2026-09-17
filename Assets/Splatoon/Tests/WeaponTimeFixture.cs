@@ -10,6 +10,8 @@ namespace Splatoon.Tests
         public static int ReferenceFrames(double seconds) => checked((int)Math.Round(seconds * 60));
         public static readonly (string frames, string seconds)[] Fields =
         {
+            ("blasterRepeatFrames", "blasterRepeatSeconds"),
+            ("blasterPostFrames", "blasterPostSeconds"),
             ("startFrames", "startSeconds"),
             ("emergeStartFrames", "emergeStartSeconds"),
             ("inkRecoverLockFrames", "inkRecoverLockSeconds"),

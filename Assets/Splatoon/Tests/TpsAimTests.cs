@@ -24,6 +24,7 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             HeroMigrationTests.Load();
+            LegacyChargeFixture.Install(); // These tests retain the retired ballistic launcher; timed blaster coverage is separate.
         }
         [TearDown] public void Cleanup()
         {

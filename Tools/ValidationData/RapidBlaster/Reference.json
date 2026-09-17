@@ -1,0 +1,12 @@
+{
+  "version": "11.3.0",
+  "source": "https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponBlasterLight.game__GameParameterTable.json",
+  "sha256": "e749fc9ccd6919f71c1a9287f9351710f48cfd81e260fc1ba759db157986cae1",
+  "spatialScale": 0.7488455298082124,
+  "brakeModelSource": "https://github.com/sendou-ink/sendou.ink/blob/55889eccc7c18f24569098959ae28f4a7034ce4e/app/features/comp-analyzer/core/weapon-range.ts",
+  "adaptationDefaults": {
+    "collisionDamageRate": 0.5,
+    "brakeAirResist": 0.36,
+    "brakeGravity": 0.07
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "forwarded": 5549,
+  "dropped": 61,
+  "delayMs": 50.0,
+  "jitterMs": 10.0,
+  "loss": 0.01,
+  "ports": [
+    18238
+  ]
+}

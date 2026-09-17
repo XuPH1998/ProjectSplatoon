@@ -1,0 +1,73 @@
+[
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/BubbleVolleySimulation.cs",
+    "sha256": "D2A7C971DF92F91E6182E8C10D0027C8585D17A36073C99D8CFBE9599367EA53",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/InkBubbleSimulation.cs",
+    "sha256": "227B79FA4B81F3FEB3BD6B9C26AA9B9DE4C99C51BFB2A5A3337BA29BEEA6EE51",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/BubbleFlightPresentation.cs",
+    "sha256": "E70E953A8CF6DE26606D0B5D893DC1B10A1B412C7ABBEB6ECE3D1C835AA7FFCF",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/HeroSelectionStats.cs",
+    "sha256": "9196304F205831C7D2A43ABF2919C96AD6B1232C2EF3EF850B2FA963E436AFA3",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/InkPresentation.cs",
+    "sha256": "A643B68E4780EC1C1F0EC641DEA493E085F6C0870464D3D9E5CFC8D40E9FD5C8",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/InkProjectileService.cs",
+    "sha256": "64626693B04F7A73A962ED9B89019A754C3B93A3D60AD71A8B6B4A57EDFE18C1",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Config/WeaponRuntimeConfig.cs",
+    "sha256": "172DF9A172A98DFFC242B1F05DD95B07F503546C0625A3CF824258178A1C2AA1",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Config/WeaponConfigValidation.cs",
+    "sha256": "5216ED78CBE72DF031C90C4090E05EBD1ACD83C5E285F4395B392C9BD3F3DF5D",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Prototype/PrototypePlayer.Network.cs",
+    "sha256": "6B13E0720364B7039EFE5E75B8D26FA92578F55B7883DB9375511294796C15B3",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Prototype/PrototypeMatch.cs",
+    "sha256": "44CE50D2A5A0D77D1C76CC803534EFDDFD4D83C59303FF4E49E2BDF5B8191F4D",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Prototype/PrototypePlayer.cs",
+    "sha256": "67011A8024E921A14A2387868A30ED67C6CB78A1766D33CA0736C0E4EE43AC81",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Network/GameplayContentSignature.cs",
+    "sha256": "586BAAE0A7E8505A8D3428B13C7298A654A14D37C4D68448BD70DB09B3FFE730",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Prototype/PrototypeApp.HeroSelectionDrawing.cs",
+    "sha256": "15E2A51C1D763192AD4414FA2769B0E6D657F6F403F463EA8D0F788AE68D3E29",
+    "matchesValidated": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Prototype/HeroUiSmoke.cs",
+    "sha256": "96BBF07677136F8E76712B8F094A122CA3E6BFCDC47CD2FEE98CAACAB84F8328",
+    "matchesValidated": false,
+    "note": "Reviewed subsequent change only renames the other weapon screenshot from charge-preview to rapid-blaster-preview; BubbleGirl interactions and assertions are identical."
+  }
+]

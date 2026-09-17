@@ -14,38 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefabAddress: Weapon/DualPistols
   ammoConfig: {fileID: 11400000, guid: c37f636a6a084521ae1bbea51f8db649, type: 2}
-  fireMode: 3
-  fireRate: 10
-  shotInk: 0.7
-  startSeconds: 0.03333333333333333
-  emergeStartSeconds: 0.16666666666666666
-  inkRecoverLockSeconds: 0.25
-  shootMoveSpeed: 4.2
+  fireMode: 0
+  fireRate: 6.666666666666667
+  shotInk: 1.4
+  startSeconds: 0
+  emergeStartSeconds: 0.06666666666666667
+  inkRecoverLockSeconds: 0.3333333333333333
+  shootMoveSpeed: 3.125
   burstCount: 1
   burstRecoverySeconds: 0
-  speedMin: 30
-  speedMax: 30
-  projectileGravity: 9.8
+  speedMin: 128.0525855972043
+  speedMax: 128.0525855972043
+  projectileGravity: 43.13350251695304
   lifetime: 10
-  collisionRadius: 0.025
-  spreadDegrees: 3
-  straightSeconds: 0.1
-  brakeSeconds: 0.13333333333333333
+  collisionRadius: 0.14976910596164247
+  spreadDegrees: 3.2
+  straightSeconds: 0.05
+  brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 6
+  jumpSpreadDegrees: 8
   landingSpreadRecoverSeconds: 0.2
-  effectiveRange: 8.4
-  damage: 32
-  damageMin: 16
-  damageReduceStartSeconds: 0.13333333333333333
+  effectiveRange: 11.232682947123186
+  damage: 36
+  damageMin: 18
+  damageReduceStartSeconds: 0.11666666666666667
   damageReduceEndSeconds: 0.6666666666666666
-  paintRadiusMin: 1.2
-  paintRadiusMax: 1.6
+  paintRadiusMin: 1.4078295960394391
+  paintRadiusMax: 1.4976910596164248
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 0.2
-  trailRadiusMin: 0.55
-  trailRadiusMax: 0.9
+  trailSpacing: 5.2419187086574865
+  trailRadiusMin: 1.1367475142488663
+  trailRadiusMax: 1.1367475142488663
   trailMaxDrop: 2.4
   chargeSeconds: 0
   chargeMinDamage: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   chargeMinJumpSpread: 0
   pelletCount: 1
   muzzleMode: 1
-  semiBufferSeconds: 0.1
+  semiBufferSeconds: 0
   splatlingMinChargeSeconds: 0
   splatlingFirstChargeSeconds: 0
   splatlingFirstShootSeconds: 0
@@ -77,3 +77,19 @@ MonoBehaviour:
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0
   baseJumpSpreadDegrees: 0
+  motionMode: 3
+  dualiesBrakeEndSpeed: 126.32275242334734
+  dualiesBrakeDrag: 0.36
+  dualiesBrakeGravity: 188.70907351166954
+  dualiesPlayerRadius: 0.21342097599534052
+  dualiesSpreadMinBias: 0.03
+  dualiesSpreadMaxBias: 0.25
+  dualiesSpreadPerShot: 0.03
+  dualiesSpreadRecoverPerSecond: 0.3
+  dualiesJumpBias: 0.4
+  dualiesJumpRecoverStartSeconds: 0.4166666666666667
+  dualiesJumpRecoverEndSeconds: 1.1666666666666667
+  dualiesTrailStartDistance: 0.7488455298082124
+  dualiesTrailCount: 2
+  dualiesFootEvery: 5
+  dualiesFootRadius: 1.591446519948413

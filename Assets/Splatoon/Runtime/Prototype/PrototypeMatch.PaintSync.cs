@@ -163,6 +163,7 @@ namespace Splatoon.Prototype
                 Window = new SnapshotSendWindow(layout.TotalRecords, GameplayConfig.Global.SnapshotMaxInFlightRecords, Time.unscaledTimeAsDouble) };
             _transfers[client] = t;
             SnapshotBeginClientRpc(manifest, t.Target);
+            SendBubbles(client);
         }
         [ClientRpc]
         private void SnapshotBeginClientRpc(SnapshotManifest manifest, ClientRpcParams targets = default)

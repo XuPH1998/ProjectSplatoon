@@ -10,8 +10,8 @@ namespace Splatoon.Prototype
         public static readonly Rect Window = new(60, 40, 1160, 640);
         public static readonly Rect Confirm = new(958, 616, 234, 42);
         public static readonly Rect Close = new(1146, 62, 46, 36);
-        public static Rect Card(int index) => new(88 + index % 2 * 318, 154 + index / 2 * 144, 304, 132);
-        public static Rect Portrait(int index) { var r = Card(index); return new Rect(r.x + 12, r.y + 16, 100, 100); }
+        public static Rect Card(int index) => new(88 + index % 2 * 318, 154 + index / 2 * 110, 304, 102);
+        public static Rect Portrait(int index) { var r = Card(index); return new Rect(r.x + 12, r.y + 11, 80, 80); }
         public static Matrix4x4 Matrix(float width, float height)
         {
             float scale = Mathf.Min(width / 1280f, height / 720f);
@@ -70,15 +70,15 @@ namespace Splatoon.Prototype
                     Panel(new Rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4), selected ? new Color(.11f, .23f, .28f) : hover ? new Color(.13f, .18f, .25f) : new Color(.095f, .13f, .19f));
                     var portrait = Heroes.Get(hero.Id).Portrait;
                     if (portrait != null) GUI.DrawTexture(HeroSelectionLayout.Portrait(index), portrait, ScaleMode.ScaleToFit);
-                    float textX = rect.x + 126;
-                    GUI.Label(new Rect(textX, rect.y + 21, 160, 34), hero.DisplayName, _heroName);
-                    GUI.Label(new Rect(textX, rect.y + 58, 166, 26), hero.WeaponTypeName, _heroCaption);
+                    float textX = rect.x + 106;
+                    GUI.Label(new Rect(textX, rect.y + 9, 180, 30), hero.DisplayName, _heroName);
+                    GUI.Label(new Rect(textX, rect.y + 39, 186, 26), hero.WeaponTypeName, _heroCaption);
                     if (hero.Id == currentId)
                     {
-                        Panel(new Rect(textX, rect.y + 94, 76, 23), new Color(.12f, .29f, .33f));
-                        GUI.Label(new Rect(textX, rect.y + 94, 76, 23), "当前使用", _heroBadge);
+                        Panel(new Rect(textX, rect.y + 72, 76, 23), new Color(.12f, .29f, .33f));
+                        GUI.Label(new Rect(textX, rect.y + 72, 76, 23), "当前使用", _heroBadge);
                     }
-                    else if (selected) GUI.Label(new Rect(textX, rect.y + 94, 76, 23), "已选中", _heroBadge);
+                    else if (selected) GUI.Label(new Rect(textX, rect.y + 72, 76, 23), "已选中", _heroBadge);
                     if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) { _previewHeroId = hero.Id; _fireInputBlocked = true; }
                     index++;
                 }

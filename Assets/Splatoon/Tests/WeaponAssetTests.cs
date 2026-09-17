@@ -32,9 +32,12 @@ namespace Splatoon.Tests
         {
             var baseline = SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAssets/Migration-Baseline.json"));
             var rows = HeroMigrationTests.CombinedHeroes();
-            Assert.That(rows.Count, Is.EqualTo(6));
+            Assert.That(rows.Children.Count(r => r["id"].AsInt <= 6), Is.EqualTo(6));
             foreach (var old in baseline.Children)
             {
+                RapidBlasterTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
+                PistolGirlTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
+                DualPistolGirlTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
                 var current = rows.Children.Single(r => r["id"].AsInt == old["id"].AsInt);
                 foreach (string key in old.Keys)
                     if (key == "displayName") continue; // Renamed heroes are verified by the portrait selection tests.
@@ -54,7 +57,7 @@ namespace Splatoon.Tests
             Assert.That(GameplayConfig.GetWeapon(6), Is.SameAs(old));
             Assert.That(WeaponConfigService.Current.Revision(6), Is.EqualTo(revision));
         }
-        [TestCase(1)] [TestCase(2)] [TestCase(4)]
+        [TestCase(1)] [TestCase(4)]
         public void FirstShotIsZeroThenContinuousIntervalsExpand(int hero)
         {
             var w = GameplayConfig.GetWeapon(hero); var s = Alive(hero); int first = -1;
@@ -128,7 +131,7 @@ namespace Splatoon.Tests
             Assert.That(SpreadSimulation.Angles(shotgun, false, 0), Is.EqualTo(Vector2.one * 2));
             Assert.That(SpreadSimulation.Angles(shotgun, true, 0), Is.EqualTo(Vector2.one * 4));
             Assert.That(SpreadSimulation.Angles(shotgun, false, 1), Is.EqualTo(Vector2.one * 5));
-            var rocket = GameplayConfig.GetWeapon(5); var s = Alive(5);
+            var rocket = LegacyChargeFixture.Create(); var s = Alive(5);
             for (int t = 0; t <= WeaponTimeFixture.ReferenceFrames(rocket.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(rocket.StartSeconds); t++) Tick(ref s, rocket, t, true);
             Assert.That(Tick(ref s, rocket, WeaponTimeFixture.ReferenceFrames(rocket.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(rocket.StartSeconds) + 1, false), Is.True);
             Assert.That(s.LastShotSpread, Is.EqualTo(rocket.SpreadDegrees)); Assert.That(s.SpreadProgress, Is.Zero);

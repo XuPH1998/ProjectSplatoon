@@ -7,6 +7,10 @@ namespace Splatoon.Config
     public sealed class AmmoConfigAsset : ScriptableObject
     {
         [InspectorName("弹药 ID")] public ushort ammoId;
+        [InspectorName("泡泡网格预制体")] public GameObject bubblePrefab;
+        [InspectorName("泡泡发射音效")] public AudioClip bubbleShotAudio;
+        [InspectorName("泡泡弹跳音效")] public AudioClip bubbleBounceAudio;
+        [InspectorName("泡泡破裂音效")] public AudioClip bubblePopAudio;
         [HideInInspector] public int flightMigrationVersion;
         [InspectorName("飞行墨弹预制体")] public ParticleSystem flightPrefab;
         [InspectorName("枪口喷溅预制体")] public ParticleSystem muzzlePrefab;
@@ -21,6 +25,10 @@ namespace Splatoon.Config
         [InspectorName("爆炸预制体")] public GameObject explosionPrefab;
         [InspectorName("爆炸范围")] public float explosionRadius;
         [InspectorName("爆炸伤害")] public float explosionDamage;
+        [InspectorName("爆风固定伤害（不随距离衰减）")] public bool explosionConstantDamage = false;
+        [InspectorName("碰撞早爆范围倍率")] public float collisionExplosionRadiusRate = 1;
+        [InspectorName("碰撞早爆伤害倍率")] public float collisionExplosionDamageRate = 1;
+        [InspectorName("直击目标不重复承受爆风")] public bool excludeDirectHitFromExplosion = false;
         [InspectorName("爆炸涂墨")] public bool explosionPaint;
         [InspectorName("涂墨半径最小值")] public float explosionPaintRadiusMin;
         [InspectorName("涂墨半径最大值")] public float explosionPaintRadiusMax;

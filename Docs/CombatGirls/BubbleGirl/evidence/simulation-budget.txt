@@ -1,0 +1,10 @@
+durationSeconds=10
+shooters=8
+shots=592
+bounces=1640
+impacts=512
+peakActive=96
+simulationMeanMs=0.3005
+simulationP95Ms=0.4037
+projectilePayloadBytes=214000
+Payload excludes RPC/transport, player snapshots and paint. This is an Editor simulation microbenchmark, not target-device frame time.

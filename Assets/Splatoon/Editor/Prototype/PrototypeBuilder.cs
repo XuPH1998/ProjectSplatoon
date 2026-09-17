@@ -48,6 +48,8 @@ namespace Splatoon.Editor
             foreach (var obsolete in group.entries.Where(e => e.address == "Character/Jammo" || e.address == "Weapon/Splattershot").ToArray()) settings.RemoveAssetEntry(obsolete.guid);
             AddAddress(settings,group,CombatGirlsBuilder.CharacterPath,"Character/RifleGirl");
             AddAddress(settings,group,CombatGirlsBuilder.WeaponPath,"Weapon/RifleGirlRifle");
+            AddAddress(settings,group,BubbleGirlBuilder.CharacterPath,"Character/BubbleGirl");
+            AddAddress(settings,group,BubbleGirlBuilder.Root + "/Prefabs/BubbleGun.prefab","Weapon/BubbleGun");
             foreach (var pack in CombatGirlsHeroBuilder.Definitions)
             {
                 if (!File.Exists(pack.CharacterPath) || !File.Exists(pack.WeaponPath)) continue;
@@ -67,7 +69,7 @@ namespace Splatoon.Editor
                 string path = AssetDatabase.GUIDToAssetPath(guid); AddAddress(settings, group, path, path);
                 var ammo = AssetDatabase.LoadAssetAtPath<Splatoon.Config.AmmoConfigAsset>(path);
                 if (ammo == null) continue;
-                AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
+                AddAsset(ammo.bubblePrefab); AddAsset(ammo.bubbleShotAudio); AddAsset(ammo.bubbleBounceAudio); AddAsset(ammo.bubblePopAudio); AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
                 void AddAsset(UnityEngine.Object asset) { if (asset != null) { var p = AssetDatabase.GetAssetPath(asset); if (!string.IsNullOrEmpty(p)) AddAddress(settings, group, p, p); } }
             }
             const string portraits = "Assets/GameResource/UI/HeroPortraits";

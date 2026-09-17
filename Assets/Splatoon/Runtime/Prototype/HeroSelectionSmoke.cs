@@ -20,7 +20,7 @@ namespace Splatoon.Prototype
         {var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
         bool _host,_ready,_ending,_roundStarted,_killed,_roundReset,_reconnected,_reconnecting;
         double _start;float _wallStart;int _expected,_lastDesired,_maxPlayers,_peakProjectiles;uint _shots,_life;
-        bool _respawnRetained,_fullCharge,_remoteMixed;float _maxCorrection;long _peakPaint;
+        bool _respawnRetained,_blasterShot,_remoteMixed;float _maxCorrection;long _peakPaint;
         readonly HashSet<int> _equipped=new(),_fired=new();readonly HashSet<ulong> _placed=new();
         readonly List<string> _errors=new();readonly List<float> _frames=new();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Initialize()
@@ -52,7 +52,7 @@ namespace Splatoon.Prototype
             {var s=other.Snapshot.Value;other.DiagnosticPlace(PrototypeArena.Spawn(s.Team,s.Slot),s.Team==1?0:180);}
             if(_start==0&&p.Snapshot.Value.Revision>=2&&PrototypePlayer.ByOwner.Count>=Math.Min(_expected,2)){_start=p.NetworkManager.ServerTime.Time;_life=p.Snapshot.Value.Revision;}
             if(_start==0)return;double age=p.NetworkManager.ServerTime.Time-_start;var state=p.Snapshot.Value;
-            _equipped.Add(state.HeroId);if(state.ShotSequence!=_shots){_shots=state.ShotSequence;_fired.Add(state.HeroId);_fullCharge|=state.HeroId==5&&state.LastShotCharge>=1;}
+            _equipped.Add(state.HeroId);if(state.ShotSequence!=_shots){_shots=state.ShotSequence;_fired.Add(state.HeroId);_blasterShot|=state.HeroId==5&&WeaponSimulation.IsBlaster(Splatoon.Config.GameplayConfig.GetWeapon(5))&&state.LastShotCharge==0;}
             _frames.Add(Time.unscaledDeltaTime*1000);_maxPlayers=Math.Max(_maxPlayers,PrototypePlayer.ByOwner.Count);
             _peakProjectiles=Math.Max(_peakProjectiles,match.Projectiles.ActiveCount);_peakPaint=Math.Max(_peakPaint,PaintSurface.AllocatedBytes);
             _maxCorrection=Mathf.Max(_maxCorrection,p.LastCorrectionDistance);
@@ -95,13 +95,13 @@ namespace Splatoon.Prototype
         async void Finish(string error)
         {
             if(_ending)return;_ending=true;
-            bool pass=error==null&&_errors.Count==0&&_maxPlayers==_expected&&_equipped.Count==5&&_fired.Count==5&&_fullCharge&&_remoteMixed&&_respawnRetained&&_roundReset&&_peakPaint<=128L*1048576;
+            bool pass=error==null&&_errors.Count==0&&_maxPlayers==_expected&&_equipped.Count==5&&_fired.Count==5&&_blasterShot&&_remoteMixed&&_respawnRetained&&_roundReset&&_peakPaint<=128L*1048576;
             if(!_host&&Arg("-weaponReconnect","0")=="1")pass&=_reconnected;
             _frames.Sort();var p=PrototypePlayer.Local;
             int snapshotBytes;
             using(var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp))
             {if(p!=null)writer.WriteNetworkSerializable(p.Snapshot.Value);snapshotBytes=writer.Length;}
-            string report=$"passed={pass}\nrole={Arg("-weaponRole","host")}\nerror={error}\nequipped={string.Join(",",_equipped)}\nfired={string.Join(",",_fired)}\nfullCharge={_fullCharge}\nremoteMixed={_remoteMixed}\nmaxPlayers={_maxPlayers}\nrespawnRetained={_respawnRetained}\nroundReset={_roundReset}\nreconnected={_reconnected}\npeakProjectiles={_peakProjectiles}\npeakPaintMiB={_peakPaint/1048576.0}\nmaxCorrection={_maxCorrection}\nsnapshotBytes={snapshotBytes}\np95FrameMs={(_frames.Count>0?_frames[(int)((_frames.Count-1)*.95)]:0)}\nruntimeErrors={string.Join(" | ",_errors)}";
+            string report=$"passed={pass}\nrole={Arg("-weaponRole","host")}\nerror={error}\nequipped={string.Join(",",_equipped)}\nfired={string.Join(",",_fired)}\nblasterShot={_blasterShot}\nremoteMixed={_remoteMixed}\nmaxPlayers={_maxPlayers}\nrespawnRetained={_respawnRetained}\nroundReset={_roundReset}\nreconnected={_reconnected}\npeakProjectiles={_peakProjectiles}\npeakPaintMiB={_peakPaint/1048576.0}\nmaxCorrection={_maxCorrection}\nsnapshotBytes={snapshotBytes}\np95FrameMs={(_frames.Count>0?_frames[(int)((_frames.Count-1)*.95)]:0)}\nruntimeErrors={string.Join(" | ",_errors)}";
             string output=Arg("-weaponOutput","Reports/HeroSelection/weapon-smoke.txt");Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));File.WriteAllText(output,report);Debug.Log("[WEAPON-SMOKE] "+report);
             if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom)await PrototypeApp.Current.Leave();
 #if UNITY_EDITOR

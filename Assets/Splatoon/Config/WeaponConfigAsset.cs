@@ -5,6 +5,15 @@ namespace Splatoon.Config
     [CreateAssetMenu(menuName = "喷墨对战/武器配置", fileName = "WeaponConfig")]
     public sealed class WeaponConfigAsset : ScriptableObject
     {
+        [Header("泡泡弹道")]
+        [InspectorName("弹道运动模式"), Tooltip("弹道运动模式") ] public ProjectileMotionMode motionMode;
+        [InspectorName("泡泡组周期（秒，首颗到首颗）"), Tooltip("泡泡组周期（秒，首颗到首颗）") ] public double bubbleVolleySeconds = .55;
+        [InspectorName("泡泡组内间隔（秒）"), Tooltip("泡泡组内间隔（秒）") ] public double bubbleIntervalSeconds = .05;
+        [InspectorName("最多地面弹跳次数"), Tooltip("最多地面弹跳次数") ] public int bubbleGroundBounces = 3;
+        [InspectorName("最多总反射次数"), Tooltip("最多总反射次数") ] public int bubbleMaxBounces = 6;
+        [InspectorName("地面法向速度保留比例"), Tooltip("地面法向速度保留比例") ] public float bubbleNormalRetention = .72f;
+        [InspectorName("地面切向速度保留比例"), Tooltip("地面切向速度保留比例") ] public float bubbleTangentRetention = .9f;
+        [InspectorName("墙面反射速度保留比例"), Tooltip("墙面反射速度保留比例") ] public float bubbleWallRetention = .9f;
         [Header("模型")]
         [InspectorName("正式武器地址"), Tooltip("模型：正式武器地址")] public string weaponPrefabAddress = "";
         [Header("弹药")]
@@ -80,6 +89,30 @@ namespace Splatoon.Config
         [InspectorName("从最大恢复至最小所需时长（秒，0为立即）"), Tooltip("散布：从最大恢复至最小所需时长（秒，0为立即）")] public float spreadRecoverSeconds = 0.5f;
         [InspectorName("地面基础散布半角（度，霰弹专用）"), Tooltip("散布：地面基础散布半角（度，霰弹专用）")] public float baseSpreadDegrees = 0f;
         [InspectorName("空中基础散布半角（度，霰弹专用）"), Tooltip("散布：空中基础散布半角（度，霰弹专用）")] public float baseJumpSpreadDegrees = 0f;
+        [Header("爆破枪")]
+        [InspectorName("爆破枪发射间隔（秒）"), Tooltip("爆破枪发射间隔（秒）；爆破枪弹道参考步长为 1/60 秒。") ] public double blasterRepeatSeconds;
+        [InspectorName("爆破枪射后动作限制（秒）"), Tooltip("爆破枪射后动作限制（秒）；爆破枪弹道参考步长为 1/60 秒。") ] public double blasterPostSeconds;
+        [InspectorName("爆破枪玩家扫掠半径（米）"), Tooltip("爆破枪玩家扫掠半径（米）；爆破枪弹道参考步长为 1/60 秒。") ] public float blasterPlayerRadius;
+        [InspectorName("爆破枪直进末端限速（米/秒）"), Tooltip("爆破枪直进末端限速（米/秒）；爆破枪弹道参考步长为 1/60 秒。") ] public float blasterBrakeEndSpeed;
+        [InspectorName("爆破枪参考步长内制动阻力（0 到 1）"), Tooltip("爆破枪参考步长内制动阻力（0 到 1）；爆破枪弹道参考步长为 1/60 秒。") ] public float blasterBrakeDrag;
+        [InspectorName("爆破枪制动重力（米/秒平方）"), Tooltip("爆破枪制动重力（米/秒平方）；爆破枪弹道参考步长为 1/60 秒。") ] public float blasterBrakeGravity;
+        [InspectorName("爆破枪每颗沿途最大落墨数"), Tooltip("爆破枪每颗沿途最大落墨数；爆破枪弹道参考步长为 1/60 秒。") ] public int blasterTrailCount;
+        [Header("普通双枪（原作参数的项目近似）")]
+        [InspectorName("双枪直进末端限速（米/秒）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesBrakeEndSpeed = 0f;
+        [InspectorName("双枪参考步长内制动阻力"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesBrakeDrag = 0f;
+        [InspectorName("双枪制动重力（米/秒平方）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesBrakeGravity = 0f;
+        [InspectorName("双枪玩家扫掠半径（米）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesPlayerRadius = 0f;
+        [InspectorName("双枪初始散布偏置"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesSpreadMinBias = 0.03f;
+        [InspectorName("双枪连续射击最大偏置（近似）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesSpreadMaxBias = 0.25f;
+        [InspectorName("双枪每发偏置增加量"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesSpreadPerShot = 0.03f;
+        [InspectorName("双枪每秒偏置恢复量"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesSpreadRecoverPerSecond = 0.3f;
+        [InspectorName("双枪跳跃初始偏置"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesJumpBias = 0.4f;
+        [InspectorName("双枪空中偏置恢复开始（秒）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public double dualiesJumpRecoverStartSeconds = 0.4166666666666667;
+        [InspectorName("双枪空中偏置恢复结束（秒）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public double dualiesJumpRecoverEndSeconds = 1.1666666666666667;
+        [InspectorName("双枪首次沿途落墨距离（米）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesTrailStartDistance = 0f;
+        [InspectorName("双枪每颗沿途最大落墨数"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public int dualiesTrailCount = 2;
+        [InspectorName("双枪脚下落墨间隔（发，首发触发）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public int dualiesFootEvery = 5;
+        [InspectorName("双枪脚下落墨半径（米）"), Tooltip("仅用于普通双枪；参考步长为 1/60 秒，距离已换算为项目米制。") ] public float dualiesFootRadius = 0f;
         public WeaponRuntimeConfig Snapshot() => new(this);
     }
 }

@@ -70,7 +70,8 @@ namespace Splatoon.Tests
             return results;
         }
 
-        public static Result Capture(int weapon, float charge, string scenario, int rate, int shotCount, string directory)
+        public static Result Capture(int weapon, float charge, string scenario, int rate, int shotCount, string directory,
+            Action<PaintSurface, Vector3> inspectFloor = null)
         {
             InkShapeAtlas.Configure(AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath));
             var roots = new List<GameObject>(); var surfaces = new Dictionary<int, PaintSurface>();
@@ -134,6 +135,7 @@ namespace Splatoon.Tests
                         // Explicit per-shot spread, independent of the external projectile driver rate.
                         var spread = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, false, charge)
                             : SpreadSimulation.Angles(w, false, w.SpreadExpandSeconds <= 0 ? 1 : (float)nextShot / w.SpreadExpandSeconds);
+                        if (DualiesNormalSimulation.Enabled(w)) state.LastShotSpreadBias = Mathf.Min(w.DualiesSpreadMaxBias, w.DualiesSpreadMinBias + (launched - 1) * w.DualiesSpreadPerShot);
                         state.LastShotSpread = spread.x; state.LastShotVerticalSpread = spread.y;
                         service.Spawn(player,state,nextShot,1);
                         double gap = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Seconds(WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + WeaponTimeFixture.ReferenceFrames(w.ChargeSeconds)) + WeaponSimulation.FireInterval(w) :
@@ -168,6 +170,7 @@ namespace Splatoon.Tests
                     result.centerlineContinuous = distance + .0625f;
                 }
                 result.simulationMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                inspectFloor?.Invoke(floor, Offset);
                 if (directory != null)
                 {
                     string name = $"w{weapon}-q{Mathf.RoundToInt(charge * 60)}-{scenario}-{rate}";
@@ -223,7 +226,8 @@ namespace Splatoon.Tests
             Assert.That(GameplayConfig.GetWeapon(3).PelletCount, Is.EqualTo(8));
             Assert.That(GameplayConfig.GetWeapon(4).ShotInk, Is.EqualTo(1.4f));
             Assert.That(WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(4).InkRecoverLockSeconds), Is.EqualTo(22));
-            Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(160));
+            Assert.That(GameplayConfig.GetWeapon(5).FireMode, Is.EqualTo(WeaponFireMode.Blaster));
+            Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(85));
             Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
             Directory.CreateDirectory("Reports/WeaponReference/PlayMode");
             File.WriteAllText("Reports/WeaponReference/PlayMode/addressables.txt",

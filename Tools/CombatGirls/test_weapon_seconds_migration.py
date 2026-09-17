@@ -18,11 +18,20 @@ class WeaponSecondsMigrationTests(unittest.TestCase):
 
     def test_all_six_actual_assets_preserve_every_value(self):
         audit = json.loads((ROOT / "Tools/ValidationData/WeaponSeconds/Migration.json").read_text("utf-8"))
+        tuning = json.loads((ROOT / "Tools/ValidationData/WeaponAssets/PistolGirl-SplashTuning.json").read_text("utf-8"))
+        dualies = json.loads((ROOT / "Tools/ValidationData/WeaponAssets/DualPistolGirl-GloogaNormal.json").read_text("utf-8"))
+        blaster = json.loads((ROOT / "Tools/ValidationData/WeaponAssets/RapidBlaster-Tuning.json").read_text("utf-8"))
         for entry in audit["assets"]:
             actual = asset_values((ROOT / entry["path"]).read_text("utf-8-sig"))
-            self.assertEqual(actual, entry["after"])
+            overrides = dict(tuning["preservedValues"], **tuning["values"]) if entry["path"] == tuning["weaponConfigPath"] else {}
+            if entry["path"] == dualies["weaponConfigPath"]: overrides = dualies["values"]
+            if entry["path"] == blaster["weaponConfigPath"]: overrides = blaster["values"]
+            expected_fields = dict(entry["after"], **overrides)
+            self.assertEqual({key: actual.get(key) for key in expected_fields}, expected_fields)
             for key, value in entry["before"].items():
-                self.assertEqual(actual[TIME_FIELDS.get(key, key)], value / 60 if key in TIME_FIELDS else value)
+                current_key = TIME_FIELDS.get(key, key)
+                expected = overrides.get(current_key, value / 60 if key in TIME_FIELDS else value)
+                self.assertEqual(actual[current_key], expected)
 
     def test_preserves_custom_values_and_non_time_numbers(self):
         self.values.update(startFrames=7, chargeFrames=157, fireMode=4, muzzleMode=1, pelletCount=7, spreadRecoverSeconds=.73456789, damage=123.456)

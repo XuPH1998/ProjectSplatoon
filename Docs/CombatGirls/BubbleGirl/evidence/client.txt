@@ -1,0 +1,22 @@
+passed=True
+role=client
+error=
+maxPlayers=2
+localShots=158
+bounceEvents=1563
+lateJoinRestored=True
+respawnRetained=True
+roundReset=True
+peakAuthoritative=0
+peakVisible=24
+maxCorrection=0.02999986
+frameP95Ms=8.345295
+InputPayloadBytes=991524
+ShotsPayloadBytes=0
+ImpactsPayloadBytes=0
+LivePaintPayloadBytes=0
+SnapshotJournalPayloadBytes=0
+SnapshotDataPayloadBytes=0
+PlayerDeltaPayloadBytes=0
+runtimeErrors=
+Payload counters exclude transport overhead. Two processes share one PC; frame times are not target-device performance.

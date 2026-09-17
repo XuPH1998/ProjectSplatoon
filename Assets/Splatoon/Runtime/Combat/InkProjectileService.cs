@@ -42,6 +42,7 @@ namespace Splatoon.Combat
     public struct InkImpact : INetworkSerializable
     {
         public uint Id, Round;
+        public double Time;
         public byte Team;
         public Vector3 Position, Normal;
         public bool Hit;
@@ -52,19 +53,21 @@ namespace Splatoon.Combat
         public uint Lifecycle, HeroRevision;
         public byte PelletIndex;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
-        { s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Team); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Hit);
+        { s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Time); s.SerializeValue(ref Team); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Hit);
           s.SerializeValue(ref Shooter); s.SerializeValue(ref Victim); s.SerializeValue(ref Damage); s.SerializeValue(ref Killed);
           s.SerializeValue(ref ActionId); s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref PelletIndex); }
     }
     public struct InkExplosionEvent : INetworkSerializable
     {
         public uint Round, ShotId, ConfigurationRevision, Seed;
+        public double Time;
+        public bool Collision;
         public ulong ActionId, Shooter;
         public byte Team;
         public int HeroId;
         public Vector3 Position, Normal;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
-        { s.SerializeValue(ref Round); s.SerializeValue(ref ShotId); s.SerializeValue(ref ActionId); s.SerializeValue(ref Shooter); s.SerializeValue(ref Team); s.SerializeValue(ref HeroId); s.SerializeValue(ref ConfigurationRevision); s.SerializeValue(ref Seed); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); }
+        { s.SerializeValue(ref Time); s.SerializeValue(ref Collision); s.SerializeValue(ref Round); s.SerializeValue(ref ShotId); s.SerializeValue(ref ActionId); s.SerializeValue(ref Shooter); s.SerializeValue(ref Team); s.SerializeValue(ref HeroId); s.SerializeValue(ref ConfigurationRevision); s.SerializeValue(ref Seed); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); }
     }
     public static class InkBallistics
     {
@@ -72,6 +75,7 @@ namespace Splatoon.Combat
         { float t = (float)age; return origin + velocity * t + Vector3.down * (.5f * gravity * t * t); }
         public static float TravelTime(WeaponRuntimeConfig w, double age)
         {
+            if (DualiesNormalSimulation.Enabled(w)) return DualiesBallistics.Distance(w, w.SpeedMin, age) / w.SpeedMin;
             float t = Mathf.Max(0, (float)age), straight = (float)w.StraightSeconds;
             if (t <= straight) return t;
             float brake = Mathf.Max(.0001f, (float)w.BrakeSeconds);
@@ -80,11 +84,14 @@ namespace Splatoon.Combat
         }
         public static Vector3 Position(Vector3 origin, Vector3 velocity, WeaponRuntimeConfig w, double age)
         {
+            if (DualiesNormalSimulation.Enabled(w)) return DualiesBallistics.Position(origin, velocity, w, age);
+            if (w.MotionMode == ProjectileMotionMode.TimedBlaster) return BlasterBallistics.Position(origin, velocity, w, age);
             float fall = Mathf.Max(0, (float)(age - w.StraightSeconds));
             return origin + velocity * TravelTime(w, age) + Vector3.down * (.5f * w.ProjectileGravity * fall * fall);
         }
         public static double AgeAtDistance(WeaponRuntimeConfig w, float speed, float distance)
         {
+            if (DualiesNormalSimulation.Enabled(w)) return DualiesBallistics.AgeAtDistance(w, speed, distance);
             double travel = Math.Max(0, distance) / Math.Max(.0001, speed);
             double straight = w.StraightSeconds;
             if (travel <= straight) return travel;
@@ -108,6 +115,8 @@ namespace Splatoon.Combat
         }
         public static Vector3 Position(InkShot shot, WeaponRuntimeConfig w, double age)
         {
+            if (DualiesNormalSimulation.Enabled(w)) return DualiesBallistics.Position(shot.Origin, shot.Velocity, w, age);
+            if (w.MotionMode == ProjectileMotionMode.TimedBlaster) return BlasterBallistics.Position(shot.Origin, shot.Velocity, w, age);
             if (shot.PostCorrectionVelocity.sqrMagnitude == 0) return Position(shot.Origin, shot.Velocity, w, age);
             float distance = shot.Velocity.magnitude * TravelTime(w, age);
             float first = Mathf.Min(distance, shot.FirstSegmentLength);
@@ -118,6 +127,8 @@ namespace Splatoon.Combat
         }
         public static Vector3 Velocity(InkShot shot, WeaponRuntimeConfig w, double age)
         {
+            if (DualiesNormalSimulation.Enabled(w)) return DualiesBallistics.Velocity(shot.Velocity, w, age);
+            if (w.MotionMode == ProjectileMotionMode.TimedBlaster) return BlasterBallistics.Velocity(shot.Velocity, w, age);
             float straight = (float)w.StraightSeconds;
             float brake = Mathf.Max(.0001f, (float)w.BrakeSeconds);
             float multiplier = Mathf.Lerp(1, w.BrakeSpeedMultiplier, Mathf.Clamp01(((float)age - straight) / brake));
@@ -155,9 +166,9 @@ namespace Splatoon.Combat
         }
     }
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
-    public sealed class InkProjectileService
+    public sealed partial class InkProjectileService
     {
-        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; public int TrailCount; }
+        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; public int TrailCount; public InkBounce Bubble; public float BubbleTrailDistance; }
         private readonly List<Active> _active = new(256);
         private readonly TpsAimSolver _aim = new();
         private readonly InkShapeSelector _shapes = new();
@@ -166,9 +177,6 @@ namespace Splatoon.Combat
         public readonly List<InkImpact> Impacts = new(32);
         public readonly List<InkExplosionEvent> Explosions = new(16);
         readonly HashSet<(uint round, uint shot)> _exploded = new();
-        readonly Collider[] _explosionHits = new Collider[128];
-        readonly ulong[] _explosionPlayers = new ulong[32];
-        readonly int[] _explosionSurfaces = new int[128];
         public int ActiveCount => _active.Count;
 #if UNITY_EDITOR
         // Opt-in observations of the real simulation; never sent over the network.
@@ -204,10 +212,17 @@ namespace Splatoon.Combat
                 : InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
             if (WeaponSimulation.IsSplatling(w)) shot.Velocity = InkBallistics.SplatlingVelocity(aim.InitialDirection,w,shot.Charge,spread,shot.SpreadVertical,ref seed);
+            if (DualiesNormalSimulation.Enabled(w))
+            {
+                uint dualiesSeed = groupSeed;
+                shot.Seed = dualiesSeed;
+                shot.Velocity = DualiesNormalSimulation.LaunchVelocity(aim.InitialDirection, w, spread, state.LastShotSpreadBias, ref dualiesSeed);
+            }
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
-            if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
-            else BeginFlight(shot, aim.Muzzle, aim.InitialDirection, WeaponSimulation.IsSplatling(w) ? state.Position + Vector3.up * .1f : (Vector3?)null);
+            if (w.MotionMode == ProjectileMotionMode.BouncingBubble) BeginFlight(shot, shot.Origin, aim.InitialDirection);
+            else if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
+            else BeginFlight(shot, aim.Muzzle, aim.InitialDirection, (WeaponSimulation.IsSplatling(w) || DualiesNormalSimulation.Enabled(w)) ? state.Position + Vector3.up * .1f : (Vector3?)null);
             }
         }
         private void BeginFlight(InkShot shot, Vector3 muzzle, Vector3 forward, Vector3? foot = null)
@@ -215,20 +230,33 @@ namespace Splatoon.Combat
             uint trailSeed = shot.Seed ^ 0x9E3779B9u, ordinal = 0;
             if (trailSeed == 0) trailSeed = 1;
             var config = shot.Configuration;
-            if (shot.PelletIndex == 0 && (!WeaponSimulation.IsSplatling(config) || (shot.ShotSequence-1)%config.SplatlingFootEvery==0))
+            if (DualiesNormalSimulation.Enabled(config))
+            {
+                if ((shot.ShotSequence - 1) % config.DualiesFootEvery == 0)
+                    PaintTrail(foot ?? muzzle - forward * .6f, shot, config, ref trailSeed, ref ordinal, config.DualiesFootRadius);
+            }
+            else if (!WeaponSimulation.IsBlaster(config) && shot.PelletIndex == 0 && (!WeaponSimulation.IsSplatling(config) || (shot.ShotSequence-1)%config.SplatlingFootEvery==0))
                 PaintTrail(foot ?? (muzzle - forward * .6f), shot, config, ref trailSeed, ref ordinal, WeaponSimulation.IsSplatling(config) ? config.SplatlingFootRadius : -1);
             _active.Add(new Active { Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
-                CorrectionAt = shot.Born + InkBallistics.CorrectionAge(shot, config) });
+                CorrectionAt = DualiesNormalSimulation.Enabled(config) || WeaponSimulation.IsBlaster(config) ? double.PositiveInfinity : shot.Born + InkBallistics.CorrectionAge(shot, config),
+                Bubble = InkBounce.Initial(shot) });
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, 0, muzzle);
 #endif
         }
         public void Simulate(double until)
         {
-            double step = 1.0 / GameplayConfig.Global.ProjectileStepRate;
+            double defaultStep = 1.0 / GameplayConfig.Global.ProjectileStepRate;
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 var a = _active[i]; var w = a.Shot.Configuration;
+                double step = WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w) ? 1.0 / 60 : defaultStep;
+                if (w.MotionMode == ProjectileMotionMode.BouncingBubble)
+                {
+                    if (SimulateBubble(ref a, until, step)) _active.RemoveAt(i);
+                    else _active[i] = a;
+                    continue;
+                }
                 double end = Math.Min(until, a.Shot.Born + w.Lifetime); bool hit = false;
                 while (a.SimulatedUntil < end - 1e-8)
                 {
@@ -268,29 +296,35 @@ namespace Splatoon.Combat
             Vector3 to = InkBallistics.Position(shot, weapon, end - shot.Born);
             Vector3 delta = to - from;
             float distance = delta.magnitude;
-            if (WeaponSimulation.IsSplatling(weapon))
+            bool blaster = WeaponSimulation.IsBlaster(weapon);
+            if (blaster && TraceBlasterCollision(ref active, weapon, from, delta, start, end)) return true;
+            bool separateRadius = WeaponSimulation.IsSplatling(weapon) || DualiesNormalSimulation.Enabled(weapon);
+            float playerRadius = DualiesNormalSimulation.Enabled(weapon) ? weapon.DualiesPlayerRadius : weapon.SplatlingPlayerRadius;
+            if (separateRadius)
             {
                 bool worldOverlap = _aim.Overlap(from,weapon.CollisionRadius,shot.Shooter,-delta.normalized,out var world,false);
-                bool playerOverlap = _aim.Overlap(from,weapon.SplatlingPlayerRadius,shot.Shooter,-delta.normalized,out var player,true);
+                bool playerOverlap = _aim.Overlap(from,playerRadius,shot.Shooter,-delta.normalized,out var player,true);
                 if (worldOverlap || playerOverlap)
                 {
                     var contact=worldOverlap?world:player;
+                    PaintDualiesTrail(ref active, weapon, start - shot.Born);
                     Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born,ref active.PaintOrdinal); return true;
                 }
                 bool worldHit=_aim.ClosestCast(from,delta,distance,weapon.CollisionRadius,shot.Shooter,out world,false);
-                bool playerHit=_aim.ClosestCast(from,delta,distance,weapon.SplatlingPlayerRadius,shot.Shooter,out player,true);
+                bool playerHit=_aim.ClosestCast(from,delta,distance,playerRadius,shot.Shooter,out player,true);
                 if (worldHit || playerHit)
                 {
                     var contact=worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
+                    PaintDualiesTrail(ref active, weapon, start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance));
                     Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance),ref active.PaintOrdinal); return true;
                 }
             }
-            else if (_aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
+            else if (!blaster && _aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
             {
                 Resolve(shot, overlap.Collider, overlap.Point, overlap.Normal, start - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
-            if (!WeaponSimulation.IsSplatling(weapon) && _aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
+            if (!blaster && !separateRadius && _aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
             {
                 Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
                 return true;
@@ -298,9 +332,35 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, end - shot.Born, to);
 #endif
-            if (Vector3.Distance(active.LastTrail, to) >= weapon.TrailSpacing && (!WeaponSimulation.IsSplatling(weapon) || active.TrailCount < weapon.SplatlingTrailCount))
+            if (blaster)
+            {
+                while (active.TrailCount < weapon.BlasterTrailCount && Vector3.Distance(active.LastTrail, to) + .00001f >= weapon.TrailSpacing)
+                {
+                    active.LastTrail = Vector3.MoveTowards(active.LastTrail, to, weapon.TrailSpacing);
+                    PaintTrail(active.LastTrail, shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal);
+                    active.TrailCount++;
+                }
+                return false;
+            }
+            if (DualiesNormalSimulation.Enabled(weapon))
+                PaintDualiesTrail(ref active, weapon, end - shot.Born);
+            else if (Vector3.Distance(active.LastTrail, to) >= weapon.TrailSpacing && (!WeaponSimulation.IsSplatling(weapon) || active.TrailCount < weapon.SplatlingTrailCount))
             { PaintTrail(to, shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal); active.LastTrail = to; active.TrailCount++; }
             return false;
+        }
+        private void PaintDualiesTrail(ref Active active, WeaponRuntimeConfig weapon, double untilAge)
+        {
+            if (!DualiesNormalSimulation.Enabled(weapon)) return;
+            var shot = active.Shot;
+            float reached = DualiesBallistics.Distance(weapon, shot.Velocity.magnitude, untilAge);
+            while (active.TrailCount < weapon.DualiesTrailCount)
+            {
+                float nextDrop = weapon.DualiesTrailStartDistance + active.TrailCount * weapon.TrailSpacing;
+                if (reached + .00001f < nextDrop) break;
+                double age = DualiesBallistics.AgeAtDistance(weapon, shot.Velocity.magnitude, nextDrop);
+                PaintTrail(InkBallistics.Position(shot, weapon, age), shot, weapon, ref active.TrailSeed, ref active.PaintOrdinal);
+                active.TrailCount++;
+            }
         }
         private void PaintTrail(Vector3 position, InkShot shot, WeaponRuntimeConfig w, ref uint seed, ref uint ordinal, float radius = -1)
         {
@@ -310,14 +370,21 @@ namespace Splatoon.Combat
 #endif
             if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, radius > 0 ? radius : Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, false);
+            if (surface != null) ApplyPaint(surface, shot, h.point, h.normal, radius > 0 ? radius : Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, false, position);
         }
-        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, WeaponRuntimeConfig w, uint ordinal, bool impact)
+        private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, WeaponRuntimeConfig w, uint ordinal, bool impact, Vector3? sightFrom = null)
         {
+            if (WeaponSimulation.IsBlaster(w))
+            {
+                radius = VisiblePaintRadius(shot, surface, sightFrom ?? point + normal * .025f, point, normal, radius);
+                if (radius <= .01f) return;
+            }
             // A sustained magazine can have several bullets in flight. Give each
             // stamp an immutable shape so batching their arrivals cannot alter paint.
             uint entropy = InkShapeAtlas.Hash(shot.Seed ^ InkShapeAtlas.Hash(shot.Id) ^ InkShapeAtlas.Hash(ordinal) ^ (impact ? 0xb5297a4du : 0x68e31da4u));
-            uint shapeSeed = WeaponSimulation.IsSplatling(w) ? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy)
+            if (DualiesNormalSimulation.Enabled(w))
+                entropy = InkShapeAtlas.Hash(shot.Seed ^ InkShapeAtlas.Hash(ordinal) ^ (impact ? 0xb5297a4du : 0x68e31da4u));
+            uint shapeSeed = (WeaponSimulation.IsSplatling(w) || WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)) ? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy)
                 : _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.Id, shot.PelletIndex, ordinal, impact);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
@@ -326,7 +393,7 @@ namespace Splatoon.Combat
             if (PrototypeMatch.Current != null)
                 PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed);
         }
-        private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal)
+        private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity = null)
         {
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
@@ -337,8 +404,8 @@ namespace Splatoon.Combat
             if (victim != null)
             {
                 float before = victim.Snapshot.Value.Health;
-                if (shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
-                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), InkBallistics.Velocity(shot, w, age), shot.Shooter);
+                if (DualiesNormalSimulation.Enabled(w) || w.MotionMode == ProjectileMotionMode.BouncingBubble || WeaponSimulation.IsBlaster(w) || shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
+                    victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), incomingVelocity ?? InkBallistics.Velocity(shot, w, age), shot.Shooter);
                 actualDamage = before - victim.Snapshot.Value.Health; killed = actualDamage > 0 && victim.Snapshot.Value.Health <= 0;
             }
             else
@@ -350,56 +417,12 @@ namespace Splatoon.Combat
                     ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
-            ResolveExplosion(shot, point, normal);
-            Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true,
+            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age);
+            Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true, Time = shot.Born + age,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });
         }
-        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal)
-        {
-            var ammo = shot.Configuration?.Ammo;
-            if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
-            var radius = ammo.ExplosionRadius;
-            if (radius > 0)
-            {
-                int count = Physics.OverlapSphereNonAlloc(position, radius, _explosionHits, ~(1 << 8), QueryTriggerInteraction.Collide);
-                int seenCount = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    var player = _explosionHits[i] != null ? _explosionHits[i].GetComponentInParent<PrototypePlayer>() : null;
-                    if (player == null || player.Snapshot.Value.Team == shot.Team) continue;
-                    bool duplicate = false; for (int p = 0; p < seenCount; p++) if (_explosionPlayers[p] == player.PlayerId) { duplicate = true; break; }
-                    if (duplicate || seenCount >= _explosionPlayers.Length) continue; _explosionPlayers[seenCount++] = player.PlayerId;
-                    Vector3 target = player.transform.position + Vector3.up * .8f, delta = target - position;
-                    float distance = delta.magnitude; if (distance > radius) continue;
-                    if (Physics.Raycast(position, delta.normalized, out var block, distance, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) && block.collider.GetComponentInParent<PrototypePlayer>() != player) continue;
-                    float damage = ammo.ExplosionDamage * (1f - distance / radius);
-                    if (damage <= 0) continue;
-                    player.ReceiveDamage(shot.Team, damage, delta.normalized, shot.Shooter);
-                }
-            }
-            if (ammo.ExplosionPaint && radius > 0 && PrototypeMatch.Current != null && PrototypeArena.Current != null)
-            {
-                int count = Physics.OverlapSphereNonAlloc(position, radius, _explosionHits, ~(1 << 8), QueryTriggerInteraction.Ignore);
-                int surfaceCount = 0;
-                uint baseSeed = InkShapeAtlas.Hash(shot.Seed ^ shot.Id ^ 0xA511E9B3u);
-                for (int i = 0; i < count; i++)
-                {
-                    var surface = _explosionHits[i] != null ? _explosionHits[i].GetComponentInParent<PaintSurface>() : null;
-                    if (surface == null) continue;
-                    bool duplicate = false; for (int s = 0; s < surfaceCount; s++) if (_explosionSurfaces[s] == surface.SurfaceId) { duplicate = true; break; }
-                    if (duplicate || surfaceCount >= _explosionSurfaces.Length) continue; _explosionSurfaces[surfaceCount++] = surface.SurfaceId;
-                    Vector3 point = _explosionHits[i].ClosestPoint(position);
-                    Vector3 n = (point - position).sqrMagnitude > .0001f ? (point - position).normalized : normal;
-                    uint seed = InkShapeAtlas.Hash(baseSeed ^ (uint)surface.SurfaceId * 0x9e3779b9u);
-                    float r = Mathf.Lerp(ammo.ExplosionPaintRadiusMin, ammo.ExplosionPaintRadiusMax, (seed & 0xffffff) / 16777216f);
-                    ApplyPaint(surface, shot, point, n, r, shot.Configuration, seed, true);
-                }
-            }
-            Explosions.Add(new InkExplosionEvent { Round = shot.Round, ShotId = shot.Id, ActionId = shot.ActionId, Shooter = shot.Shooter,
-                Team = shot.Team, HeroId = shot.HeroId, ConfigurationRevision = shot.ConfigurationRevision, Seed = shot.Seed, Position = position, Normal = normal });
-        }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();
-        public void Clear() { _active.Clear(); Spawned.Clear(); Impacts.Clear(); Explosions.Clear(); _exploded.Clear(); _shapes.Clear(); }
+        public void Clear() { _active.Clear(); Spawned.Clear(); Bounces.Clear(); Impacts.Clear(); Explosions.Clear(); _exploded.Clear(); _shapes.Clear(); }
     }
 }

@@ -145,6 +145,7 @@ namespace Splatoon.Prototype
         {
             var s = State.Value;
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(new NetworkBatch<InkShot>(Projectiles.Spawned)); Projectiles.Spawned.Clear(); }
+            if (Projectiles.Bounces.Count > 0) { BouncesClientRpc(new NetworkBatch<InkBounce>(Projectiles.Bounces)); Projectiles.Bounces.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(new NetworkBatch<InkImpact>(Projectiles.Impacts)); Projectiles.Impacts.Clear(); }
             if (Projectiles.Explosions.Count > 0) { ExplosionsClientRpc(new NetworkBatch<InkExplosionEvent>(Projectiles.Explosions)); Projectiles.Explosions.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(new NetworkBatch<PaintStamp>(_pending)); _pending.Clear(); }
@@ -152,6 +153,17 @@ namespace Splatoon.Prototype
         }
         [ClientRpc] private void ShotsClientRpc(NetworkBatch<InkShot> shots)
         { try { if (State.Value.Phase != MatchPhase.Finished) for (int i = 0; i < shots.Count; i++) { var shot = shots[i]; if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); } } finally { shots.Dispose(); } }
+        [ClientRpc] private void BouncesClientRpc(NetworkBatch<InkBounce> bounces)
+        { try { for (int i = 0; i < bounces.Count; i++) if (bounces[i].Round == _paintRound) InkPresentation.Current?.Bounce(bounces[i]); } finally { bounces.Dispose(); } }
+        [ClientRpc] private void BubbleStatesClientRpc(NetworkBatch<InkBubbleState> states, ClientRpcParams targets = default)
+        { try { for (int i = 0; i < states.Count; i++) if (states[i].Shot.Round == _paintRound) InkPresentation.Current?.RestoreBubble(states[i]); } finally { states.Dispose(); } }
+        readonly List<InkBubbleState> _bubbleSnapshot = new();
+        void SendBubbles(ulong client)
+        {
+            Projectiles.CaptureBubbles(_bubbleSnapshot);
+            if (_bubbleSnapshot.Count > 0) BubbleStatesClientRpc(new NetworkBatch<InkBubbleState>(_bubbleSnapshot),
+                new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new[] { client } } });
+        }
         [ClientRpc] private void ImpactsClientRpc(NetworkBatch<InkImpact> impacts)
         { try { for (int i = 0; i < impacts.Count; i++) { var impact = impacts[i]; if (impact.Round == _paintRound) InkPresentation.Current?.Impact(impact); } } finally { impacts.Dispose(); } }
         [ClientRpc] private void ExplosionsClientRpc(NetworkBatch<InkExplosionEvent> explosions)

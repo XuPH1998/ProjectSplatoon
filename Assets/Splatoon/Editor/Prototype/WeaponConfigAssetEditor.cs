@@ -32,6 +32,10 @@ namespace Splatoon.Editor
                     }
                     var field = typeof(WeaponConfigAsset).GetField(property.name);
                     if (field == null) continue;
+                    // Bubble volleys use an exact double period, avoiding a rounded reciprocal fire rate.
+                    if (property.name == "fireRate" && !serializedObject.isEditingMultipleObjects &&
+                        (((WeaponConfigAsset)target).fireMode == WeaponFireMode.BubbleVolley ||
+                         ((WeaponConfigAsset)target).fireMode == WeaponFireMode.Blaster)) continue;
                     var label = new GUIContent(WeaponConfigLabels.Name(field.Name), field.GetCustomAttribute<TooltipAttribute>()?.tooltip);
                     if (field.FieldType.IsEnum)
                     {
