@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="56" result="Passed" total="56" passed="56" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.8149482">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="770" result="Passed" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.814948" total="56" passed="56" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1953" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="769" result="Passed" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.614652" total="56" passed="56" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2560" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1954" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="769" result="Passed" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.585465" total="56" passed="56" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1955" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="769" result="Passed" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.578077" total="56" passed="56" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1686" name="ShooterMovementTests" fullname="Splatoon.Tests.ShooterMovementTests" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-09-17 08:41:20Z" end-time="2026-09-17 08:41:26Z" duration="5.827064" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1716" name="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" fullname="Splatoon.Tests.ShooterMovementTests.ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" methodname="ContentSignatureIncludesCameraMuzzleColliderAndTurnCurve" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="660109546" result="Passed" start-time="2026-09-17 08:41:20Z" end-time="2026-09-17 08:41:20Z" duration="0.289913" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1718" name="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" fullname="Splatoon.Tests.ShooterMovementTests.CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" methodname="CoplanarSeamCanBeCrossedButEnemyNeighbourHasNoGrace" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="312270522" result="Passed" start-time="2026-09-17 08:41:20Z" end-time="2026-09-17 08:41:21Z" duration="0.527546" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1692" name="DamageHasExactAgeBoundariesAndThreeShotCloseKill" fullname="Splatoon.Tests.ShooterMovementTests.DamageHasExactAgeBoundariesAndThreeShotCloseKill" methodname="DamageHasExactAgeBoundariesAndThreeShotCloseKill" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="600824923" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.069425" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1697" name="EnemyInkIsNonlethalAndNeverHeals" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.175164" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1694" name="EnemyInkIsNonlethalAndNeverHeals(100,60)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(100,60)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="928029578" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.055036" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1695" name="EnemyInkIsNonlethalAndNeverHeals(59,59)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(59,59)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="10743567" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.054194" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1696" name="EnemyInkIsNonlethalAndNeverHeals(20,20)" fullname="Splatoon.Tests.ShooterMovementTests.EnemyInkIsNonlethalAndNeverHeals(20,20)" methodname="EnemyInkIsNonlethalAndNeverHeals" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1043793847" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.058676" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1691" name="FullTankFires108AndNeverGoesNegative" fullname="Splatoon.Tests.ShooterMovementTests.FullTankFires108AndNeverGoesNegative" methodname="FullTankFires108AndNeverGoesNegative" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1521050284" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.070853" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1698" name="HealthRecoveryWaitsAfterDamageAndEnemyInk" fullname="Splatoon.Tests.ShooterMovementTests.HealthRecoveryWaitsAfterDamageAndEnemyInk" methodname="HealthRecoveryWaitsAfterDamageAndEnemyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1459776252" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.064982" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1703" name="LegacyHorizontalBallisticsUsesStraightAndBrakeTimings" fullname="Splatoon.Tests.ShooterMovementTests.LegacyHorizontalBallisticsUsesStraightAndBrakeTimings" methodname="LegacyHorizontalBallisticsUsesStraightAndBrakeTimings" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="342790568" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.058140" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1710" name="OnlyLocomotionUsesSpeedParameter" fullname="Splatoon.Tests.ShooterMovementTests.OnlyLocomotionUsesSpeedParameter" methodname="OnlyLocomotionUsesSpeedParameter" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="484211389" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:21Z" duration="0.069120" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1709" name="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" fullname="Splatoon.Tests.ShooterMovementTests.OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" methodname="OwnerAndAuthorityMotorReplayMatchWithoutLifecycleReset" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="81546422" result="Passed" start-time="2026-09-17 08:41:21Z" end-time="2026-09-17 08:41:22Z" duration="0.487954" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1712" name="PredictionSnapshotSerializesEverySimulationField" fullname="Splatoon.Tests.ShooterMovementTests.PredictionSnapshotSerializesEverySimulationField" methodname="PredictionSnapshotSerializesEverySimulationField" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1527549495" result="Passed" start-time="2026-09-17 08:41:22Z" end-time="2026-09-17 08:41:22Z" duration="0.071639" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1714" name="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" fullname="Splatoon.Tests.ShooterMovementTests.PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" methodname="PressEdgeDuringHeldBurstDoesNotFireAnExtraShotAfterRelease" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="360377575" result="Passed" start-time="2026-09-17 08:41:22Z" end-time="2026-09-17 08:41:22Z" duration="0.084856" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1707" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-17 08:41:22Z" end-time="2026-09-17 08:41:24Z" duration="1.504487" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1704" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(2)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1972984733" result="Passed" start-time="2026-09-17 08:41:22Z" end-time="2026-09-17 08:41:23Z" duration="0.493358" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+]]></output>
+              </test-case>
+              <test-case id="1705" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(32)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1038294743" result="Passed" start-time="2026-09-17 08:41:23Z" end-time="2026-09-17 08:41:23Z" duration="0.514816" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+]]></output>
+              </test-case>
+              <test-case id="1706" name="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" fullname="Splatoon.Tests.ShooterMovementTests.ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk(62)" methodname="ReleasedSniperCanImmediatelySwimAndReplayOnFriendlyInk" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="994430018" result="Passed" start-time="2026-09-17 08:41:23Z" end-time="2026-09-17 08:41:24Z" duration="0.490582" asserts="0">
+                <properties />
+                <output><![CDATA[[INK-GPU] surface=1 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+[INK-GPU] surface=5 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x512
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1702" name="RenderRatesDoNotChangeFixedSimulationResults" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.178283" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1699" name="RenderRatesDoNotChangeFixedSimulationResults(30)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(30)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1425003815" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.058147" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1700" name="RenderRatesDoNotChangeFixedSimulationResults(60)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(60)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1381026936" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.058065" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1701" name="RenderRatesDoNotChangeFixedSimulationResults(144)" fullname="Splatoon.Tests.ShooterMovementTests.RenderRatesDoNotChangeFixedSimulationResults(144)" methodname="RenderRatesDoNotChangeFixedSimulationResults" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="577608788" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.056265" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1715" name="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" fullname="Splatoon.Tests.ShooterMovementTests.ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" methodname="ReplayKeepsShotActionButCancelledBurstCannotSuppressANewBurst" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1646521923" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.078771" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1713" name="RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" fullname="Splatoon.Tests.ShooterMovementTests.RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" methodname="RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="808577649" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.153678" asserts="0">
+              <properties />
+              <output><![CDATA[[SHOOTER-RANGE] RifleGirl corrected floor=10.216m
+]]></output>
+            </test-case>
+            <test-case id="1690" name="ShortTapCompletesStartupAndCannotBypassCooldown" fullname="Splatoon.Tests.ShooterMovementTests.ShortTapCompletesStartupAndCannotBypassCooldown" methodname="ShortTapCompletesStartupAndCannotBypassCooldown" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1751137366" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.056877" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1689" name="StartupAndContinuousCadenceUseReferenceFrames" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.124436" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1687" name="StartupAndContinuousCadenceUseReferenceFrames(False,2)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(False,2)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1011747796" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.063081" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1688" name="StartupAndContinuousCadenceUseReferenceFrames(True,10)" fullname="Splatoon.Tests.ShooterMovementTests.StartupAndContinuousCadenceUseReferenceFrames(True,10)" methodname="StartupAndContinuousCadenceUseReferenceFrames" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="703492530" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.056914" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1693" name="SwimmingCannotBypassRecoveryLock" fullname="Splatoon.Tests.ShooterMovementTests.SwimmingCannotBypassRecoveryLock" methodname="SwimmingCannotBypassRecoveryLock" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1675254742" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:24Z" duration="0.053038" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1711" name="WallClimbMantleAndEnemyCoverUseActualController" fullname="Splatoon.Tests.ShooterMovementTests.WallClimbMantleAndEnemyCoverUseActualController" methodname="WallClimbMantleAndEnemyCoverUseActualController" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="361670477" result="Passed" start-time="2026-09-17 08:41:24Z" end-time="2026-09-17 08:41:25Z" duration="0.506027" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1717" name="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" fullname="Splatoon.Tests.ShooterMovementTests.WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" methodname="WallFireWaitsForStandingClearanceAndMantleRejectsBlockedTop" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="324365137" result="Passed" start-time="2026-09-17 08:41:25Z" end-time="2026-09-17 08:41:25Z" duration="0.508932" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1708" name="WallPlanesAreIndependentAndDoNotAddScoreArea" fullname="Splatoon.Tests.ShooterMovementTests.WallPlanesAreIndependentAndDoNotAddScoreArea" methodname="WallPlanesAreIndependentAndDoNotAddScoreArea" classname="Splatoon.Tests.ShooterMovementTests" runstate="Runnable" seed="1785328731" result="Passed" start-time="2026-09-17 08:41:25Z" end-time="2026-09-17 08:41:26Z" duration="0.579258" asserts="0">
+              <properties />
+              <output><![CDATA[[INK-GPU] surface=16 atlas=InkSplatAtlas-32 hash=0c6e1df9565cc60862c24825ad334c58e719de64428b0246945e395981fcee06 shapeProperty=True displayMask=512x640
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1721" name="SwimMovementTests" fullname="Splatoon.Tests.SwimMovementTests" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:29Z" duration="3.205575" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1737" name="AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" fullname="Splatoon.Tests.SwimMovementTests.AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" methodname="AirCeilingDefersHumanFormAndFireDoesNotGrantAnExtraJump" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="108639636" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:26Z" duration="0.136542" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1730" name="AirReleaseCanReenterAndEnemyLandingExits" fullname="Splatoon.Tests.SwimMovementTests.AirReleaseCanReenterAndEnemyLandingExits" methodname="AirReleaseCanReenterAndEnemyLandingExits" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="785645983" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:26Z" duration="0.158250" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1741" name="AirSnapshotReplaysSameMovement" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:26Z" duration="0.275168" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1739" name="AirSnapshotReplaysSameMovement(0)" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement(0)" methodname="AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="753918395" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:26Z" duration="0.135943" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1740" name="AirSnapshotReplaysSameMovement(1)" fullname="Splatoon.Tests.SwimMovementTests.AirSnapshotReplaysSameMovement(1)" methodname="AirSnapshotReplaysSameMovement" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="973766370" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:26Z" duration="0.134546" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1738" name="AirSourceSurvivesSerializationAndHumanCheckpointReplay" fullname="Splatoon.Tests.SwimMovementTests.AirSourceSurvivesSerializationAndHumanCheckpointReplay" methodname="AirSourceSurvivesSerializationAndHumanCheckpointReplay" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1837598199" result="Passed" start-time="2026-09-17 08:41:26Z" end-time="2026-09-17 08:41:27Z" duration="0.165165" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1736" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.576001" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1732" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,False)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,False)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1215077246" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.143519" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1733" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,False)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,False)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1188628453" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.150088" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1734" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,True)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(0,True)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="186350611" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.145934" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1735" name="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,True)" fullname="Splatoon.Tests.SwimMovementTests.AirSwitchesRetainTakeoffSourceWithoutResettingVelocity(1,True)" methodname="AirSwitchesRetainTakeoffSourceWithoutResettingVelocity" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1937487955" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.131409" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1726" name="EnemyPaintCancelsImmediatelyAndCannotBeEntered" fullname="Splatoon.Tests.SwimMovementTests.EnemyPaintCancelsImmediatelyAndCannotBeEntered" methodname="EnemyPaintCancelsImmediatelyAndCannotBeEntered" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1321293192" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.140939" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1742" name="FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" fullname="Splatoon.Tests.SwimMovementTests.FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" methodname="FriendlyParticlesRequireSurfaceMotionAndNeverEmitInAirOrNeutral" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1816754892" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:27Z" duration="0.145339" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1746" name="InvalidNeutralSpeedRejected" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:28Z" duration="0.455108" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1743" name="InvalidNeutralSpeedRejected(0)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(0)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1454714311" result="Passed" start-time="2026-09-17 08:41:27Z" end-time="2026-09-17 08:41:28Z" duration="0.140411" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1744" name="InvalidNeutralSpeedRejected(5)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(5)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="778010055" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.149750" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1745" name="InvalidNeutralSpeedRejected(-1)" fullname="Splatoon.Tests.SwimMovementTests.InvalidNeutralSpeedRejected(-1)" methodname="InvalidNeutralSpeedRejected" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1554021358" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.160050" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1729" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.301140" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1727" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding(0)" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding(0)" methodname="JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="998735527" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.153037" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1728" name="JumpKeepsSourceButUsesGlideSpeedUntilLanding(1)" fullname="Splatoon.Tests.SwimMovementTests.JumpKeepsSourceButUsesGlideSpeedUntilLanding(1)" methodname="JumpKeepsSourceButUsesGlideSpeedUntilLanding" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="636657333" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.143457" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-case id="1731" name="LowCeilingDefersStandingWithoutEnemyInkInvisibility" fullname="Splatoon.Tests.SwimMovementTests.LowCeilingDefersStandingWithoutEnemyInkInvisibility" methodname="LowCeilingDefersStandingWithoutEnemyInkInvisibility" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="806831765" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.148801" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1725" name="NonPaintableGroundAndFreshAirAllowNeutralSwimming" fullname="Splatoon.Tests.SwimMovementTests.NonPaintableGroundAndFreshAirAllowNeutralSwimming" methodname="NonPaintableGroundAndFreshAirAllowNeutralSwimming" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1274892323" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:28Z" duration="0.132458" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1747" name="SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" fullname="Splatoon.Tests.SwimMovementTests.SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" methodname="SharedPrefabUsesPaperAndFriendlyModelRemainsVisible" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1203539894" result="Passed" start-time="2026-09-17 08:41:28Z" end-time="2026-09-17 08:41:29Z" duration="0.255239" asserts="0">
+              <properties />
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1724" name="SurfaceChoosesSpeedRecoveryAndModel" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.304317" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1722" name="SurfaceChoosesSpeedRecoveryAndModel(0,3,Neutral)" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel(0,3,Neutral)" methodname="SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="1881851121" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.131949" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1723" name="SurfaceChoosesSpeedRecoveryAndModel(1,8,Friendly)" fullname="Splatoon.Tests.SwimMovementTests.SurfaceChoosesSpeedRecoveryAndModel(1,8,Friendly)" methodname="SurfaceChoosesSpeedRecoveryAndModel" classname="Splatoon.Tests.SwimMovementTests" runstate="Runnable" seed="304715427" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.167217" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1850" name="WeaponAlignmentTests" fullname="Splatoon.Tests.WeaponAlignmentTests" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" testcasecount="26" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.145571" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1864" name="PhasedTrajectoryMatchesIndependentFrameIntegrator" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.136889" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1858" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(1)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(1)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="1178725282" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.027851" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1859" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(2)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(2)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="2045149212" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.024948" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1860" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(4)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(4)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="1797361105" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.021188" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1861" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(5)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(5)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="218685703" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.015856" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1862" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(6)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(6)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="1795020050" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.017648" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1863" name="PhasedTrajectoryMatchesIndependentFrameIntegrator(7)" fullname="Splatoon.Tests.WeaponAlignmentTests.PhasedTrajectoryMatchesIndependentFrameIntegrator(7)" methodname="PhasedTrajectoryMatchesIndependentFrameIntegrator" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="2050975563" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:29Z" duration="0.024169" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1918" name="WeaponReferenceMeasurementTests" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-17 08:41:39Z" end-time="2026-09-17 08:41:55Z" duration="15.533684" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1921" name="PlayModeUsesTheSameMeasuredPhysicsAndCoverage" fullname="Splatoon.Tests.WeaponReferenceMeasurementTests.PlayModeUsesTheSameMeasuredPhysicsAndCoverage" methodname="PlayModeUsesTheSameMeasuredPhysicsAndCoverage" classname="Splatoon.Tests.WeaponReferenceMeasurementTests" runstate="Runnable" seed="974108171" result="Passed" start-time="2026-09-17 08:41:29Z" end-time="2026-09-17 08:41:55Z" duration="25.347478" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[LAN] Ready. Config loaded from Luban.
+Saving results to: Reports/WeaponAlignment/alignment-movement-play.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

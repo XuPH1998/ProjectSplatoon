@@ -20,7 +20,7 @@ MonoBehaviour:
   startSeconds: 0.13333333333333333
   emergeStartSeconds: 0.2
   inkRecoverLockSeconds: 0.7833333333333333
-  shootMoveSpeed: 2.8645833333333335
+  shootMoveSpeed: 2.4711902483671007
   burstCount: 1
   burstRecoverySeconds: 0.0
   speedMin: 53.916878146191294
@@ -28,11 +28,11 @@ MonoBehaviour:
   projectileGravity: 43.13350251695304
   lifetime: 0.25
   collisionRadius: 0.14976910596164247
-  spreadDegrees: 0
+  spreadDegrees: 0.0
   straightSeconds: 0.18333333333333332
   brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.64
-  jumpSpreadDegrees: 8
+  jumpSpreadDegrees: 8.0
   landingSpreadRecoverSeconds: 0.2
   effectiveRange: 11.140100017955
   damage: 85
@@ -85,3 +85,28 @@ MonoBehaviour:
   blasterBrakeDrag: 0.36
   blasterBrakeGravity: 188.70907351166954
   blasterTrailCount: 11
+  referenceRules: 1
+  referenceBrakeDrag: 0.36
+  referenceBrakeGravity: 188.70907351166954
+  referenceFreeDrag: 0
+  paintDropGravity: 43.13350251695304
+  paintDropLifetime: 5
+  referenceFootEvery: 1
+  referenceBrakeEndSpeed: 50.90876565295169
+  referencePlayerRadius: 0.1759786995049299
+  paintDistanceMiddle: 0.0
+  paintDistanceFar: 11.140100017955
+  referenceTrailBudget: 11.0
+  referenceTrailStart: 0.6739609768273912
+  referenceTrailRandomPhase: 0
+  referenceFootRadius: 0
+  trailDepthScale: 1
+  referenceSpreadEnabled: 1
+  referenceBiasMin: 1e-05
+  referenceBiasMax: 1e-05
+  referenceBiasPerShot: 1e-05
+  referenceJumpBias: 0.5
+  referenceBiasRecovery: 0.0
+  referenceJumpStart: 0.6666666666666666
+  referenceJumpEnd: 1.1666666666666667
+  collisionExplosionPaintRadius: 1.7223447185588885

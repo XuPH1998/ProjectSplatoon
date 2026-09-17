@@ -20,7 +20,7 @@ MonoBehaviour:
   startSeconds: 0
   emergeStartSeconds: 0.06666666666666667
   inkRecoverLockSeconds: 0.3333333333333333
-  shootMoveSpeed: 3.125
+  shootMoveSpeed: 2.6958439073095644
   burstCount: 1
   burstRecoverySeconds: 0
   speedMin: 128.0525855972043
@@ -93,3 +93,27 @@ MonoBehaviour:
   dualiesTrailCount: 2
   dualiesFootEvery: 5
   dualiesFootRadius: 1.591446519948413
+  referenceRules: 1
+  referenceBrakeDrag: 0.36
+  referenceBrakeGravity: 188.70907351166954
+  referenceFreeDrag: 0
+  paintDropGravity: 43.13350251695304
+  paintDropLifetime: 5
+  referenceFootEvery: 5
+  referenceBrakeEndSpeed: 126.32275242334735
+  referencePlayerRadius: 0.21342097599534052
+  paintDepthMin: 1.31
+  paintDepthMax: 2.24
+  paintDepthBreakMin: 1.12
+  paintDepthBreakMax: 2.24
+  paintDistanceMiddle: 0.8237300827890337
+  paintDistanceFar: 11.232682947123186
+  referenceTrailBudget: 2.0
+  referenceTrailStart: 0.7488455298082124
+  referenceTrailRandomPhase: 0
+  referenceFootRadius: 1.591446519948413
+  trailDepthScale: 1
+  wallDropRadius: 0.48674959437533805
+  wallDropGroundRadius: 0.44930731788492745
+  wallDropSpeed: 2.6958439073095644
+  wallDropSeconds: 1.0833333333333333

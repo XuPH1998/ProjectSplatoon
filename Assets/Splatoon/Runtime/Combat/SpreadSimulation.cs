@@ -10,6 +10,7 @@ namespace Splatoon.Combat
     {
         public static Vector2 Angles(WeaponRuntimeConfig w, bool airborne, float progress)
         {
+            if (ReferenceSpreadSimulation.Enabled(w)) return new Vector2(airborne ? w.JumpSpreadDegrees : w.SpreadDegrees, airborne ? w.JumpSpreadDegrees : WeaponSimulation.IsSplatling(w) ? w.SplatlingPitchSpread : w.SpreadDegrees);
             if (WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)) return Vector2.one * (airborne ? w.JumpSpreadDegrees : w.SpreadDegrees);
             float p = Mathf.Clamp01(progress);
             float min = airborne ? w.BaseJumpSpreadDegrees : w.BaseSpreadDegrees;
@@ -21,6 +22,7 @@ namespace Splatoon.Combat
         public static void Reset(ref PlayerSnapshot s, WeaponRuntimeConfig w)
         {
             s.SpreadProgress = 0; s.SpreadFiring = false; s.SpreadInitialized = false; s.SpreadUpdatedAt = 0;
+            if (ReferenceSpreadSimulation.Enabled(w)) { ReferenceSpreadSimulation.Reset(ref s, w); return; }
             if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.Reset(ref s, w); return; }
             var angles = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, !s.Grounded, 0) : Angles(w, !s.Grounded, 0);
             s.CurrentSpread = angles.x; s.CurrentVerticalSpread = angles.y;
@@ -28,6 +30,7 @@ namespace Splatoon.Combat
         }
         public static void Before(ref PlayerSnapshot s, WeaponRuntimeConfig w, double now)
         {
+            if (ReferenceSpreadSimulation.Enabled(w)) { ReferenceSpreadSimulation.Before(ref s, w, now); return; }
             if (WeaponSimulation.IsBlaster(w))
             { s.SpreadProgress = 0; s.SpreadFiring = false; s.SpreadUpdatedAt = now; Refresh(ref s, w); return; }
             float dt = s.SpreadInitialized ? (float)Math.Max(0, now - s.SpreadUpdatedAt) : 0;
@@ -48,6 +51,7 @@ namespace Splatoon.Combat
         }
         public static void After(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, bool emitted, float charge, bool canShoot)
         {
+            if (ReferenceSpreadSimulation.Enabled(w)) { ReferenceSpreadSimulation.After(ref s, input, w, emitted, canShoot); return; }
             if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.After(ref s, input, w, emitted, canShoot); return; }
             if (WeaponSimulation.IsBlaster(w))
             {
@@ -65,7 +69,7 @@ namespace Splatoon.Combat
                 bool active = canShoot && s.Health > 0 && !input.CancelFire && !s.AttackNeedsRelease;
                 active &= WeaponSimulation.IsSplatling(w) ? s.SplatlingRemaining > 0 && s.WeaponPhase == WeaponPhase.Firing :
                     s.BurstRemaining > 0 && w.FireMode == WeaponFireMode.Burst ||
-                    input.Fire && (emitted || s.SpreadFiring) && s.Ink + .00001f >= w.ShotInk &&
+                    input.Fire && (emitted || s.SpreadFiring) && s.Ink + PrototypeRules.InkTolerance >= w.ShotInk &&
                     (s.WeaponPhase == WeaponPhase.Firing || s.WeaponPhase == WeaponPhase.BurstCooldown || WeaponSimulation.IsSemi(w));
                 // Zero expansion takes effect on the first emitted shot, including a one-round magazine.
                 if (w.SpreadExpandSeconds <= 0 && emitted) { s.SpreadProgress = 1; Refresh(ref s, w); }
@@ -78,6 +82,7 @@ namespace Splatoon.Combat
         }
         public static void Refresh(ref PlayerSnapshot s, WeaponRuntimeConfig w)
         {
+            if (ReferenceSpreadSimulation.Enabled(w)) { ReferenceSpreadSimulation.Refresh(ref s, w); return; }
             if (DualiesNormalSimulation.Enabled(w)) { DualiesNormalSimulation.Refresh(ref s, w); return; }
             if (WeaponSimulation.IsCharge(w)) return;
             var angles = Angles(w, !s.Grounded, s.SpreadProgress);

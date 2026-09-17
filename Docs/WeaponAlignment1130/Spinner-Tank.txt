@@ -1,0 +1,1 @@
+100 initial ink, no ResourceSimulation/refill calls; 3 charge-release cycles. The existing empty-ink slow-charge rule supplies ink internally. Emitted=191; net tank debit=99.734848022460938; generated reservation=1.5530252456665039. This is not a finite maximum-magazine claim.

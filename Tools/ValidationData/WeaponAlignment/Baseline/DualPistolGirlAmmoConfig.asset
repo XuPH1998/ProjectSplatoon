@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4fb864519a46f7af76d3fb3f1f3769, type: 3}
+  m_Name: DualPistolGirlAmmoConfig
+  m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
+  ammoId: 3
+  flightMigrationVersion: 1
+  burstInterval: 0.02
+  particlesPerBurst: 2
+  visualLifetime: 10
+  muzzleInterval: 0.06
+  muzzleBurstCount: 50
+  maxRibbonGap: 1.5
+  satelliteSpread: 0.1
+  flightPrefab: {fileID: 949289641, guid: 7e8e3d51acd04dc29c11b5626aa1850c, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: 19455c0db08945d6bb79284e97220f21, type: 3}
+  explosionEnabled: 0
+  explosionPrefab: {fileID: 0}
+  explosionRadius: 0
+  explosionDamage: 0
+  explosionPaint: 0
+  explosionPaintRadiusMin: 0
+  explosionPaintRadiusMax: 0

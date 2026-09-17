@@ -20,7 +20,9 @@ Shader "Splatoon/InkTexturePainter"
             Texture2D<float4> _MainTex;
             Texture2D<float4> _ShapeAtlas;
             float _PainterTeam;
-            float3 _PainterPosition, _PainterNormal;
+            float3 _PainterPosition, _PainterNormal, _PainterDirection;
+            float _DepthScale, _ClipEnabled;
+            float4 _Clip0, _Clip1;
             float4 _PainterColor;
             float _Radius, _Hardness, _Strength, _Threshold, _PrepareUV;
             float4 _ShapeTransform, _ShapeLayout;
@@ -44,7 +46,16 @@ Shader "Splatoon/InkTexturePainter"
                 if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return old;
                 float3 n=normalize(_PainterNormal); float3 axis=abs(n.y)>.5?float3(0,0,1):float3(0,1,0);
                 float3 tangent=normalize(cross(n,axis)), bitangent=cross(tangent,n);
-                float2 p=float2(dot(i.positionWS-_PainterPosition,tangent),dot(i.positionWS-_PainterPosition,bitangent))/max(.0001,_Radius);
+                float3 projected=_PainterDirection-n*dot(_PainterDirection,n);
+                if(dot(projected,projected)>1e-8) { bitangent=normalize(projected); tangent=normalize(cross(n,bitangent)); }
+                float2 plane=float2(dot(i.positionWS-_PainterPosition,tangent),dot(i.positionWS-_PainterPosition,bitangent));
+                if(_ClipEnabled>0) {
+                    float angle=atan2(plane.y,plane.x); if(angle<0) angle+=6.28318530718;
+                    int a=((int)floor(angle*1.27323954474))%8, b=(a+1)%8;
+                    float ra=a<4?_Clip0[a]:_Clip1[a-4], rb=b<4?_Clip0[b]:_Clip1[b-4];
+                    if(length(plane)>min(ra,rb)+.00001) return old;
+                }
+                float2 p=float2(dot(i.positionWS-_PainterPosition,tangent),dot(i.positionWS-_PainterPosition,bitangent)/(_DepthScale>0?_DepthScale:1))/max(.0001,_Radius);
                 float c=_ShapeTransform.x,s=_ShapeTransform.y; p=float2((p.x*c-p.y*s)*_ShapeTransform.z,p.x*s+p.y*c)*.5+.5;
                 int columns=(int)_ShapeLayout.x;
                 float2 tile=float2(_ShapeIndex%columns,_ShapeIndex/columns); float alpha=0;

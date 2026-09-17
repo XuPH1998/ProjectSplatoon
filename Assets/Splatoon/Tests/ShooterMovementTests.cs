@@ -63,7 +63,7 @@ namespace Splatoon.Tests
         }
         [Test] public void SwimmingCannotBypassRecoveryLock()
         {
-            var s=Alive();s.Ink=40;s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.InkRecoverAt=20/60.0;
+            var s=Alive();s.Ink=40;s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.FriendlyInkContact=true;s.Movement=MovementMode.GroundInk;s.InkRecoverAt=20/60.0;
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,19/60.0);Assert.That(s.Ink,Is.EqualTo(40));
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,20/60.0);Assert.That(s.Ink,Is.EqualTo(40+100f/180).Within(.0001));
         }
@@ -79,7 +79,7 @@ namespace Splatoon.Tests
             var s=Alive();s.Health=30;s.LastDamageAt=2;
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,2.99);Assert.That(s.Health,Is.EqualTo(30));
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.5f));
-            s.Swimming=true;s.SwimSource=SwimSurface.Friendly;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
+            s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.FriendlyInkContact=true;s.Movement=MovementMode.GroundInk;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
         }
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void RenderRatesDoNotChangeFixedSimulationResults(int rate)
@@ -93,16 +93,17 @@ namespace Splatoon.Tests
             }
             Assert.That(tick,Is.EqualTo(600));Assert.That(shots,Is.EqualTo(100));Assert.That(s.Ink,Is.EqualTo(8).Within(.001));
         }
-        [Test] public void HorizontalBallisticsUsesCurrentStraightAndBrakeTimings()
+        [Test] public void LegacyHorizontalBallisticsUsesStraightAndBrakeTimings()
         {
-            float age=(float)W.StraightSeconds+Mathf.Sqrt(2*1.4f/W.ProjectileGravity);
-            var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*W.SpeedMin,W,age);
-            float straight=(float)W.StraightSeconds,brake=(float)W.BrakeSeconds;
+            var legacy = WeaponAlignmentFixture.LegacySpread(1);
+            float age=(float)legacy.StraightSeconds+Mathf.Sqrt(2*1.4f/legacy.ProjectileGravity);
+            var hit=InkBallistics.Position(Vector3.up*1.4f,Vector3.forward*legacy.SpeedMin,legacy,age);
+            float straight=(float)legacy.StraightSeconds,brake=(float)legacy.BrakeSeconds;
             Assert.That(age,Is.GreaterThan(straight+brake));
             // Integrate the three speed phases independently to derive horizontal paint range.
-            float expected=W.SpeedMin*(straight+brake*(1+W.BrakeSpeedMultiplier)*.5f+(age-straight-brake)*W.BrakeSpeedMultiplier);
+            float expected=legacy.SpeedMin*(straight+brake*(1+legacy.BrakeSpeedMultiplier)*.5f+(age-straight-brake)*legacy.BrakeSpeedMultiplier);
             Assert.That(hit.y,Is.Zero.Within(.0001));Assert.That(hit.z,Is.EqualTo(expected).Within(.0001));
-            Assert.That(InkBallistics.Position(Vector3.zero,Vector3.forward*31,W,4/60.0).y,Is.Zero);
+            Assert.That(InkBallistics.Position(Vector3.zero,Vector3.forward*31,legacy,4/60.0).y,Is.Zero);
         }
         PrototypeArena LoadArena()
         {
@@ -223,7 +224,7 @@ namespace Splatoon.Tests
             var expected=(PlayerSnapshot)boxed;
             using var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp);writer.WriteNetworkSerializable(expected);
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
-            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.LessThan(512));
+            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.EqualTo(525));
         }
         [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {

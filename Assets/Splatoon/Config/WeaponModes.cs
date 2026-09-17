@@ -25,6 +25,7 @@ namespace Splatoon.Config
         [InspectorName("普通墨弹")] Ballistic = 0,
         [InspectorName("弹跳泡泡")] BouncingBubble = 1,
         [InspectorName("定时爆破墨弹")] TimedBlaster = 2,
-        [InspectorName("普通双枪（三段参考弹道）")] DualiesNormal = 3
+        [InspectorName("普通双枪（三段参考弹道）")] DualiesNormal = 3,
+        [InspectorName("共用三阶段参考墨弹")] ReferencePhased = 4
     }
 }

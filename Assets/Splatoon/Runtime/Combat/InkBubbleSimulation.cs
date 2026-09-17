@@ -21,6 +21,18 @@ namespace Splatoon.Combat
             s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Sequence); s.SerializeValue(ref GroundBounces);
             s.SerializeValue(ref Time); s.SerializeValue(ref Position); s.SerializeValue(ref Velocity); s.SerializeValue(ref Normal); s.SerializeValue(ref Travelled);
         }
+        public Vector3 PositionAt(double time, InkShot shot)
+        {
+            if (!shot.Configuration.ReferenceRules) return PositionAt(time, shot.Configuration.ProjectileGravity);
+            ReferenceBallistics.Evaluate(Velocity, shot.Configuration, Math.Max(0, time-Time), Time-shot.Born, out var delta, out _);
+            return Position + delta;
+        }
+        public Vector3 VelocityAt(double time, InkShot shot)
+        {
+            if (!shot.Configuration.ReferenceRules) return VelocityAt(time, shot.Configuration.ProjectileGravity);
+            ReferenceBallistics.Evaluate(Velocity, shot.Configuration, Math.Max(0, time-Time), Time-shot.Born, out _, out var velocity);
+            return velocity;
+        }
         public Vector3 PositionAt(double time, float gravity) => InkBallistics.Position(Position, Velocity, gravity, Math.Max(0, time - Time));
         public Vector3 VelocityAt(double time, float gravity) => Velocity + Vector3.down * (gravity * (float)Math.Max(0, time - Time));
     }
@@ -64,24 +76,36 @@ namespace Splatoon.Combat
                 int contacts = 0;
                 while (cursor < next - 1e-8)
                 {
-                    Vector3 from = a.Bubble.PositionAt(cursor, w.ProjectileGravity);
-                    Vector3 to = a.Bubble.PositionAt(next, w.ProjectileGravity);
+                    Vector3 from = a.Bubble.PositionAt(cursor, a.Shot);
+                    Vector3 to = a.Bubble.PositionAt(next, a.Shot);
                     Vector3 delta = to - from; float distance = delta.magnitude;
                     float remainingRange = Mathf.Max(0, w.EffectiveRange - a.Bubble.Travelled);
                     double traceEnd = next;
                     bool atRange = distance >= remainingRange;
                     if (atRange && distance > .000001f)
                     { traceEnd = cursor + (next - cursor) * remainingRange / distance; delta *= remainingRange / distance; distance = remainingRange; to = from + delta; }
-                    var velocity = a.Bubble.VelocityAt(cursor, w.ProjectileGravity);
-                    bool contact = _aim.Overlap(from, w.CollisionRadius, a.Shot.Shooter, -velocity.normalized, out var hit, null, a.Shot.Team);
-                    if (contact) hit.Distance = 0; // Overlap is a contact now, not travel to the surface.
-                    if (!contact) contact = _aim.ClosestCast(from, delta, distance, w.CollisionRadius, a.Shot.Shooter, out hit, null, a.Shot.Team);
+                    var velocity = a.Bubble.VelocityAt(cursor, a.Shot);
+                    float fieldRadius = ReferenceBallistics.BubbleRadius(a.Shot, traceEnd-a.Shot.Born, (int)a.Bubble.Sequence, false);
+                    float playerRadius = ReferenceBallistics.BubbleRadius(a.Shot, traceEnd-a.Shot.Born, (int)a.Bubble.Sequence, true);
+                    bool worldOverlap = _aim.Overlap(from, fieldRadius, a.Shot.Shooter, -velocity.normalized, out var world, false);
+                    bool playerOverlap = _aim.Overlap(from, playerRadius, a.Shot.Shooter, -velocity.normalized, out var player, true, a.Shot.Team);
+                    bool contact = worldOverlap || playerOverlap;
+                    var hit = worldOverlap ? world : player;
+                    if (contact) hit.Distance = 0;
+                    else
+                    {
+                        bool worldHit = _aim.ClosestCast(from, delta, distance, fieldRadius, a.Shot.Shooter, out world, false);
+                        bool playerHit = _aim.ClosestCast(from, delta, distance, playerRadius, a.Shot.Shooter, out player, true, a.Shot.Team);
+                        contact = worldHit || playerHit;
+                        hit = worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
+                    }
                     if (contact)
                     {
                         double time = cursor + (traceEnd - cursor) * Mathf.Clamp01(hit.Distance / Mathf.Max(.000001f, distance));
+                        if (w.ReferenceRules) PaintReferenceTrail(ref a, from, from + delta * Mathf.Clamp01(hit.Distance/Mathf.Max(.000001f, distance)), cursor, time);
                         a.Bubble.Travelled += Mathf.Min(distance, hit.Distance);
                         a.BubbleTrailDistance += Mathf.Min(distance, hit.Distance);
-                        velocity = a.Bubble.VelocityAt(time, w.ProjectileGravity);
+                        velocity = a.Bubble.VelocityAt(time, a.Shot);
                         if (hit.Collider.GetComponentInParent<PrototypePlayer>() != null)
                         { Resolve(a.Shot, hit.Collider, hit.Point, hit.Normal, time - a.Shot.Born, ref a.PaintOrdinal, velocity); return true; }
                         var reflected = ReflectBubble(velocity, hit.Normal, w, out bool ground);
@@ -91,9 +115,13 @@ namespace Splatoon.Combat
                         { Resolve(a.Shot, hit.Collider, hit.Point, hit.Normal, time - a.Shot.Born, ref a.PaintOrdinal, velocity); return true; }
                         var surface = hit.Collider.GetComponentInParent<PaintSurface>();
                         if (surface != null) ApplyPaint(surface, a.Shot, hit.Point, hit.Normal,
-                            Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref a.TrailSeed)), w, ++a.PaintOrdinal, true);
+                            w.ReferenceRules ? BubbleBouncePaintRadius(a.Shot, (int)a.Bubble.Sequence) : Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref a.TrailSeed)),
+                            w, ++a.PaintOrdinal, true, null, w.ReferenceRules ? velocity : Vector3.zero, w.ReferenceRules ? w.PaintDepthMax : 1);
                         a.Bubble.Sequence++; if (ground) a.Bubble.GroundBounces++;
-                        a.Bubble.Time = time; a.Bubble.Position = hit.Point + hit.Normal * (w.CollisionRadius + .002f);
+                        // The sweep uses the interval-end growing radius. Place the rebound
+                        // outside that same envelope so growth cannot cause an immediate
+                        // separating overlap to be mistaken for a second terminal impact.
+                        a.Bubble.Time = time; a.Bubble.Position = hit.Point + hit.Normal * (ReferenceBallistics.BubbleRadius(a.Shot, traceEnd-a.Shot.Born, (int)a.Bubble.Sequence, false) + .002f);
                         a.Bubble.Velocity = reflected; a.Bubble.Normal = hit.Normal;
                         Bounces.Add(a.Bubble);
                         cursor = Math.Min(next, Math.Max(time, cursor + .000001));
@@ -101,7 +129,8 @@ namespace Splatoon.Combat
                     else
                     {
                         a.Bubble.Travelled += distance; a.BubbleTrailDistance += distance;
-                        if (a.BubbleTrailDistance >= w.TrailSpacing)
+                        if (w.ReferenceRules) PaintReferenceTrail(ref a, from, to, cursor, traceEnd);
+                        else if (a.BubbleTrailDistance >= w.TrailSpacing)
                         { PaintTrail(to, a.Shot, w, ref a.TrailSeed, ref a.PaintOrdinal); a.BubbleTrailDistance %= w.TrailSpacing; }
 #if UNITY_EDITOR
                         TraceObserved?.Invoke(a.Shot, traceEnd - a.Shot.Born, to);
@@ -113,12 +142,15 @@ namespace Splatoon.Combat
                 a.SimulatedUntil = next;
             }
             if (end >= expires - 1e-8)
-            { FinishBubble(a, a.Bubble.PositionAt(expires, w.ProjectileGravity), expires); return true; }
+            { FinishBubble(a, a.Bubble.PositionAt(expires, a.Shot), expires); return true; }
             return false;
         }
         void FinishBubble(Active a, Vector3 position, double time)
         {
             var s = a.Shot;
+            if (s.Configuration.ReferenceRules)
+                QueuePaintDrop(s, position, time, s.VolleyIndex == 0 ? s.Configuration.PaintRadiusMax : s.Configuration.BubbleLaterImpactRadius,
+                    a.PaintOrdinal + 1, a.Bubble.VelocityAt(time, s), s.Configuration.PaintDepthMax);
             Impacts.Add(new InkImpact { Id = s.Id, Round = s.Round, Team = s.Team, Position = position, Normal = Vector3.up, Time = time,
                 Shooter = s.Shooter, ActionId = s.ActionId, Lifecycle = s.Lifecycle, HeroRevision = s.HeroRevision, PelletIndex = s.PelletIndex });
         }

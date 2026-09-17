@@ -1,0 +1,47 @@
+[
+  {
+    "path": "Assets/GameResource/Weapons/ShotgunGirl/Prefabs/Shotgun.prefab",
+    "sha256": "797b8a5b8388513223c3335ab8bd4f0c58585828fb7b853b6b1aff824226b71e",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlWeaponConfig.asset",
+    "sha256": "7be1e8198229af5b2b603c839ec78e35d5c795af53a21e4b786b75ec54356754",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/GameResource/Characters/ShotgunGirl/Prefabs/ShotgunGirlVisual.prefab",
+    "sha256": "02ba78646e1afd10a2bccf6b5d4de4a00c573aeab2d096925f4ed13a7ad10621",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/GameResource/Characters/ShotgunGirl/ShotgunGirlPresentation.asset",
+    "sha256": "50f1157758ebec1e36cf4a87dabac788e2b4d4af1cfd5067cabe8598b26f7eaf",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/GameResource/Characters/ShotgunGirl/Materials/Weapon_Shotgun_Metal_9b8a7ab4.mat",
+    "sha256": "c7af55b66724228d410dfff4bb92deb5634761f9efb29748894155622add0a6b",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/ThirdParty/CombatGirls/CombatGirlsCharacterPack/Shotgun_Girl/Models/ShotgunGirl_FullBody.fbx",
+    "sha256": "1232152f53d1419c2d7258f428c11f0c046ac7baa4bf50fdcba52b4c3b2714e8",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/HeroWeaponBindings.cs",
+    "sha256": "edfcc2fafc1f76ade175289867a8a0e06ba1816c509fc9fbb4299053ca758202",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/Splatoon/Runtime/Combat/InkCharacterView.cs",
+    "sha256": "46a178e5a602c14d68285e565f3d3b6e4d4a236713607d151b15d700cedab68f",
+    "equals_validation_snapshot": true
+  },
+  {
+    "path": "Assets/AddressableAssetsData/AssetGroups/Splatoon Local.asset",
+    "sha256": "03a7b773f04855b58394aaf2b1ff94eb0cf5dd588dc309c620cec1c4fdafd17a",
+    "equals_validation_snapshot": true
+  }
+]

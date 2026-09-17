@@ -201,18 +201,18 @@ namespace Splatoon.Tests
             }
             var baseline = Measure(60);
             Assert.That(baseline.Count, Is.InRange(2, 12));
-            Assert.That(baseline.Last().Radius, Is.EqualTo(W.Ammo.ExplosionPaintRadiusMin).Within(.00001));
+            Assert.That(baseline.Max(x => x.Radius), Is.EqualTo(W.Ammo.ExplosionPaintRadiusMin).Within(.00001));
             foreach (int hz in new[] { 30, 144 })
             {
                 var actual = Measure(hz); Assert.That(actual.Count, Is.EqualTo(baseline.Count));
                 for (int i = 0; i < baseline.Count; i++)
                 { Assert.That(actual[i].Position, Is.EqualTo(baseline[i].Position)); Assert.That(actual[i].ShapeSeed, Is.EqualTo(baseline[i].ShapeSeed)); Assert.That(actual[i].Radius, Is.EqualTo(baseline[i].Radius)); }
             }
-            var center = BlasterBallistics.Position(shot.Origin, shot.Velocity, W, .25);
+            var center = InkBallistics.Position(shot.Origin, shot.Velocity, W, .25);
             var wall = Object("Paint occluder", center + Vector3.right * .8f);
             wall.AddComponent<BoxCollider>().size = new Vector3(.1f, 5, 30); Physics.SyncTransforms();
             foreach (var clipped in Measure(60))
-                Assert.That(clipped.Position.x + clipped.Radius, Is.LessThan(wall.transform.position.x - .05f));
+                Assert.That(InkShapeAtlas.Coverage(new Vector3(wall.transform.position.x + .1f, clipped.Position.y, clipped.Position.z), clipped), Is.Zero);
         }
     }
 }

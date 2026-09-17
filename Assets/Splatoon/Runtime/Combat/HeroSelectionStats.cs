@@ -35,6 +35,7 @@ namespace Splatoon.Combat
                 : WeaponSimulation.IsSplatling(w) ? Mathf.Lerp(w.ChargeMinSpeed, (w.SpeedMin + w.SpeedMax) * .5f, SplatlingSimulation.RangeCharge(w, charge))
                 : w.PelletCount > 1 ? w.SpeedMin : (w.SpeedMin + w.SpeedMax) * .5f;
             var shot = new InkShot { Origin = origin, Velocity = aim.InitialDirection * speed, Charge = charge, Configuration = w, MuzzleIndex = muzzle };
+            if (w.ReferenceRules && WeaponSimulation.IsBubble(w)) shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, 0, true);
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             return shot;
         }
@@ -73,6 +74,7 @@ namespace Splatoon.Combat
         }
         static FlatShotRange CalculateBubble(InkShot shot, WeaponRuntimeConfig w)
         {
+            if (w.ReferenceRules) return CalculateReferenceBubble(shot, w);
             Vector3 position = shot.Origin, velocity = shot.Velocity;
             double time = 0, step = 1.0 / GameplayConfig.Global.ProjectileStepRate;
             float travelled = 0; int bounces = 0; bool grounded = false;
@@ -104,6 +106,37 @@ namespace Splatoon.Combat
             }
             Vector3 delta = position - shot.Origin;
             return new FlatShotRange(new Vector2(delta.x, delta.z).magnitude, time, grounded);
+        }
+        static FlatShotRange CalculateReferenceBubble(InkShot shot, WeaponRuntimeConfig w)
+        {
+            var segment = InkBounce.Initial(shot); double time = shot.Born; float travelled = 0;
+            while (time < shot.Born + w.Lifetime - 1e-8)
+            {
+                double end = Math.Min(time + 1.0 / 60, shot.Born + w.Lifetime), cursor = time;
+                for (int contacts=0;cursor<end-1e-8 && contacts<8;contacts++)
+                {
+                    Vector3 from=segment.PositionAt(cursor,shot),to=segment.PositionAt(end,shot);
+                    float radius=ReferenceBallistics.BubbleRadius(shot,end-shot.Born,(int)segment.Sequence,false);
+                    float distance=Vector3.Distance(from,to),remaining=Mathf.Max(0,w.EffectiveRange-travelled);
+                    if(distance>=remaining) return new FlatShotRange(Vector3.ProjectOnPlane(Vector3.Lerp(from,to,remaining/Mathf.Max(.000001f,distance))-shot.Origin,Vector3.up).magnitude,cursor-shot.Born,false);
+                    if(to.y<=radius)
+                    {
+                        float fraction=Mathf.Clamp01((from.y-radius)/Mathf.Max(.000001f,from.y-to.y));
+                        double hit=cursor+(end-cursor)*fraction;Vector3 point=Vector3.Lerp(from,to,fraction);travelled+=distance*fraction;
+                        if(segment.GroundBounces>=w.BubbleGroundBounces || segment.Sequence>=w.BubbleMaxBounces)
+                            return new FlatShotRange(Vector3.ProjectOnPlane(point-shot.Origin,Vector3.up).magnitude,hit-shot.Born,true);
+                        var velocity=segment.VelocityAt(hit,shot);
+                        segment.Sequence++;segment.GroundBounces++;segment.Time=hit;
+                        segment.Position=new Vector3(point.x,ReferenceBallistics.BubbleRadius(shot,hit-shot.Born,(int)segment.Sequence,false)+.002f,point.z);
+                        segment.Velocity=InkProjectileService.ReflectBubble(velocity,Vector3.up,w,out _);
+                        cursor=Math.Max(cursor+.000001,hit);
+                    }
+                    else{travelled+=distance;cursor=end;}
+                }
+                time=end;
+            }
+            var final=segment.PositionAt(time,shot)-shot.Origin;
+            return new FlatShotRange(new Vector2(final.x,final.z).magnitude,w.Lifetime,false);
         }
     }
 

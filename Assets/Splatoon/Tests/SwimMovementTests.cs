@@ -50,7 +50,7 @@ namespace Splatoon.Tests
         {
             Paint(team); Run(90);
             Assert.That(state.Swimming, Is.True); Assert.That(state.SwimSource, Is.EqualTo(source));
-            Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(speed).Within(.002));
+            Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(team==1?GameplayConfig.DefaultHero.SwimSpeed:speed).Within(.002));
             Assert.That(state.ShowsSwimBody, Is.True); Assert.That(state.HasInkRecovery, Is.EqualTo(team == 1));
             state.Health = state.Ink = 30; state.LastDamageAt = -10;
             ResourceSimulation.Step(ref state, GameplayConfig.DefaultHero, false, false, Dt, now);
@@ -71,7 +71,7 @@ namespace Splatoon.Tests
             Paint(1); Run(5); Paint(2); Tick();
             Assert.That(state.Swimming, Is.False); Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.None));
             Run(60); Assert.That(state.Swimming, Is.False);
-            Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(5 * GameplayConfig.DefaultHero.EnemyInkMultiplier).Within(.002));
+            Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(GameplayConfig.DefaultHero.MoveSpeed * GameplayConfig.DefaultHero.EnemyInkMultiplier).Within(.002));
         }
         [TestCase(0)] [TestCase(1)]
         public void JumpKeepsSourceButUsesGlideSpeedUntilLanding(byte source)
@@ -117,7 +117,7 @@ namespace Splatoon.Tests
             for(int cycle=0;cycle<3;cycle++) foreach(bool swim in new[]{false,true})
             {
                 input.Swim=swim; var before=state; Tick();
-                float target=swim ? GameplayConfig.DefaultHero.AirSwimSpeed : 5;
+                float target=swim ? GameplayConfig.DefaultHero.AirSwimSpeed : GameplayConfig.DefaultHero.MoveSpeed;
                 float acceleration=swim ? GameplayConfig.DefaultHero.SwimAcceleration : GameplayConfig.DefaultHero.MoveAcceleration;
                 var expected=Vector3.MoveTowards(before.PlanarVelocity,Vector3.forward*target,acceleration*Dt);
                 Assert.That(Vector3.Distance(state.PlanarVelocity,expected),Is.LessThan(.0001f));

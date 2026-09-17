@@ -75,9 +75,25 @@ namespace Splatoon.Painting
             Vector4 t = Transform(seed);
             return new Vector2((p.x * t.x - p.y * t.y) * t.z, p.x * t.y + p.y * t.x) * .5f + Vector2.one * .5f;
         }
+        internal static void StampBasis(PaintStamp stamp, out Vector3 tangent, out Vector3 bitangent)
+        {
+            var direction = Vector3.ProjectOnPlane(stamp.Direction, stamp.Normal);
+            if (direction.sqrMagnitude < 1e-8f) { Basis(stamp.Normal, out tangent, out bitangent); return; }
+            bitangent = direction.normalized; tangent = Vector3.Cross(stamp.Normal.normalized, bitangent).normalized;
+        }
+        public static bool Visible(PaintStamp stamp, Vector2 point)
+        {
+            if (!stamp.ClipEnabled) return true;
+            float angle = Mathf.Repeat(Mathf.Atan2(point.y, point.x), Mathf.PI * 2) * (4 / Mathf.PI);
+            int a = Mathf.FloorToInt(angle) % 8, b = (a + 1) % 8;
+            float ra = a < 4 ? stamp.Clip0[a] : stamp.Clip1[a - 4], rb = b < 4 ? stamp.Clip0[b] : stamp.Clip1[b - 4];
+            return point.magnitude <= Mathf.Min(ra, rb) + .00001f;
+        }
+        static float Depth(PaintStamp stamp) => stamp.DepthScale > 0 ? stamp.DepthScale : 1;
         public static Vector2 LocalExtents(PaintStamp stamp, Matrix4x4 worldToLocal)
         {
-            Basis(stamp.Normal, out var tangent, out var bitangent); Vector4 t = Transform(stamp.ShapeSeed);
+            StampBasis(stamp, out var tangent, out var bitangent); Vector4 t = Transform(stamp.ShapeSeed);
+            bitangent *= Depth(stamp);
             Vector3 u = worldToLocal.MultiplyVector((tangent * t.x - bitangent * t.y) * stamp.Radius);
             Vector3 v = worldToLocal.MultiplyVector((tangent * t.y + bitangent * t.x) * stamp.Radius);
             return new Vector2(Mathf.Abs(u.x) + Mathf.Abs(v.x), Mathf.Abs(u.z) + Mathf.Abs(v.z));
@@ -99,8 +115,7 @@ namespace Splatoon.Painting
             float t = Mathf.Clamp01((alpha - (1 - h)) / h);
             return t * t * (3 - 2 * t) * Mathf.Clamp01(strength);
         }
-        public static float Coverage(Vector3 point, PaintStamp stamp) => stamp.Radius <= 0 ? 0
-            : RemapCoverage(Sample(ProjectedUv(point, stamp.Position, stamp.Normal, stamp.Radius, stamp.ShapeSeed), stamp.ShapeSeed), stamp.Hardness, stamp.Strength);
+        public static float Coverage(Vector3 point, PaintStamp stamp) => new Brush(stamp).Coverage(point);
 
         /// <summary>Stamp-invariant work, shared by all tested regions and covered cells.</summary>
         internal readonly struct Brush
@@ -110,20 +125,21 @@ namespace Splatoon.Painting
             readonly Vector4 _transform;
             public Brush(PaintStamp stamp)
             {
-                _stamp = stamp; Basis(stamp.Normal, out _tangent, out _bitangent);
+                _stamp = stamp; StampBasis(stamp, out _tangent, out _bitangent);
                 _transform = Transform(stamp.ShapeSeed);
             }
             public Vector2 LocalExtents(Matrix4x4 inverse)
             {
-                Vector3 u = inverse.MultiplyVector((_tangent * _transform.x - _bitangent * _transform.y) * _stamp.Radius);
-                Vector3 v = inverse.MultiplyVector((_tangent * _transform.y + _bitangent * _transform.x) * _stamp.Radius);
+                Vector3 u = inverse.MultiplyVector((_tangent * _transform.x - _bitangent * (_transform.y * Depth(_stamp))) * _stamp.Radius);
+                Vector3 v = inverse.MultiplyVector((_tangent * _transform.y + _bitangent * (_transform.x * Depth(_stamp))) * _stamp.Radius);
                 return new Vector2(Mathf.Abs(u.x) + Mathf.Abs(v.x), Mathf.Abs(u.z) + Mathf.Abs(v.z));
             }
             public float Coverage(Vector3 point)
             {
                 if (_stamp.Radius <= 0) return 0;
                 Vector3 delta = point - _stamp.Position;
-                Vector2 p = new Vector2(Vector3.Dot(delta, _tangent), Vector3.Dot(delta, _bitangent)) / Mathf.Max(.0001f, _stamp.Radius);
+                if (!Visible(_stamp, new Vector2(Vector3.Dot(delta, _tangent), Vector3.Dot(delta, _bitangent)))) return 0;
+                Vector2 p = new Vector2(Vector3.Dot(delta, _tangent), Vector3.Dot(delta, _bitangent) / Depth(_stamp)) / Mathf.Max(.0001f, _stamp.Radius);
                 Vector2 uv = new Vector2((p.x * _transform.x - p.y * _transform.y) * _transform.z,
                     p.x * _transform.y + p.y * _transform.x) * .5f + Vector2.one * .5f;
                 return RemapCoverage(Sample(uv, _stamp.ShapeSeed), _stamp.Hardness, _stamp.Strength);

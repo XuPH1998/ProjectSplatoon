@@ -38,6 +38,7 @@ namespace Splatoon.Tests
                 if (path == PistolGirlTuningFixture.AssetPath)
                     PistolGirlTuningFixture.Apply(4, entry["after"]);
                 if (path == DualPistolGirlTuningFixture.AssetPath) DualPistolGirlTuningFixture.Apply(2, entry["after"]);
+                WeaponAlignmentFixture.Apply(path.Contains("RifleGirl/") ? 1 : path.Contains("DualPistolGirl/") ? 2 : path.Contains("ShotgunGirl/") ? 3 : path.Contains("PistolGirl/") ? 4 : path.Contains("RocketLauncherGirl/") ? 5 : 6, entry["after"]);
                 var asset = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(path);
                 Assert.That(asset, Is.Not.Null);
                 foreach (var field in Fields)
@@ -65,7 +66,7 @@ namespace Splatoon.Tests
                 Assert.That(name, Is.Not.EqualTo("武器参数"), field.Name);
                 Assert.That(name.Any(c => c >= '\u4e00' && c <= '\u9fff'), Is.True, field.Name);
                 Assert.That(field.GetCustomAttribute<TooltipAttribute>(), Is.Not.Null);
-                Assert.That(name, Does.Not.Contain("帧"));
+                if (field.FieldType == typeof(double)) Assert.That(name, Does.Not.Contain("帧")); // Drag is explicitly per reference frame; time stays seconds.
             }
             Assert.That(typeof(WeaponRuntimeConfig).GetField("FireMode").FieldType, Is.EqualTo(typeof(WeaponFireMode)));
             Assert.That(typeof(WeaponRuntimeConfig).GetField("MuzzleMode").FieldType, Is.EqualTo(typeof(WeaponMuzzleMode)));

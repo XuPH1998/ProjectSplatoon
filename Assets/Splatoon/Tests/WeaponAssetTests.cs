@@ -38,6 +38,7 @@ namespace Splatoon.Tests
                 RapidBlasterTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
                 PistolGirlTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
                 DualPistolGirlTuningFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
+                WeaponAlignmentFixture.Apply(old["id"].AsInt, old, referenceFrames: true);
                 var current = rows.Children.Single(r => r["id"].AsInt == old["id"].AsInt);
                 foreach (string key in old.Keys)
                     if (key == "displayName") continue; // Renamed heroes are verified by the portrait selection tests.
@@ -58,9 +59,9 @@ namespace Splatoon.Tests
             Assert.That(WeaponConfigService.Current.Revision(6), Is.EqualTo(revision));
         }
         [TestCase(1)] [TestCase(4)]
-        public void FirstShotIsZeroThenContinuousIntervalsExpand(int hero)
+        public void LegacyFirstShotIsZeroThenContinuousIntervalsExpand(int hero)
         {
-            var w = GameplayConfig.GetWeapon(hero); var s = Alive(hero); int first = -1;
+            var w = WeaponAlignmentFixture.LegacySpread(hero); var s = Alive(hero); int first = -1;
             for (int t = 0; t <= 100; t++)
             {
                 bool emitted = Tick(ref s, w, t, true);
@@ -68,9 +69,9 @@ namespace Splatoon.Tests
                 if (first >= 0) Assert.That(s.SpreadProgress, Is.EqualTo(Mathf.Min(1, (t - first) / 60f)).Within(.00002));
             }
         }
-        [Test] public void HalfProgressRecoversInHalfTheConfiguredTimeAndKeepsAirProgress()
+        [Test] public void LegacyHalfProgressRecoversInHalfTheConfiguredTimeAndKeepsAirProgress()
         {
-            var w = GameplayConfig.GetWeapon(6); var s = Alive();
+            var w = WeaponAlignmentFixture.LegacySpread(6); var s = Alive();
             s.SpreadInitialized = true; s.SpreadProgress = .5f;
             s.Grounded = false; SpreadSimulation.Refresh(ref s, w);
             Assert.That(s.CurrentSpread, Is.EqualTo(3)); Assert.That(s.CurrentVerticalSpread, Is.EqualTo(3));
@@ -80,9 +81,9 @@ namespace Splatoon.Tests
             SpreadSimulation.Before(ref s, w, .25);
             Assert.That(s.CurrentSpread, Is.Zero); Assert.That(s.CurrentVerticalSpread, Is.Zero);
         }
-        [Test] public void CommittedBurstKeepsGrowingAfterReleaseUntilItsFinalRound()
+        [Test] public void LegacyCommittedBurstKeepsGrowingAfterReleaseUntilItsFinalRound()
         {
-            var w = Changed(1, a => { a.fireMode = WeaponFireMode.Burst; a.burstCount = 3; a.fireRate = 15; a.startSeconds = 0 / 60.0; a.burstRecoverySeconds = 8 / 60.0; });
+            var w = Changed(1, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.fireMode = WeaponFireMode.Burst; a.burstCount = 3; a.fireRate = 15; a.startSeconds = 0 / 60.0; a.burstRecoverySeconds = 8 / 60.0; });
             var s = Alive(1);
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, t == 0);
             Assert.That(s.ShotSequence, Is.EqualTo(3)); Assert.That(s.SpreadFiring, Is.False);
@@ -111,9 +112,9 @@ namespace Splatoon.Tests
             CollectionAssert.AreNotEqual(GameplayContentSignature.Compute(new byte[] { 1 }, "map", player, new[] { old }),
                 GameplayContentSignature.Compute(new byte[] { 1 }, "map", player, new[] { changed }));
         }
-        [Test] public void SplatlingReleaseGrowsThroughLastRoundAndEndingImmediatelyRecovers()
+        [Test] public void LegacySplatlingReleaseGrowsThroughLastRoundAndEndingImmediatelyRecovers()
         {
-            var w = GameplayConfig.GetWeapon(6); var s = Alive();
+            var w = WeaponAlignmentFixture.LegacySpread(6); var s = Alive();
             for (int t = 0; t < 120; t++) { Assert.That(Tick(ref s, w, t, true), Is.False); Assert.That(s.SpreadProgress, Is.Zero); }
             Assert.That(Tick(ref s, w, 120, false), Is.True); Assert.That(s.LastShotSpread, Is.Zero); Assert.That(s.LastShotVerticalSpread, Is.Zero);
             for (int t = 121; t <= 248; t++) Tick(ref s, w, t, false);
@@ -128,8 +129,8 @@ namespace Splatoon.Tests
         [Test] public void ShotgunRetainsBaseAndRocketStillTightensWithCharge()
         {
             var shotgun = GameplayConfig.GetWeapon(3);
-            Assert.That(SpreadSimulation.Angles(shotgun, false, 0), Is.EqualTo(Vector2.one * 2));
-            Assert.That(SpreadSimulation.Angles(shotgun, true, 0), Is.EqualTo(Vector2.one * 4));
+            Assert.That(SpreadSimulation.Angles(shotgun, false, 0), Is.EqualTo(Vector2.one * 5));
+            Assert.That(SpreadSimulation.Angles(shotgun, true, 0), Is.EqualTo(Vector2.one * 5));
             Assert.That(SpreadSimulation.Angles(shotgun, false, 1), Is.EqualTo(Vector2.one * 5));
             var rocket = LegacyChargeFixture.Create(); var s = Alive(5);
             for (int t = 0; t <= WeaponTimeFixture.ReferenceFrames(rocket.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(rocket.StartSeconds); t++) Tick(ref s, rocket, t, true);
@@ -137,9 +138,9 @@ namespace Splatoon.Tests
             Assert.That(s.LastShotSpread, Is.EqualTo(rocket.SpreadDegrees)); Assert.That(s.SpreadProgress, Is.Zero);
             Assert.That(WeaponSimulation.Spread(rocket, false, 0), Is.GreaterThan(s.LastShotSpread));
         }
-        [Test] public void ZeroDurationUsesMaxForFinalShotBeforeImmediateRecovery()
+        [Test] public void LegacyZeroDurationUsesMaxForFinalShotBeforeImmediateRecovery()
         {
-            var w = Changed(6, a => { a.spreadExpandSeconds = 0; a.spreadRecoverSeconds = 0; }); var s = Alive();
+            var w = Changed(6, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadExpandSeconds = 0; a.spreadRecoverSeconds = 0; }); var s = Alive();
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, false);
             Assert.That(s.ShotSequence, Is.EqualTo(1)); Assert.That(s.LastShotSpread, Is.EqualTo(3)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(2));
             Assert.That(s.CurrentSpread, Is.Zero); Assert.That(s.CurrentVerticalSpread, Is.Zero);
@@ -171,10 +172,10 @@ namespace Splatoon.Tests
             Tick(ref s, next, at + 20, false); Tick(ref s, next, at + 21, true, 2);
             Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Charging));
         }
-        [Test] public void LiveSpreadChangePreservesProgressAndOldShotConfiguration()
+        [Test] public void LegacyLiveSpreadChangePreservesProgressAndOldShotConfiguration()
         {
-            var old = GameplayConfig.GetWeapon(6); uint revision = WeaponConfigService.Current.Revision(6);
-            var next = Changed(6, a => { a.spreadDegrees = 4; a.splatlingPitchSpread = 3; a.spreadExpandSeconds = 2; a.projectileGravity = 0; a.damage = 45; });
+            var old = WeaponAlignmentFixture.LegacySpread(6); WeaponConfigService.Current.Replace(6, old); uint revision = WeaponConfigService.Current.Revision(6);
+            var next = Changed(6, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadDegrees = 4; a.splatlingPitchSpread = 3; a.spreadExpandSeconds = 2; a.projectileGravity = 0; a.damage = 45; });
             var s = Alive(); s.SpreadProgress = .5f;
             Assert.That(old.RequiresRestart(next), Is.False); Assert.That(old.SameValues(next), Is.False);
             WeaponConfigService.Current.Replace(6, next); SpreadSimulation.Refresh(ref s, next);

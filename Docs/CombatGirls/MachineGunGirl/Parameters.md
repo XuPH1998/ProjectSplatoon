@@ -1,5 +1,7 @@
 # 参数与空间适配
 
+现行11.3.0对齐：第一圈2秒，三阶段弹道、逐发偏置和独立脚下／沿途墨调度；下表作为旧实现记录保留。完整实现与最新验收见 [对齐报告](../../WeaponAlignment1130/Report.md)。下文中的旧参数和旧验收证据不代表本轮版本。
+
 采用计划指定的 11.3.0 固定版本，[原始参数文件](https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponSpinnerHyper.game__GameParameterTable.json)及 SHA-256 保存在 `Tools/ValidationData/MachineGun/`。这些参数用于本项目实现，不作为完整复刻原作内部算法的证明。
 
 | 项目 | 实现 |

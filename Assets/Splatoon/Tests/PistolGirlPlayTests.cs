@@ -99,12 +99,12 @@ namespace Splatoon.Tests
             var csv = new StringBuilder("distanceM,firstDamage,hitsToDefeat,impactAgeSeconds,actualTravelM\n");
             try
             {
-                foreach (var pair in new[] { (3f, 4), (5f, 4), (6f, 4), (7f, 5), (8f, 6), (9f, 7), (9.1f, 0) })
+                foreach (var pair in new[] { (3f, 4), (5f, 4), (6f, 4), (7f, 4), (8f, 4), (9f, 5), (9.1f, 5) })
                 {
                     var state = player.Snapshot.Value; state.Health = 100; state.Team = 2; state.ProtectedUntil = 0;
                     state.Position = origin + Vector3.forward * pair.Item1; state.Movement = MovementMode.Human;
                     player.Snapshot.Value = state; player.transform.position = state.Position;
-                    target.transform.position = origin + Vector3.forward * (pair.Item1 + w.CollisionRadius - .002f);
+                    target.transform.position = origin + Vector3.forward * (pair.Item1 + w.ReferencePlayerRadius - .002f);
                     Physics.SyncTransforms();
                     float firstDamage = 0; double hitAge = 0; float travel = 0; int hits = 0;
                     var projectiles = new InkProjectileService();

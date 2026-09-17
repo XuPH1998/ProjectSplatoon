@@ -32,7 +32,7 @@ namespace Splatoon.Combat
         public static bool IsSplatling(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Splatling;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now)
             => IsBubble(w) ? BubbleVolleySimulation.WantsFire(s, input, w, now) : IsSplatling(w) ? SplatlingSimulation.WantsFire(s, input, now) : !IsSemi(w) ? WantsFire(s, input) : !input.CancelFire && !s.AttackNeedsRelease &&
-                (s.WeaponPhase == WeaponPhase.Starting || (s.Ink + .00001f >= w.ShotInk &&
+                (s.WeaponPhase == WeaponPhase.Starting || (s.Ink + PrototypeRules.InkTolerance >= w.ShotInk &&
                 (input.Fire || (input.FireSequence != s.ConsumedFire && now + w.SemiBufferSeconds + 1e-8 >= s.NextShotAt))));
         public static void ResetPresentation(ref PlayerSnapshot s)
         { s.NextMuzzle = s.LastShotMuzzle = 0; s.RightShotAt = s.LeftShotAt = 0; s.RightShotAction = s.LeftShotAction = 0; }
@@ -47,7 +47,7 @@ namespace Splatoon.Combat
         // authored endpoint itself may be any fractional second and is never rounded.
         public static double AffordableChargeSeconds(WeaponRuntimeConfig w, float ink)
         {
-            if (ink + .00001f >= w.ShotInk) return w.ChargeSeconds;
+            if (ink + PrototypeRules.InkTolerance >= w.ShotInk) return w.ChargeSeconds;
             double fraction = (ink - w.ChargeMinInk + .00001f) / (w.ShotInk - w.ChargeMinInk);
             return Math.Clamp(Math.Floor(fraction * w.ChargeSeconds * ReferenceRate + 1e-6) / ReferenceRate, 0, w.ChargeSeconds);
         }
@@ -116,7 +116,7 @@ namespace Splatoon.Combat
                 if (chargeWeapon && edge && now + 1e-8 < s.NextShotAt) { s.ConsumedFire = input.FireSequence; return false; }
                 if (!(chargeWeapon ? edge : input.Fire || edge)) return false;
                 s.ConsumedFire = input.FireSequence;
-                if (s.Ink + .00001f < InkCost(w)) return false;
+                if (s.Ink + PrototypeRules.InkTolerance < InkCost(w)) return false;
                 Begin(ref s, input, w, now, emerged ? w.EmergeStartSeconds : w.StartSeconds);
             }
             if (input.Fire) s.ConsumedFire = input.FireSequence;
@@ -152,7 +152,7 @@ namespace Splatoon.Combat
             result = default;
             if (!input.Fire || edge) s.SemiHoldStarted = false;
             if (!canShoot) { Cancel(ref s, input); return false; }
-            if (s.Ink + .00001f < w.ShotInk)
+            if (s.Ink + PrototypeRules.InkTolerance < w.ShotInk)
             {
                 bool held = s.SemiHoldStarted && input.Fire;
                 Cancel(ref s, input); s.SemiHoldStarted = held;

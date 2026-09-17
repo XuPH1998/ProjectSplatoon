@@ -16,10 +16,14 @@ namespace Splatoon.Painting
         public Vector3 Position, Normal;
         public float Radius, Hardness, Strength;
         public uint ShapeSeed;
+        public Vector3 Direction;
+        public float DepthScale;
+        public bool ClipEnabled;
+        public Vector4 Clip0, Clip1;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Sequence); s.SerializeValue(ref Round); s.SerializeValue(ref SurfaceId); s.SerializeValue(ref Team);
-            s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Radius); s.SerializeValue(ref Hardness); s.SerializeValue(ref Strength); s.SerializeValue(ref ShapeSeed);
+            s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Radius); s.SerializeValue(ref Hardness); s.SerializeValue(ref Strength); s.SerializeValue(ref ShapeSeed); s.SerializeValue(ref Direction); s.SerializeValue(ref DepthScale); s.SerializeValue(ref ClipEnabled); s.SerializeValue(ref Clip0); s.SerializeValue(ref Clip1);
         }
     }
     public static class InkBrush
@@ -163,6 +167,8 @@ namespace Splatoon.Painting
                     _brush.SetFloat("_Radius", stamp.Radius); _brush.SetFloat("_Hardness", stamp.Hardness); _brush.SetFloat("_Strength", stamp.Strength);
                     _brush.SetFloat("_PainterTeam", stamp.Team); _brush.SetInteger("_ShapeIndex", InkShapeAtlas.Index(stamp.ShapeSeed));
                     _brush.SetVector("_ShapeTransform", InkShapeAtlas.Transform(stamp.ShapeSeed));
+                    _brush.SetVector("_PainterDirection", stamp.Direction); _brush.SetFloat("_DepthScale", stamp.DepthScale > 0 ? stamp.DepthScale : 1);
+                    _brush.SetFloat("_ClipEnabled", stamp.ClipEnabled ? 1 : 0); _brush.SetVector("_Clip0", stamp.Clip0); _brush.SetVector("_Clip1", stamp.Clip1);
                     _brush.SetTexture("_MainTex", source);
                     command.SetRenderTarget(destination);
                     // DrawMesh snapshots the property block, preserving every stamp in submission order.

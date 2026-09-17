@@ -42,7 +42,7 @@ namespace Splatoon.Tests
             {
                 var player = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab").GetComponent<Splatoon.Prototype.PrototypePlayer>();
                 var baseline = Splatoon.Networking.GameplayContentSignature.Compute(new byte[] { 1 }, "map", player);
-                Assert.That(Splatoon.Networking.GameplayContentSignature.PaintProtocolVersion, Is.EqualTo(8));
+                Assert.That(Splatoon.Networking.GameplayContentSignature.PaintProtocolVersion, Is.EqualTo(9));
                 InkShapeAtlas.Reset(); Assert.Throws<InvalidOperationException>(() => { var hash = InkShapeAtlas.ContentHash; });
                 Assert.Throws<InvalidOperationException>(() => InkShapeAtlas.Configure(null));
                 var pixel = changed.GetPixel(128, 128); pixel.a = pixel.a > .5f ? .4f : .8f;

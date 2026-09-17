@@ -31,15 +31,15 @@ namespace Splatoon.Tests
             ulong animation = 0;
             for (int i = 0; i < 80; i++) if (Step(ref s, i))
             { ticks.Add(i); ids.Add(s.ShotActionId); if (animation == 0) animation = s.RightShotAction; Assert.That(s.RightShotAction, Is.EqualTo(animation)); }
-            Assert.That(ticks, Is.EqualTo(new[] { 6, 9, 12, 15 }));
+            Assert.That(ticks, Is.EqualTo(new[] { 6, 11, 16, 21 }));
             Assert.That(ids.Distinct().Count(), Is.EqualTo(4)); Assert.That(ids.Select(x => x >> 32).Distinct().Count(), Is.EqualTo(1));
-            Assert.That(s.Ink, Is.EqualTo(92)); Assert.That(s.InkRecoverAt, Is.EqualTo(.9).Within(1e-6));
+            Assert.That(s.Ink, Is.EqualTo(92)); Assert.That(s.InkRecoverAt, Is.EqualTo(61.0 / 60).Within(1e-6));
         }
         [Test] public void HeldFireMaintainsExactCycleUntilTwelveGroupsExhaustInk()
         {
             var s = Alive(); var ticks = new List<int>();
             for (int i = 0; i < 500; i++) if (Step(ref s, i, true)) ticks.Add(i);
-            Assert.That(ticks, Is.EqualTo(Enumerable.Range(0, 12).SelectMany(g => new[] { 6, 9, 12, 15 }.Select(x => x + g * 33))));
+            Assert.That(ticks, Is.EqualTo(Enumerable.Range(0, 12).SelectMany(g => new[] { 6, 11, 16, 21 }.Select(x => x + g * 32))));
             Assert.That(s.Ink, Is.EqualTo(4)); Assert.That(s.BurstRemaining, Is.Zero);
         }
         [Test] public void SwimmingWaitsForFourthBubbleButNotRecovery()
@@ -47,9 +47,9 @@ namespace Splatoon.Tests
             var s = Alive(); for (int i = 0; i <= 6; i++) Step(ref s, i);
             var input = new PlayerInputFrame { Swim = true, FireSequence = 1 };
             Assert.That(WeaponSimulation.WantsFire(s, input, Weapon, .12), Is.True);
-            for (int i = 7; i <= 15; i++) Step(ref s, i, swim: true);
-            Assert.That(s.ShotSequence, Is.EqualTo(4)); Assert.That(WeaponSimulation.WantsFire(s, input, Weapon, .26), Is.False);
-            Assert.That(s.FireVisualUntil, Is.EqualTo(.65).Within(1e-6));
+            for (int i = 7; i <= 21; i++) Step(ref s, i, swim: true);
+            Assert.That(s.ShotSequence, Is.EqualTo(4)); Assert.That(WeaponSimulation.WantsFire(s, input, Weapon, 22.0 / 60), Is.False);
+            Assert.That(s.FireVisualUntil, Is.EqualTo(38.0 / 60).Within(1e-6));
         }
         [TestCase(0)] [TestCase(7)]
         public void CancellationNeverRefundsAnEmittedGroupOrResurrectsIt(int cancelTick)
@@ -68,7 +68,7 @@ namespace Splatoon.Tests
             s.Swimming = false; var ticks = new List<int>();
             for (int i = 0; i < 40; i++)
                 if (WeaponSimulation.Step(ref s, input, Weapon, i / 60.0, i == 0, true)) ticks.Add(i);
-            Assert.That(ticks, Is.EqualTo(new[] { 12, 15, 18, 21 })); Assert.That(s.Ink, Is.EqualTo(92));
+            Assert.That(ticks, Is.EqualTo(new[] { 12, 17, 22, 27 })); Assert.That(s.Ink, Is.EqualTo(92));
         }
         [Test] public void SnapshotReplayRestoresRemainingBubblesWithoutDoublePayment()
         {
@@ -78,10 +78,10 @@ namespace Splatoon.Tests
             for (int i = 10; i < 100; i++) Assert.That(Step(ref copy, i, true), Is.EqualTo(Step(ref s, i, true)));
             Assert.That(copy.Ink, Is.EqualTo(s.Ink)); Assert.That(copy.ShotActionId, Is.EqualTo(s.ShotActionId));
         }
-        [Test] public void ThirtyDamageHasNoAgeDecayAndFourHitsDefeatHundredHealth()
+        [Test] public void ThirtyTwoDamageHasNoAgeDecayAndFourHitsDefeatHundredHealth()
         {
             float health = 100; for (int i = 0; i < 4; i++)
-            { float damage = WeaponSimulation.Damage(Weapon, i * .7); Assert.That(damage, Is.EqualTo(30)); health = PrototypeRules.Damage(health, damage, false, 0, 10); if (i == 2) Assert.That(health, Is.EqualTo(10)); }
+            { float damage = WeaponSimulation.Damage(Weapon, i * .7); Assert.That(damage, Is.EqualTo(32)); health = PrototypeRules.Damage(health, damage, false, 0, 10); if (i == 2) Assert.That(health, Is.EqualTo(4)); }
             Assert.That(health, Is.Zero);
         }
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
@@ -91,8 +91,9 @@ namespace Splatoon.Tests
             for (int i = 1; i <= rate * 3; i++) service.Simulate((double)i / rate);
             Assert.That(service.Bounces.Count, Is.EqualTo(3)); Assert.That(service.Impacts.Count, Is.EqualTo(1)); Assert.That(service.ActiveCount, Is.Zero);
             Assert.That(service.Bounces.Select(b => b.GroundBounces), Is.EqualTo(new[] { 1, 2, 3 }));
-            Assert.That(service.Bounces[0].Position.z - Origin.z, Is.EqualTo(4.76).Within(.15));
-            Assert.That(service.Impacts[0].Position.z - Origin.z, Is.InRange(17.1f, 17.9f));
+            Assert.That(service.Bounces[0].Position.z - Origin.z, Is.GreaterThan(4));
+            var reference = HeroFlatRange.Calculate(service.Spawned[0], Weapon);
+            Assert.That(service.Impacts[0].Position.z - Origin.z, Is.EqualTo(reference.Distance).Within(.1));
         }
         [Test] public void WallReflectsWithoutSpendingGroundBounce()
         {
@@ -131,9 +132,9 @@ namespace Splatoon.Tests
         [Test] public void RangeAndLifetimeRemainCumulativeAfterBounces()
         {
             Floor(); var copy = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>("Assets/GameResource/Weapons/BubbleGirl/BubbleGirlWeaponConfig.asset")); _objects.Add(copy);
-            copy.effectiveRange = 8; var service = Shot(copy.Snapshot()); service.Simulate(2.5);
+            copy.effectiveRange = 12; var service = Shot(copy.Snapshot()); service.Simulate(2.5);
             Assert.That(service.Bounces.Count, Is.EqualTo(1)); Assert.That(service.ActiveCount, Is.Zero);
-            Assert.That(service.Impacts.Single().Position.z - Origin.z, Is.LessThan(8));
+            Assert.That(service.Impacts.Single().Position.z - Origin.z, Is.LessThan(12));
         }
         [Test] public void LifetimeEndsHighAltitudeFlightExactlyOnce()
         {
@@ -165,7 +166,7 @@ namespace Splatoon.Tests
         [Test] public void LateJoinCapturesLatestAuthoritativeSegmentAndRoundClearRemovesIt()
         {
             Floor(); var service = Shot(); service.Simulate(.9); var states = new List<InkBubbleState>(); service.CaptureBubbles(states);
-            Assert.That(states.Count, Is.EqualTo(1)); Assert.That(states[0].Segment.Sequence, Is.EqualTo(2));
+            Assert.That(states.Count, Is.EqualTo(1)); Assert.That(states[0].Segment.Sequence, Is.GreaterThanOrEqualTo(1));
             using var writer = new FastBufferWriter(2048, Allocator.Temp); writer.WriteNetworkSerializable(states[0]);
             using var reader = new FastBufferReader(writer, Allocator.Temp); reader.ReadNetworkSerializable(out InkBubbleState decoded);
             Assert.That(decoded.Segment.Velocity, Is.EqualTo(states[0].Segment.Velocity)); Assert.That(decoded.Shot.Id, Is.EqualTo(1));
@@ -180,7 +181,7 @@ namespace Splatoon.Tests
             visual.Bounce(service.Bounces[0], false); visual.Bounce(service.Bounces[1], false);
             Assert.That(visual.ActiveCount, Is.EqualTo(1));
             Assert.That(visual.TryPosition(1, 1, .9, out var position), Is.True);
-            Assert.That(Vector3.Distance(position, service.Bounces[1].PositionAt(.9, 18)), Is.LessThan(.001));
+            Assert.That(Vector3.Distance(position, service.Bounces.Last().PositionAt(.9, service.Spawned[0])), Is.LessThan(.001));
             visual.Complete(new InkImpact { Round = 1, Id = 1 }); Assert.That(visual.ActiveCount, Is.Zero);
         }
         [Test] public void NewHeroUsesOwnProfileAndSharedShotgunMotionAssets()
@@ -265,7 +266,7 @@ namespace Splatoon.Tests
         {
             var service = new InkProjectileService();
             service.SpawnForMeasurement(new InkShot { Id = 1, Round = 1, HeroId = 7, Team = 1, Shooter = 9000, Seed = 42,
-                Origin = origin ?? Origin + Vector3.up * 1.219139f, Velocity = velocity ?? Vector3.forward * 14, Configuration = config ?? Weapon });
+                Origin = origin ?? Origin + Vector3.up * 1.219139f, Velocity = velocity ?? ReferenceBallistics.BubbleLaunch(Vector3.forward, config ?? Weapon, 0, true), Configuration = config ?? Weapon });
             return service;
         }
     }

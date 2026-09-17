@@ -104,7 +104,7 @@ namespace Splatoon.Combat
             position = default;
             if (!_active.TryGetValue((round, id), out var v)) return false;
             var segment = Segment(v, time);
-            position = segment.PositionAt(time, v.Shot.Configuration.ProjectileGravity); return true;
+            position = segment.PositionAt(time, v.Shot); return true;
         }
         static InkBounce Segment(Visual v, double time)
         {
@@ -128,10 +128,10 @@ namespace Splatoon.Combat
                 if (now > v.Shot.Born + w.Lifetime + RenderDelay) { _expired.Add(pair.Key); continue; }
                 double time = Math.Max(v.Shot.Born, now - RenderDelay);
                 var segment = Segment(v, time);
-                v.Object.transform.position = segment.PositionAt(time, w.ProjectileGravity);
+                v.Object.transform.position = segment.PositionAt(time, v.Shot);
                 float squash = segment.Sequence == 0 ? 0 : Mathf.Clamp01(1 - (float)(time - segment.Time) / .12f);
                 v.Object.transform.rotation = segment.Sequence == 0 ? Quaternion.identity : Quaternion.FromToRotation(Vector3.up, segment.Normal);
-                v.Object.transform.localScale = new Vector3(1 + .16f * squash, 1 - .27f * squash, 1 + .16f * squash) * (w.CollisionRadius * 2);
+                v.Object.transform.localScale = new Vector3(1 + .16f * squash, 1 - .27f * squash, 1 + .16f * squash) * (ReferenceBallistics.BubbleRadius(v.Shot, time-v.Shot.Born, (int)segment.Sequence, false) * 2);
             }
             foreach (var key in _expired) { var v = _active[key]; _active.Remove(key); Recycle(v); }
         }

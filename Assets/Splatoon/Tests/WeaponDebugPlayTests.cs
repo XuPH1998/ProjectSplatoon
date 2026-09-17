@@ -154,15 +154,15 @@ namespace Splatoon.Tests
                 }
                 var before = GameplayConfig.GetWeapon(6); var visual = player.CharacterView;
                 uint oldRevision = WeaponConfigService.Current.Revision(6);
-                var state = player.Snapshot.Value; state.SpreadProgress = .5f; player.Snapshot.Value = state;
+                var state = player.Snapshot.Value; state.SpreadProgress = .5f; state.DualiesGroundBias = Mathf.Lerp(GameplayConfig.GetWeapon(6).ReferenceBiasMin,GameplayConfig.GetWeapon(6).ReferenceBiasMax,.5f); player.Snapshot.Value = state;
                 var inFlight = new InkShot { HeroId = 6, Configuration = before, ConfigurationRevision = oldRevision, Born = 0,
                     Origin = new Vector3(5000, 100, 5000), Velocity = Vector3.forward * 100, Team = 1, Id = 9000, Seed = 19 };
                 Vector3 observed = default; match.Projectiles.Clear(); match.Projectiles.TraceObserved = (_, _, p) => observed = p;
                 match.Projectiles.SpawnForMeasurement(inFlight);
-                asset.spreadDegrees = 4; asset.splatlingPitchSpread = 3; asset.spreadExpandSeconds = 2; asset.projectileGravity = 0; asset.damage += 5;
+                asset.spreadDegrees = 4; asset.splatlingPitchSpread = 3; asset.spreadExpandSeconds = 2; asset.projectileGravity = 0; asset.referenceBrakeGravity = 0; asset.damage += 5;
                 yield return Applied(app, () => WeaponConfigService.Current.Revision(6) > oldRevision);
                 Assert.That(player.CharacterView, Is.SameAs(visual), "Numeric edits preserve the live character assembly");
-                Assert.That(player.Snapshot.Value.SpreadProgress, Is.EqualTo(.5f)); Assert.That(player.Snapshot.Value.CurrentSpread, Is.EqualTo(2));
+                Assert.That(player.Snapshot.Value.SpreadProgress, Is.EqualTo(.5f).Within(.00001)); Assert.That(player.Snapshot.Value.CurrentSpread, Is.EqualTo(4));
                 match.Projectiles.Simulate(.5);
                 Assert.That(observed.y, Is.LessThan(100), "In-flight projectile retains gravity");
                 Assert.That(WeaponConfigService.Current.ForShot(6, oldRevision), Is.SameAs(before));

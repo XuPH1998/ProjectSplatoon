@@ -8,6 +8,15 @@ namespace Splatoon.Config
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
             w.Ammo.Validate();
+            foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
+            {
+                string name = WeaponConfigLabels.Name(f.Name);
+                if (f.FieldType == typeof(float)) Require(float.IsFinite((float)f.GetValue(w)) && (float)f.GetValue(w) >= 0, name + "必须为有限非负数");
+                if (f.FieldType == typeof(double)) Require(double.IsFinite((double)f.GetValue(w)) && (double)f.GetValue(w) >= 0, name + "必须为有限非负数");
+                if (f.FieldType == typeof(int)) Require((int)f.GetValue(w) >= 0, name + "必须非负");
+                if (f.FieldType.IsEnum) Require(Enum.IsDefined(f.FieldType, f.GetValue(w)), name + "必须选择有效选项");
+            }
+
             if (w.MotionMode == ProjectileMotionMode.DualiesNormal)
             {
                 Require(w.FireMode == WeaponFireMode.Automatic && w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft &&
@@ -40,14 +49,13 @@ namespace Splatoon.Config
                     w.BubbleNormalRetention > 0 && w.BubbleNormalRetention <= 1 && w.BubbleTangentRetention > 0 && w.BubbleTangentRetention <= 1 &&
                     w.BubbleWallRetention > 0 && w.BubbleWallRetention <= 1 && !w.Ammo.ExplosionEnabled && w.PelletCount == 1 &&
                     w.Damage == w.DamageMin && w.SpreadDegrees == 0 && w.JumpSpreadDegrees == 0 &&
-                    w.StraightSeconds == 0 && w.BrakeSpeedMultiplier == 1 && w.Ammo.BubblePrefab != null, "泡泡连发、弹跳或伤害配置无效");
-            foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
+                    (w.ReferenceRules || w.StraightSeconds == 0) && w.BrakeSpeedMultiplier == 1 && w.Ammo.BubblePrefab != null, "泡泡连发、弹跳或伤害配置无效");
+            if (w.ReferenceRules)
             {
-                string name = WeaponConfigLabels.Name(f.Name);
-                if (f.FieldType == typeof(float)) Require(float.IsFinite((float)f.GetValue(w)) && (float)f.GetValue(w) >= 0, name + "必须为有限非负数");
-                if (f.FieldType == typeof(double)) Require(double.IsFinite((double)f.GetValue(w)) && (double)f.GetValue(w) >= 0, name + "必须为有限非负数");
-                if (f.FieldType == typeof(int)) Require((int)f.GetValue(w) >= 0, name + "必须非负");
-                if (f.FieldType.IsEnum) Require(Enum.IsDefined(f.FieldType, f.GetValue(w)), name + "必须选择有效选项");
+                Require(w.ReferenceBrakeEndSpeed > 0 && w.ReferenceBrakeDrag >= 0 && w.ReferenceBrakeDrag < 1 && w.ReferenceFreeDrag >= 0 && w.ReferenceFreeDrag < 1 && w.ReferenceBrakeGravity >= 0 && w.ReferencePlayerRadius >= w.CollisionRadius, "参考弹道或碰撞无效");
+                Require(w.ReferenceTrailBudget >= 0 && w.ReferenceTrailBudget <= 64 && w.ReferenceFootEvery > 0 && w.ReferenceFootRadius >= 0 && w.PaintDepthMin > 0 && w.PaintDepthMax >= w.PaintDepthMin && w.PaintDepthBreakMin > 0 && w.PaintDepthBreakMax >= w.PaintDepthBreakMin && w.PaintDistanceFar > w.PaintDistanceMiddle && w.TrailDepthScale > 0 && w.PaintDropGravity > 0 && w.PaintDropLifetime > 0 && w.PaintDropLifetime <= 10, "参考涂墨配置无效");
+                if (w.ReferenceSpreadEnabled) Require(w.ReferenceBiasMin > 0 && w.ReferenceBiasMax >= w.ReferenceBiasMin && w.ReferenceBiasMax < 1 && w.ReferenceJumpBias >= w.ReferenceBiasMax && w.ReferenceJumpBias < 1 && w.ReferenceJumpEnd > w.ReferenceJumpStart && w.ReferencePitchBias > 0 && w.ReferencePitchBias < 1, "参考散布配置无效");
+                if (w.MotionMode == ProjectileMotionMode.BouncingBubble) Require(w.BubbleAirSpeed > 0 && w.BubbleLaterSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterAirSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterFieldRadius > 2*w.BubbleRadiusDecrement && w.BubbleLaterPlayerRadius >= w.BubbleLaterFieldRadius && w.BubbleInitialRadiusRate > 0 && w.BubbleInitialRadiusRate <= 1 && w.BubbleFieldGrowSeconds > 0 && w.BubblePlayerGrowSeconds > 0 && w.BubbleBounceRadiusRate > 0 && w.BubbleBounceRadiusRate <= 1 && w.BubbleBouncePaintRate > 0 && w.BubbleBouncePaintRate <= 1, "参考泡泡参数无效");
             }
                 Require(w.ShootMoveSpeed > 0 && w.BurstCount > 0, "射击移动速度与每组发数必须大于零");
                 if (w.FireMode == WeaponFireMode.Splatling) Require(w.SplatlingMinChargeSeconds > 0 && w.SplatlingFirstChargeSeconds > w.SplatlingMinChargeSeconds && w.ChargeSeconds > w.SplatlingFirstChargeSeconds &&

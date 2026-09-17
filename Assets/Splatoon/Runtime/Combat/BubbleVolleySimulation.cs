@@ -13,7 +13,7 @@ namespace Splatoon.Combat
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now)
             => !input.CancelFire && !s.AttackNeedsRelease && (Pending(s) || s.WeaponPhase == WeaponPhase.Starting ||
                 (!input.Swim || s.Swimming) && (
-                s.Ink + .00001f >= w.ShotInk && now + 1e-8 >= s.BurstReadyAt &&
+                s.Ink + PrototypeRules.InkTolerance >= w.ShotInk && now + 1e-8 >= s.BurstReadyAt &&
                 (input.Fire || input.FireSequence != s.ConsumedFire)));
 
         public static bool Step(ref PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w,
@@ -26,7 +26,7 @@ namespace Splatoon.Combat
             if (!Pending(s) && s.WeaponPhase != WeaponPhase.Starting)
             {
                 s.WeaponPhase = WeaponPhase.Idle;
-                if (input.Swim && !emerged || !(input.Fire || edge) || now + 1e-8 < s.BurstReadyAt || s.Ink + .00001f < w.ShotInk) return false;
+                if (input.Swim && !emerged || !(input.Fire || edge) || now + 1e-8 < s.BurstReadyAt || s.Ink + PrototypeRules.InkTolerance < w.ShotInk) return false;
                 s.WeaponPhase = WeaponPhase.Starting;
                 // Held repetitions use the exact first-to-first deadline; fresh clicks have startup.
                 s.WeaponReadyAt = s.SemiHoldStarted && input.Fire ? Math.Max(now, s.BurstReadyAt)

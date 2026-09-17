@@ -1,0 +1,75 @@
+{
+  "triangles": 3304,
+  "source_triangles": 4676,
+  "parts": 32,
+  "materials": 1,
+  "textures": [
+    {
+      "file": "WaterShotgun_Albedo.png",
+      "width": 1024,
+      "height": 1024
+    }
+  ],
+  "source_design_min_m": [
+    -1.0091339349746704,
+    -0.01406063698232174,
+    -0.18697156012058258
+  ],
+  "source_design_max_m": [
+    -0.004594971891492605,
+    0.039375558495521545,
+    0.03378325328230858
+  ],
+  "design_min_m": [
+    -1.0089393854141235,
+    -0.014000000432133675,
+    -0.1862073689699173
+  ],
+  "design_max_m": [
+    -0.004594971891492605,
+    0.0393499992787838,
+    0.03370000049471855
+  ],
+  "size_relative_error": [
+    0.0001936704973093395,
+    0.0016130595779699775,
+    0.0038388469324501795
+  ],
+  "degenerate_triangles": 0,
+  "nonmanifold_edges": 0,
+  "blender_version": "5.2.2 LTS",
+  "per_part_triangles": {
+    "01 Ivory molded shoulder stock": 144,
+    "02 Charcoal shoulder pad": 44,
+    "03 Teal stock side insert": 52,
+    "04 Orange heel accent": 44,
+    "05 Original angle grip neck": 160,
+    "06 Open molded trigger guard": 164,
+    "07 Orange squeeze trigger": 68,
+    "08 Main ivory pressure housing": 172,
+    "09 Integrated teal water reservoir": 188,
+    "10 Dark filler seal": 124,
+    "11 Orange quarter turn fill cap": 124,
+    "12 Fill cap raised tab": 44,
+    "13 Printed ivory side badge": 56,
+    "14 Molded level scale": 44,
+    "15 Ivory long water nozzle shroud": 124,
+    "16 Teal upper spine": 64,
+    "17 Lower pressure channel": 68,
+    "18 Dark ergonomic pump contact": 124,
+    "19 Pump rib 00": 92,
+    "19 Pump rib 01": 92,
+    "19 Pump rib 02": 92,
+    "19 Pump rib 03": 92,
+    "19 Pump rib 04": 92,
+    "19 Pump rib 05": 92,
+    "20 Orange pump release collar": 124,
+    "21 Front bridge housing": 56,
+    "22 Orange safety nozzle": 240,
+    "23 Recessed dark outlet": 60,
+    "24 Housing fastener 0 -1": 116,
+    "24 Housing fastener 0 1": 116,
+    "24 Housing fastener 1 -1": 116,
+    "24 Housing fastener 1 1": 116
+  }
+}

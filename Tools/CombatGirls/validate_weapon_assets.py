@@ -37,7 +37,12 @@ def main():
     pistol_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/PistolGirl-SplashTuning.json').read_text('utf-8'))
     dualies_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/DualPistolGirl-GloogaNormal.json').read_text('utf-8'))
     blaster_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/RapidBlaster-Tuning.json').read_text('utf-8'))
-    weapon_fields = re.findall(r'public (?:float|int|string|double|WeaponFireMode|WeaponMuzzleMode|ProjectileMotionMode|AmmoConfigAsset) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
+    alignment = json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Tuning.json').read_text('utf-8'))
+    def aligned(hero, values):
+        values.update(next(r for r in json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Baseline/Values.json').read_text('utf-8')) if r['id']==hero))
+        values.update({r['field']:r['after'] for r in alignment['fields'] if r['hero']==hero})
+        if hero==1: values['weaponTypeName']='斯普拉射击枪'
+    weapon_fields = re.findall(r'public (?:bool|float|int|string|double|WeaponFireMode|WeaponMuzzleMode|ProjectileMotionMode|AmmoConfigAsset) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
     schema = ET.parse(ROOT/'Config/Luban/source/Defines/gameplay.xml')
     hero_fields = {node.attrib['name'] for bean in schema.iter('bean') if bean.attrib.get('name') == 'HeroConfig' for node in bean.findall('var')}
     check(hero_fields == set(columns), 'Source columns do not match Luban HeroConfig schema')
@@ -76,12 +81,13 @@ def main():
         if row['id'] == blaster_tuning['heroId']:
             old.update(blaster_tuning['values'])
             old.update(blaster_tuning['heroValues'])
+        aligned(row["id"], old)
         combined = dict(gen, **values)
         for key, value in old.items():
             if key == 'displayName': continue
             checked += 1
             check(equal(combined.get(key), value), f'Migration changed original value: {row["id"]}/{key}')
-        if historical and row['id'] != blaster_tuning['heroId']:
+        if historical and row['id'] not in (3, blaster_tuning['heroId']):
             check(values.get('spreadExpandSeconds') == 1 and values.get('spreadRecoverSeconds') == .5, f'New time defaults: {path}')
         if row['id'] == 7:
             bubble = dict(fireMode=5, motionMode=1, burstCount=4, pelletCount=1,
@@ -94,10 +100,11 @@ def main():
                           paintRadiusMin=.65, paintRadiusMax=.85, trailSpacing=.6,
                           trailRadiusMin=.2, trailRadiusMax=.3, trailMaxDrop=1,
                           spreadDegrees=0, jumpSpreadDegrees=0)
+            aligned(7,bubble)
             for key, value in bubble.items():
-                check(equal(values.get(key), value), f'Bubble launch baseline: {key}')
-        check(values.get('baseSpreadDegrees') == (2 if row['id'] == 3 else 0), f'Ground base: {path}')
-        check(values.get('baseJumpSpreadDegrees') == (4 if row['id'] == 3 else 0), f'Air base: {path}')
+                check(equal(combined.get(key), value), f'Bubble launch baseline: {key}')
+        check(values.get('baseSpreadDegrees') == (5 if row['id'] == 3 else 0), f'Ground base: {path}')
+        check(values.get('baseJumpSpreadDegrees') == (5 if row['id'] == 3 else 0), f'Air base: {path}')
     report = dict(passed=not errors, heroes=len(rows), characterFields=len(columns)-1, weaponPathFields=1,
                   originalWeaponFields=60, newWeaponFields=4, originalValuesCompared=checked, errors=errors)
     output = ROOT/'Reports/WeaponAssets'; output.mkdir(parents=True, exist_ok=True)

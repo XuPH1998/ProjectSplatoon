@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.4118992">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="778" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.411899" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1962" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="777" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.304974" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2560" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1963" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="777" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.217985" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1964" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="777" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.118066" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1858" name="WeaponAlignmentTests" fullname="Splatoon.Tests.WeaponAlignmentTests" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" testcasecount="27" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="1.024122" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1887" name="CaptureSpinnerTank" fullname="Splatoon.Tests.WeaponAlignmentTests.CaptureSpinnerTank" methodname="CaptureSpinnerTank" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Explicit" seed="1256439826" result="Passed" start-time="2026-09-17 08:50:04Z" end-time="2026-09-17 08:50:05Z" duration="0.912897" asserts="0">
+              <properties>
+                <property name="_SKIPREASON" value="Measures three charge releases from a real 100-ink tank, including the retained slow refill rule" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: Reports/WeaponAlignment/alignment-spinner-tank.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

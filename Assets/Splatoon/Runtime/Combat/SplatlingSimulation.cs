@@ -81,7 +81,7 @@ namespace Splatoon.Combat
                 // slower filling process supplies only the missing reserved ink.
                 double normal = Math.Min(w.ChargeSeconds, s.SplatlingChargeSeconds + elapsed);
                 float needed = ReserveAt(w, normal) - s.SplatlingReservedInk;
-                s.SplatlingSlow = !s.Grounded || needed > s.Ink + .00001f;
+                s.SplatlingSlow = !s.Grounded || needed > s.Ink + PrototypeRules.InkTolerance;
                 double next = SnapCharge(w, Math.Min(w.ChargeSeconds, s.SplatlingChargeSeconds + elapsed / (s.SplatlingSlow ? w.SplatlingSlowChargeMultiplier : 1)));
                 float add = Mathf.Max(0, ReserveAt(w, next) - s.SplatlingReservedInk);
                 float taken = Mathf.Min(s.Ink, add);

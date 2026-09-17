@@ -32,6 +32,7 @@ namespace Splatoon.Combat
     public sealed partial class InkProjectileService
     {
         readonly System.Collections.Generic.HashSet<int> _paintedExplosionSurfaces = new();
+        readonly System.Collections.Generic.List<(int surface, Vector3 point)> _explosionPaintSites = new();
 
         void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null)
         {
@@ -63,7 +64,7 @@ namespace Splatoon.Combat
             }
             if (ammo.ExplosionPaint && radius > 0)
             {
-                _paintedExplosionSurfaces.Clear();
+                _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear();
                 // First-hit rays produce an actual surface normal and never stamp a wall's
                 // far side. Downward ray guarantees floor coverage, even between fan samples.
                 PaintExplosionRay(shot, origin, Vector3.down, radius, collision);
@@ -86,14 +87,42 @@ namespace Splatoon.Combat
         {
             if (!_aim.ClosestCast(origin, direction, distance, 0, shot.Shooter, out var hit, false)) return;
             var surface = hit.Collider.GetComponentInParent<Splatoon.Painting.PaintSurface>();
-            if (surface == null || !_paintedExplosionSurfaces.Add(surface.SurfaceId)) return;
+            if (surface == null) return;
+            if (!shot.Configuration.ReferenceRules && !_paintedExplosionSurfaces.Add(surface.SurfaceId)) return;
             var ammo = shot.Configuration.Ammo;
-            uint seed = InkShapeAtlas.Hash(shot.Seed ^ shot.Id ^ (uint)surface.SurfaceId * 0x9e3779b9u);
+            uint seed = InkShapeAtlas.Hash(shot.Seed ^ (shot.Configuration.ReferenceRules ? (uint)_explosionPaintSites.Count : shot.Id) ^ (uint)surface.SurfaceId * 0x9e3779b9u);
             float r = Mathf.Lerp(ammo.ExplosionPaintRadiusMin, ammo.ExplosionPaintRadiusMax, (seed & 0xffffff) / 16777216f);
-            if (collision) r *= ammo.CollisionExplosionRadiusRate;
+            if (collision) r = shot.Configuration.ReferenceRules ? shot.Configuration.CollisionExplosionPaintRadius : r * ammo.CollisionExplosionRadiusRate;
+            if (shot.Configuration.ReferenceRules)
+            {
+                foreach (var site in _explosionPaintSites)
+                    if (site.surface == surface.SurfaceId && Vector3.Distance(site.point, hit.Point) < r * .75f) return;
+                _explosionPaintSites.Add((surface.SurfaceId, hit.Point));
+            }
             // Keep the entire stamp visible. A wide stamp on the floor could otherwise
             // reach behind a nearby wall even though its centre passed the visibility ray.
             ApplyPaint(surface, shot, hit.Point, hit.Normal, r, shot.Configuration, seed, true, origin);
+        }
+
+        void PopulatePaintClip(ref PaintStamp stamp, InkShot shot, PaintSurface surface, Vector3 origin, Vector3 point, float extent)
+        {
+            stamp.ClipEnabled = true;
+            InkShapeAtlas.StampBasis(stamp, out var tangent, out var bitangent);
+            var start = point + stamp.Normal * .025f;
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = i * (Mathf.PI / 4), radius = extent;
+                var direction = tangent * Mathf.Cos(angle) + bitangent * Mathf.Sin(angle);
+                if (_aim.ClosestCast(start, direction, radius, .01f, shot.Shooter, out var edge, false) && edge.Collider.GetComponentInParent<PaintSurface>() != surface)
+                    radius = Mathf.Max(0, edge.Distance - .025f);
+                if (Occluded(origin, start + direction * radius - origin, shot.Shooter))
+                {
+                    float lo = 0, hi = radius;
+                    for (int k = 0; k < 10; k++) { float mid = (lo + hi) * .5f; if (Occluded(origin, start + direction * mid - origin, shot.Shooter)) hi = mid; else lo = mid; }
+                    radius = Mathf.Max(0, lo - .025f);
+                }
+                if (i < 4) stamp.Clip0[i] = radius; else stamp.Clip1[i - 4] = radius;
+            }
         }
 
         float VisiblePaintRadius(InkShot shot, PaintSurface surface, Vector3 origin, Vector3 point, Vector3 normal, float radius)
@@ -135,6 +164,7 @@ namespace Splatoon.Combat
             if (worldOverlap || playerOverlap)
             {
                 var contact = worldOverlap ? world : player;
+                if (w.ReferenceRules) PaintReferenceTrail(ref active, from, from, start, start);
                 Resolve(shot, contact.Collider, contact.Point, contact.Normal, start - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
@@ -142,6 +172,7 @@ namespace Splatoon.Combat
             bool playerHit = _aim.ClosestCast(from, delta, distance, w.BlasterPlayerRadius, shot.Shooter, out player, true, shot.Team);
             if (!worldHit && !playerHit) return false;
             var hit = worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
+            if (w.ReferenceRules) PaintReferenceTrail(ref active, from, from + delta * (hit.Distance / Mathf.Max(.0001f, distance)), start, start + (end-start)*hit.Distance/Mathf.Max(.0001f,distance));
             Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
             return true;
         }

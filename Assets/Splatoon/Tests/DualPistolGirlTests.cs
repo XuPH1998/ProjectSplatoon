@@ -43,6 +43,7 @@ namespace Splatoon.Tests
         {
             var asset = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(DualPistolGirlTuningFixture.AssetPath);
             var values = JSONNode.Parse(File.ReadAllText(DualPistolGirlTuningFixture.RecordPath))["values"];
+            WeaponAlignmentFixture.Apply(2, values);
             foreach (string key in values.Keys)
             {
                 var field = typeof(WeaponConfigAsset).GetField(key);
@@ -66,7 +67,7 @@ namespace Splatoon.Tests
                 }
             Assert.That(ticks, Is.EqualTo(Enumerable.Range(0, 71).Select(i => i * 9)));
             Assert.That(s.Ink, Is.EqualTo(.6f).Within(.0002f));
-            Assert.That(W.ShootMoveSpeed, Is.EqualTo(3.125f));
+            Assert.That(W.ShootMoveSpeed, Is.EqualTo(2.69584391f).Within(.00001));
         }
 
         [TestCase("release")] [TestCase("empty")] [TestCase("death")] [TestCase("cancel")] [TestCase("submerged")]

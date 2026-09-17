@@ -20,32 +20,32 @@ MonoBehaviour:
   startSeconds: 0
   emergeStartSeconds: 0.06666666666666667
   inkRecoverLockSeconds: 0.6666666666666666
-  shootMoveSpeed: 3.125
+  shootMoveSpeed: 2.6958439073095644
   burstCount: 1
   burstRecoverySeconds: 0
   speedMin: 101.54346
   speedMax: 114.12406
-  projectileGravity: 3.5
+  projectileGravity: 43.13350251695304
   lifetime: 3
-  collisionRadius: 0.14976911
-  spreadDegrees: 3
-  straightSeconds: 0
-  brakeSeconds: 0.13333333333333333
+  collisionRadius: 0.14976910596164247
+  spreadDegrees: 3.0
+  straightSeconds: 0.13333333333333333
+  brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.1
-  jumpSpreadDegrees: 3
+  jumpSpreadDegrees: 6.0
   landingSpreadRecoverSeconds: 0.75
   effectiveRange: 20.21883
   damage: 40
   damageMin: 16
   damageReduceStartSeconds: 0.18333333333333332
   damageReduceEndSeconds: 0.31666666666666665
-  paintRadiusMin: 1.4377834
-  paintRadiusMax: 1.5725756
+  paintRadiusMin: 1.4377834172317678
+  paintRadiusMax: 1.572575612597246
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 0.35
-  trailRadiusMin: 0.96451306
-  trailRadiusMax: 0.96451306
+  trailSpacing: 17.597869950492992
+  trailRadiusMin: 0.9645130423929776
+  trailRadiusMax: 0.9645130423929776
   trailMaxDrop: 2.4
   chargeSeconds: 2.5
   chargeMinDamage: 32
@@ -59,14 +59,14 @@ MonoBehaviour:
   muzzleMode: 0
   semiBufferSeconds: 0
   splatlingMinChargeSeconds: 0.13333333333333333
-  splatlingFirstChargeSeconds: 1.5
+  splatlingFirstChargeSeconds: 2
   splatlingFirstShootSeconds: 2.1666666666666665
   splatlingFullShootSeconds: 4.333333333333333
   splatlingSlowChargeMultiplier: 3
-  splatlingChargeMoveSpeed: 2.2916667
+  splatlingChargeMoveSpeed: 1.9769521986936804
   splatlingChargeJumpSpeed: 2.695844
   splatlingPostSeconds: 0.06666666666666667
-  splatlingPitchSpread: 3
+  splatlingPitchSpread: 2.0
   splatlingSpreadBias: 0.3
   splatlingSpeedBias: 0.2
   splatlingFootEvery: 1
@@ -77,3 +77,37 @@ MonoBehaviour:
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0
   baseJumpSpreadDegrees: 0
+  referenceRules: 1
+  referenceBrakeDrag: 0.36
+  referenceBrakeGravity: 188.70907351166954
+  referenceFreeDrag: 0
+  paintDropGravity: 43.13350251695304
+  paintDropLifetime: 5
+  referenceFootEvery: 1
+  referenceBrakeEndSpeed: 87.16561966967592
+  referencePlayerRadius: 0.1684902442068478
+  paintDepthMin: 1.17
+  paintDepthMax: 1.83
+  paintDepthBreakMin: 1.17
+  paintDepthBreakMax: 1.67
+  paintDistanceMiddle: 0.8237300827890337
+  paintDistanceFar: 18.72113824520531
+  referenceTrailBudget: 1.0
+  referenceTrailStart: 0.0
+  referenceTrailRandomPhase: 1
+  referenceFootRadius: 1.1574156508715732
+  trailDepthScale: 1.5
+  wallDropRadius: 0.48674959437533805
+  wallDropGroundRadius: 0.44930731788492745
+  wallDropSpeed: 2.6958439073095644
+  wallDropSeconds: 1.0
+  motionMode: 4
+  referenceSpreadEnabled: 1
+  referenceBiasMin: 0.1
+  referenceBiasMax: 0.3
+  referenceBiasPerShot: 0.02
+  referenceJumpBias: 0.3
+  referenceBiasRecovery: 0.3
+  referenceJumpStart: 0.4166666666666667
+  referenceJumpEnd: 1.1666666666666667
+  referencePitchBias: 0.4

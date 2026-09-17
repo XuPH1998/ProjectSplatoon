@@ -51,13 +51,13 @@ namespace Splatoon.Prototype
             else RequestSnapshotRpc();
             Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
         }
-        public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint? shapeSeed = null)
+        public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint? shapeSeed = null, Vector3? direction = null, float depthScale = 1, bool clipEnabled = false, Vector4 clip0 = default, Vector4 clip1 = default)
         {
             if (!IsServer || State.Value.Phase == MatchPhase.Finished) return;
             var sequence = ++PaintSequence;
             uint entropy = InkShapeAtlas.Hash(sequence ^ (uint)surface.SurfaceId * 0x9e3779b9u ^ team);
             uint appearance = shapeSeed ?? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy);
-            var stamp = new PaintStamp { Sequence = sequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength, ShapeSeed = appearance };
+            var stamp = new PaintStamp { Sequence = sequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength, ShapeSeed = appearance, Direction = direction ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clipEnabled, Clip0 = clip0, Clip1 = clip1 };
             PrototypeArena.Current.Apply(stamp, true); _pending.Add(stamp); _journal.Add(stamp);
         }
         public void AddPlayer(ulong clientId, GameObject prefab)

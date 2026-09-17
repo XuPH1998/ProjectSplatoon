@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4fb864519a46f7af76d3fb3f1f3769, type: 3}
+  m_Name: RocketLauncherGirlAmmoConfig
+  m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
+  ammoId: 6
+  bubblePrefab: {fileID: 0}
+  bubbleShotAudio: {fileID: 0}
+  bubbleBounceAudio: {fileID: 0}
+  bubblePopAudio: {fileID: 0}
+  flightMigrationVersion: 1
+  flightPrefab: {fileID: 949289641, guid: 6a9f9382fa794ac7973b169067184b08, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: 133e31e1136a4499babf56c282f4beed, type: 3}
+  burstInterval: 0.02
+  particlesPerBurst: 2
+  visualLifetime: 10
+  muzzleInterval: 0.06
+  muzzleBurstCount: 50
+  maxRibbonGap: 1.5
+  satelliteSpread: 0.1
+  explosionEnabled: 1
+  explosionPrefab: {fileID: 6061940137612646960, guid: 65af4ca3d6a5d664b9f628aa2c64f6d3, type: 3}
+  explosionRadius: 2.4973998
+  explosionDamage: 35
+  explosionConstantDamage: 1
+  collisionExplosionRadiusRate: 0.4653
+  collisionExplosionDamageRate: 0.5
+  excludeDirectHitFromExplosion: 1
+  explosionPaint: 1
+  explosionPaintRadiusMin: 2.0967674
+  explosionPaintRadiusMax: 2.0967674

@@ -82,7 +82,7 @@ namespace Splatoon.Tests
                 match.Projectiles.SpawnForMeasurement(shot); match.Projectiles.Simulate(shot.Born + .13);
                 health.Add(victim.Snapshot.Value.Health);
             }
-            Assert.That(health, Is.EqualTo(new[] { 70f, 40f, 10f, 0f }));
+            Assert.That(health, Is.EqualTo(new[] { 68f, 36f, 4f, 0f }));
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
             var surface = UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)
                 .First(s => s.GetComponent<Collider>() != null && s.GetComponent<Collider>().bounds.size.y > 2 && s.GetComponent<Collider>().bounds.size.x > 5 && s.GetComponent<Collider>().bounds.size.z < 1);

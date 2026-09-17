@@ -20,8 +20,13 @@ namespace Splatoon.Combat
         };
         public static float SustainedRate(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Burst ? (float)(w.BurstCount / ((w.BurstCount - 1) * WeaponSimulation.FireInterval(w) + w.BurstRecoverySeconds)) : w.FireRate;
         public static string Ink(WeaponRuntimeConfig w) => WeaponSimulation.IsBubble(w) ? $"{w.ShotInk:0.##} / 组（{w.BurstCount} 颗）" : WeaponSimulation.IsSplatling(w) ? $"满蓄 {w.ShotInk*SplatlingSimulation.Rounds(w,w.ChargeSeconds):0.##} / {SplatlingSimulation.Rounds(w,w.ChargeSeconds)} 发，取消返还未发射部分" : WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinInk:0.##} / 满蓄 {w.ShotInk:0.##}" : $"{w.ShotInk:0.##} / {(w.PelletCount > 1 ? "次齐射" : "发")}";
-        public static string Range(WeaponRuntimeConfig w) => WeaponSimulation.IsBlaster(w) ? $"空爆中心约 {w.EffectiveRange:0.##} 米 / 爆风半径 {w.Ammo.ExplosionRadius:0.##} 米" : DualiesNormalSimulation.Enabled(w) ? $"参考 {w.EffectiveRange:0.#} 米（弹道受下坠影响）" : WeaponSimulation.IsBubble(w) ? $"平地约 17.5 米 / 路程上限 {w.EffectiveRange:0.#} 米" : WeaponSimulation.IsCharge(w) || WeaponSimulation.IsSplatling(w) ? $"{w.ChargeMinRange:0.#}–{w.EffectiveRange:0.#} 米" : $"{w.EffectiveRange:0.#} 米";
-        public static string Spread(WeaponRuntimeConfig w) => WeaponSimulation.IsBlaster(w) ? $"地面 {w.SpreadDegrees:0.#}° / 空中 {w.JumpSpreadDegrees:0.#}°（固定）" : DualiesNormalSimulation.Enabled(w) ? $"地面最大 {w.SpreadDegrees:0.#}° / 空中最大 {w.JumpSpreadDegrees:0.#}°；首发较集中，连射偏差增大" : WeaponSimulation.IsCharge(w)
+        public static string Range(WeaponRuntimeConfig w)
+        {
+            var r = new WeaponRangeMetrics(w);
+            return $"平地{(WeaponSimulation.IsBlaster(w) ? "爆炸中心" : "落点")} {r.Flat:0.##} 米";
+        }
+        public static string Spread(WeaponRuntimeConfig w) => w.ReferenceRules ?
+            (WeaponSimulation.IsSplatling(w) ? $"地面 {w.SpreadDegrees:0.##}°水平 / {w.SplatlingPitchSpread:0.##}°垂直；空中 {w.JumpSpreadDegrees:0.##}°" : $"地面 {w.SpreadDegrees:0.##}° / 空中 {w.JumpSpreadDegrees:0.##}°") : WeaponSimulation.IsBlaster(w) ? $"地面 {w.SpreadDegrees:0.#}° / 空中 {w.JumpSpreadDegrees:0.#}°（固定）" : DualiesNormalSimulation.Enabled(w) ? $"地面最大 {w.SpreadDegrees:0.#}° / 空中最大 {w.JumpSpreadDegrees:0.#}°；首发较集中，连射偏差增大" : WeaponSimulation.IsCharge(w)
             ? $"{w.ChargeMinSpread:0.#}°/{w.ChargeMinJumpSpread:0.#}° → {w.SpreadDegrees:0.#}°/{w.JumpSpreadDegrees:0.#}°（随蓄力收紧）"
             : WeaponSimulation.IsSplatling(w) ? $"地面 0 → {w.SpreadDegrees:0.#}°水平 / {w.SplatlingPitchSpread:0.#}°垂直；空中 0 → {w.JumpSpreadDegrees:0.#}°"
             : $"地面 {w.BaseSpreadDegrees:0.#}° → {w.SpreadDegrees:0.#}° / 空中 {w.BaseJumpSpreadDegrees:0.#}° → {w.JumpSpreadDegrees:0.#}°";
@@ -44,9 +49,12 @@ namespace Splatoon.Combat
             ("伤害", Damage(w)), ("射击节奏", Cadence(w)),
             ("射速上限／方式", WeaponSimulation.IsBubble(w) ? "点击一组，长按连续；组内转向可甩射" : WeaponSimulation.IsSplatling(w) ? "按住蓄力，松开持续射击；Shift 取消" : WeaponSimulation.IsCharge(w) ? "按住蓄力，松开发射" : WeaponSimulation.IsSemi(w) ? $"最快 {SustainedRate(w):0.##} 次/秒，点击单发，长按连续" : $"{SustainedRate(w):0.##} 发/秒"),
             ("耗墨", w.FireMode == WeaponFireMode.Burst ? $"{w.ShotInk:0.##}/发 · {w.ShotInk*w.BurstCount:0.##}/组" : Ink(w)), ("满墨发数", WeaponSimulation.IsBubble(w) ? $"{Mathf.FloorToInt(hero.MaxInk / w.ShotInk)} 组" : WeaponSimulation.IsCharge(w) ? $"点射 {Mathf.FloorToInt(hero.MaxInk / w.ChargeMinInk)} / 满蓄 {Mathf.FloorToInt(hero.MaxInk / w.ShotInk)}" : $"{Mathf.FloorToInt(hero.MaxInk / w.ShotInk)} 发"),
-            (DualiesNormalSimulation.Enabled(w) ? "参考射程" : "有效伤害射程", Range(w)),
+            ("平地参考落点", Range(w) + "（枪口高 1.4 米、无散布）"),
+            ("直进距离", $"{new WeaponRangeMetrics(w).Straight:0.##} 米"),
+            ("伤害衰减距离", WeaponSimulation.IsBlaster(w) || WeaponSimulation.IsBubble(w) ? "飞行期间不衰减" : $"{new WeaponRangeMetrics(w).FullDamage:0.##}～{new WeaponRangeMetrics(w).MinimumDamage:0.##} 米；其后保持最低伤害至终止"),
+            ("平地涂墨最远上界", $"{new WeaponRangeMetrics(w).PaintEnvelope:0.##} 米（几何上界，实际墨迹随轮廓与散布变化）"),
             ("地面／空中散布", Spread(w)),
-            ("散布扩大／完全恢复", WeaponSimulation.IsBlaster(w) ? "固定角度；连续射击不扩散" : DualiesNormalSimulation.Enabled(w) ? "随发数增大，停火逐步恢复；首发保留少量偏差" : WeaponSimulation.IsCharge(w) ? "蓄力控制；不使用时间扩散" : $"{w.SpreadExpandSeconds:0.###} / {w.SpreadRecoverSeconds:0.###} 秒"),
+            ("散布扩大／完全恢复", ReferenceSpreadSimulation.Enabled(w) ? $"逐发偏置累积；跳跃 {w.ReferenceJumpStart:0.###}～{w.ReferenceJumpEnd:0.###} 秒恢复" : WeaponSimulation.IsBlaster(w) ? "固定角度；连续射击不扩散" : DualiesNormalSimulation.Enabled(w) ? "随发数增大，停火逐步恢复；首发保留少量偏差" : WeaponSimulation.IsCharge(w) ? "蓄力控制；不使用时间扩散" : $"{w.SpreadExpandSeconds:0.###} / {w.SpreadRecoverSeconds:0.###} 秒"),
             (WeaponSimulation.IsSplatling(w) ? "蓄力／射击移动速度" : "射击移动速度", WeaponSimulation.IsSplatling(w) ? $"{w.SplatlingChargeMoveSpeed:0.##} / {w.ShootMoveSpeed:0.##} 米/秒" : $"{w.ShootMoveSpeed:0.#} 米/秒"), ("人形／出墨起手", $"{w.StartSeconds:0.###} 秒 / {w.EmergeStartSeconds:0.###} 秒"),
             ("回墨锁定", $"{w.InkRecoverLockSeconds:0.###} 秒")
         };

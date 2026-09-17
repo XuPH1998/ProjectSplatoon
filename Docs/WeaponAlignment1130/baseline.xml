@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-17 07:34:00Z" end-time="2026-09-17 07:34:07Z" duration="6.5401486">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="736" result="Passed" start-time="2026-09-17 07:34:00Z" end-time="2026-09-17 07:34:07Z" duration="6.540149" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1912" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="735" result="Passed" start-time="2026-09-17 07:34:01Z" end-time="2026-09-17 07:34:07Z" duration="6.435342" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2560" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1913" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="735" result="Passed" start-time="2026-09-17 07:34:01Z" end-time="2026-09-17 07:34:07Z" duration="6.348924" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1914" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="735" result="Passed" start-time="2026-09-17 07:34:01Z" end-time="2026-09-17 07:34:07Z" duration="6.248362" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1837" name="WeaponAlignmentTests" fullname="Splatoon.Tests.WeaponAlignmentTests" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-17 07:34:01Z" end-time="2026-09-17 07:34:07Z" duration="6.153502" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1838" name="CaptureBaseline" fullname="Splatoon.Tests.WeaponAlignmentTests.CaptureBaseline" methodname="CaptureBaseline" classname="Splatoon.Tests.WeaponAlignmentTests" runstate="Runnable" seed="1898503470" result="Passed" start-time="2026-09-17 07:34:01Z" end-time="2026-09-17 07:34:07Z" duration="6.043165" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: Reports/WeaponAlignment/baseline.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

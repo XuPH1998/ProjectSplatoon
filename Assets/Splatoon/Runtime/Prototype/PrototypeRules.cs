@@ -7,6 +7,8 @@ namespace Splatoon.Prototype
 {
     public static class PrototypeRules
     {
+        // Covers float accumulation over a 100-ink magazine (e.g. 125 x 0.8).
+        public const float InkTolerance = .0002f;
         public static byte ChooseTeam(int pink, int blue) => (byte)(pink <= blue ? 1 : 2);
         public static bool CanStart(int pink, int blue, MatchPhase phase, int minimumPlayers = 2) =>
             phase == MatchPhase.Practice && pink > 0 && blue > 0 && pink <= Combat.TeamSelectionRules.Capacity &&
@@ -15,7 +17,7 @@ namespace Splatoon.Prototype
         public static int Winner(double pink, double blue) => Math.Abs(pink - blue) < .000001 ? 0 : pink > blue ? 1 : 2;
         public static float Recover(float ink, float maximum, float rate, float dt) => Mathf.Min(maximum, ink + rate * dt);
         public static bool Spend(ref float ink, float amount)
-        { if (ink + .00001f < amount) return false; ink = Mathf.Max(0, ink - amount); return true; }
+        { if (ink + InkTolerance < amount) return false; ink = Mathf.Max(0, ink - amount); return true; }
         public static float Damage(float health, float amount, bool friendly, double protectedUntil, double now) => friendly || now < protectedUntil ? health : Mathf.Max(0, health - amount);
         public static bool CanRespawn(float health, double now, double due) => health <= 0 && now >= due;
     }

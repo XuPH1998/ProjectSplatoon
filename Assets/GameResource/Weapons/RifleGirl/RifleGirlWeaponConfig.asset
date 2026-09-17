@@ -15,37 +15,37 @@ MonoBehaviour:
   ammoConfig: {fileID: 11400000, guid: b53feddf01ac46c29b615ccd8b3cf3c9, type: 2}
   weaponPrefabAddress: "Weapon/RifleGirlRifle"
   fireMode: 0
-  fireRate: 15
-  shotInk: 0.85
+  fireRate: 10
+  shotInk: 0.9199999999999999
   startSeconds: 0.03333333333333333
   emergeStartSeconds: 0.16666666666666666
   inkRecoverLockSeconds: 0.3333333333333333
-  shootMoveSpeed: 3.6
+  shootMoveSpeed: 3.235012688771477
   burstCount: 1
   burstRecoverySeconds: 0.0
-  speedMin: 32
-  speedMax: 32
-  projectileGravity: 18
+  speedMin: 101.81303823272457
+  speedMax: 101.81303823272457
+  projectileGravity: 43.13350251695304
   lifetime: 10
-  collisionRadius: 0.025
-  spreadDegrees: 6
-  straightSeconds: 0.16666666666666666
-  brakeSeconds: 0.13333333333333333
+  collisionRadius: 0.14976910596164247
+  spreadDegrees: 4.86
+  straightSeconds: 0.06666666666666667
+  brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 12
+  jumpSpreadDegrees: 11.66
   landingSpreadRecoverSeconds: 0.2
   effectiveRange: 10.4
   damage: 36
   damageMin: 18
   damageReduceStartSeconds: 0.13333333333333333
   damageReduceEndSeconds: 0.6666666666666666
-  paintRadiusMin: 1
-  paintRadiusMax: 1.5
+  paintRadiusMin: 1.2805258559720432
+  paintRadiusMax: 1.44527187252985
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 0.2
-  trailRadiusMin: 0.75
-  trailRadiusMax: 0.9
+  trailSpacing: 6.889378874235554
+  trailRadiusMin: 1.1023006198776886
+  trailRadiusMax: 1.1023006198776886
   trailMaxDrop: 2.4
   chargeSeconds: 0.0
   chargeMinDamage: 0
@@ -77,3 +77,36 @@ MonoBehaviour:
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0
   baseJumpSpreadDegrees: 0
+  referenceRules: 1
+  referenceBrakeDrag: 0.36
+  referenceBrakeGravity: 188.70907351166954
+  referenceFreeDrag: 0
+  paintDropGravity: 43.13350251695304
+  paintDropLifetime: 5
+  referenceFootEvery: 1
+  referenceBrakeEndSpeed: 67.08158256021967
+  referencePlayerRadius: 0.21342097599534052
+  motionMode: 4
+  paintDepthMin: 1.31
+  paintDepthMax: 2.24
+  paintDepthBreakMin: 1.12
+  paintDepthBreakMax: 2.24
+  paintDistanceMiddle: 0.8237300827890337
+  paintDistanceFar: 10.4
+  referenceTrailBudget: 1.5
+  referenceTrailStart: 0.8986146357698549
+  referenceTrailRandomPhase: 1
+  referenceFootRadius: 1.543220867828764
+  trailDepthScale: 1
+  wallDropRadius: 0.48674959437533805
+  wallDropGroundRadius: 0.44930731788492745
+  wallDropSpeed: 2.6958439073095644
+  wallDropSeconds: 1.0833333333333333
+  referenceSpreadEnabled: 1
+  referenceBiasMin: 0.01
+  referenceBiasMax: 0.25
+  referenceBiasPerShot: 0.01
+  referenceJumpBias: 0.4
+  referenceBiasRecovery: 0.8999999999999999
+  referenceJumpStart: 0.4166666666666667
+  referenceJumpEnd: 1.1666666666666667

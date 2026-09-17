@@ -1,0 +1,95 @@
+{
+    "unityVersion": "6000.3.9f1",
+    "shader": "Toon/Toon",
+    "graphicsDevice": "NVIDIA GeForce RTX 3060",
+    "meshes": 1,
+    "materialSlots": 1,
+    "triangles": 3304,
+    "vertices": 4688,
+    "textureWidth": 1024,
+    "textureHeight": 1024,
+    "degenerateTriangles": 0,
+    "min": {
+        "x": -1.0089393854141236,
+        "y": -0.0139999995008111,
+        "z": -0.1862073689699173
+    },
+    "max": {
+        "x": -0.004594943020492792,
+        "y": 0.03935003653168678,
+        "z": 0.03370002284646034
+    },
+    "relativeSizeError": {
+        "x": 0.0001936704938998446,
+        "y": 0.0016124320682138205,
+        "z": 0.003838779404759407
+    },
+    "markers": [
+        {
+            "name": "Mount",
+            "actual": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "positionErrorMeters": 0.0,
+            "rotationErrorDegrees": 0.0
+        },
+        {
+            "name": "LeftGrip",
+            "actual": {
+                "x": -0.3320349156856537,
+                "y": 0.07183073461055756,
+                "z": 0.06840561330318451
+            },
+            "positionErrorMeters": 0.0,
+            "rotationErrorDegrees": 0.0
+        },
+        {
+            "name": "Muzzle",
+            "actual": {
+                "x": -0.7279049754142761,
+                "y": 0.027152150869369508,
+                "z": 0.23276588320732118
+            },
+            "positionErrorMeters": 0.0,
+            "rotationErrorDegrees": 0.0
+        }
+    ],
+    "poses": [
+        {
+            "pose": "level",
+            "elevationDegrees": 0.0,
+            "enginePitch": 0.0,
+            "baselineLeftHandErrorMeters": 5.372690026206328e-8,
+            "newLeftHandErrorMeters": 5.372690026206328e-8,
+            "handDeltaMeters": 0.0
+        },
+        {
+            "pose": "down45",
+            "elevationDegrees": -45.0,
+            "enginePitch": 45.0,
+            "baselineLeftHandErrorMeters": 8.56006536764653e-8,
+            "newLeftHandErrorMeters": 8.56006536764653e-8,
+            "handDeltaMeters": 0.0
+        },
+        {
+            "pose": "up35",
+            "elevationDegrees": 35.0,
+            "enginePitch": -35.0,
+            "baselineLeftHandErrorMeters": 1.341104507446289e-7,
+            "newLeftHandErrorMeters": 1.341104507446289e-7,
+            "handDeltaMeters": 0.0
+        },
+        {
+            "pose": "shoot",
+            "elevationDegrees": 0.0,
+            "enginePitch": 0.0,
+            "baselineLeftHandErrorMeters": 0.00012075663107680157,
+            "newLeftHandErrorMeters": 0.00012075663107680157,
+            "handDeltaMeters": 0.0
+        }
+    ],
+    "cameraPreview": "ShotgunGirl profile CameraPivot/CameraOffset through PrototypePlayer.CameraPosition, neutral camera rotation, FOV 60, square center framing.",
+    "boundary": "Isolated Editor GPU rendering of evaluated original Animator poses. No live-project replacement, Play Mode, network or target-device performance claim."
+}

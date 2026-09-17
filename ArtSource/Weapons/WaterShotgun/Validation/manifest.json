@@ -1,0 +1,210 @@
+{
+  "asset": "AQUA 03 WaterShotgun",
+  "files": [
+    {
+      "path": "Export/WaterShotgun.fbx",
+      "bytes": 144860,
+      "sha256": "33b23e3f4f4cbae79e45790b835ba6f07f8c5c4cf3db44183e67f55bb093b535"
+    },
+    {
+      "path": "Export/WaterShotgun.fbx.meta",
+      "bytes": 3045,
+      "sha256": "558e252365ef470790ce303216b16d90898a4bdfeec4a91a853b33b8312dbb2a"
+    },
+    {
+      "path": "Export/WaterShotgun_Albedo.png",
+      "bytes": 24472,
+      "sha256": "92c2af629d0ffe25399da296eef2aa7e0f0cd0608054a388521cc812909ee097"
+    },
+    {
+      "path": "Export/WaterShotgun_Albedo.png.meta",
+      "bytes": 3362,
+      "sha256": "6732f66a705afd86c73c9c7fede8233e1e09b69d5e1ba6f758b6cfa83f3213d6"
+    },
+    {
+      "path": "Export/WaterShotgun_Toon.mat",
+      "bytes": 15667,
+      "sha256": "da94b1c161c4a989be991d217c5b58aa9ba97f672e8eaee05758b83c0c640f0a"
+    },
+    {
+      "path": "Export/WaterShotgun_Toon.mat.meta",
+      "bytes": 188,
+      "sha256": "9cf00d19eb9e50bfecd5b15b7c7e218648e002a15f28cc40f190824bc6e5e854"
+    },
+    {
+      "path": "Previews/01-hero.png",
+      "bytes": 1636831,
+      "sha256": "db0b88393c5f89acb198b60b3b30f64d47e1be0d15e662e513478eb6a756af9f"
+    },
+    {
+      "path": "Previews/02-side.png",
+      "bytes": 1618688,
+      "sha256": "40c8ac9142bc886d01fe5b0863a9bed25b834ccbda32bc782c75c0ef47eea586"
+    },
+    {
+      "path": "Previews/03-front.png",
+      "bytes": 1600518,
+      "sha256": "0ed4ce8634678097085d6a85eb14233d5db5d14c26255a3faf267acc34ffc541"
+    },
+    {
+      "path": "Previews/04-top.png",
+      "bytes": 1573868,
+      "sha256": "1edc09c690e5bccdae7c8ff504a97f8be1002874c0f06a2a93a2fdc9a8c91140"
+    },
+    {
+      "path": "Previews/05-rear-quarter.png",
+      "bytes": 1649982,
+      "sha256": "1797d9fe7db15d02cc13ceed7b8724d1231034ac76bf02494728bc80607cb05d"
+    },
+    {
+      "path": "Previews/06-unity-comparison.png",
+      "bytes": 301075,
+      "sha256": "53952d875687619f96ae0cc6be79372c3baf4bc7162d711f0b25851fd01f4194"
+    },
+    {
+      "path": "Previews/07-unity-poses.png",
+      "bytes": 757842,
+      "sha256": "ca1978ccfadfe968df5568f1a8a75ad23623449b5837c13165d33f89dbb0a136"
+    },
+    {
+      "path": "Previews/Unity/original-down45.png",
+      "bytes": 291702,
+      "sha256": "bf0c3bc6f8906882c611279968699f61ab8cce809289aee852ec143223a94965"
+    },
+    {
+      "path": "Previews/Unity/original-game-camera.png",
+      "bytes": 66852,
+      "sha256": "5f633385b85be512c682392349d448a7603a8f6d27331d939dd00bc1eb0f6bfc"
+    },
+    {
+      "path": "Previews/Unity/original-level-grip-close.png",
+      "bytes": 343730,
+      "sha256": "15423c880cfef7f017b769916199ea2a3edc338748c001720945da0bd48ff5ec"
+    },
+    {
+      "path": "Previews/Unity/original-level.png",
+      "bytes": 285342,
+      "sha256": "9599381ef4d7d07c944aaf8e2b4b7e137613b054b42e96bb15a75b83c6a0a755"
+    },
+    {
+      "path": "Previews/Unity/original-shoot.png",
+      "bytes": 296756,
+      "sha256": "84f47e9d0d4994ff68bb281f49829523050b169b282bcc345fb6569e03cb2901"
+    },
+    {
+      "path": "Previews/Unity/original-up35.png",
+      "bytes": 282150,
+      "sha256": "af6e5ff1dc25979d3d9591d36bcf74d3d709c4af0554340598b0182c85b78466"
+    },
+    {
+      "path": "Previews/Unity/water-down45.png",
+      "bytes": 268680,
+      "sha256": "4046ed10c2c082a9aa233d8d6cd5a0c3996a87138aea8dace8e7d3d281eeec06"
+    },
+    {
+      "path": "Previews/Unity/water-game-camera.png",
+      "bytes": 66175,
+      "sha256": "cb1eebf426f87b79ebe815ff2279e550c5b19a725db1c59d17f144a9c192f41c"
+    },
+    {
+      "path": "Previews/Unity/water-level-grip-close.png",
+      "bytes": 311094,
+      "sha256": "8eab28e70a17a8123a0a602234be23181d87da16d65171edd7c524326956c955"
+    },
+    {
+      "path": "Previews/Unity/water-level.png",
+      "bytes": 265144,
+      "sha256": "252be2da29ccef23531f6e90118681c8791e9f658edb2c59c05a468f2880c4d8"
+    },
+    {
+      "path": "Previews/Unity/water-shoot.png",
+      "bytes": 274147,
+      "sha256": "86a7152da4cdc0c97dacd80673ffa500592f50210a7c47dc6b73f3562b24f2cd"
+    },
+    {
+      "path": "Previews/Unity/water-up35.png",
+      "bytes": 258039,
+      "sha256": "71b9c59fbf094766d9ffbdf75167241b8a6e52b4225204ecfc0536c7b4973823"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6454,
+      "sha256": "c543d6eaae190744337a1fca720cb6d115ba6c9b88d73ab4ac75ea9545a281b1"
+    },
+    {
+      "path": "Reference/coordinate-probe.fbx",
+      "bytes": 14604,
+      "sha256": "6a058f4c0f2079153574cc713f85d91f01f3934a605fab28e13d525ff5f1a52c"
+    },
+    {
+      "path": "Reference/original-blueprint.png",
+      "bytes": 29109,
+      "sha256": "9e0dd8083d2176bdb9ca1384b5fb72dbc3967819fdfa7223ef4a2585fc385600"
+    },
+    {
+      "path": "Reference/shotgun-reference.json",
+      "bytes": 1275524,
+      "sha256": "ef056ab8b88fb1a7f757da6f24d68b44caa9dd90a4df68f2b312762f678a0106"
+    },
+    {
+      "path": "Reference/unity-coordinate-probe.txt",
+      "bytes": 499,
+      "sha256": "6729f859e938b6103e897a4e77c13afb799d2c964fcfab20a1a3a36189b05c00"
+    },
+    {
+      "path": "Scripts/build_water_shotgun.py",
+      "bytes": 20309,
+      "sha256": "066b07717f69e501ea1ce07d79b7d9d4d797301daf58681d204c9ced70806b0e"
+    },
+    {
+      "path": "Scripts/generate_texture.py",
+      "bytes": 2145,
+      "sha256": "433e9c385258d002e3a67dc63ab50710931e43060c44f745545d6c9ce4b06af9"
+    },
+    {
+      "path": "Scripts/make_review_sheets.py",
+      "bytes": 1431,
+      "sha256": "3963b243f1d017dd1368cca7dfbe815694d32e6029a61ed7526a16727dcacc03"
+    },
+    {
+      "path": "Scripts/package_resources.py",
+      "bytes": 8016,
+      "sha256": "d1e062be047548f4d0c626394a6de488de30a91e6ce0f43041425ce2732624c1"
+    },
+    {
+      "path": "Scripts/rebuild.ps1",
+      "bytes": 2906,
+      "sha256": "32aba3e2b9b4f75b2a84d3f778605ff63cb4620156e05ad03bbe17653364cbd6"
+    },
+    {
+      "path": "Scripts/WaterShotgunValidation.cs",
+      "bytes": 19248,
+      "sha256": "d44da4ff3e781663a9adbd777615723773d810d3366621940c03fa2607499186"
+    },
+    {
+      "path": "Validation/Acceptance.md",
+      "bytes": 3337,
+      "sha256": "90268ff6596c8e9e1369ea22059d42a1b06f95811986d3111dcbe91c5b0cc0fc"
+    },
+    {
+      "path": "Validation/blender-geometry.json",
+      "bytes": 2069,
+      "sha256": "edf376f0d1095fae7b5324afbd4cd93244ae2bba8ef48a78a5c5cce126c9ad91"
+    },
+    {
+      "path": "Validation/source-preservation.json",
+      "bytes": 1988,
+      "sha256": "9e2d4fffe0b22148f6dac26ce696a277c05a452303183ba5566495f71dff31b4"
+    },
+    {
+      "path": "Validation/unity-validation.json",
+      "bytes": 3008,
+      "sha256": "f0c2827e4059fe75de64dd54a5b8aeebea66d0550d557e63e3b2fc90be83371e"
+    },
+    {
+      "path": "WaterShotgun.blend",
+      "bytes": 368153,
+      "sha256": "f5dac8f713acf101b53a43bd527fa73cd6f62309c0cc92a172de3b2accd6c122"
+    }
+  ]
+}

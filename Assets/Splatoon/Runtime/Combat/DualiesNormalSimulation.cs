@@ -55,7 +55,7 @@ namespace Splatoon.Combat
                 s.DualiesGroundBias = Mathf.Min(w.DualiesSpreadMaxBias, s.DualiesGroundBias + w.DualiesSpreadPerShot);
             }
             s.SpreadFiring = canShoot && s.Health > 0 && input.Fire && !input.CancelFire && !s.AttackNeedsRelease &&
-                s.Ink + .00001f >= w.ShotInk && (emitted || s.SpreadFiring);
+                s.Ink + PrototypeRules.InkTolerance >= w.ShotInk && (emitted || s.SpreadFiring);
             Refresh(ref s, w);
         }
 

@@ -1,0 +1,96 @@
+{
+  "passed": true,
+  "changedCells": [
+    {
+      "sheet": "Hero",
+      "cell": "J4",
+      "before": 5,
+      "after": 4.313350251695304
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K4",
+      "before": 8,
+      "after": 8.626700503390607
+    },
+    {
+      "sheet": "Hero",
+      "cell": "AG4",
+      "before": "自动步枪",
+      "after": "斯普拉射击枪"
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J5",
+      "before": 5,
+      "after": 4.313350251695304
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K5",
+      "before": 8,
+      "after": 8.626700503390607
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J6",
+      "before": 5,
+      "after": 4.313350251695304
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K6",
+      "before": 8,
+      "after": 8.626700503390607
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J7",
+      "before": 5,
+      "after": 4.672796106003245
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K7",
+      "before": 8,
+      "after": 9.058035528560136
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J8",
+      "before": 5,
+      "after": 4.313350251695304
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K8",
+      "before": 8,
+      "after": 8.626700503390607
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J9",
+      "before": 4.583333333333333,
+      "after": 3.953904397387361
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K9",
+      "before": 7.2,
+      "after": 7.764030453051546
+    },
+    {
+      "sheet": "Hero",
+      "cell": "J10",
+      "before": 5,
+      "after": 4.313350251695304
+    },
+    {
+      "sheet": "Hero",
+      "cell": "K10",
+      "before": 8,
+      "after": 8.626700503390607
+    }
+  ],
+  "styleChanges": []
+}
