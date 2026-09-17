@@ -29,6 +29,8 @@ namespace Splatoon.Editor
             var group=settings.FindGroup("Splatoon Local")??settings.CreateGroup("Splatoon Local",false,false,true,null,typeof(BundledAssetGroupSchema),typeof(ContentUpdateGroupSchema));
             var schema=group.GetSchema<BundledAssetGroupSchema>();
             foreach (var stale in group.entries.Where(e => string.IsNullOrEmpty(e.AssetPath)).ToArray()) settings.RemoveAssetEntry(stale.guid);
+            foreach (var legacyProfile in group.entries.Where(e => AssetDatabase.GetMainAssetTypeAtPath(e.AssetPath) == typeof(Splatoon.Combat.InkFlightProfile)).ToArray())
+                settings.RemoveAssetEntry(legacyProfile.guid);
             schema.BuildPath.SetVariableByName(settings,AddressableAssetSettings.kLocalBuildPath);
             schema.LoadPath.SetVariableByName(settings,AddressableAssetSettings.kLocalLoadPath);
             schema.BundleMode=BundledAssetGroupSchema.BundlePackingMode.PackTogether;
@@ -65,7 +67,7 @@ namespace Splatoon.Editor
                 string path = AssetDatabase.GUIDToAssetPath(guid); AddAddress(settings, group, path, path);
                 var ammo = AssetDatabase.LoadAssetAtPath<Splatoon.Config.AmmoConfigAsset>(path);
                 if (ammo == null) continue;
-                AddAsset(ammo.flightProfile); AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
+                AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
                 void AddAsset(UnityEngine.Object asset) { if (asset != null) { var p = AssetDatabase.GetAssetPath(asset); if (!string.IsNullOrEmpty(p)) AddAddress(settings, group, p, p); } }
             }
             const string portraits = "Assets/GameResource/UI/HeroPortraits";
@@ -79,14 +81,18 @@ namespace Splatoon.Editor
         }
         private static void AddAddress(AddressableAssetSettings settings,AddressableAssetGroup group,string path,string address)
         {settings.CreateOrMoveEntry(AssetDatabase.AssetPathToGUID(path),group).address=address;}
+        public static void BuildContent()
+        {
+            ConfigureAddressables();
+            AddressableAssetSettings.BuildPlayerContent(out var content);
+            if (!string.IsNullOrEmpty(content.Error)) throw new BuildFailedException(content.Error);
+        }
         [MenuItem("喷墨对战/构建/Windows 正式资源版本")]
         public static void BuildWindows()
         {
             CombatGirlsBuilder.ValidateInstalled();
             TrainingGroundBuilder.ValidateSavedScene();
-            ConfigureAddressables();
-            AddressableAssetSettings.BuildPlayerContent(out var content);
-            if(!string.IsNullOrEmpty(content.Error))throw new BuildFailedException(content.Error);
+            BuildContent();
             Directory.CreateDirectory("Builds/Windows");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone,ScriptingImplementation.Mono2x);
             var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{

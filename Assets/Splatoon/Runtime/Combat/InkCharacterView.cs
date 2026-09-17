@@ -19,7 +19,6 @@ namespace Splatoon.Combat
         private float _kick;
         private InkMuzzleEmitter _muzzleEffect;
         private InkMuzzleEmitter _leftMuzzleEffect;
-        private ushort _muzzleAmmoId, _leftMuzzleAmmoId;
         private MaterialPropertyBlock _block;
         public readonly struct OutlineDraw
         {
@@ -99,21 +98,31 @@ namespace Splatoon.Combat
             var nozzle = muzzleIndex == 1 ? LeftNozzle : Nozzle;
             if (nozzle == null || InkPresentation.Current == null) return;
             var effect = muzzleIndex == 1 ? _leftMuzzleEffect : _muzzleEffect;
-            ushort ammoId = weapon?.Ammo?.AmmoId ?? 0;
-            if (effect != null && (muzzleIndex == 1 ? _leftMuzzleAmmoId : _muzzleAmmoId) != ammoId)
+
+            if (effect != null && !effect.Ammo.SameValues(weapon.Ammo))
             {
-                effect.Stop(); Destroy(effect.gameObject); effect = null;
+                effect.Retire(InkPresentation.Current.transform); effect = null;
                 if (muzzleIndex == 1) _leftMuzzleEffect = null; else _muzzleEffect = null;
             }
             if (effect == null)
             {
                 effect = InkPresentation.Current.CreateMuzzle(nozzle, weapon);
                 if (muzzleIndex == 1) _leftMuzzleEffect = effect; else _muzzleEffect = effect;
-                if (muzzleIndex == 1) _leftMuzzleAmmoId = ammoId; else _muzzleAmmoId = ammoId;
             }
             double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : Time.timeAsDouble;
             effect?.Shot((uint)(actionId ^ (actionId >> 32)) + muzzleIndex + 1u, _state.Team,
                 InkFlightPresentation.IsContinuous(weapon), now, double.IsNaN(born) ? now : born);
+        }
+        public void RefreshAmmo(WeaponRuntimeConfig weapon)
+        {
+            Refresh(ref _muzzleEffect, Nozzle); Refresh(ref _leftMuzzleEffect, LeftNozzle);
+            void Refresh(ref InkMuzzleEmitter emitter, Transform nozzle)
+            {
+                if (emitter == null || emitter.Ammo.SameValues(weapon.Ammo) || InkPresentation.Current == null) return;
+                emitter.Retire(InkPresentation.Current.transform);
+                emitter = InkPresentation.Current.CreateMuzzle(nozzle, weapon);
+
+            }
         }
         public void Present(PlayerSnapshot state, float dt, double now)
         {

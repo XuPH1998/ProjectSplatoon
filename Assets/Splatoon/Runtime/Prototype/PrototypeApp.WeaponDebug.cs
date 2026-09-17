@@ -16,9 +16,10 @@ namespace Splatoon.Prototype
     {
         readonly Dictionary<int, string> _observedWeapons = new();
         readonly Dictionary<int, (WeaponRuntimeConfig config, HeroContent content)> _pendingWeapons = new();
+        readonly List<int> _appliedWeapons = new();
         CancellationTokenSource _weaponReload;
         int _weaponReloadGeneration;
-        public string WeaponDebugStatus { get; private set; } = "修改武器资产即可实时试枪";
+        public string WeaponDebugStatus { get; private set; } = "修改武器或弹药资产即可实时试枪";
         public async UniTask StartWeaponDebugRoom()
         {
             if (!Ready || Busy || InRoom) return;
@@ -33,7 +34,7 @@ namespace Splatoon.Prototype
             _weaponReloadGeneration++;
             _weaponReload?.Cancel(); _weaponReload?.Dispose(); _weaponReload = null;
             _observedWeapons.Clear(); _pendingWeapons.Clear();
-            WeaponDebugStatus = "修改武器资产即可实时试枪";
+            WeaponDebugStatus = "修改武器或弹药资产即可实时试枪";
         }
         void ObserveDebugWeaponAssets()
         {
@@ -43,7 +44,7 @@ namespace Splatoon.Prototype
             {
                 var source = WeaponConfigService.Current.Source(hero.Id);
                 if (source == null) continue;
-                string json = JsonUtility.ToJson(source);
+                string json = JsonUtility.ToJson(source) + "|" + (source.ammoConfig != null ? JsonUtility.ToJson(source.ammoConfig) : "null");
                 if (_observedWeapons.TryGetValue(hero.Id, out var prior) && prior == json) continue;
                 _observedWeapons[hero.Id] = json;
                 QueueDebugWeaponChange(hero.Id, source.Snapshot(), json, _weaponReloadGeneration, _weaponReload.Token).Forget();
@@ -55,6 +56,7 @@ namespace Splatoon.Prototype
             try
             {
                 WeaponConfigValidation.Validate(candidate);
+                WeaponConfigService.Current.ValidateAmmoId(heroId, candidate.Ammo);
                 var old = GameplayConfig.GetWeapon(heroId);
                 if (old.SameValues(candidate)) return;
                 WeaponDebugStatus = "正在验证武器修改…";
@@ -74,9 +76,23 @@ namespace Splatoon.Prototype
         public void ApplyDebugWeaponChanges()
         {
             if (!IsWeaponDebugRoom || !InRoom || Manager == null || !Manager.IsHost || PrototypeMatch.Current == null) return;
+            _appliedWeapons.Clear();
             foreach (var pair in _pendingWeapons)
             {
                 var prior = GameplayConfig.GetWeapon(pair.Key); var next = pair.Value.config;
+                // Another pending weapon may have claimed this ID since asynchronous validation.
+                try { WeaponConfigService.Current.ValidateAmmoId(pair.Key, next.Ammo); }
+                catch (Exception e)
+                {
+                    WeaponDebugStatus = "修改未应用：" + e.Message;
+                    _appliedWeapons.Add(pair.Key);
+                    continue;
+                }
+                if (InkPresentation.Current != null && !InkPresentation.Current.TryPrepareAmmo(next.Ammo, prior.Ammo))
+                {
+                    WeaponDebugStatus = "等待旧墨弹结束 · 已保留最新修改";
+                    continue;
+                }
                 bool restart = prior.RequiresRestart(next);
                 if (restart)
                     foreach (var player in PrototypeMatch.Current.Players)
@@ -85,9 +101,10 @@ namespace Splatoon.Prototype
                 Heroes.Replace(pair.Value.content);
                 foreach (var player in PrototypeMatch.Current.Players)
                     if (player != null && player.IsSpawned && player.Snapshot.Value.HeroId == pair.Key) player.RefreshWeaponConfiguration();
+                _appliedWeapons.Add(pair.Key);
                 WeaponDebugStatus = restart ? "已应用 · 旧动作已取消并退回预留墨，请松开后重新射击" : "已应用 · 后续射击使用新参数";
             }
-            _pendingWeapons.Clear();
+            foreach (int id in _appliedWeapons) _pendingWeapons.Remove(id);
         }
         void DrawWeaponDebugHud(PlayerSnapshot state)
         {

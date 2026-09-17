@@ -120,6 +120,8 @@ namespace Splatoon.Prototype
             {
                 // Copy all painted surfaces at one sequence boundary. Subsequent paint commands
                 // write different targets, so async readback cannot include later stamps.
+                using (FramePerformance.Checkpoint.Auto())
+                {
                 foreach (var surface in PrototypeArena.Current.Surfaces.Values)
                 {
                     if (!surface.HasPaint || surface.Mask == null) continue;
@@ -135,6 +137,7 @@ namespace Splatoon.Prototype
                         }
                         finally { RenderTexture.ReleaseTemporary(copy); pending--; }
                     });
+                }
                 }
                 while (pending > 0) await UniTask.Yield();
                 if (generation != _captureGeneration || !IsSpawned) return;

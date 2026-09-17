@@ -12,11 +12,21 @@ namespace Splatoon.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.HelpBox("弹药配置由武器资源引用。爆炸默认关闭；启用后会替换普通 InkImpact，并叠加范围伤害与涂墨。", MessageType.Info);
+            EditorGUILayout.HelpBox("单机武器调试中，修改本资产会应用到后续射击；已经飞出的墨弹保留旧参数。预制体内部模块修改需重新进入房间。", MessageType.Info);
+            EditorGUILayout.LabelField("弹药标识", EditorStyles.boldLabel);
             Draw("ammoId", "弹药编号");
-            Draw("flightProfile", "飞行表现配置");
+            EditorGUILayout.Space(); EditorGUILayout.LabelField("飞行墨水", EditorStyles.boldLabel);
             Draw("flightPrefab", "飞行墨弹预制体");
+            Draw("burstInterval", "飞行发射间隔（秒）");
+            Draw("particlesPerBurst", "每次发射粒子数");
+            Draw("visualLifetime", "飞行显示寿命（秒）");
+            Draw("maxRibbonGap", "拖尾最大连接间距（米）");
+            Draw("satelliteSpread", "附加墨团扰动（米）");
+            EditorGUILayout.Space(); EditorGUILayout.LabelField("枪口喷溅", EditorStyles.boldLabel);
             Draw("muzzlePrefab", "枪口喷溅预制体");
+            Draw("muzzleInterval", "枪口喷溅间隔（秒）");
+            Draw("muzzleBurstCount", "每次枪口喷溅粒子数");
+            EditorGUILayout.Space(); EditorGUILayout.LabelField("爆炸", EditorStyles.boldLabel);
             Draw("explosionEnabled", "启用爆炸");
             Draw("explosionPrefab", "爆炸特效预制体");
             Draw("explosionRadius", "爆炸范围（米）");
@@ -26,10 +36,10 @@ namespace Splatoon.Editor
             Draw("explosionPaintRadiusMax", "涂墨最大半径（米）");
             serializedObject.ApplyModifiedProperties();
             var ammo = (AmmoConfigAsset)target;
-            if (ammo.explosionPaintRadiusMin < 0 || ammo.explosionPaintRadiusMax < ammo.explosionPaintRadiusMin)
-                EditorGUILayout.HelpBox("涂墨半径必须满足 0 <= min <= max。", MessageType.Error);
+            try { new AmmoRuntimeConfig(ammo).Validate(); }
+            catch (System.Exception e) { EditorGUILayout.HelpBox("修改未应用：" + e.Message, MessageType.Error); }
             if (ammo.explosionEnabled && ammo.explosionPrefab == null)
-                EditorGUILayout.HelpBox("启用爆炸时必须绑定爆炸预制体。", MessageType.Error);
+                EditorGUILayout.HelpBox("未绑定爆炸预制体，继续使用普通命中效果。", MessageType.Info);
             var duplicate = AssetDatabase.FindAssets("t:AmmoConfigAsset")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => path != AssetDatabase.GetAssetPath(ammo))

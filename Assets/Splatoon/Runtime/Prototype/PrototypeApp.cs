@@ -58,6 +58,7 @@ namespace Splatoon.Prototype
             Current = this; Application.runInBackground = true; Application.targetFrameRate = 120;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             _localAddresses = LanRoomCode.LocalAddresses();
+            SavedUsername = _usernameInput = PlayerNames.Load();
             Initialize().Forget();
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             gameObject.AddComponent<PrototypeSmoke>();
@@ -84,7 +85,7 @@ namespace Splatoon.Prototype
                 Manager.NetworkConfig = new NetworkConfig();
                 Manager.NetworkConfig.NetworkTransport = transport; Manager.NetworkConfig.EnableSceneManagement = false;
                 Manager.NetworkConfig.TickRate = (uint)GameplayConfig.Global.NetworkTickRate; Manager.NetworkConfig.ConnectionApproval = true;
-                Manager.NetworkConfig.ConnectionData = _signature;
+                Manager.NetworkConfig.ConnectionData = PlayerConnectionPayload.Encode(_signature, SavedUsername);
                 Manager.ConnectionApprovalCallback = Approve;
                 Manager.OnClientConnectedCallback += ClientConnected;
                 Manager.OnClientDisconnectCallback += ClientDisconnected;
@@ -103,18 +104,20 @@ namespace Splatoon.Prototype
         }
         private void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
-            response.Approved = (!IsWeaponDebugRoom || request.ClientNetworkId == NetworkManager.ServerClientId) && request.Payload.SequenceEqual(_signature) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
+            bool valid = PlayerConnectionPayload.TryDecode(request.Payload, _signature, out var name, out var error);
+            response.Approved = valid && (!IsWeaponDebugRoom || request.ClientNetworkId == NetworkManager.ServerClientId) && _admitted.Count < (int)GameplayConfig.Mode.MaxPlayers;
             response.CreatePlayerObject = false; response.Pending = false;
-            if(response.Approved) _admitted.Add(request.ClientNetworkId);
-            if (!response.Approved) response.Reason = !request.Payload.SequenceEqual(_signature) ? $"协议或游戏内容不一致（玩家协议 {PlayerSnapshot.ProtocolVersion}、墨水协议 {GameplayContentSignature.PaintProtocolVersion}），请使用相同地图、配置和角色资源。" : $"房间已满（最多 {GameplayConfig.Mode.MaxPlayers} 人）。";
+            if (response.Approved) { _admitted.Add(request.ClientNetworkId); _admittedNames[request.ClientNetworkId] = name; }
+            else response.Reason = !valid ? error : IsWeaponDebugRoom ? "单机武器调试房不接受其他玩家。" : $"房间已满（最多 {GameplayConfig.Mode.MaxPlayers} 人）。";
         }
         private void ClientConnected(ulong id)
         { if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.AddPlayer(id, _playerPrefab.Result); }
         private void ClientDisconnected(ulong id)
-        { _admitted.Remove(id); if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.RemovePlayer(id); }
+        { _admitted.Remove(id); _admittedNames.Remove(id); if (Manager.IsServer && PrototypeMatch.Current != null) PrototypeMatch.Current.RemovePlayer(id); }
         public async UniTask Connect(bool host, string address, ushort port, bool weaponDebug = false)
         {
             if (!Ready || Busy || InRoom) return;
+            if (!SaveUsername(_usernameInput)) { Error = _usernameStatus; return; }
             if (!LanDiscoveryProtocol.ValidGamePort(port)) { Error = "游戏端口须为 1～65535，且不能使用房间发现端口 47777。"; return; }
 #if !UNITY_EDITOR
             if (weaponDebug) { Error = "武器调试房仅编辑器可用"; return; }
@@ -141,7 +144,7 @@ namespace Splatoon.Prototype
                 await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
                 _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
-                Manager.NetworkConfig.ConnectionData = _signature;
+                Manager.NetworkConfig.ConnectionData = PlayerConnectionPayload.Encode(_signature, SavedUsername);
                 Manager.AddNetworkPrefab(_playerPrefab.Result); Manager.AddNetworkPrefab(_matchPrefab.Result);
                 Status = host ? "正在创建房间…" : "正在连接房主…";
                 if (host)
@@ -195,7 +198,7 @@ namespace Splatoon.Prototype
             _discovery.Stop();
             InRoom = false; _overlay = GameplayOverlay.Game; RoomCode = ""; _copiedUntil = 0; CaptureMouse(false);
             if (Session != null) await Session.ShutdownAsync();
-            _admitted.Clear();
+            _admitted.Clear(); _admittedNames.Clear(); _nameCamera = null;
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
             Heroes.Clear(); _heroStats.Clear(); WeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
 #if UNITY_EDITOR
@@ -274,6 +277,7 @@ namespace Splatoon.Prototype
             }
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
+            DrawPlayerNames();
             var state=match.State.Value; var player=local.PresentedState;
             var equipped = GameplayConfig.GetHero(player.HeroId);
             var weapon = GameplayConfig.GetWeapon(player.HeroId);

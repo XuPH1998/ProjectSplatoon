@@ -57,7 +57,14 @@ namespace Splatoon.Painting
         public Shader PainterShader;
         public Shader ExtendShader;
         [Tooltip("共享的不规则落墨图集")] public Texture2D ShapeAtlas;
-        public RenderTexture Mask { get; private set; }
+        private RenderTexture _mask;
+        // Reading the authoritative GPU state is a synchronization boundary (readback/checkpoint/tests).
+        public RenderTexture Mask { get { FlushPaint(); return _mask; } }
+        struct PendingPaint { public PaintStamp Stamp; public Matrix4x4 Matrix; }
+        readonly System.Collections.Generic.List<PendingPaint> _paintQueue = new(64);
+        MaterialPropertyBlock _brush;
+        MeshFilter _meshFilter;
+        public int PendingPaintCount => _paintQueue.Count;
         public bool HasPaint { get; private set; }
         public static long AllocatedBytes { get; private set; }
         public static long CheckpointBytes { get; private set; }
@@ -68,7 +75,6 @@ namespace Splatoon.Painting
         private Material _painter, _extend;
         private bool _displayDirty;
         private bool _diagnosticScheduled;
-        private bool _firstStampDiagnostic;
         private bool _registeredGraphics;
         private MeshRenderer _renderer;
         private MaterialPropertyBlock _properties;
@@ -88,19 +94,20 @@ namespace Splatoon.Painting
         }
         private void Initialize()
         {
-            if (Mask != null) return;
+            if (_mask != null) return;
             if (PainterShader == null || DisplayShader == null) throw new InvalidOperationException("喷涂 Shader 缺失：" + name);
             var islandFormat = PaintTextureMemory.SelectIslandFormat();
             try
             {
                 _renderer = GetComponent<MeshRenderer>(); _properties = new MaterialPropertyBlock();
+                _meshFilter = GetComponent<MeshFilter>(); _brush = new MaterialPropertyBlock();
                 InkShapeAtlas.Configure(ShapeAtlas);
                 _painter = new Material(PainterShader); _extend = new Material(DisplayShader);
                 if (!_painter.HasProperty("_ShapeAtlas")) throw new InvalidOperationException("落墨绘制 Shader 缺少 _ShapeAtlas 属性：" + PainterShader.name);
                 _extend.SetColor("_InkPink", PrototypeArena.Pink); _extend.SetColor("_InkBlue", PrototypeArena.Blue);
                 _instances++; _registeredGraphics = true;
-                Mask = Texture(" State"); CheckpointBytes += TextureBytes;
-                Mask.filterMode = FilterMode.Point; DisplayMask = Texture(" Display"); _islands = Texture(" Islands", islandFormat);
+                _mask = Texture(" State"); CheckpointBytes += TextureBytes;
+                _mask.filterMode = FilterMode.Point; DisplayMask = Texture(" Display"); _islands = Texture(" Islands", islandFormat);
                 var size = new Vector2Int(Resolution, Height);
                 if (!Scratch.TryGetValue(size, out _support)) { _support = Texture(" SharedScratch"); Scratch.Add(size, _support); }
                 Clear();
@@ -121,10 +128,10 @@ namespace Splatoon.Painting
         }
         public void Clear()
         {
-            foreach (var r in GameplayRegions) r.Grid.Clear();
-            HasPaint = false; _displayDirty = false; if (Mask == null) return;
+            foreach (var r in _regions) r.Grid.Clear();
+            _paintQueue.Clear(); HasPaint = false; _displayDirty = false; if (_mask == null) return;
             var command = CommandBufferPool.Get("Clear ink");
-            command.SetRenderTarget(Mask); command.ClearRenderTarget(false, true, Color.clear);
+            command.SetRenderTarget(_mask); command.ClearRenderTarget(false, true, Color.clear);
             command.SetRenderTarget(DisplayMask); command.ClearRenderTarget(false, true, Color.clear);
             Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
         }
@@ -132,31 +139,50 @@ namespace Splatoon.Painting
         {
             InkShapeAtlas.Configure(ShapeAtlas);
             if (!GraphicsEnabled) { HasPaint = true; return; } Initialize(); HasPaint = true;
-            _painter.SetFloat("_PrepareUV", 0); _painter.SetVector("_PainterPosition", stamp.Position); _painter.SetVector("_PainterNormal", stamp.Normal);
-            _painter.SetFloat("_Radius", stamp.Radius); _painter.SetFloat("_Hardness", stamp.Hardness); _painter.SetFloat("_Strength", stamp.Strength);
-            _painter.SetFloat("_PainterTeam", stamp.Team);
-            _painter.SetTexture("_ShapeAtlas", ShapeAtlas); _painter.SetInteger("_ShapeIndex", InkShapeAtlas.Index(stamp.ShapeSeed));
-            _painter.SetVector("_ShapeTransform", InkShapeAtlas.Transform(stamp.ShapeSeed));
-            _painter.SetVector("_ShapeLayout", new Vector4(InkShapeAtlas.Columns, InkShapeAtlas.Rows, InkShapeAtlas.CellSize, 0));
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-            if (!_firstStampDiagnostic)
-            {
-                _firstStampDiagnostic = true;
-                Debug.Log($"[INK-GPU] surface={SurfaceId} firstStamp seed={stamp.ShapeSeed} index={InkShapeAtlas.Index(stamp.ShapeSeed)} rotation={InkShapeAtlas.Rotation(stamp.ShapeSeed):F4} radius={stamp.Radius:F3}");
-            }
-#endif
-            _painter.SetTexture("_MainTex", _support); _extend.SetTexture("_UVIslands", _islands);
-            var command = CommandBufferPool.Get("Paint ink surface");
-            command.Blit(Mask, _support);
-            command.SetRenderTarget(Mask); command.DrawMesh(GetComponent<MeshFilter>().sharedMesh, transform.localToWorldMatrix, _painter);
-            Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
+            _paintQueue.Add(new PendingPaint { Stamp = stamp, Matrix = transform.localToWorldMatrix });
             _displayDirty = true;
+        }
+        public void FlushPaint()
+        {
+            if (_paintQueue.Count == 0 || _mask == null) return;
+            using var marker = FramePerformance.PaintSubmit.Auto();
+            var command = CommandBufferPool.Get("Paint ink batch");
+            try
+            {
+                command.BeginSample("Splatoon.Paint.GPU");
+                // Scratch is shared by equal-size surfaces. Clear atlas gaps before reusing it.
+                command.SetRenderTarget(_support); command.ClearRenderTarget(false, true, Color.clear);
+                RenderTexture source = _mask, destination = _support;
+                _brush.SetFloat("_PrepareUV", 0);
+                _brush.SetTexture("_ShapeAtlas", ShapeAtlas);
+                _brush.SetVector("_ShapeLayout", new Vector4(InkShapeAtlas.Columns, InkShapeAtlas.Rows, InkShapeAtlas.CellSize, 0));
+                foreach (var pending in _paintQueue)
+                {
+                    var stamp = pending.Stamp;
+                    _brush.SetVector("_PainterPosition", stamp.Position); _brush.SetVector("_PainterNormal", stamp.Normal);
+                    _brush.SetFloat("_Radius", stamp.Radius); _brush.SetFloat("_Hardness", stamp.Hardness); _brush.SetFloat("_Strength", stamp.Strength);
+                    _brush.SetFloat("_PainterTeam", stamp.Team); _brush.SetInteger("_ShapeIndex", InkShapeAtlas.Index(stamp.ShapeSeed));
+                    _brush.SetVector("_ShapeTransform", InkShapeAtlas.Transform(stamp.ShapeSeed));
+                    _brush.SetTexture("_MainTex", source);
+                    command.SetRenderTarget(destination);
+                    // DrawMesh snapshots the property block, preserving every stamp in submission order.
+                    command.DrawMesh(_meshFilter.sharedMesh, pending.Matrix, _painter, 0, 0, _brush);
+                    (source, destination) = (destination, source);
+                }
+                if (source != _mask) { command.CopyTexture(source, _mask); FramePerformance.PaintCopies++; }
+                command.EndSample("Splatoon.Paint.GPU");
+                Graphics.ExecuteCommandBuffer(command);
+                FramePerformance.PaintDraws += _paintQueue.Count; FramePerformance.PaintSubmissions++;
+                _paintQueue.Clear();
+            }
+            finally { CommandBufferPool.Release(command); }
         }
         private void LateUpdate() => FlushDisplay();
         public void FlushDisplay()
         {
-            if (!_displayDirty || Mask == null) return;
-            _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(Mask, DisplayMask, _extend); _displayDirty = false;
+            FlushPaint();
+            if (!_displayDirty || _mask == null) return;
+            _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend); _displayDirty = false;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (!_diagnosticScheduled) ScheduleDiagnosticReadback();
 #endif
@@ -166,31 +192,33 @@ namespace Splatoon.Painting
             InkShapeAtlas.Configure(ShapeAtlas);
             if (!GraphicsEnabled) { HasPaint = true; return; } Initialize();
             if (rgba.Length != TextureBytes) throw new InvalidOperationException("喷涂纹理快照尺寸不符");
+            _paintQueue.Clear(); _displayDirty = false;
             var texture = new Texture2D(Resolution, Height, TextureFormat.RGBA32, false, true);
             var previous = RenderTexture.active;
-            try { texture.LoadRawTextureData(rgba); texture.Apply(false, false); Graphics.Blit(texture, Mask);
-                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(Mask, DisplayMask, _extend); HasPaint = true; }
+            try { texture.LoadRawTextureData(rgba); texture.Apply(false, false); Graphics.Blit(texture, _mask);
+                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend); HasPaint = true; }
             finally { RenderTexture.active = previous; DisposeObject(texture); }
         }
         private void OnDisable() => ReleaseGraphics();
         public void ReleaseGraphics()
         {
+            _paintQueue.Clear();
             if (_registeredGraphics && --_instances == 0) { foreach (var texture in Scratch.Values) Release(texture); Scratch.Clear(); }
             _registeredGraphics = false;
-            if (Mask != null) CheckpointBytes -= (long)Mask.width * Mask.height * 4;
-            Release(Mask); Release(DisplayMask); Release(_islands); Mask = DisplayMask = _support = _islands = null;
+            if (_mask != null) CheckpointBytes -= (long)_mask.width * _mask.height * 4;
+            Release(_mask); Release(DisplayMask); Release(_islands); _mask = DisplayMask = _support = _islands = null;
             if (_painter != null) DisposeObject(_painter); if (_extend != null) DisposeObject(_extend);
             _painter = _extend = null; _displayDirty = false;
-            _diagnosticScheduled = false; _firstStampDiagnostic = false;
+            _diagnosticScheduled = false;
         }
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         private void ScheduleDiagnosticReadback()
         {
-            if (!SystemInfo.supportsAsyncGPUReadback || Mask == null || DisplayMask == null) return;
+            if (!SystemInfo.supportsAsyncGPUReadback || _mask == null || DisplayMask == null) return;
             _diagnosticScheduled = true;
-            AsyncGPUReadback.Request(Mask, 0, TextureFormat.RGBA32, request =>
+            AsyncGPUReadback.Request(_mask, 0, TextureFormat.RGBA32, request =>
             {
-                if (request.hasError || Mask == null || DisplayMask == null) { Debug.LogWarning($"[INK-GPU] surface={SurfaceId} mask readback failed"); return; }
+                if (request.hasError || _mask == null || DisplayMask == null) { Debug.LogWarning($"[INK-GPU] surface={SurfaceId} mask readback failed"); return; }
                 var data = request.GetData<byte>(); int maskAlpha = 0;
                 for (int i = 3; i < data.Length; i += 4) if (data[i] > 0) maskAlpha++;
                 AsyncGPUReadback.Request(DisplayMask, 0, TextureFormat.RGBA32, displayRequest =>

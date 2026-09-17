@@ -4,6 +4,8 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
+using Splatoon.Combat;
+using Splatoon.Prototype;
 
 public class RenderMetaballsScreenSpace : ScriptableRendererFeature
 {
@@ -30,8 +32,17 @@ public class RenderMetaballsScreenSpace : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        if (!ShouldRender(renderingData.cameraData.camera)) { FramePerformance.SkippedComposites++; return; }
         if (_pass != null)
             renderer.EnqueuePass(_pass);
+    }
+
+    public bool ShouldRender(Camera camera)
+    {
+        if (camera == null || (camera.cullingMask & FilterSettings.LayerMask.value) == 0) return false;
+        // Editor/reference cameras can contain independent emitters outside the gameplay manager.
+        return !Application.isPlaying || PrototypeMatch.Current == null || InkPresentation.Current == null ||
+            InkPresentation.Current.HasCompositeContent(FilterSettings.LayerMask.value);
     }
 
     protected override void Dispose(bool disposing)
@@ -151,6 +162,7 @@ internal sealed class MetaballsRenderGraphPass : ScriptableRenderPass
 
         using (var builder = graph.AddUnsafePass<PassData>(_passTag, out var data))
         {
+            FramePerformance.CompositePasses++;
             data.cameraColor = resources.activeColorTexture;
             data.cameraDepth = resources.cameraDepthTexture;
             data.ink = ink;

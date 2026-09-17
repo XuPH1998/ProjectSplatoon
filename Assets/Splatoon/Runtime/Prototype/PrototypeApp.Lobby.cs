@@ -46,11 +46,11 @@ namespace Splatoon.Prototype
         private void DrawLobby()
         {
             _roomText ??= new GUIStyle(_small) { fontSize = 15, richText = false, clipping = TextClipping.Clip, wordWrap = false };
-            _lobbyField ??= new GUIStyle(_field) { fontSize = 18, padding = new RectOffset(8,8,6,6) };
+            _lobbyField ??= new GUIStyle(_field) { fontSize = 18, richText = false, padding = new RectOffset(8,8,6,6) };
             Panel(new Rect(0,0,1280,720),new Color(.055f,.075f,.10f));
             Panel(new Rect(147,34,6,52),PrototypeArena.Pink);
             GUI.Label(new Rect(170,30,675,66),"喷墨对战 / 局域网",_title);
-            GUI.Label(new Rect(50,101,780,28),"选择房间，与同一局域网的伙伴一起涂地。",_small);
+            DrawUsernameField();
             Panel(new Rect(30,151,815,431),new Color(.085f,.115f,.15f));
             GUI.Label(new Rect(48,160,280,32),$"局域网房间  ·  {_discovery.Rooms.Count}",_label);
             GUI.enabled = Ready && !Busy;

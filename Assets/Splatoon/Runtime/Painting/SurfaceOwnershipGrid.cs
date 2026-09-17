@@ -14,6 +14,21 @@ namespace Splatoon.Painting
         public double PinkArea { get; private set; }
         public double BlueArea { get; private set; }
         public double TotalArea { get; private set; }
+        Vector3[] _worldPoints;
+        float[] _noiseFactors;
+        bool[] _cachedCells;
+        Matrix4x4 _cachedMatrix;
+        float _cachedWorldScale, _cachedNoiseScale;
+        void PrepareCache(Matrix4x4 matrix, float worldScale, float noiseScale)
+        {
+            if (_cachedCells == null)
+            {
+                _worldPoints = new Vector3[Cells.Length]; _noiseFactors = new float[Cells.Length]; _cachedCells = new bool[Cells.Length];
+            }
+            else if (matrix.Equals(_cachedMatrix) && worldScale == _cachedWorldScale && noiseScale == _cachedNoiseScale) return;
+            Array.Clear(_cachedCells, 0, _cachedCells.Length);
+            _cachedMatrix = matrix; _cachedWorldScale = worldScale; _cachedNoiseScale = noiseScale;
+        }
         public SurfaceOwnershipGrid(Vector2 size, float cellSize, int[] blocked)
         {
             if (size.x <= 0 || size.y <= 0 || cellSize <= 0) throw new ArgumentException("表面尺寸无效");
@@ -74,10 +89,12 @@ namespace Splatoon.Painting
             Array.Clear(State, 0, State.Length);
         }
         public void Apply(PaintStamp stamp, Matrix4x4 localToWorld, float threshold, float worldScale, float noiseScale)
+            => Apply(stamp, localToWorld, localToWorld.inverse, new InkShapeAtlas.Brush(stamp), threshold, worldScale, noiseScale);
+        internal void Apply(PaintStamp stamp, Matrix4x4 localToWorld, Matrix4x4 inverse, InkShapeAtlas.Brush brush, float threshold, float worldScale, float noiseScale)
         {
-            var inverse = localToWorld.inverse;
+            PrepareCache(localToWorld, worldScale, noiseScale);
             Vector3 p = inverse.MultiplyPoint3x4(stamp.Position);
-            Vector2 extent = InkShapeAtlas.LocalExtents(stamp, inverse);
+            Vector2 extent = brush.LocalExtents(inverse);
             Vector3 normal = localToWorld.MultiplyVector(Vector3.up).normalized;
             int minX = Mathf.Max(0, Mathf.FloorToInt((p.x - extent.x + Size.x / 2) / CellSize));
             int maxX = Mathf.Min(Columns - 1, Mathf.FloorToInt((p.x + extent.x + Size.x / 2) / CellSize));
@@ -86,13 +103,19 @@ namespace Splatoon.Painting
             for (int z = minZ; z <= maxZ; z++) for (int x = minX; x <= maxX; x++)
             {
                 int i = z * Columns + x; if (Cells[i] == 255) continue;
-                Vector3 point = localToWorld.MultiplyPoint3x4(Center(i));
-                float f = InkShapeAtlas.Coverage(point, stamp);
+                if (!_cachedCells[i])
+                {
+                    var point = localToWorld.MultiplyPoint3x4(Center(i));
+                    _worldPoints[i] = point;
+                    _noiseFactors[i] = 1 + .5f * InkCoverage.Noise(InkCoverage.DetailUV(point, normal, worldScale), noiseScale);
+                    _cachedCells[i] = true;
+                }
+                float f = brush.Coverage(_worldPoints[i]);
                 if (f <= 0) continue;
                 int o = i * 4;
                 var value = InkCoverage.Accumulate(new Color32(State[o], State[o+1], State[o+2], State[o+3]), stamp.Team, f);
                 State[o] = value.r; State[o+1] = value.g; State[o+2] = value.b; State[o+3] = value.a;
-                SetOwnership(i, InkCoverage.Owner(value, point, normal, threshold, worldScale, noiseScale));
+                SetOwnership(i, value.a / 255f * _noiseFactors[i] >= threshold ? value.b : (byte)0);
             }
         }
         public byte[] Capture()

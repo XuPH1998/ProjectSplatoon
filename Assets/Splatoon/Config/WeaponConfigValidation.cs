@@ -7,12 +7,7 @@ namespace Splatoon.Config
         public static void Validate(WeaponRuntimeConfig w)
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
-            if (w.Ammo != null)
-            {
-                Require(w.Ammo.ExplosionRadius >= 0 && w.Ammo.ExplosionDamage >= 0, "弹药爆炸范围与伤害必须非负");
-                Require(w.Ammo.ExplosionPaintRadiusMin >= 0 && w.Ammo.ExplosionPaintRadiusMax >= w.Ammo.ExplosionPaintRadiusMin, "弹药爆炸涂墨半径无效");
-                if (w.Ammo.ExplosionEnabled) Require(w.Ammo.ExplosionPrefab != null, "启用爆炸时必须绑定爆炸预制体");
-            }
+            w.Ammo.Validate();
             foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
             {
                 string name = WeaponConfigLabels.Name(f.Name);

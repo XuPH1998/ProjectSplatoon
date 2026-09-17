@@ -30,6 +30,18 @@ namespace Splatoon.Config
 #endif
             throw new InvalidOperationException($"英雄 {hero.Id} 武器配置未加载：{hero.WeaponConfigPath}");
         }
+        public bool UsesAmmo(AmmoRuntimeConfig ammo, AmmoRuntimeConfig excluding = null)
+        {
+            foreach (var value in _values.Values)
+                if (value.Ammo.SameValues(ammo) && (excluding == null || !value.Ammo.SameValues(excluding))) return true;
+            return false;
+        }
+        public void ValidateAmmoId(int heroId, AmmoRuntimeConfig ammo)
+        {
+            foreach (var pair in _values)
+                if (pair.Key != heroId && pair.Value.Ammo.AmmoId == ammo.AmmoId)
+                    throw new InvalidOperationException("弹药编号与其他武器重复：" + ammo.AmmoId);
+        }
         public WeaponConfigAsset Source(int heroId) => _sources.TryGetValue(heroId, out var source) ? source : null;
         public uint Revision(int heroId) => _revisions.TryGetValue(heroId, out var revision) ? revision : 0;
         public WeaponRuntimeConfig ForShot(int heroId, uint revision) => revision != 0 && _history.TryGetValue((heroId, revision), out var value)
@@ -61,7 +73,7 @@ namespace Splatoon.Config
                         if (asset == null) throw new InvalidOperationException($"武器配置加载失败：{hero.WeaponConfigPath}");
                         _assets.Add(hero.WeaponConfigPath, asset);
                     }
-                    var snapshot = asset.Snapshot(); WeaponConfigValidation.Validate(snapshot);
+                    var snapshot = asset.Snapshot(); WeaponConfigValidation.Validate(snapshot); ValidateAmmoId(hero.Id, snapshot.Ammo);
                     _sources.Add(hero.Id, asset); Store(hero.Id, snapshot);
                 }
             }
@@ -70,7 +82,7 @@ namespace Splatoon.Config
         public void Replace(int heroId, WeaponRuntimeConfig snapshot)
         {
             if (!_values.ContainsKey(heroId)) throw new InvalidOperationException("武器尚未加载");
-            WeaponConfigValidation.Validate(snapshot); Store(heroId, snapshot);
+            WeaponConfigValidation.Validate(snapshot); ValidateAmmoId(heroId, snapshot.Ammo); Store(heroId, snapshot);
         }
 #if UNITY_EDITOR
         // Test fixtures and editor validation can inject independent snapshots without changing assets.

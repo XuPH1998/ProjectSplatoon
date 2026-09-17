@@ -17,7 +17,7 @@ Shader "Splatoon/InkTexturePainter"
             #pragma target 3.5
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "InkCoverage.hlsl"
-            sampler2D _MainTex;
+            Texture2D<float4> _MainTex;
             Texture2D<float4> _ShapeAtlas;
             float _PainterTeam;
             float3 _PainterPosition, _PainterNormal;
@@ -39,7 +39,7 @@ Shader "Splatoon/InkTexturePainter"
             float4 frag(Output i):SV_Target
             {
                 if (_PrepareUV>0) return float4(1,0,0,1);
-                float4 old=tex2D(_MainTex,i.uv);
+                float4 old=_MainTex.Sample(sampler_LinearClamp,i.uv);
                 // Registered convex arena meshes have hard, disconnected faces in the atlas.
                 if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return old;
                 float3 n=normalize(_PainterNormal); float3 axis=abs(n.y)>.5?float3(0,0,1):float3(0,1,0);

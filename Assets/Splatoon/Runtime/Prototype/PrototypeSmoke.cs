@@ -21,6 +21,7 @@ namespace Splatoon.Prototype
         private float _captureAfter;
         private string _label;
         private float _finishedAt;
+        static readonly string FrameScenario = Arg(Environment.GetCommandLineArgs(), "-frameScenario", "fire");
         private float _leaveAfter;
         private int _cycles;
         private bool _cycling;
@@ -61,7 +62,13 @@ namespace Splatoon.Prototype
             float t=Time.realtimeSinceStartup-_connectedAt;
             // A remote spawn/timeout can require release before firing. Exercise the same legal
             // release/press sequence as a real player so every participant actually fires.
-            if (_inkCase == "inkperf") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 55); frame.Fire = t > 2 && !p.Snapshot.Value.AttackNeedsRelease; frame.Swim = false; return; }
+            if (_inkCase == "inkperf")
+            {
+                frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 55);
+                frame.Swim = FrameScenario == "swim" && ((int)t + (int)p.PlayerId) % 8 >= 5;
+                frame.Fire = FrameScenario != "idle" && !frame.Swim && t > 2 && !p.Snapshot.Value.AttackNeedsRelease;
+                return;
+            }
             if (_inkCase == "observer") { frame.Move = Vector2.zero; frame.Look = new Vector2(0, 45); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "map") { frame.Move = Vector2.zero; frame.Look = new Vector2(p.Snapshot.Value.Team == 1 ? 0 : 180, 12); frame.Fire = frame.Swim = false; return; }
             if (_inkCase == "surfaces")
@@ -141,7 +148,7 @@ namespace Splatoon.Prototype
                     });
                 }
             }
-            if(!_captured&&t>_captureAfter&&!Application.isBatchMode)
+            if(!_captured&&!FramePerformanceProbe.Requested&&t>_captureAfter&&!Application.isBatchMode)
             {
                 _captured=true;
                 var output=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..","Reports","PrototypeSmoke"));

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Splatoon.Combat
 {
-    [CreateAssetMenu(menuName = "喷墨对战/飞行墨水表现")]
+    // 仅保留旧资产的反序列化兼容；正式表现从 AmmoRuntimeConfig 读取。
     public sealed class InkFlightProfile : ScriptableObject
     {
         public ParticleSystem FlightPrefab, MuzzlePrefab;

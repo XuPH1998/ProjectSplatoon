@@ -16,15 +16,15 @@ namespace Splatoon.Tests
         Camera _camera;
         InkFlightPresentation _flight;
         WeaponRuntimeConfig _weapon;
-        InkFlightProfile _profile;
+        AmmoRuntimeConfig _profile;
         readonly ParticleSystem.Particle[] _particles = new ParticleSystem.Particle[2048];
         [SetUp] public void Setup()
         {
             _root = new GameObject("Flight acceptance"); _camera = _root.AddComponent<Camera>();
             _camera.transform.position = new Vector3(3, 2, -4);
-            _profile = AssetDatabase.LoadAssetAtPath<InkFlightProfile>("Assets/GameResource/Effects/Ink/InkFlightProfile.asset");
+            _profile = new AmmoRuntimeConfig(AssetDatabase.LoadAssetAtPath<AmmoConfigAsset>("Assets/Splatoon/Tests/VisualReference/InkFlight/ReferenceAmmoConfig.asset"));
             Assert.That(_profile, Is.Not.Null, "Run InkFlightBuilder once to bind authored assets");
-            _flight = new InkFlightPresentation(_root.transform, _profile.FlightPrefab, _profile);
+            _flight = new InkFlightPresentation(_root.transform, _profile);
             _weapon = new WeaponRuntimeConfig(AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>("Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset"));
         }
         [TearDown] public void TearDown() { _flight?.Dispose(); Object.DestroyImmediate(_root); }
@@ -61,7 +61,7 @@ namespace Splatoon.Tests
             var s = Shot(5); s.Lifecycle++; _flight.Spawn(s,10);
             _flight.Update(10.2,_camera);
             Assert.That(_flight.ActiveGroups,Is.EqualTo(5));
-            Assert.That(_root.GetComponentsInChildren<MeshRenderer>().All(r=>r.gameObject.layer==InkFlightProfile.Layer),Is.True);
+            Assert.That(_root.GetComponentsInChildren<MeshRenderer>().All(r=>r.gameObject.layer==InkFlightPresentation.Layer),Is.True);
         }
         [Test] public void HitBeforeShotDuplicateLateAndOldRoundCannotResurrectFlight()
         {

@@ -11,7 +11,9 @@
     "Unity.Collections",
     "Unity.InputSystem",
     "UniTask",
-    "Luban"
+    "Luban",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "Unity.RenderPipelines.Core.Runtime"
   ],
   "includePlatforms": [
     "Editor"

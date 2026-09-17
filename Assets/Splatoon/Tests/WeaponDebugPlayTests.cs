@@ -108,7 +108,7 @@ namespace Splatoon.Tests
                 yield return Wait(() => player.Snapshot.Value.HeroId == id && !player.HeroChangePending, "Hero " + id);
             }
             match.StartRound(); Assert.That(match.State.Value.Phase, Is.EqualTo(MatchPhase.Practice));
-            var signature = (byte[])typeof(PrototypeApp).GetField("_signature", Flags).GetValue(app);
+            var signature = app.Manager.NetworkConfig.ConnectionData;
             var response = new NetworkManager.ConnectionApprovalResponse();
             app.Manager.ConnectionApprovalCallback(new NetworkManager.ConnectionApprovalRequest { ClientNetworkId = 123, Payload = signature }, response);
             Assert.That(response.Approved, Is.False, "Remote connection with correct content is still rejected");

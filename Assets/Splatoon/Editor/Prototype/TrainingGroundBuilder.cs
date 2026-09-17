@@ -97,7 +97,6 @@ namespace Splatoon.Editor
             RenderSettings.skybox=AssetDatabase.LoadAssetAtPath<Material>("Assets/GameResource/Environment/Ink/Sky/Sky_8.mat");
             var cam=Group("Main Camera",lighting).gameObject.AddComponent<Camera>();cam.tag="MainCamera";cam.transform.position=new Vector3(0,19,-36);cam.transform.LookAt(new Vector3(0,0,2));cam.fieldOfView=65;cam.farClipPlane=250;cam.nearClipPlane=.05f;cam.backgroundColor=new Color(.66f,.79f,.87f);cam.clearFlags=CameraClearFlags.Skybox;cam.gameObject.AddComponent<AudioListener>();cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
             var effects=root.AddComponent<InkPresentation>();
-            effects.FlightProfile=AssetDatabase.LoadAssetAtPath<InkFlightProfile>(InkFlightBuilder.ProfilePath);
             effects.StreamPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkStream.prefab").GetComponent<ParticleSystem>();
             effects.ImpactPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Effects/Ink/Prefabs/InkImpact.prefab").GetComponent<ParticleSystem>();
             HeroChangeZoneSetup.AddMissingZones(arena);

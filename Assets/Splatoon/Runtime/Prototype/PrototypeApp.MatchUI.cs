@@ -64,6 +64,7 @@ namespace Splatoon.Prototype
         }
         void DrawTeamScore(byte team, float x)
         {
+            NameStyles();
             var color = PrototypeArena.TeamColor(team);
             Panel(new Rect(x, 176, 500, 5), color);
             GUI.color = color; GUI.Label(new Rect(x + 12, 191, 280, 40), team == 1 ? "粉队" : "蓝队", _scoreHeading); GUI.color = Color.white;
@@ -78,7 +79,8 @@ namespace Splatoon.Prototype
                 bool local = player == PrototypePlayer.Local;
                 Panel(new Rect(x, y, 500, 60), local ? new Color(color.r, color.g, color.b, .18f) : new Color(1, 1, 1, .04f));
                 if (local) Panel(new Rect(x, y, 4, 60), color);
-                GUI.Label(new Rect(x + 14, y + 2, 300, 30), (player.IsTestBot ? $"测试 BOT {player.Snapshot.Value.Slot + 1}" : $"玩家 {player.OwnerClientId + 1}") + (local ? "  ·  你" : ""), _label);
+                GUI.Label(new Rect(x + 14, y + 2, 300, 30),
+                    new GUIContent(FitPlayerName(player.DisplayName, local ? "  ·  你" : "", _scoreName, 300), player.DisplayName), _scoreName);
                 GUI.Label(new Rect(x + 14, y + 33, 300, 25), GameplayConfig.GetHero(player.Snapshot.Value.HeroId).DisplayName, _small);
                 var stats = player.Stats.Value;
                 if (stats.Round != PrototypeMatch.Current.State.Value.Round) stats = default;

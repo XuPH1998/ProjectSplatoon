@@ -81,7 +81,7 @@ namespace Splatoon.Tests
             Vector3 feet = new(0, 5.54f, 0);
             var report = new List<string>();
             var csv = new List<string> { "hero,age,old_x,old_y,old_z,new_x,new_y,new_z" };
-            var flightPresentation = InkPresentation.Current.Flight;
+            var flightPresentation = InkPresentation.Current;
             int visiblePixels = 0;
             foreach (int hero in new[] { 1, 2, 3, 4, 5 })
             {
@@ -98,7 +98,7 @@ namespace Splatoon.Tests
                     var lastTrace = new Dictionary<uint, string>();
                     match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 // This fixture deliberately backdates subsequent synthetic shots.
-                InkPresentation.Current.Flight.Clear();
+                InkPresentation.Current.ClearFlights();
                     double born = player.NetworkManager.ServerTime.Time;
                     match.Projectiles.Spawn(player, state, born, match.State.Value.Round);
                     var shots = match.Projectiles.Spawned.ToArray();
@@ -150,7 +150,7 @@ namespace Splatoon.Tests
                 Assert.That(Vector3.Distance(miss.CorrectionPoint, miss.CameraOrigin + miss.Forward * 50), Is.LessThan(.0001f));
                 match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 // This fixture deliberately backdates subsequent synthetic shots.
-                InkPresentation.Current.Flight.Clear();
+                InkPresentation.Current.ClearFlights();
                 match.Projectiles.Spawn(player, live, player.NetworkManager.ServerTime.Time - .05, match.State.Value.Round);
                 var flight = match.Projectiles.Spawned[0]; var w = GameplayConfig.GetWeapon(hero);
                 // GPU captures can take longer than a projectile's lifetime on an importing editor.
@@ -192,7 +192,7 @@ namespace Splatoon.Tests
             // Flush the real host RPC and render in this frame so clock scheduling cannot skip the interval.
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 // This fixture deliberately backdates subsequent synthetic shots.
-                InkPresentation.Current.Flight.Clear();
+                InkPresentation.Current.ClearFlights();
             var gravityWeapon = GameplayConfig.GetWeapon(3);
             var gravityAim = TpsAimSolver.Geometry(Vector3.up * 20, Vector3.forward, new Vector3(-.6f, 20, 0), 6, 6, float.PositiveInfinity);
             var gravityShot = new InkShot { Id = uint.MaxValue, HeroId = 3, Team = player.Snapshot.Value.Team,
@@ -221,7 +221,7 @@ namespace Splatoon.Tests
             report.Add($"GPU particle before convergence: age={gravityAge:F6}s, targetAge={convergenceAge:F6}s, gravityStart={gravityShot.GravityStartAge:F6}s, drop={drop:F6}m; RPC and authority position agree");
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 // This fixture deliberately backdates subsequent synthetic shots.
-                InkPresentation.Current.Flight.Clear();
+                InkPresentation.Current.ClearFlights();
             player.RequestHeroChange(1, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 1, "Return to rifle");
             SetPose(player, feet);
@@ -264,7 +264,7 @@ namespace Splatoon.Tests
             var paintState = player.Snapshot.Value; paintState.Pitch = 55; paintState.CurrentSpread=paintState.LastShotSpread=.000001f;paintState.LastShotVerticalSpread=.000001f;
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
                 // This fixture deliberately backdates subsequent synthetic shots.
-                InkPresentation.Current.Flight.Clear();
+                InkPresentation.Current.ClearFlights();
             match.Projectiles.Spawn(player, paintState, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
             uint paintBeforeFlight = match.PaintSequence;
             yield return Wait(() => match.PaintSequence > paintBeforeFlight, "Corrected flight paints authored arena surface", 3);

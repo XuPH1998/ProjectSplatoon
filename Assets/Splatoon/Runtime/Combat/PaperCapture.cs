@@ -33,7 +33,7 @@ namespace Splatoon.Combat
         readonly List<Part> _parts = new();
         readonly PaperSilhouette _silhouette = new();
         int _frame = -1, _renderedVersion = -1;
-        static readonly ProfilerMarker SampleMarker = new("Splatoon.Paper.Sample");
+        static readonly ProfilerMarker SampleMarker = FramePerformance.PaperSample;
         Vector2 _move;
         public Mesh HitMesh { get; }
         public RenderTexture Texture { get; private set; }
@@ -118,6 +118,7 @@ namespace Splatoon.Combat
         public void Render()
         {
             if (_renderedVersion==PoseVersion || SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null) return;
+            using var marker = FramePerformance.PaperRender.Auto();
             if (Texture == null)
             {
                 Texture=new RenderTexture(_profile.TextureWidth,_profile.TextureHeight,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB)

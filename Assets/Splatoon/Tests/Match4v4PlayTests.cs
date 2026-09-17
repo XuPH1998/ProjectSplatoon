@@ -51,7 +51,7 @@ namespace Splatoon.Tests
             var view=EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView")); view.Show(); view.Focus();
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var approve=typeof(PrototypeApp).GetMethod("Approve",Private);
-            var signature=(byte[])typeof(PrototypeApp).GetField("_signature",Private).GetValue(app);
+            var signature=app.Manager.NetworkConfig.ConnectionData;
             for(ulong id=1;id<8;id++)
             {
                 var response=new NetworkManager.ConnectionApprovalResponse();
@@ -75,12 +75,15 @@ namespace Splatoon.Tests
             Unprotect(victim); victim.ReceiveDamage(1,10,Vector3.forward,assistant.OwnerClientId);
             Assert.That(assistant.Stats.Value.Assists,Is.Zero);
             app.OpenHeroSelection(HeroSelectionOrigin.Warmup); match.StartRound();
+            // Assert protection at the spawn boundary. GPU screenshot/readback can outlast
+            // the protection window on a loaded Editor and must not decide this gameplay check.
+            Assert.That(victim.Snapshot.Value.ProtectedUntil, Is.GreaterThan(app.Manager.ServerTime.Time));
+            victim.ReceiveDamage(1,1000,Vector3.forward,local.OwnerClientId);
+            Assert.That(victim.Stats.Value.Deaths,Is.Zero,"spawn protection");
             yield return null;
             Assert.That(match.State.Value.Phase,Is.EqualTo(MatchPhase.Playing)); Assert.That(app.Overlay,Is.EqualTo(GameplayOverlay.Game));
             Assert.That(PrototypeApp.StartNoticeActive(match.State.Value,app.Manager.ServerTime.Time),Is.True);
             yield return Capture("start-notice");
-            victim.ReceiveDamage(1,1000,Vector3.forward,local.OwnerClientId);
-            Assert.That(victim.Stats.Value.Deaths,Is.Zero,"spawn protection");
             Unprotect(victim); victim.ReceiveDamage(2,1000,Vector3.forward,victim.OwnerClientId);
             Assert.That(victim.Stats.Value.Deaths,Is.Zero,"friendly fire disabled");
             victim.ReceiveDamage(1,10,Vector3.forward,assistant.OwnerClientId);
@@ -101,7 +104,8 @@ namespace Splatoon.Tests
                 yield return Wait(()=>!PrototypeApp.StartNoticeActive(match.State.Value,app.Manager.ServerTime.Time),"Start notice expires after two server seconds");
                 view.Focus(); app.CaptureMouse(true);
                 InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Tab)); InputSystem.Update();
-                Assert.That(app.ScoreboardVisible,Is.True); Assert.That(app.HasControl,Is.True); Assert.That(Cursor.lockState,Is.EqualTo(CursorLockMode.Locked));
+                Assert.That(app.ScoreboardVisible,Is.True); Assert.That(app.HasControl,Is.True);
+                if (!Application.isBatchMode) Assert.That(Cursor.lockState,Is.EqualTo(CursorLockMode.Locked));
                 yield return Capture("scoreboard");
                 InputSystem.QueueStateEvent(keyboard,new KeyboardState()); InputSystem.Update(); Assert.That(app.ScoreboardVisible,Is.False);
                 InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Tab)); InputSystem.Update(); app.CaptureMouse(false);

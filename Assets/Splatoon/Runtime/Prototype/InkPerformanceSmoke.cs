@@ -26,6 +26,16 @@ namespace Splatoon.Prototype
         static int _flightParticlesPeak, _flightGroupsPeak, _playerCountMin;
         public static void Tick(PrototypeMatch match)
         {
+            // The opt-in fixture still replenishes ink, but frame probes observe only normal rendering.
+            if (FramePerformanceProbe.Requested)
+            {
+                if (match.IsServer) foreach (var player in match.Players)
+                {
+                    var state = player.Snapshot.Value;
+                    if (state.Ink < 90) { state.Ink = 100; player.Snapshot.Value = state; }
+                }
+                return;
+            }
             if(match.State.Value.PlayerCount<(FlightAcceptance ? 8 : 4))return;
             if(_match!=match)
             {
@@ -53,7 +63,7 @@ namespace Splatoon.Prototype
             if(FlightAcceptance)
             {
                 _playerCountMin=Math.Min(_playerCountMin,match.State.Value.PlayerCount);
-                var flight=Combat.InkPresentation.Current?.Flight;
+                var flight=Combat.InkPresentation.Current;
                 if(flight!=null){_flightParticlesPeak=Math.Max(_flightParticlesPeak,flight.ParticleCount);_flightGroupsPeak=Math.Max(_flightGroupsPeak,flight.ActiveGroups);}
                 FrameTimingManager.CaptureFrameTimings();
                 if(FrameTimingManager.GetLatestTimings(1,Timings)>0&&Timings[0].gpuFrameTime>0)GpuFrames.Add(Timings[0].gpuFrameTime);
@@ -69,7 +79,7 @@ namespace Splatoon.Prototype
             if(FlightAcceptance)
             {
                 GpuFrames.Sort();string gpu=GpuFrames.Count==0?"null":GpuFrames[(int)((GpuFrames.Count-1)*.95)].ToString("F3",System.Globalization.CultureInfo.InvariantCulture);
-                result=result.TrimEnd('}')+FormattableString.Invariant($",\"minimumPlayers\":{_playerCountMin},\"flightParticlesPeak\":{_flightParticlesPeak},\"flightGroupsPeak\":{_flightGroupsPeak},\"gpuP95Ms\":{gpu},\"gpuSamples\":{GpuFrames.Count},\"flightDroppedSamples\":{Combat.InkPresentation.Current?.Flight?.DroppedSamples??0}}}");
+                result=result.TrimEnd('}')+FormattableString.Invariant($",\"minimumPlayers\":{_playerCountMin},\"flightParticlesPeak\":{_flightParticlesPeak},\"flightGroupsPeak\":{_flightGroupsPeak},\"gpuP95Ms\":{gpu},\"gpuSamples\":{GpuFrames.Count},\"flightDroppedSamples\":{Combat.InkPresentation.Current?.DroppedSamples??0}}}");
             }
             string label=match.IsServer?"host":"client-"+match.NetworkManager.LocalClientId;
             string output = Path.Combine(Application.dataPath, "..", "Reports", FlightAcceptance?"InkFlightReference":"InkPerformance");

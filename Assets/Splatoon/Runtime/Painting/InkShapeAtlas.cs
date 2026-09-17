@@ -101,5 +101,33 @@ namespace Splatoon.Painting
         }
         public static float Coverage(Vector3 point, PaintStamp stamp) => stamp.Radius <= 0 ? 0
             : RemapCoverage(Sample(ProjectedUv(point, stamp.Position, stamp.Normal, stamp.Radius, stamp.ShapeSeed), stamp.ShapeSeed), stamp.Hardness, stamp.Strength);
+
+        /// <summary>Stamp-invariant work, shared by all tested regions and covered cells.</summary>
+        internal readonly struct Brush
+        {
+            readonly PaintStamp _stamp;
+            readonly Vector3 _tangent, _bitangent;
+            readonly Vector4 _transform;
+            public Brush(PaintStamp stamp)
+            {
+                _stamp = stamp; Basis(stamp.Normal, out _tangent, out _bitangent);
+                _transform = Transform(stamp.ShapeSeed);
+            }
+            public Vector2 LocalExtents(Matrix4x4 inverse)
+            {
+                Vector3 u = inverse.MultiplyVector((_tangent * _transform.x - _bitangent * _transform.y) * _stamp.Radius);
+                Vector3 v = inverse.MultiplyVector((_tangent * _transform.y + _bitangent * _transform.x) * _stamp.Radius);
+                return new Vector2(Mathf.Abs(u.x) + Mathf.Abs(v.x), Mathf.Abs(u.z) + Mathf.Abs(v.z));
+            }
+            public float Coverage(Vector3 point)
+            {
+                if (_stamp.Radius <= 0) return 0;
+                Vector3 delta = point - _stamp.Position;
+                Vector2 p = new Vector2(Vector3.Dot(delta, _tangent), Vector3.Dot(delta, _bitangent)) / Mathf.Max(.0001f, _stamp.Radius);
+                Vector2 uv = new Vector2((p.x * _transform.x - p.y * _transform.y) * _transform.z,
+                    p.x * _transform.y + p.y * _transform.x) * .5f + Vector2.one * .5f;
+                return RemapCoverage(Sample(uv, _stamp.ShapeSeed), _stamp.Hardness, _stamp.Strength);
+            }
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace Splatoon.Prototype
             SpreadSimulation.Refresh(ref s, GameplayConfig.GetWeapon(s.HeroId));
             Snapshot.Value = s;
             EnsureHeroPresentation(s.HeroId);
+            CharacterView?.RefreshAmmo(GameplayConfig.GetWeapon(s.HeroId));
         }
     }
 }

@@ -13,7 +13,14 @@ MonoBehaviour:
   m_Name: RocketLauncherGirlAmmoConfig
   m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
   ammoId: 6
-  flightProfile: {fileID: 11400000, guid: 5243adfccedc4190a2f36b53b48e93a8, type: 2}
+  flightMigrationVersion: 1
+  burstInterval: 0.02
+  particlesPerBurst: 2
+  visualLifetime: 10
+  muzzleInterval: 0.06
+  muzzleBurstCount: 50
+  maxRibbonGap: 1.5
+  satelliteSpread: 0.1
   flightPrefab: {fileID: 949289641, guid: 6a9f9382fa794ac7973b169067184b08, type: 3}
   muzzlePrefab: {fileID: 276323219, guid: 133e31e1136a4499babf56c282f4beed, type: 3}
   explosionEnabled: 0

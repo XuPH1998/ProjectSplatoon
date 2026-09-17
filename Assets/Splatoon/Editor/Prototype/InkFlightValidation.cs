@@ -24,7 +24,7 @@ namespace Splatoon.Editor
         static RenderTexture target;
         static RenderMetaballsScreenSpace feature;
         static Material productionComposite;
-        static InkFlightProfile profile;
+        static AmmoRuntimeConfig profile;
         static readonly List<string> notes = new();
         static GameObject root, wall;
         static InkFlightPresentation flight;
@@ -100,12 +100,13 @@ namespace Splatoon.Editor
             var material = new Material(Shader.Find("Universal Render Pipeline/Lit")); material.SetColor("_BaseColor",new Color(.62f,.65f,.65f)); material.SetFloat("_Smoothness",.15f);
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube); floor.transform.position = new Vector3(0,-.12f,8);floor.transform.localScale = new Vector3(25,.2f,30);floor.GetComponent<Renderer>().sharedMaterial = material;
             wall = GameObject.CreatePrimitive(PrimitiveType.Cube);wall.transform.position = new Vector3(0,1.5f,5);wall.transform.localScale = new Vector3(8,6,.25f);wall.GetComponent<Renderer>().sharedMaterial = material;wall.SetActive(false);
-            profile = AssetDatabase.LoadAssetAtPath<InkFlightProfile>(InkFlightBuilder.ProfilePath);
+            var referenceAmmo = AssetDatabase.LoadAssetAtPath<AmmoConfigAsset>(Fixtures + "ReferenceAmmoConfig.asset");
+            profile = new AmmoRuntimeConfig(referenceAmmo);
             feature = AssetDatabase.LoadAssetAtPath<UniversalRendererData>("Assets/Settings/PC_Renderer.asset").rendererFeatures.OfType<RenderMetaballsScreenSpace>().Single(f=>f.name=="InkFlightMetaballs");
             productionComposite = feature.BlitMaterial;
             var w = ScriptableObject.CreateInstance<WeaponConfigAsset>();
             w.fireMode = WeaponFireMode.Automatic;w.pelletCount=1;w.fireRate=1/.03f;w.speedMin=20;w.speedMax=25;w.projectileGravity=19.62f;w.lifetime=1;w.brakeSeconds=1;w.brakeSpeedMultiplier=1;
-            referenceWeapon = new WeaponRuntimeConfig(w);Object.DestroyImmediate(w);
+            w.ammoConfig = referenceAmmo; referenceWeapon = new WeaponRuntimeConfig(w);Object.DestroyImmediate(w);
         }
         static void Composite(bool source)
         {
@@ -116,7 +117,7 @@ namespace Splatoon.Editor
         static ParticleSystem Native(string name)
         {
             var ps = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Fixtures+"Reference"+name+".prefab"),root.transform).GetComponent<ParticleSystem>();
-            ps.gameObject.layer=InkFlightProfile.Layer;ps.transform.position=Vector3.up*2.4f;
+            ps.gameObject.layer=InkFlightPresentation.Layer;ps.transform.position=Vector3.up*2.4f;
             ps.useAutoRandomSeed=false;ps.randomSeed=137;ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);ps.Play(false);return ps;
         }
         static InkShot ReferenceShot(uint id,double born,Vector3 origin,Quaternion rotation,byte team=1,ulong shooter=1)
@@ -128,7 +129,7 @@ namespace Splatoon.Editor
         {
             Composite(source);string folder=Output+"/"+scenario+"-"+(source?"reference":"restored");Directory.CreateDirectory(folder);
             ParticleSystem native=source?Native("Flight"):null;
-            if(!source)flight=new InkFlightPresentation(root.transform,profile.FlightPrefab,profile);
+            if(!source)flight=new InkFlightPresentation(root.transform,profile);
             double next=0;uint id=1;
             for(int frame=0;frame<84;frame++)
             {
@@ -177,10 +178,11 @@ namespace Splatoon.Editor
         }
         static void CaptureWeapons()
         {
-            Composite(false);flight=new InkFlightPresentation(root.transform,profile.FlightPrefab,profile);
+            Composite(false);
             foreach(string guid in AssetDatabase.FindAssets("t:WeaponConfigAsset",new[]{"Assets/GameResource/Weapons"}))
             {
                 var asset=AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(AssetDatabase.GUIDToAssetPath(guid));var w=new WeaponRuntimeConfig(asset);
+                flight?.Dispose(); flight=new InkFlightPresentation(root.transform,w.Ammo);
                 foreach(byte team in new byte[]{1,2})
                 {
                     flight.Clear();int pellets=Mathf.Max(1,w.PelletCount);
@@ -195,7 +197,7 @@ namespace Splatoon.Editor
         {
             Composite(false);wall.SetActive(true);var oldPosition=camera.transform.position;var oldRotation=camera.transform.rotation;
             camera.transform.position=new Vector3(0,2,0);camera.transform.LookAt(new Vector3(0,2,8));
-            var baseline=Pixels();flight=new InkFlightPresentation(root.transform,profile.FlightPrefab,profile);
+            var baseline=Pixels();flight=new InkFlightPresentation(root.transform,profile);
             for(uint i=1;i<=15;i++)flight.Spawn(ReferenceShot(i,0,new Vector3((i%5-2)*.2f,2,7),Quaternion.identity),0);
             flight.Update(.04,camera);var painted=Pixels();int changed=Difference(baseline,painted);
             Capture(Output+"/wall-occlusion.png");notes.Add("Fully hidden flight changed pixels="+changed);
@@ -243,7 +245,7 @@ namespace Splatoon.Editor
         static void BeginPerformance()
         {
             target.Release();Object.DestroyImmediate(target);target=new RenderTexture(1280,720,24,RenderTextureFormat.ARGB32);target.Create();
-            flight=new InkFlightPresentation(root.transform,profile.FlightPrefab,profile);perfFrame=0;allocations=0;cpu.Clear();submit.Clear();gpu.Clear();
+            flight=new InkFlightPresentation(root.transform,profile);perfFrame=0;allocations=0;cpu.Clear();submit.Clear();gpu.Clear();
         }
         static void PerformanceTick()
         {

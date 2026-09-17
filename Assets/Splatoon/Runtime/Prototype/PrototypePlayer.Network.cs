@@ -88,7 +88,13 @@ namespace Splatoon.Prototype
         {
             GameLatency.Reset(); ResetPredictionDiagnostics();
             _paintReplayPending = _syncReplayPending = _predictionPaused = false;
-            if (IsServer) { TestBot.Value = _initialTestBot; Snapshot.Value = new PlayerSnapshot { Team = _initialTeam, Slot = _initialSlot, HeroId = _initialTestBot ? _botHero : 0 }; Respawn(); }
+            if (IsServer)
+            {
+                TestBot.Value = _initialTestBot;
+                Username.Value = new Unity.Collections.FixedString128Bytes(PrototypeApp.Current != null ?
+                    PrototypeApp.Current.AdmittedUsername(OwnerClientId) : $"玩家 {OwnerClientId + 1}");
+                Snapshot.Value = new PlayerSnapshot { Team = _initialTeam, Slot = _initialSlot, HeroId = _initialTestBot ? _botHero : 0 }; Respawn();
+            }
             ByOwner[PlayerId] = this;
             _predicted = Snapshot.Value; _controller.enabled = IsServer || ControlsLocalPlayer;
             SwimBody?.ApplyCollision(_predicted);

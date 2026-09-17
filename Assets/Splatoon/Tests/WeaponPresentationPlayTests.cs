@@ -51,7 +51,7 @@ namespace Splatoon.Tests
             yield return Wait(() => PrototypePlayer.Local != null && InkPresentation.Current != null, "Host player and ink presentation");
             var player = PrototypePlayer.Local;
             var match = PrototypeMatch.Current;
-            var flightPresentation = InkPresentation.Current.Flight;
+            var flightPresentation = InkPresentation.Current;
             var camera = new GameObject("Weapon repair capture").AddComponent<Camera>();
             camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1; camera.fieldOfView = 35;
             var report = new List<string>();

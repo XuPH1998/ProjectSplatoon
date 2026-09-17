@@ -18,6 +18,7 @@ namespace Splatoon.Prototype
         public float OwnershipCellSize = .125f;
         public string BakedTopology;
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
+        PaintSurface[] _paintSurfaces = Array.Empty<PaintSurface>();
         HeroChangeZone[] _heroChangeZones;
         public void RegisterHeroChangeZones() => _heroChangeZones = GetComponentsInChildren<HeroChangeZone>(true);
         public bool IsInHeroChangeZone(byte team, Vector3 position)
@@ -56,6 +57,7 @@ namespace Splatoon.Prototype
             Surfaces.Clear();
             foreach (var surface in GetComponentsInChildren<PaintSurface>(true))
                 if (surface.SurfaceId <= 0 || !Surfaces.TryAdd(surface.SurfaceId, surface)) throw new InvalidOperationException("表面 ID 重复或无效");
+            _paintSurfaces = Surfaces.Values.ToArray();
         }
         public string ComputeTopology()
         {
@@ -123,26 +125,30 @@ namespace Splatoon.Prototype
         }
         public void Apply(PaintStamp stamp, bool updateOwnership)
         {
+            using var marker = FramePerformance.PaintCpu.Auto(); FramePerformance.PaintStamps++;
+            var brush = new InkShapeAtlas.Brush(stamp);
             if (!Surfaces.TryGetValue(stamp.SurfaceId, out var surface)) throw new InvalidOperationException("未知涂色表面：" + stamp.SurfaceId);
-            ApplyToSurface(surface, stamp, updateOwnership);
+            ApplyToSurface(surface, stamp, brush, updateOwnership);
             // A floor split into rendering tiles is still one continuous paintable plane.
             // Only coplanar neighbours participate, so a bridge never paints the ground below it.
-            foreach (var neighbour in Surfaces.Values)
+            foreach (var neighbour in _paintSurfaces)
             {
                 if (neighbour == surface) continue;
-                foreach (var region in neighbour.GameplayRegions)
+                foreach (var region in neighbour.CachedRegions)
                 {
-                    var matrix = region.Matrix(neighbour); var inverse = matrix.inverse; var local = inverse.MultiplyPoint3x4(stamp.Position);
-                    var extent = InkShapeAtlas.LocalExtents(stamp, inverse);
-                    if (Vector3.Dot(matrix.MultiplyVector(Vector3.up).normalized, stamp.Normal) < .9999f || Mathf.Abs(local.y) > .005f || Mathf.Abs(local.x) > region.Size.x / 2 + extent.x || Mathf.Abs(local.z) > region.Size.y / 2 + extent.y) continue;
-                    ApplyToSurface(neighbour, stamp, updateOwnership); break;
+                    if (Vector3.Dot(region.Normal(neighbour), stamp.Normal) < .9999f) continue;
+                    var inverse = region.Inverse(neighbour); var local = inverse.MultiplyPoint3x4(stamp.Position);
+                    if (Mathf.Abs(local.y) > .005f) continue;
+                    var extent = brush.LocalExtents(inverse);
+                    if (Mathf.Abs(local.x) > region.Size.x / 2 + extent.x || Mathf.Abs(local.z) > region.Size.y / 2 + extent.y) continue;
+                    ApplyToSurface(neighbour, stamp, brush, updateOwnership); break;
                 }
             }
         }
-        private static void ApplyToSurface(PaintSurface surface, PaintStamp stamp, bool updateOwnership)
+        private static void ApplyToSurface(PaintSurface surface, PaintStamp stamp, InkShapeAtlas.Brush brush, bool updateOwnership)
         {
             surface.Apply(stamp);
-            if (updateOwnership) surface.ApplyRegions(stamp);
+            if (updateOwnership) surface.ApplyRegions(stamp, brush);
         }
         public Dictionary<int, SurfaceOwnershipGrid> RegionGrids() => Surfaces.Values
             .SelectMany(s => s.GameplayRegions.Select(r => new { Key = r.Key(s), r.Grid })).ToDictionary(p => p.Key, p => p.Grid);
