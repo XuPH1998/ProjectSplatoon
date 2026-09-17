@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: ShotgunGirlWeaponConfig
   m_EditorClassIdentifier: 
-  ammoConfig: {fileID: 11400000, guid: c8b10ff1e647419cbb79c256710469ef, type: 2}
   weaponPrefabAddress: Weapon/Shotgun
+  ammoConfig: {fileID: 11400000, guid: c8b10ff1e647419cbb79c256710469ef, type: 2}
   fireMode: 3
   fireRate: 2.5
   shotInk: 4
@@ -25,18 +25,18 @@ MonoBehaviour:
   burstRecoverySeconds: 0
   speedMin: 30
   speedMax: 30
-  projectileGravity: 8
+  projectileGravity: 14
   lifetime: 10
   collisionRadius: 0.025
   spreadDegrees: 5
-  straightSeconds: 0.16666666666666666
+  straightSeconds: 0
   brakeSeconds: 0.13333333333333333
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 10
+  jumpSpreadDegrees: 5
   landingSpreadRecoverSeconds: 0.2
   effectiveRange: 6.5
-  damage: 10
-  damageMin: 4
+  damage: 16
+  damageMin: 8
   damageReduceStartSeconds: 0.06666666666666667
   damageReduceEndSeconds: 0.3
   paintRadiusMin: 0.95
@@ -45,7 +45,7 @@ MonoBehaviour:
   paintStrength: 1
   trailSpacing: 0.2
   trailRadiusMin: 0.45
-  trailRadiusMax: 0.85
+  trailRadiusMax: 0.55
   trailMaxDrop: 2.4
   chargeSeconds: 0
   chargeMinDamage: 0
@@ -76,4 +76,4 @@ MonoBehaviour:
   spreadExpandSeconds: 0
   spreadRecoverSeconds: 0
   baseSpreadDegrees: 5
-  baseJumpSpreadDegrees: 10
+  baseJumpSpreadDegrees: 5

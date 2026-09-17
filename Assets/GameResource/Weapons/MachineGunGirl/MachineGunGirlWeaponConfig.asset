@@ -12,67 +12,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: MachineGunGirlWeaponConfig
   m_EditorClassIdentifier: 
+  weaponPrefabAddress: Weapon/MachineGun
   ammoConfig: {fileID: 11400000, guid: 48d1adeafd3444198a2c13b3b395a791, type: 2}
-  weaponPrefabAddress: "Weapon/MachineGun"
   fireMode: 4
   fireRate: 15
-  shotInk: 0.53030303
-  startSeconds: 0.0
+  shotInk: 0.530303
+  startSeconds: 0
   emergeStartSeconds: 0.06666666666666667
   inkRecoverLockSeconds: 0.6666666666666666
   shootMoveSpeed: 3.125
   burstCount: 1
-  burstRecoverySeconds: 0.0
-  speedMin: 101.543454
-  speedMax: 114.124059
-  projectileGravity: 43.1335025
+  burstRecoverySeconds: 0
+  speedMin: 101.54346
+  speedMax: 114.12406
+  projectileGravity: 3.5
   lifetime: 3
-  collisionRadius: 0.149769106
+  collisionRadius: 0.14976911
   spreadDegrees: 3
-  straightSeconds: 0.13333333333333333
+  straightSeconds: 0
   brakeSeconds: 0.13333333333333333
   brakeSpeedMultiplier: 0.1
-  jumpSpreadDegrees: 6
+  jumpSpreadDegrees: 3
   landingSpreadRecoverSeconds: 0.75
-  effectiveRange: 20.2188293
+  effectiveRange: 20.21883
   damage: 40
   damageMin: 16
   damageReduceStartSeconds: 0.18333333333333332
   damageReduceEndSeconds: 0.31666666666666665
-  paintRadiusMin: 1.43778342
-  paintRadiusMax: 1.57257561
+  paintRadiusMin: 1.4377834
+  paintRadiusMax: 1.5725756
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 17.59787
-  trailRadiusMin: 0.964513042
-  trailRadiusMax: 0.964513042
-  trailMaxDrop: 7.4884553
+  trailSpacing: 0.35
+  trailRadiusMin: 0.96451306
+  trailRadiusMax: 0.96451306
+  trailMaxDrop: 2.4
   chargeSeconds: 2.5
   chargeMinDamage: 32
   chargePartialMaxDamage: 32
-  chargeMinInk: 0.53030303
-  chargeMinRange: 8.23730083
-  chargeMinSpeed: 47.1772684
+  chargeMinInk: 0.530303
+  chargeMinRange: 8.237301
+  chargeMinSpeed: 47.17727
   chargeMinSpread: 3
   chargeMinJumpSpread: 6
   pelletCount: 1
   muzzleMode: 0
-  semiBufferSeconds: 0.0
+  semiBufferSeconds: 0
   splatlingMinChargeSeconds: 0.13333333333333333
-  splatlingFirstChargeSeconds: 2.0
+  splatlingFirstChargeSeconds: 1.5
   splatlingFirstShootSeconds: 2.1666666666666665
   splatlingFullShootSeconds: 4.333333333333333
   splatlingSlowChargeMultiplier: 3
-  splatlingChargeMoveSpeed: 2.29166667
-  splatlingChargeJumpSpeed: 2.69584391
+  splatlingChargeMoveSpeed: 2.2916667
+  splatlingChargeJumpSpeed: 2.695844
   splatlingPostSeconds: 0.06666666666666667
-  splatlingPitchSpread: 2
+  splatlingPitchSpread: 3
   splatlingSpreadBias: 0.3
   splatlingSpeedBias: 0.2
-  splatlingFootEvery: 8
+  splatlingFootEvery: 1
   splatlingTrailCount: 1
-  splatlingFootRadius: 1.15741565
-  splatlingPlayerRadius: 0.168490244
+  splatlingFootRadius: 1.1574156
+  splatlingPlayerRadius: 0.16849025
   spreadExpandSeconds: 1
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0

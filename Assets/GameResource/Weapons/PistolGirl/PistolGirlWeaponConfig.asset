@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: PistolGirlWeaponConfig
   m_EditorClassIdentifier: 
+  weaponPrefabAddress: Weapon/Pistol
   ammoConfig: {fileID: 11400000, guid: 87e2eaa701d945b4a43315528b8cdf45, type: 2}
-  weaponPrefabAddress: "Weapon/Pistol"
   fireMode: 3
   fireRate: 5
   shotInk: 1
@@ -22,17 +22,17 @@ MonoBehaviour:
   inkRecoverLockSeconds: 0.36666666666666664
   shootMoveSpeed: 3.4
   burstCount: 1
-  burstRecoverySeconds: 0.0
-  speedMin: 28
-  speedMax: 28
-  projectileGravity: 6
+  burstRecoverySeconds: 0
+  speedMin: 35
+  speedMax: 35
+  projectileGravity: 7.5
   lifetime: 10
   collisionRadius: 0.025
   spreadDegrees: 2
-  straightSeconds: 0.16666666666666666
+  straightSeconds: 0.075
   brakeSeconds: 0.13333333333333333
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 4
+  jumpSpreadDegrees: 2
   landingSpreadRecoverSeconds: 0.2
   effectiveRange: 12
   damage: 52
@@ -47,7 +47,7 @@ MonoBehaviour:
   trailRadiusMin: 0.35
   trailRadiusMax: 0.75
   trailMaxDrop: 2.4
-  chargeSeconds: 0.0
+  chargeSeconds: 0
   chargeMinDamage: 0
   chargePartialMaxDamage: 0
   chargeMinInk: 0
@@ -58,14 +58,14 @@ MonoBehaviour:
   pelletCount: 1
   muzzleMode: 0
   semiBufferSeconds: 0.1
-  splatlingMinChargeSeconds: 0.0
-  splatlingFirstChargeSeconds: 0.0
-  splatlingFirstShootSeconds: 0.0
-  splatlingFullShootSeconds: 0.0
+  splatlingMinChargeSeconds: 0
+  splatlingFirstChargeSeconds: 0
+  splatlingFirstShootSeconds: 0
+  splatlingFullShootSeconds: 0
   splatlingSlowChargeMultiplier: 0
   splatlingChargeMoveSpeed: 0
   splatlingChargeJumpSpeed: 0
-  splatlingPostSeconds: 0.0
+  splatlingPostSeconds: 0
   splatlingPitchSpread: 0
   splatlingSpreadBias: 0
   splatlingSpeedBias: 0
