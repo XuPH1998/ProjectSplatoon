@@ -25,7 +25,7 @@ namespace Splatoon.Combat
         // Conservative gate for the two gameplay-owned ink layers. Unknown filters still render.
         public bool HasCompositeContent(int layerMask)
         {
-            if (_explosionEffects.Count > 0) return true;
+            foreach (var burst in _explosionEffects) if ((burst.layers & layerMask) != 0) return true;
             if (layerMask == 1 << InkFlightPresentation.Layer)
             {
                 foreach (var version in _flights)
@@ -62,7 +62,7 @@ namespace Splatoon.Combat
         readonly List<InkMuzzleEmitter> _muzzles = new(16);
         private readonly Queue<InkImpactEffect> _pool = new();
         private readonly List<(InkImpactEffect effect, float until)> _effects = new(96);
-        readonly List<(GameObject effect, float until, GameObject prefab)> _explosionEffects = new(32);
+        readonly List<(GameObject effect, float until, GameObject prefab, int layers)> _explosionEffects = new(32);
         readonly Dictionary<GameObject, Queue<GameObject>> _explosionPool = new();
         readonly HashSet<(uint round, uint id)> _seenExplosions = new();
         private void Awake()
@@ -165,15 +165,19 @@ namespace Splatoon.Combat
             go.name = "Ink explosion";
             go.transform.localScale = Vector3.one * InkExplosionRules.Radius(ammo, explosion.Collision);
             var teamColor = PrototypeArena.TeamColor(explosion.Team);
-            foreach (var particles in go.GetComponentsInChildren<ParticleSystem>(true))
-            { var main = particles.main; main.startColor = teamColor; }
-            float lifetime = .05f;
-            foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true))
+            var systems = go.GetComponentsInChildren<ParticleSystem>(true);
+            // Clear every layer before recoloring a pooled burst. Play(false) avoids restarting children.
+            foreach (var ps in systems) ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            float lifetime = .05f; int effectLayers = 0;
+            for (int i = 0; i < systems.Length; i++)
             {
-                lifetime = Mathf.Max(lifetime, ps.main.duration + ps.main.startLifetime.constantMax);
-                ps.useAutoRandomSeed = false; ps.randomSeed = explosion.Seed == 0 ? 1u : explosion.Seed; ps.Play(true);
+                var ps = systems[i]; var main = ps.main; main.startColor = teamColor;
+                effectLayers |= 1 << ps.gameObject.layer;
+                lifetime = Mathf.Max(lifetime, main.startDelay.constantMax + main.duration + main.startLifetime.constantMax);
+                uint seed = unchecked((explosion.Seed == 0 ? 1u : explosion.Seed) + (uint)i * 2654435761u);
+                ps.useAutoRandomSeed = false; ps.randomSeed = seed == 0 ? 1u : seed; ps.Play(false);
             }
-            _explosionEffects.Add((go, Time.time + Mathf.Min(lifetime, 3f), ammo.ExplosionPrefab));
+            _explosionEffects.Add((go, Time.time + lifetime, ammo.ExplosionPrefab, effectLayers));
         }
         private void RecycleImpacts()
         {

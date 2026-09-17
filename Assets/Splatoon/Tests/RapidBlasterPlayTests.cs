@@ -187,13 +187,14 @@ namespace Splatoon.Tests
                 Assert.That(roots.Length, Is.EqualTo(1));
                 Assert.That(roots[0].localScale.x, Is.EqualTo(w.Ammo.ExplosionRadius).Within(.00001));
                 foreach (var ps in roots[0].GetComponentsInChildren<ParticleSystem>())
-                { Assert.That(ps.main.startColor.color, Is.EqualTo(PrototypeArena.TeamColor(team))); ps.Simulate(.10f, true, true); }
-                Capture(visible, "ink-explosion-team-" + team);
+                { Assert.That(ps.main.startColor.color, Is.EqualTo(PrototypeArena.TeamColor(team))); ps.Simulate(.10f, false, true, false); }
+                Capture(visible, "ink-explosion-team-" + team, new Vector3(3, 2, 7));
                 // A same-round delayed event after clearing must not restore the burst.
                 presentation.Clear(); evt.ShotId = ++id; evt.Time = host.NetworkManager.ServerTime.Time - 1;
                 presentation.Explosion(evt);
                 Assert.That(Enumerable.Range(0, presentation.transform.childCount).Select(i => presentation.transform.GetChild(i)).Count(t => t.name == "Ink explosion" && t.gameObject.activeSelf), Is.Zero);
             }
+            yield return RapidBlasterExplosionChecks.Check(splash.Explosions[0], visual, host, view.Profile);
             int actualStamps = 0;
             Vector3 paintCenter = default, paintNormal = Vector3.up;
             var paint = new InkProjectileService { PaintObserved = stamp => { actualStamps++; paintCenter = stamp.Position; paintNormal = stamp.Normal; } };
