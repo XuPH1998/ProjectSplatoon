@@ -449,7 +449,7 @@ MonoBehaviour:
   SurfaceId: 25
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -1088,7 +1088,7 @@ MonoBehaviour:
   SurfaceId: 30
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -2431,7 +2431,7 @@ MonoBehaviour:
   SurfaceId: 31
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -2597,7 +2597,7 @@ MonoBehaviour:
   SurfaceId: 32
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 256
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -3116,7 +3116,7 @@ MonoBehaviour:
   SurfaceId: 28
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -3590,7 +3590,7 @@ MonoBehaviour:
   SurfaceId: 19
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -4519,7 +4519,7 @@ MonoBehaviour:
   SurfaceId: 29
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -6198,7 +6198,7 @@ MonoBehaviour:
   SurfaceId: 16
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -6815,7 +6815,7 @@ MonoBehaviour:
   SurfaceId: 36
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -7110,7 +7110,7 @@ MonoBehaviour:
   SurfaceId: 12
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -7351,7 +7351,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c40fa2476e9758347b957d9be7ab84a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Prototype.HeroChangeZone
   Team: 1
 --- !u!65 &1194940256
@@ -7747,7 +7747,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c40fa2476e9758347b957d9be7ab84a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Prototype.HeroChangeZone
   Team: 2
 --- !u!65 &1252604411
@@ -8243,7 +8243,7 @@ MonoBehaviour:
   SurfaceId: 21
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -9326,7 +9326,7 @@ MonoBehaviour:
   SurfaceId: 33
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -9576,7 +9576,7 @@ MonoBehaviour:
   SurfaceId: 14
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10192,7 +10192,7 @@ MonoBehaviour:
   SurfaceId: 22
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 1440
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10560,7 +10560,7 @@ MonoBehaviour:
   SurfaceId: 23
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 1024
   ResolutionHeight: 288
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10810,7 +10810,7 @@ MonoBehaviour:
   SurfaceId: 35
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -11200,7 +11200,7 @@ MonoBehaviour:
   SurfaceId: 34
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -11628,7 +11628,7 @@ MonoBehaviour:
   SurfaceId: 9
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -12541,7 +12541,7 @@ MonoBehaviour:
   SurfaceId: 26
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 256
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -13290,7 +13290,7 @@ MonoBehaviour:
   SurfaceId: 15
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 1440
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -13568,7 +13568,7 @@ MonoBehaviour:
   SurfaceId: 27
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells:
+  BlockedCells: 
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}

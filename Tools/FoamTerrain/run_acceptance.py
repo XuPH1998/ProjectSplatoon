@@ -38,7 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--exe", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--matrix", choices=("smoke", "full", "eight-late", "reconnect", "reset"), default="smoke")
-    parser.add_argument("--graphics",action="store_true",help="Enable rendering; default is headless functional network acceptance.")
+    parser.add_argument("--graphics",action="store_true",help="Enable a graphics device; batch/hidden windows may still produce no rendered frames. Default is headless network acceptance.")
     args = parser.parse_args()
     cases = [(0, 0)] if args.matrix == "smoke" else [(delay, loss) for delay in (50, 100, 200) for loss in (0, 1, 3)] if args.matrix == "full" else [(100, 1)]
     results = []

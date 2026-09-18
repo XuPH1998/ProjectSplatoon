@@ -16,6 +16,25 @@ namespace Splatoon.Editor
         static FoamAppearanceBuilder(){EditorApplication.update+=Poll;}
         static void Poll()
         {
+            const string player="Temp/FoamAppearance/build-player";
+            if(File.Exists(player)&&!EditorApplication.isPlayingOrWillChangePlaymode&&!EditorApplication.isCompiling&&!EditorApplication.isUpdating&&!EditorUtility.scriptCompilationFailed)
+            {
+                var active=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("UnityEditor.TestTools.TestRunner.Api.TestRunnerApi")).FirstOrDefault(t=>t!=null)?.GetMethod("IsRunActive",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+                if(active==null||(bool)active.Invoke(null,null))return;
+                string output=File.ReadAllText(player).Trim();File.Delete(player);Directory.CreateDirectory("Reports/FoamAppearance");
+                bool timing=PlayerSettings.enableFrameTimingStats;
+                var preloaded=PlayerSettings.GetPreloadedAssets();
+                try
+                {
+                    File.WriteAllText("Reports/FoamAppearance/build-status.txt","RUNNING: rendered Player performance and independent-process network acceptance\n"+output);
+                    PlayerSettings.enableFrameTimingStats=true;
+                    PrototypeBuilder.BuildWindowsTo(output);
+                    File.WriteAllText("Reports/FoamAppearance/build-status.txt","PASS\n"+output);
+                }
+                catch(System.Exception e){File.WriteAllText("Reports/FoamAppearance/build-status.txt",e.ToString());Debug.LogException(e);}
+                finally{PlayerSettings.enableFrameTimingStats=timing;PlayerSettings.SetPreloadedAssets(preloaded);AssetDatabase.SaveAssets();}
+                return;
+            }
             const string path="Temp/FoamAppearance/build-assets";
             if(!File.Exists(path)||EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling||EditorApplication.isUpdating||EditorUtility.scriptCompilationFailed)return;
             File.Delete(path);

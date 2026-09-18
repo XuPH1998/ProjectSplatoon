@@ -31,19 +31,23 @@ namespace Splatoon.Tests
         }
         [UnityTest] public IEnumerator FixedInputsCaptureAndMeasure()
         {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
+            yield return new EnterPlayMode();
             string label = File.Exists("Temp/FoamAppearance/label") ? File.ReadAllText("Temp/FoamAppearance/label").Trim() : "current";
             string output = "Reports/FoamAppearance/" + label;
             Directory.CreateDirectory(output);
-            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
-            yield return new EnterPlayMode();
+            Debug.Log("[FOAM-APPEARANCE] Entered play " + output);
             yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready);
             var app = PrototypeApp.Current;
             yield return app.StartWeaponDebugRoom().ToCoroutine();
+            Debug.Log("[FOAM-APPEARANCE] Room started");
             yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current != null);
             app.CaptureMouse(false);
             var match = PrototypeMatch.Current; var host = PrototypePlayer.Local;
             match.enabled = false; host.enabled = false;
             var world = match.Arena.Foam; var camera = Camera.main;
+            var stages=new List<FoamUpdateMetrics>(2048);world.Updated+=stages.Add;
+            Debug.Log("[FOAM-APPEARANCE] Capturing " + output);
             Assert.That(Physics.Raycast(new Vector3(2, 2, -12), Vector3.down, out var hit, 3, Splatoon.Combat.PlayerMotorSimulation.WorldMask), Is.True);
             var floor = hit.collider.GetComponentInParent<PaintSurface>();
             var summary = new System.Text.StringBuilder("scenario,peakM,occupiedNodeCount,commitP95Ms,commitP99Ms,quietVersions\n");
@@ -93,7 +97,21 @@ namespace Splatoon.Tests
             }
             File.WriteAllText(output + "/metrics.csv", summary.ToString());
             File.WriteAllText(output + "/commits.csv", timings.ToString());
+            var stageCsv=new System.Text.StringBuilder("total,deposit,round,relax,ownership,mesh,collider,feedback,chunks,cooks,normals,uploads\n");
+            foreach(var m in stages)stageCsv.AppendLine(FormattableString.Invariant($"{m.TotalMs:F6},{m.DepositMs:F6},{m.RoundMs:F6},{m.RelaxMs:F6},{m.OwnershipMs:F6},{m.MeshMs:F6},{m.ColliderMs:F6},{m.FeedbackMs:F6},{m.DirtyChunks},{m.ColliderRebuilds},{m.NormalOnlyUpdates},{m.OwnerUploads}"));
+            File.WriteAllText(output+"/stages.csv",stageCsv.ToString());world.Updated-=stages.Add;
+            if(match.Arena.FoamPresentation!=null)
+            {
+                var presentation=match.Arena.FoamPresentation;
+                Assert.That(presentation.PeakGroups,Is.LessThanOrEqualTo(24));
+                Assert.That(presentation.PlayedGroups,Is.GreaterThan(0));
+                File.WriteAllText(output+"/feedback.txt",$"played={presentation.PlayedGroups}, peak={presentation.PeakGroups}, dropped={presentation.DroppedGroups}");
+                double until=Time.realtimeSinceStartupAsDouble+2;
+                while(presentation.ActiveGroups>0&&Time.realtimeSinceStartupAsDouble<until)yield return null;
+                Assert.That(presentation.ActiveGroups,Is.Zero);
+            }
             File.WriteAllText(output + "/environment.txt", $"{SystemInfo.operatingSystem}\n{SystemInfo.processorType}\n{SystemInfo.graphicsDeviceName}\nUnity {Application.unityVersion}\nEditor rendered fixture; commit timings exclude capture and are not Player/GPU frame timings.\n");
+            Debug.Log("[FOAM-APPEARANCE] COMPLETE " + output);
         }
         static void Capture(Camera camera, string path)
         {

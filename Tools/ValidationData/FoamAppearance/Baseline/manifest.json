@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "e69f534",
+  "unity": "6000.3.9f1",
+  "input": {
+    "commits": 120,
+    "volumePerCommit": 0.075,
+    "radius": 2,
+    "shapeAtlasIndex": 0,
+    "seeds": "123+i",
+    "cellSize": 0.25,
+    "chunkSize": 4,
+    "commitRateHz": 20
+  },
+  "files": {
+    "enemy.bin": "a771385744eda8cc70c7ed675159453938ec0c3aeed9bac6abb3394a872e9890",
+    "FoamTerrain.shader.txt": "aa4b0cbd5249b4991712390a1d5f5b94d8aeb8bcbf4aa331d1191ab4e85e704d",
+    "FoamTerrainWorld.cs.txt": "15f1b65336be51b537b7c903a0e3774cc13f5d2ca0bf2293bc67092eb67ec4e2",
+    "merge.bin": "3b469431f4a67bdcdaf22e9a6360c190b7d53bca5c1283433f5a4f2d5247cea8",
+    "platform.bin": "d2cd71103d6f273e1d44d8ff4dadd041f04613956f388846205b4b91d3b6874b",
+    "ramp.bin": "ad1886b121b30128c5ed83afbb86fc3135f38e4ba3e7a60428c03a2cc3149e9c",
+    "scatter.bin": "1046e37264d8af5edd1c0009044134be61a6cff6773ee72b80b7a9dc72668111",
+    "single.bin": "f7d7907039f6bd2a80d1d90c3215ef80e4750cae624d10aa33f5982a682db03d"
+  }
+}

@@ -18,7 +18,19 @@
 
 坡度整理采用八方向邻接，每次提交最多四轮局部转移，目标自由坡度 35°；仍变化的节点继续参与后续提交。转移消耗高处已有体积，只能进入空白或同阵营节点，受障碍、断边、角色占用和限高约束。自由坡度是整理目标，敌方边界、平台断边和限高处允许保留陡面。
 
+落点权重使用由 `ShapeSeed` 决定的三个不对称圆鼓包，权重为 60% / 25% / 15%，仍按合法连通采样面积归一化。新落点触发最多两轮局部体积交换，只整理已有同阵营泡沫的厚度；随后执行上述坡度整理。圆顶整理没有逐帧流体求解，不在无新落点时继续执行。相同墨量允许形成更低、更宽的泡堆，真实高度、碰撞和纸片支撑共用结果。
+
 `FoamChunk` 使用同一份顶面三角形更新 MeshRenderer 和 MeshCollider，复用 Mesh 与列表。接缝法线来自共享邻接节点，侧面在区域外缘封口。泡沫不额外增加地图总得分面积；原有 0.125 米归属网格根据最终泡沫阵营局部更新。
+
+仅邻接法线变化时只更新 Mesh 法线，不重新赋值 MeshCollider；高度变化仍同步重建几何和碰撞。归属纹理和原地图归属网格只在节点归属变化时发布，CPU 归属直接按相同三角形权重读取，避免计算无关的高度与法线。
+
+## 表现资源
+
+训练场的 `FoamAppearance.asset` 只控制美术和本地反馈，不参与模拟。默认使用不透明三平面泡孔纹理、柔和高光与距离细节衰减；地图重烘焙保留此资源引用和已调整的参数。`Tools/FoamTerrain/bake_pores.py` 可重建固定种子的周期性纹理，Unity 菜单 **喷墨对战 → 表现 → 构建绵软泡沫资源** 配置导入、材质、低面数泡粒和场景引用。已有配置资源不会恢复为默认数值。
+
+表现只监听已安装地形：节点变化至少 1 cm 才参与反馈，按块汇总，每块至少间隔 100 ms。默认池容量 24 组、每组最多 8 颗、寿命不超过 0.45 秒；8 米外减半、16 米外不播放。增长与降低同时出现时取体积变化较大的一类，降低反馈不声称识别了具体攻击原因。池满丢弃视觉反馈，不影响模拟。恢复检查点、历史日志和清空不播放；无渲染进程不创建粒子池。
+
+`FoamTerrainWorld.Updated` 在每次主机提交或客户端差量安装后发布结构化计时；`SurfaceChanged` 在画面与碰撞安装后发布本地块变化。恢复和清空发布 `SurfaceReset`。游戏模拟版本为 15，玩家快照与检查点布局不变。
 
 `FoamSurfaceQuery` 返回实际接触位置、法线、原始区域、阵营和泡沫版本。枪口重叠、射线起点埋入泡沫、球体在山包侧面擦碰使用实心高度查询与真实三角形最近点，补充非凸 MeshCollider 的内部检测。
 
@@ -53,9 +65,11 @@
 - Unity：`FoamTerrainTests` 测试消融、预算、分层、毫米累计、实体接触与检查点；`FoamTerrainPlayTests` 经 Boot 进入真实训练场验证八种武器、接缝、角色支撑、画面和清空。
 - 编辑器测试请求：`Temp/WeaponAlignment/tests` 两行，分别填报告路径 `../FoamTerrain/<名称>`、以分号分隔的完整测试类名。现有入口负责刷新与编译；`FoamValidationRunner` 提供本模块的结果收集入口。
 - 正式独立 Windows 构建：`PrototypeBuilder.BuildWindowsTo`。本次构建目的是验证独立进程联机，编辑器 Host 不能替代该验证。
-- `Tools/FoamTerrain/run_acceptance.py --exe <InkLan.exe> --output <目录> --matrix smoke|full|eight-late|reconnect|reset` 使用独立进程和 UDP 代理。只在相同回合、泡沫版本下比较高度/阵营哈希和原地图归属哈希。默认无渲染运行；加 `--graphics` 可开启渲染。
+- `Tools/FoamTerrain/run_acceptance.py --exe <InkLan.exe> --output <目录> --matrix smoke|full|eight-late|reconnect|reset` 使用独立进程和 UDP 代理。只在相同回合、泡沫版本下比较高度/阵营哈希和原地图归属哈希。默认无渲染运行；加 `--graphics` 可启用图形设备，但批处理或隐藏窗口仍可能不产生实际渲染帧，不能直接作为 GPU 验收。
 - 开发参数 `-inkSmokeCase foam -networkProbe <秒>` 按位置路点绕过出生掩体，在开阔地持续射击至主机时间 32 秒后停止并等待同步；该显式夹具会补充墨水。验收要求对齐版本至少为 20，且每位参与者均实际开火。探针保存泡沫版本序列、提交耗时、整帧 GC、脏块峰值和流量；泡沫热路径单独用 Unity `GC.Alloc` 约束验证。
 
 `reset` 夹具在主机上缩短回合时长，经过正常结算、返回热身和再次开局流程；它不声称验证了完整三分钟时长。
 
 本机测试记录与尚未覆盖的验收项见 `Reports/FoamTerrain/README.md`。P95 2 ms、持续托管分配、真实多机和目标设备帧率均需各自的实测证据，不能用算法测试或构建成功代替。
+
+绵软泡沫的固定输入对照入口为 `FoamAppearancePlayTests.FixedInputsCaptureAndMeasure`，报告放在 `Reports/FoamAppearance`；旧版源实现和六个高度快照保存在 `Tools/ValidationData/FoamAppearance/Baseline`。逐次计时包含体积分配、圆顶整理、坡度整理、归属、网格、碰撞和反馈；外部角色准备、全部角色/弹道查询与网络发送不包含在提交计时中。网络探针保存每次提交/安装的 `*.foam-commits.csv`，不再每 100 ms 只抽样最后一次提交。

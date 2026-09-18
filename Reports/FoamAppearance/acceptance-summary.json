@@ -1,0 +1,156 @@
+{
+  "acceptance": "NOT_ACCEPTED",
+  "reason": [
+    "terrain commit P95 exceeds 2 ms",
+    "target phone and rendered GPU budget not validated",
+    "physical multi-device and manual traversal acceptance pending"
+  ],
+  "network": [
+    {
+      "case": "smoke",
+      "passed": true,
+      "players": 2,
+      "headless": true,
+      "rtt_ms": 0,
+      "loss_percent": 0,
+      "aligned_revision": [
+        0,
+        412
+      ],
+      "final_revision": 412,
+      "terrain_hash_match": true,
+      "all_players_fired": true,
+      "commit_p95_ms": 4.7483,
+      "commit_p99_ms": 6.2873,
+      "commit_samples": 412,
+      "client_install_p95_max_ms": 2.0978,
+      "dirty_chunks_peak": 10,
+      "collider_rebuilds_peak": 9,
+      "normal_only_peak": 4,
+      "foam_payload_bytes": 362258,
+      "proxy_up_received_bytes": 805167,
+      "proxy_down_received_bytes": 1069634
+    },
+    {
+      "case": "eight-late",
+      "passed": true,
+      "players": 8,
+      "headless": true,
+      "rtt_ms": 100,
+      "loss_percent": 1,
+      "aligned_revision": [
+        0,
+        424
+      ],
+      "final_revision": 424,
+      "terrain_hash_match": true,
+      "all_players_fired": true,
+      "commit_p95_ms": 25.5145,
+      "commit_p99_ms": 38.7451,
+      "commit_samples": 424,
+      "client_install_p95_max_ms": 8.7245,
+      "dirty_chunks_peak": 26,
+      "collider_rebuilds_peak": 21,
+      "normal_only_peak": 8,
+      "foam_payload_bytes": 828052,
+      "proxy_up_received_bytes": 24735236,
+      "proxy_down_received_bytes": 20810545
+    },
+    {
+      "case": "reconnect",
+      "passed": true,
+      "players": 2,
+      "headless": true,
+      "rtt_ms": 100,
+      "loss_percent": 1,
+      "aligned_revision": [
+        0,
+        416
+      ],
+      "final_revision": 416,
+      "terrain_hash_match": true,
+      "all_players_fired": true,
+      "commit_p95_ms": 3.5262,
+      "commit_p99_ms": 4.0041,
+      "commit_samples": 416,
+      "client_install_p95_max_ms": 1.6925,
+      "dirty_chunks_peak": 10,
+      "collider_rebuilds_peak": 9,
+      "normal_only_peak": 4,
+      "foam_payload_bytes": 331726,
+      "proxy_up_received_bytes": 1264147,
+      "proxy_down_received_bytes": 987071
+    },
+    {
+      "case": "reset",
+      "passed": true,
+      "players": 2,
+      "headless": true,
+      "rtt_ms": 100,
+      "loss_percent": 1,
+      "aligned_revision": [
+        1,
+        296
+      ],
+      "final_revision": 0,
+      "terrain_hash_match": true,
+      "all_players_fired": true,
+      "commit_p95_ms": 3.868,
+      "commit_p99_ms": 4.1317,
+      "commit_samples": 301,
+      "client_install_p95_max_ms": 1.761,
+      "dirty_chunks_peak": 10,
+      "collider_rebuilds_peak": 9,
+      "normal_only_peak": 4,
+      "foam_payload_bytes": 301965,
+      "proxy_up_received_bytes": 1840529,
+      "proxy_down_received_bytes": 1158846
+    }
+  ],
+  "editor_active_commit_stage_p95_ms": {
+    "total": 3.5682,
+    "deposit": 0.5016,
+    "round": 0.438,
+    "relax": 0.846,
+    "ownership": 0.2603,
+    "mesh": 0.5959,
+    "collider": 0.3675,
+    "feedback": 0.0521
+  },
+  "editor_feedback": "played=278, peak=24, dropped=8",
+  "tests": {
+    "final-core-capture": {
+      "passed": 30,
+      "failed": 0
+    },
+    "prebuild-core": {
+      "passed": 28,
+      "failed": 0
+    },
+    "final-compile-check": {
+      "passed": 1,
+      "failed": 0
+    },
+    "final-map-geometry-check": {
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "render_probes": {
+    "baseline-render-hidden": {
+      "complete": true,
+      "errors": 0,
+      "renderedFrames": 0,
+      "gpuTimingAvailable": false
+    },
+    "current-render-hidden": {
+      "complete": true,
+      "errors": 0,
+      "renderedFrames": 0,
+      "gpuTimingAvailable": false
+    }
+  },
+  "limits": [
+    "6 km isolated ramp fixture had 1.48 mm collision error; current map-coordinate flat/ramp fixture passes 1 mm assertion."
+  ]
+}
