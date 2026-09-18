@@ -1,0 +1,77 @@
+{
+    "passed": true,
+    "avatarValid": true,
+    "avatarHuman": true,
+    "unityVersion": "6000.3.9f1",
+    "renderers": 11,
+    "vertices": 26021,
+    "triangles": 41013,
+    "bones": 93,
+    "unweightedVertices": 0,
+    "height": 1.3191370964050294,
+    "maximumSupportHandError": 2.6151431598009369e-7,
+    "previewRifleScale": 0.550000011920929,
+    "animations": [
+        {
+            "clip": "AimIdle",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2417713403701783,
+            "boneMotionDegrees": 34.00010681152344
+        },
+        {
+            "clip": "AimWalk_F",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2569773197174073,
+            "boneMotionDegrees": 59.438812255859378
+        },
+        {
+            "clip": "AimWalk_B",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2560300827026368,
+            "boneMotionDegrees": 54.2171745300293
+        },
+        {
+            "clip": "AimWalk_FL",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2691198587417603,
+            "boneMotionDegrees": 74.8398666381836
+        },
+        {
+            "clip": "AimWalk_BR",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2713508605957032,
+            "boneMotionDegrees": 80.12519073486328
+        },
+        {
+            "clip": "AimTurn_L90",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2403620481491089,
+            "boneMotionDegrees": 35.176944732666019
+        },
+        {
+            "clip": "AimTurn_R90",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.2437326908111573,
+            "boneMotionDegrees": 39.68544387817383
+        },
+        {
+            "clip": "Die1",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.321691870689392,
+            "boneMotionDegrees": 146.46798706054688
+        },
+        {
+            "clip": "Die2",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.321691870689392,
+            "boneMotionDegrees": 108.23939514160156
+        },
+        {
+            "clip": "R_AimIdle_AutoShoot",
+            "samples": 13,
+            "maximumVertexMagnitude": 1.246315598487854,
+            "boneMotionDegrees": 40.405208587646487
+        }
+    ],
+    "boundary": "Isolated Unity Editor: Humanoid retargeting sampled through PlayableGraph and GPU captures. Not multiplayer, target-device, or gameplay replacement acceptance."
+}

@@ -33,6 +33,11 @@
     <var name="swimHealthRecoverRate" type="float" comment="移动恢复：己方潜墨回血（HP/秒）" />
     <var name="enemyInkDamageRate" type="float" comment="移动恢复：敌墨伤害（HP/秒）" />
     <var name="enemyInkHealthFloor" type="float" comment="移动恢复：敌墨非致死生命下限（HP）" />
+    <var name="standingHeight" type="float" comment="体型：站立高度（米）" />
+    <var name="bodyRadius" type="float" comment="体型：身体碰撞半径（米）" />
+    <var name="compactHeight" type="float" comment="体型：潜墨碰撞高度（米）" />
+    <var name="controllerStepOffset" type="float" comment="体型：台阶高度（米）" />
+    <var name="controllerSkinWidth" type="float" comment="体型：碰撞皮肤宽度（米）" />
   </bean>
   <table name="TbHero" value="HeroConfig" input="TbHero.xlsx" mode="map" index="id" />
   <bean name="RoomModeConfig" comment="RoomMode 强类型配置">

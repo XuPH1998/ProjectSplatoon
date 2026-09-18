@@ -315,6 +315,8 @@ namespace Splatoon.Prototype
                 }
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
                 if (weapon.FireMode == WeaponFireMode.Splatling) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
+                if (!player.Swimming && local.ImpactReticleVisible)
+                    DrawImpactReticle(new Vector2(local.ImpactReticleViewport.x * 1280, (1 - local.ImpactReticleViewport.y) * 720));
                 DrawSpreadReticle(local, player, weapon, reticleCenter);
                 if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil) GUI.Label(new Rect(reticleCenter.x-12,reticleCenter.y-13,90,35),local.LastHitKilled ? "× 击倒" : "×",_label);
                 if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);

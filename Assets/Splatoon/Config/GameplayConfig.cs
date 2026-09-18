@@ -26,6 +26,8 @@ namespace Splatoon.Config
                             Require(float.IsFinite((float)field.GetValue(row)) && (float)field.GetValue(row) >= 0, row.GetType().Name + "." + field.Name + " 必须为有限非负数");
             foreach (var c in tables.TbHero.DataList)
             {
+                Require(c.StandingHeight >= c.BodyRadius * 2 && c.CompactHeight >= c.BodyRadius * 2 && c.CompactHeight <= c.StandingHeight &&
+                    c.BodyRadius > 0 && c.ControllerStepOffset <= c.CompactHeight && c.ControllerSkinWidth > 0 && c.ControllerSkinWidth < c.BodyRadius, "英雄碰撞体型无效");
                 Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.CharacterGravity > 0 && c.JumpSpeed > 0, "英雄角色数值无效");
                 Require(!string.IsNullOrWhiteSpace(c.WeaponConfigPath) && c.WeaponConfigPath.StartsWith("Assets/", StringComparison.Ordinal) && c.WeaponConfigPath.EndsWith(".asset", StringComparison.Ordinal), "武器配置路径必须为 Assets/.../*.asset");
                 Require(!string.IsNullOrWhiteSpace(c.CharacterPrefabAddress), "角色缺少外观地址");

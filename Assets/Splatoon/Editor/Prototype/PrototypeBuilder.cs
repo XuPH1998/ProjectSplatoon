@@ -50,6 +50,8 @@ namespace Splatoon.Editor
             AddAddress(settings,group,CombatGirlsBuilder.WeaponPath,"Weapon/RifleGirlRifle");
             AddAddress(settings,group,BubbleGirlBuilder.CharacterPath,"Character/BubbleGirl");
             AddAddress(settings,group,BubbleGirlBuilder.Root + "/Prefabs/BubbleGun.prefab","Weapon/BubbleGun");
+            if (File.Exists(SplooshGirlBuilder.CharacterPath) && File.Exists(SplooshGirlBuilder.WeaponPath))
+            { AddAddress(settings,group,SplooshGirlBuilder.CharacterPath,"Character/SplooshGirl"); AddAddress(settings,group,SplooshGirlBuilder.WeaponPath,"Weapon/SplooshGun"); }
             foreach (var pack in CombatGirlsHeroBuilder.Definitions)
             {
                 if (!File.Exists(pack.CharacterPath) || !File.Exists(pack.WeaponPath)) continue;
@@ -90,18 +92,20 @@ namespace Splatoon.Editor
             if (!string.IsNullOrEmpty(content.Error)) throw new BuildFailedException(content.Error);
         }
         [MenuItem("喷墨对战/构建/Windows 正式资源版本")]
-        public static void BuildWindows()
+        public static void BuildWindows() => BuildWindowsTo("Builds/Windows");
+        // Acceptance runs can use an isolated output while an older Player is running.
+        public static void BuildWindowsTo(string outputDirectory)
         {
             CombatGirlsBuilder.ValidateInstalled();
             TrainingGroundBuilder.ValidateSavedScene();
             BuildContent();
-            Directory.CreateDirectory("Builds/Windows");
+            Directory.CreateDirectory(outputDirectory);
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone,ScriptingImplementation.Mono2x);
             var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{
-                scenes=new[]{"Assets/Scenes/Main/Boot.unity"},locationPathName="Builds/Windows/InkLan.exe",target=BuildTarget.StandaloneWindows64,
+                scenes=new[]{"Assets/Scenes/Main/Boot.unity"},locationPathName=Path.Combine(outputDirectory,"InkLan.exe"),target=BuildTarget.StandaloneWindows64,
                 options=BuildOptions.Development});
             if(report.summary.result!=BuildResult.Succeeded)throw new BuildFailedException("Windows 构建失败："+report.summary.result);
-            Debug.Log("[PrototypeBuilder] Windows 构建成功：Builds/Windows/InkLan.exe");
+            Debug.Log("[PrototypeBuilder] Windows 构建成功："+Path.Combine(outputDirectory,"InkLan.exe"));
         }
     }
 }

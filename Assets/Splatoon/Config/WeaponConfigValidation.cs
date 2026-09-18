@@ -7,6 +7,21 @@ namespace Splatoon.Config
         public static void Validate(WeaponRuntimeConfig w)
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
+            Require(w.ReferenceFootDepth > 0, "脚下墨迹纵深比例必须大于0");
+            if (w.ShooterDetails)
+            {
+                Require(w.ReferenceRules && w.ReferenceSpreadEnabled && w.FireMode == WeaponFireMode.Automatic &&
+                    w.MotionMode == ProjectileMotionMode.ReferencePhased && w.PelletCount == 1 && w.MuzzleMode == WeaponMuzzleMode.Single && !w.Ammo.ExplosionEnabled, "射手详细规则要求单发自动参考墨弹");
+                Require(w.ShooterSplitNum > 0 && w.ShooterSplitNum <= 64 && w.ShooterPaintNearRadius > 0 &&
+                    w.PaintDistanceMiddle > w.ShooterPaintNearDistance && w.PaintDistanceFar > w.PaintDistanceMiddle &&
+                    w.ShooterPaintAngleMax > w.ShooterPaintAngleMin && w.ShooterPaintAngleMax <= 90 &&
+                    w.ShooterFallHeightMax > w.ShooterFallHeightMin && w.ShooterSplashHeightMax > w.ShooterSplashHeightMin &&
+                    w.ShooterSplashDepthMin > 0 && w.ShooterSplashDepthMax >= w.ShooterSplashDepthMin &&
+                    w.ShooterSplashForwardMax >= w.ShooterSplashForwardMin, "射手落墨节点、循环或纵深无效");
+                Require(w.ShooterWallFirstMin > 0 && w.ShooterWallFirstMax >= w.ShooterWallFirstMin && w.ShooterWallMiddle > 0 &&
+                    w.ShooterWallLastMin > 0 && w.ShooterWallLastMax >= w.ShooterWallLastMin && w.ShooterWallGravity > 0 &&
+                    w.ShooterWallFirstSpeed > 0 && w.ShooterWallShockRadius > 0 && w.WallDropSpeed > 0, "射手墙墨阶段无效");
+            }
             w.Ammo.Validate();
             foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
             {
@@ -17,6 +32,18 @@ namespace Splatoon.Config
                 if (f.FieldType.IsEnum) Require(Enum.IsDefined(f.FieldType, f.GetValue(w)), name + "必须选择有效选项");
             }
 
+            if (w.FireMode == WeaponFireMode.Explosher || w.MotionMode == ProjectileMotionMode.Explosher)
+            {
+                Require(w.FireMode == WeaponFireMode.Explosher && w.MotionMode == ProjectileMotionMode.Explosher && w.ReferenceRules &&
+                    w.PelletCount == 1 && w.MuzzleMode == WeaponMuzzleMode.Single && w.Damage == w.DamageMin && w.SpreadDegrees == 0 && w.JumpSpreadDegrees == 0 &&
+                    w.Ammo.HasExplosion && w.Ammo.ExplosionConstantDamage && !w.Ammo.ExcludeDirectHitFromExplosion && w.Ammo.CollisionExplosionDamageRate == 1 && w.Ammo.CollisionExplosionRadiusRate == 1,
+                    "爆炸泼桶须为单颗穿透墨弹、恒定直击与爆风伤害、零散布");
+                Require(w.ExplosherAirSpeed > 0 && w.ExplosherFieldInitialRadius > 0 && w.ExplosherFieldInitialRadius <= w.CollisionRadius &&
+                    w.ExplosherPlayerInitialRadius > 0 && w.ExplosherPlayerInitialRadius <= w.ReferencePlayerRadius && w.ExplosherFieldGrowSeconds > 0 && w.ExplosherPlayerGrowSeconds > 0 &&
+                    w.ExplosherPostSeconds > 0 && w.ExplosherMoveLimitSeconds >= w.ExplosherPostSeconds && w.ExplosherPaintFarDistance > w.ExplosherPaintNearDistance &&
+                    w.ExplosherTrailPhaseMax >= w.ReferenceTrailStart / w.TrailSpacing && w.ExplosherTrailPhaseMax <= 1 && w.ExplosherFootDepth > 0,
+                    "爆炸泼桶速度、碰撞成长、动作限制或涂墨参数无效");
+            }
             if (w.MotionMode == ProjectileMotionMode.DualiesNormal)
             {
                 Require(w.FireMode == WeaponFireMode.Automatic && w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft &&
@@ -64,7 +91,7 @@ namespace Splatoon.Config
                     w.ChargePartialMaxDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.SplatlingSpeedBias > 0 && w.SplatlingSpeedBias < 1 &&
                     w.SplatlingSpreadBias > 0 && w.SplatlingSpreadBias < 1 && w.ChargeMinSpeed > 0 && w.ChargeMinRange > 0, "旋转枪分段蓄力或弹道配置无效");
                 Require(w.PelletCount >= 1 && w.PelletCount <= 8 && w.SemiBufferSeconds * w.FireRate <= 1 + .00001 / 60, "弹丸数量须为1至8，点击缓存时长不得超过一次射击间隔");
-                Require(w.FireMode == WeaponFireMode.SemiAutomatic || (w.PelletCount == 1 && w.SemiBufferSeconds == 0 && (w.MuzzleMode == WeaponMuzzleMode.Single || w.FireMode == WeaponFireMode.Automatic)), "齐射和点击缓存仅用于半自动；交替枪口支持半自动或全自动");
+                Require((w.FireMode == WeaponFireMode.SemiAutomatic || w.FireMode == WeaponFireMode.Explosher) || (w.PelletCount == 1 && w.SemiBufferSeconds == 0 && (w.MuzzleMode == WeaponMuzzleMode.Single || w.FireMode == WeaponFireMode.Automatic)), "齐射和点击缓存仅用于半自动；交替枪口支持半自动或全自动");
                 Require(w.MuzzleMode != WeaponMuzzleMode.AlternatingRightLeft || w.PelletCount == 1, "双枪每次只发射一颗墨弹");
                 Require(w.FireMode == WeaponFireMode.Burst || w.FireMode == WeaponFireMode.BubbleVolley || w.BurstCount == 1, "非三连发武器每次只发射一颗");
                 if (w.FireMode == WeaponFireMode.Burst) Require(w.BurstCount == 3 && w.BurstRecoverySeconds * w.FireRate >= 1 - .00001 / 60, "三连发须为每组3发，组间恢复时长不得短于一次射击间隔");

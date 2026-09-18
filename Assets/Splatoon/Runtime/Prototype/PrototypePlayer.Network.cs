@@ -37,6 +37,8 @@ namespace Splatoon.Prototype
         public bool LastHitKilled { get; private set; }
         public bool MuzzleBlocked { get; private set; }
         public Vector2 ReticleViewport { get; private set; } = new(.5f, .5f);
+        public bool ImpactReticleVisible { get; private set; }
+        public Vector2 ImpactReticleViewport { get; private set; }
         readonly TpsAimSolver _aimSolver = new();
         public int PendingInputCount => _history.Count;
         CharacterController _controller;
@@ -149,7 +151,10 @@ namespace Splatoon.Prototype
             ShooterMovementSmoke.ModifyInput(this, ref frame);
             HeroSelectionSmoke.ModifyInput(this, ref frame);
             BubbleNetworkSmoke.ModifyInput(this, ref frame);
-            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active || BubbleNetworkSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
+            ExplosherNetworkSmoke.ModifyInput(this, ref frame);
+            PaintParityNetworkSmoke.ModifyInput(this, ref frame);
+            SplooshNetworkSmoke.ModifyInput(this, ref frame);
+            if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active || BubbleNetworkSmoke.Active || ExplosherNetworkSmoke.Active || PaintParityNetworkSmoke.Active || SplooshNetworkSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
 #endif
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1);
             if (frame.Fire && !_fireWasHeld && frame.FireSequence == PresentedState.ConsumedFire) frame.FireSequence = ++_fireSequence;
@@ -329,6 +334,7 @@ namespace Splatoon.Prototype
         { if (!ControlsLocalPlayer) return; HitConfirmedUntil = Time.unscaledTimeAsDouble + .16; LastHitKilled = killed; if (_audio != null) _audio.PlayOneShot(_hitAudio, .18f); }
         void EnsureHeroPresentation(int heroId)
         {
+            _motor?.BindBody(heroId);
             if (PrototypeApp.Current == null) return;
             if (heroId == 0) heroId = GameplayConfig.Mode.HeroId;
             var content = PrototypeApp.Current.Heroes.Get(heroId);
@@ -359,6 +365,7 @@ namespace Splatoon.Prototype
         }
         void LateUpdate()
         {
+            ImpactReticleVisible = false;
             if (!IsSpawned) return;
             var s = PresentedState;
             if (!IsServer && !ControlsLocalPlayer) transform.position = Vector3.Lerp(transform.position, s.Position, 1 - Mathf.Exp(-18 * Time.deltaTime));
@@ -374,8 +381,17 @@ namespace Splatoon.Prototype
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
+            var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
-            MuzzleBlocked = _aimSolver.IsObstructed(aim, GameplayConfig.GetWeapon(s.HeroId).CollisionRadius, PlayerId);
+            if (s.Health > 0 && !s.Swimming &&
+                WeaponImpactPrediction.TryPredict(_aimSolver, aim, reticleWeapon, s, PlayerId, out var landing))
+            {
+                var projected = _camera.WorldToViewportPoint(landing);
+                ImpactReticleVisible = projected.z > 0 && float.IsFinite(projected.z) &&
+                    projected.x >= 0 && projected.x <= 1 && projected.y >= 0 && projected.y <= 1;
+                if (ImpactReticleVisible) ImpactReticleViewport = new Vector2(projected.x, projected.y);
+            }
+            MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId);
         }
         public override void OnNetworkDespawn()
         {

@@ -125,7 +125,7 @@ namespace Splatoon.Combat
             _ammo = ammo ?? throw new ArgumentNullException(nameof(ammo));
             for (int i = 0; i < GroupLimit; i++) { _groups[i] = new Group(ammo.FlightPrefab, parent); _streams[i] = _groups[i].System; }
         }
-        public static bool IsContinuous(WeaponRuntimeConfig w) => !WeaponSimulation.IsBubble(w) && !WeaponSimulation.IsBlaster(w) && w.PelletCount == 1 &&
+        public static bool IsContinuous(WeaponRuntimeConfig w) => !WeaponSimulation.IsExplosher(w) && !WeaponSimulation.IsBubble(w) && !WeaponSimulation.IsBlaster(w) && w.PelletCount == 1 &&
             w.FireMode != WeaponFireMode.SemiAutomatic && w.FireMode != WeaponFireMode.Charge;
         float Lifetime => _ammo.VisualLifetime;
         float Rate => _ammo.ParticlesPerBurst / _ammo.BurstInterval;
@@ -136,10 +136,10 @@ namespace Splatoon.Combat
             if (_seenOrder.Count >= SeenLimit) _seen.Remove(_seenOrder.Dequeue());
             _seenOrder.Enqueue(key);
         }
-        public bool Spawn(InkShot shot, double now)
+        public bool Spawn(InkShot shot, double now, bool authoritativeRestore = false)
         {
             var id = (shot.Round, shot.Id);
-            if (shot.Round < _round || shot.Born < _clearedAt - .001 || _seen.Contains(id)) return false;
+            if (shot.Round < _round || (!authoritativeRestore && shot.Born < _clearedAt - .001) || _seen.Contains(id)) return false;
             if (shot.Round > _round) { Clear(); _round = shot.Round; }
             Remember(id);
             var w = shot.Configuration;
@@ -163,14 +163,16 @@ namespace Splatoon.Combat
             group.LastBorn = Math.Max(group.LastBorn, shot.Born);
             float wanted = continuous ? Rate / Mathf.Max(1, w.FireRate) + group.DensityRemainder : _ammo.ParticlesPerBurst;
             int count = Mathf.Clamp(Mathf.FloorToInt(wanted), 1, 16);
+            if (WeaponSimulation.IsExplosher(w)) count = 6;
             group.DensityRemainder = continuous ? wanted - Mathf.Floor(wanted) : 0;
             _shots[_shotCount] = new ShotVisual { Shot = shot, Group = index, Count = count, Segment = group.Segment,
-                Lifetime = Mathf.Min(Lifetime, w.Lifetime), Span = continuous ? Mathf.Min((float)interval, .12f) : .03f };
+                Lifetime = Mathf.Min(Lifetime, w.Lifetime), Span = WeaponSimulation.IsExplosher(w) ? .02f : continuous ? Mathf.Min((float)interval, .12f) : .03f };
             PrepareSamples(_shotCount, count, shot, group); _shotCount++;
             return true;
         }
         public void Complete(InkImpact impact)
         {
+            if (impact.ContinuesProjectile) return;
             Remember((impact.Round, impact.Id));
             for (int i = _shotCount - 1; i >= 0; i--) if (_shots[i].Shot.Id == impact.Id && _shots[i].Shot.Round == impact.Round) Remove(i);
         }
@@ -185,7 +187,7 @@ namespace Splatoon.Combat
             {
                 uint seed = Hash(shot.Seed ^ ((uint)n * 0x9e3779b9u)), random = seed;
                 var sample = new SampleInvariant { Seed = seed, Velocity = shot.Velocity, PostVelocity = shot.PostCorrectionVelocity };
-                if (n != 0)
+                if (n != 0 && !WeaponSimulation.IsExplosher(shot.Configuration))
                 {
                     float speedRatio = Mathf.Lerp(group.SpeedMin, group.SpeedMax, InkBallistics.Random01(ref random)) / Mathf.Max(.001f, (group.SpeedMin + group.SpeedMax) * .5f);
                     float angle = InkBallistics.Random01(ref random) * Mathf.PI * 2;
@@ -216,6 +218,7 @@ namespace Splatoon.Combat
                     // The source emits pairs at the same instant. Staggering every individual
                     // particle makes an evenly spaced chain instead of merging and separating blobs.
                     double lag = (n / 2) * visual.Span / ((visual.Count + 1) / 2), t = age - lag;
+                    if (WeaponSimulation.IsExplosher(shot.Configuration)) { lag = n * visual.Span / (visual.Count - 1); t = age - lag; }
                     if (t < 0 || t >= visual.Lifetime) continue;
                     if (group.Count == ParticlesPerGroup) { DroppedSamples++; break; }
                     var sample = _sampleCache[i * 16 + n];
@@ -230,7 +233,7 @@ namespace Splatoon.Combat
                         position += (right * sample.Side + Vector3.Cross(forward, right) * sample.Up) * spread;
                     }
                     var p = new ParticleSystem.Particle { position = position, velocity = velocity,
-                        startColor = PrototypeArena.TeamColor(shot.Team), startSize = group.StartSize,
+                        startColor = PrototypeArena.TeamColor(shot.Team), startSize = group.StartSize * (WeaponSimulation.IsExplosher(shot.Configuration) ? Mathf.Lerp(1, .12f, n / (float)(visual.Count - 1)) : 1),
                         startLifetime = visual.Lifetime, remainingLifetime = visual.Lifetime - (float)t,
                         rotation3D = new Vector3((float)t * 15, 0, 0), randomSeed = sample.Seed };
                     // Stable birth order is also the reference ribbon order.

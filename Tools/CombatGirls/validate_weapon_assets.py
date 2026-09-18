@@ -21,6 +21,7 @@ def asset_values(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--hero', type=int, help='Audit one authored hero while retaining source/schema checks')
+    parser.add_argument('--output', type=Path, help='Write this audit to a separate report directory')
     args = parser.parse_args()
     errors = []
     def check(value, message):
@@ -42,6 +43,10 @@ def main():
         values.update(next(r for r in json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Baseline/Values.json').read_text('utf-8')) if r['id']==hero))
         values.update({r['field']:r['after'] for r in alignment['fields'] if r['hero']==hero})
         if hero==1: values['weaponTypeName']='斯普拉射击枪'
+        if hero==3:
+            tuning=json.loads((ROOT/'Tools/ValidationData/Explosher/Tuning.json').read_text('utf-8'))
+            values.update(tuning['weapons'])
+            values.update(weaponTypeName='爆炸泼桶',moveSpeed=.088*60*18/24.037,swimSpeed=.1728*60*18/24.037)
     weapon_fields = re.findall(r'public (?:bool|float|int|string|double|WeaponFireMode|WeaponMuzzleMode|ProjectileMotionMode|AmmoConfigAsset) (\w+)\s*[;=]', (ROOT/'Assets/Splatoon/Config/WeaponConfigAsset.cs').read_text('utf-8-sig'))
     schema = ET.parse(ROOT/'Config/Luban/source/Defines/gameplay.xml')
     hero_fields = {node.attrib['name'] for bean in schema.iter('bean') if bean.attrib.get('name') == 'HeroConfig' for node in bean.findall('var')}
@@ -82,6 +87,8 @@ def main():
             old.update(blaster_tuning['values'])
             old.update(blaster_tuning['heroValues'])
         aligned(row["id"], old)
+        overrides = json.loads((ROOT/'Tools/ValidationData/PaintParity1130/VerifiedOverrides.json').read_text('utf-8'))
+        old.update({r['field']: r['after'] for r in overrides['fields'] if r['hero'] == row['id']})
         combined = dict(gen, **values)
         for key, value in old.items():
             if key == 'displayName': continue
@@ -103,11 +110,12 @@ def main():
             aligned(7,bubble)
             for key, value in bubble.items():
                 check(equal(combined.get(key), value), f'Bubble launch baseline: {key}')
-        check(values.get('baseSpreadDegrees') == (5 if row['id'] == 3 else 0), f'Ground base: {path}')
-        check(values.get('baseJumpSpreadDegrees') == (5 if row['id'] == 3 else 0), f'Air base: {path}')
+        check(values.get('baseSpreadDegrees') == 0, f'Ground base: {path}')
+        check(values.get('baseJumpSpreadDegrees') == 0, f'Air base: {path}')
     report = dict(passed=not errors, heroes=len(rows), characterFields=len(columns)-1, weaponPathFields=1,
                   originalWeaponFields=60, newWeaponFields=4, originalValuesCompared=checked, errors=errors)
-    output = ROOT/'Reports/WeaponAssets'; output.mkdir(parents=True, exist_ok=True)
+    output = args.output if args.output is not None else ROOT/'Reports/WeaponAssets'
+    output.mkdir(parents=True, exist_ok=True)
     name = f'hero-{args.hero}-static-validation.json' if args.hero is not None else 'static-validation.json'
     (output/name).write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n', 'utf-8')
     print(json.dumps(report, ensure_ascii=False, indent=2))

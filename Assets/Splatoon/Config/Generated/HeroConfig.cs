@@ -53,6 +53,11 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["swimHealthRecoverRate"].IsNumber) { throw new SerializationException(); }  SwimHealthRecoverRate = _buf["swimHealthRecoverRate"]; }
         { if(!_buf["enemyInkDamageRate"].IsNumber) { throw new SerializationException(); }  EnemyInkDamageRate = _buf["enemyInkDamageRate"]; }
         { if(!_buf["enemyInkHealthFloor"].IsNumber) { throw new SerializationException(); }  EnemyInkHealthFloor = _buf["enemyInkHealthFloor"]; }
+        { if(!_buf["standingHeight"].IsNumber) { throw new SerializationException(); }  StandingHeight = _buf["standingHeight"]; }
+        { if(!_buf["bodyRadius"].IsNumber) { throw new SerializationException(); }  BodyRadius = _buf["bodyRadius"]; }
+        { if(!_buf["compactHeight"].IsNumber) { throw new SerializationException(); }  CompactHeight = _buf["compactHeight"]; }
+        { if(!_buf["controllerStepOffset"].IsNumber) { throw new SerializationException(); }  ControllerStepOffset = _buf["controllerStepOffset"]; }
+        { if(!_buf["controllerSkinWidth"].IsNumber) { throw new SerializationException(); }  ControllerSkinWidth = _buf["controllerSkinWidth"]; }
     }
 
     public static HeroConfig DeserializeHeroConfig(JSONNode _buf)
@@ -192,6 +197,26 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 移动恢复：敌墨非致死生命下限（HP）
     /// </summary>
     public readonly float EnemyInkHealthFloor;
+    /// <summary>
+    /// 体型：站立高度（米）
+    /// </summary>
+    public readonly float StandingHeight;
+    /// <summary>
+    /// 体型：身体碰撞半径（米）
+    /// </summary>
+    public readonly float BodyRadius;
+    /// <summary>
+    /// 体型：潜墨碰撞高度（米）
+    /// </summary>
+    public readonly float CompactHeight;
+    /// <summary>
+    /// 体型：台阶高度（米）
+    /// </summary>
+    public readonly float ControllerStepOffset;
+    /// <summary>
+    /// 体型：碰撞皮肤宽度（米）
+    /// </summary>
+    public readonly float ControllerSkinWidth;
    
     public const int __ID__ = -563759108;
     public override int GetTypeId() => __ID__;
@@ -236,6 +261,11 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "swimHealthRecoverRate:" + SwimHealthRecoverRate + ","
         + "enemyInkDamageRate:" + EnemyInkDamageRate + ","
         + "enemyInkHealthFloor:" + EnemyInkHealthFloor + ","
+        + "standingHeight:" + StandingHeight + ","
+        + "bodyRadius:" + BodyRadius + ","
+        + "compactHeight:" + CompactHeight + ","
+        + "controllerStepOffset:" + ControllerStepOffset + ","
+        + "controllerSkinWidth:" + ControllerSkinWidth + ","
         + "}";
     }
 }

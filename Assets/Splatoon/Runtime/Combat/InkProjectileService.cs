@@ -48,6 +48,8 @@ namespace Splatoon.Combat
         public byte Team;
         public Vector3 Position, Normal;
         public bool Hit;
+        // Damage-only events must not retire a piercing projectile on clients.
+        public bool ContinuesProjectile;
         public ulong Shooter, Victim;
         public float Damage;
         public bool Killed;
@@ -55,7 +57,7 @@ namespace Splatoon.Combat
         public uint Lifecycle, HeroRevision;
         public byte PelletIndex;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
-        { s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Time); s.SerializeValue(ref Team); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Hit);
+        { s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Time); s.SerializeValue(ref Team); s.SerializeValue(ref Position); s.SerializeValue(ref Normal); s.SerializeValue(ref Hit); s.SerializeValue(ref ContinuesProjectile);
           s.SerializeValue(ref Shooter); s.SerializeValue(ref Victim); s.SerializeValue(ref Damage); s.SerializeValue(ref Killed);
           s.SerializeValue(ref ActionId); s.SerializeValue(ref Lifecycle); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref PelletIndex); }
     }
@@ -175,7 +177,7 @@ namespace Splatoon.Combat
     /// <summary>Server-only continuous collision simulation. Presentation never reports hits.</summary>
     public sealed partial class InkProjectileService
     {
-        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; public int TrailCount, TrailBudget; public float TrailTravelled, NextTrailDistance; public InkBounce Bubble; public float BubbleTrailDistance; }
+        private struct Active { public InkShot Shot; public double SimulatedUntil, CorrectionAt; public Vector3 LastTrail; public uint TrailSeed, PaintOrdinal; public int TrailCount, TrailBudget; public float TrailTravelled, NextTrailDistance; public HashSet<(ulong player, uint life)> Pierced; public InkBounce Bubble; public float BubbleTrailDistance; }
         private readonly List<Active> _active = new(256);
         private readonly TpsAimSolver _aim = new();
         private readonly InkShapeSelector _shapes = new();
@@ -195,6 +197,8 @@ namespace Splatoon.Combat
         // Opt-in observations of the real simulation; never sent over the network.
         public Action<InkShot, double, Vector3> TraceObserved;
         public Action<PaintStamp> PaintObserved;
+        // Diagnostic submission time on the internal 60 Hz clock, not the caller's render frame.
+        public double ObservedPaintTime { get; private set; }
         public void SpawnForMeasurement(InkShot shot)
         {
             if (GameplayConfig.GetWeapon(shot.HeroId) == null || shot.Velocity.sqrMagnitude <= 0)
@@ -206,6 +210,9 @@ namespace Splatoon.Combat
 #endif
         public void Spawn(PrototypePlayer player, PlayerSnapshot state, double born, uint round)
         {
+#if UNITY_EDITOR
+            ObservedPaintTime = born;
+#endif
             var w = GameplayConfig.GetWeapon(state.HeroId);
             var aim = _aim.Resolve(player, state, state.LastShotMuzzle);
             uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.PlayerId ^ state.HeroRevision);
@@ -240,6 +247,8 @@ namespace Splatoon.Combat
             if (ReferenceSpreadSimulation.Enabled(w) && !WeaponSimulation.IsSplatling(w))
                 shot.Velocity = DualiesNormalSimulation.LaunchVelocity(aim.InitialDirection, w, spread, state.LastShotSpreadBias > 0 ? state.LastShotSpreadBias : w.ReferenceBiasMin, ref seed);
             if (w.ReferenceRules && WeaponSimulation.IsBubble(w)) shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, shot.VolleyIndex, state.Grounded);
+            if (WeaponSimulation.IsExplosher(w)) shot.Velocity = ExplosherSimulation.Launch(aim.InitialDirection, w, state.Grounded, state.PlanarVelocity + Vector3.up * state.VerticalSpeed, state.Yaw);
+            if (w.ShooterDetails) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
             if (w.MotionMode == ProjectileMotionMode.BouncingBubble) BeginFlight(shot, shot.Origin, aim.InitialDirection);
@@ -256,10 +265,15 @@ namespace Splatoon.Combat
             uint trailSeed = shot.Seed ^ 0x9E3779B9u, ordinal = 0;
             if (trailSeed == 0) trailSeed = 1;
             var config = shot.Configuration;
-            if (config.ReferenceRules)
+            if (config.ShooterDetails)
+            {
+                ShooterDetailSimulation.Schedule(shot.RoundIndex, config, out _, out _, out bool feet);
+                if (feet) QueuePaintDrop(shot, foot ?? muzzle - forward * .6f, shot.Born, config.ReferenceFootRadius, ++ordinal, forward, config.ReferenceFootDepth);
+            }
+            else if (config.ReferenceRules)
             {
                 if (shot.PelletIndex == 0 && (!WeaponSimulation.IsBubble(config) || shot.VolleyIndex == 0) && config.ReferenceFootRadius > 0 && (shot.ShotSequence - 1) % config.ReferenceFootEvery == 0)
-                    QueuePaintDrop(shot, foot ?? muzzle - forward * .6f, shot.Born, config.ReferenceFootRadius, ++ordinal, forward, 1);
+                    QueuePaintDrop(shot, foot ?? muzzle - forward * .6f, shot.Born, config.ReferenceFootRadius, ++ordinal, forward, WeaponSimulation.IsExplosher(config) ? config.ExplosherFootDepth : config.ReferenceFootDepth);
             }
             else if (DualiesNormalSimulation.Enabled(config))
             {
@@ -272,7 +286,9 @@ namespace Splatoon.Combat
             uint scheduleSeed = InkShapeAtlas.Hash(shot.Seed ^ 0xA511E9B3u);
             int count = (int)budget + (InkBallistics.Random01(ref scheduleSeed) < budget - (int)budget ? 1 : 0);
             float first = config.ReferenceTrailStart + (config.ReferenceTrailRandomPhase ? InkBallistics.Random01(ref scheduleSeed) * config.TrailSpacing : 0);
-            _active.Add(new Active { TrailBudget = count, NextTrailDistance = first, Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
+            if (config.ShooterDetails) ShooterDetailSimulation.Schedule(shot.RoundIndex, config, out count, out first, out _);
+            if (WeaponSimulation.IsExplosher(config)) first = Mathf.Lerp(config.ReferenceTrailStart, config.ExplosherTrailPhaseMax * config.TrailSpacing, InkBallistics.Random01(ref scheduleSeed));
+            _active.Add(new Active { Pierced = WeaponSimulation.IsExplosher(config) ? new HashSet<(ulong, uint)>() : null, TrailBudget = count, NextTrailDistance = first, Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
                 CorrectionAt = config.ReferenceRules || DualiesNormalSimulation.Enabled(config) || WeaponSimulation.IsBlaster(config) ? double.PositiveInfinity : shot.Born + InkBallistics.CorrectionAge(shot, config),
                 Bubble = InkBounce.Initial(shot) });
 #if UNITY_EDITOR
@@ -292,6 +308,9 @@ namespace Splatoon.Combat
             while (_clockOrigin + _clockFrame / 60.0 <= until + 1e-8)
             {
                 double time = _clockOrigin + _clockFrame++ / 60.0;
+#if UNITY_EDITOR
+                ObservedPaintTime = time;
+#endif
                 // Preserve the original 60 Hz order: feet first, then active shots.
                 for (int i=0;i<_legacyFeet.Count;)
                 {
@@ -340,7 +359,7 @@ namespace Splatoon.Combat
                     if (!hit)
                     {
                         var position = InkBallistics.Position(a.Shot, w, w.Lifetime);
-                        ResolveExplosion(a.Shot, position, Vector3.up);
+                        if (!WeaponSimulation.IsExplosher(w)) ResolveExplosion(a.Shot, position, Vector3.up);
                         Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = position, Hit = false,
                             ActionId = a.Shot.ActionId, Lifecycle = a.Shot.Lifecycle, HeroRevision = a.Shot.HeroRevision, PelletIndex = a.Shot.PelletIndex, Shooter = a.Shot.Shooter });
                     }
@@ -357,6 +376,7 @@ namespace Splatoon.Combat
             Vector3 to = InkBallistics.Position(shot, weapon, end - shot.Born);
             Vector3 delta = to - from;
             float distance = delta.magnitude;
+            if (WeaponSimulation.IsExplosher(weapon)) return TraceExplosher(ref active, from, to, start, end);
             bool blaster = WeaponSimulation.IsBlaster(weapon);
             if (blaster && TraceBlasterCollision(ref active, weapon, from, delta, start, end)) return true;
             bool separateRadius = !blaster && (weapon.ReferenceRules || WeaponSimulation.IsSplatling(weapon) || DualiesNormalSimulation.Enabled(weapon));
@@ -457,8 +477,8 @@ namespace Splatoon.Combat
             uint shapeSeed = (w.ReferenceRules || WeaponSimulation.IsSplatling(w) || WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)) ? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy)
                 : _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.ShotSequence > 0 ? (shot.ShotSequence - 1) * (uint)w.PelletCount + shot.PelletIndex + 1 : shot.Id, shot.PelletIndex, ordinal, impact);
             var clip = new PaintStamp { Normal = normal, Direction = paintDirection ?? Vector3.zero };
-            if (w.ReferenceRules && WeaponSimulation.IsBlaster(w) && sightFrom.HasValue)
-                PopulatePaintClip(ref clip, shot, surface, sightFrom.Value, point, radius * Mathf.Max(1, depthScale) * 1.414214f);
+            if (WeaponSimulation.IsExplosher(w) || (w.ReferenceRules && WeaponSimulation.IsBlaster(w) && sightFrom.HasValue))
+                PopulatePaintClip(ref clip, shot, surface, sightFrom ?? point + normal * .025f, point, radius * Mathf.Max(1, depthScale) * 1.414214f);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed, Direction = paintDirection ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clip.ClipEnabled, Clip0 = clip.Clip0, Clip1 = clip.Clip1 });

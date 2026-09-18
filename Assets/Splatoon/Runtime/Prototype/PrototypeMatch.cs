@@ -158,10 +158,18 @@ namespace Splatoon.Prototype
         [ClientRpc] private void BubbleStatesClientRpc(NetworkBatch<InkBubbleState> states, ClientRpcParams targets = default)
         { try { for (int i = 0; i < states.Count; i++) if (states[i].Shot.Round == _paintRound) InkPresentation.Current?.RestoreBubble(states[i]); } finally { states.Dispose(); } }
         readonly List<InkBubbleState> _bubbleSnapshot = new();
+        readonly List<InkShot> _explosherSnapshot = new();
+        [ClientRpc] private void ExplosherStatesClientRpc(NetworkBatch<InkShot> shots, double capturedAt, ClientRpcParams targets = default)
+        { try { for (int i = 0; i < shots.Count; i++) if (shots[i].Round == _paintRound) InkPresentation.Current?.RestoreExplosher(shots[i], capturedAt); } finally { shots.Dispose(); } }
         void SendBubbles(ulong client)
         {
             Projectiles.CaptureBubbles(_bubbleSnapshot);
             if (_bubbleSnapshot.Count > 0) BubbleStatesClientRpc(new NetworkBatch<InkBubbleState>(_bubbleSnapshot),
+                new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new[] { client } } });
+            _explosherSnapshot.Clear();
+            foreach (var shot in Projectiles.LiveShots())
+                if (WeaponSimulation.IsExplosher(shot.Configuration)) _explosherSnapshot.Add(shot);
+            if (_explosherSnapshot.Count > 0) ExplosherStatesClientRpc(new NetworkBatch<InkShot>(_explosherSnapshot), NetworkManager.ServerTime.Time,
                 new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new[] { client } } });
         }
         [ClientRpc] private void ImpactsClientRpc(NetworkBatch<InkImpact> impacts)

@@ -73,7 +73,7 @@ namespace Splatoon.Tests
             foreach (var type in new[] { typeof(WeaponFireMode), typeof(WeaponMuzzleMode) })
                 foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
                     Assert.That(field.GetCustomAttribute<InspectorNameAttribute>(), Is.Not.Null, field.Name);
-            Assert.That(Enum.GetValues(typeof(WeaponFireMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1, 2, 3, 4, 5, 6 }));
+            Assert.That(Enum.GetValues(typeof(WeaponFireMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1, 2, 3, 4, 5, 6, 7 }));
             Assert.That(Enum.GetValues(typeof(WeaponMuzzleMode)).Cast<object>().Select(Convert.ToInt32), Is.EqualTo(new[] { 0, 1 }));
         }
 

@@ -61,6 +61,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e4114f4a7b0706408263c22e2271fd3
+    m_Address: Assets/GameResource/Weapons/ShotgunGirl/ExplosherExplosion.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 300fc09e9899c1749a95ef9b697efd20
     m_Address: Assets/GameResource/Weapons/BubbleGirl/BubblePop.wav
     m_ReadOnly: 0
@@ -68,6 +73,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39df9bcebf6341b419e63cf6d757120f
     m_Address: Weapon/Shotgun
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e927ce4cb7260942b830799def20ac8
+    m_Address: Character/SplooshGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -96,6 +106,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c392e846c0732b4388a701a93d50c50
+    m_Address: Assets/GameResource/Weapons/SplooshGirl/SplooshGirlAmmoConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6099aec9a79bca34298597ce157343bd
     m_Address: Effects/InkImpact
     m_ReadOnly: 0
@@ -113,6 +128,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 647d27ba7735dc443ab9ebbe5e885af2
     m_Address: Assets/GameResource/Weapons/BubbleGirl/BubbleGirlAmmoConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65af4ca3d6a5d664b9f628aa2c64f6d3
+    m_Address: Assets/GameResource/Weapons/RocketLauncherGirl/RapidBlasterExplosion.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67a80872a4b23974e8cc39d79465f467
+    m_Address: Assets/GameResource/Weapons/ShotgunGirl/ExplosherFlight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -169,6 +194,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9af6fda7a8d345c49258de1a6d5ac60e
     m_Address: Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a19f69c5ebaa30c40899b3fe044f5d8f
+    m_Address: Portrait/SplooshGirl
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -273,8 +303,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6a3d5f2a1a2e9e4cb5e28a275ef7894
+    m_Address: Assets/GameResource/Weapons/SplooshGirl/SplooshGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dab96b2249b6abf4f8bc137a54dbc771
     m_Address: Character/RifleGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcd4f79f13ec0454bbb587deccf90407
+    m_Address: Weapon/SplooshGun
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

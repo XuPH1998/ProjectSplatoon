@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "validated_asset_files": 13,
+  "files": [
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Models/RifleGirlChibi.fbx",
+      "sha256": "1aa7c009a3ef8a2a9ad9ccdf5df30ce6116fbbbdeef86f63ed81668c9dbcef08",
+      "bytes": 2464492
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Models/RifleGirlChibi.fbx.meta",
+      "sha256": "4c11da7029cf7ee5b9818b4fe330a5ae97f9291d15f78faab587a3a255d09fdd",
+      "bytes": 38589
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Models.meta",
+      "sha256": "b187dd5da4a5f93e94a93f2eb3e273b99b97dbabb50e5e190b70a03babbc0251",
+      "bytes": 172
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Prefabs/RifleGirlChibi.prefab",
+      "sha256": "13bf18a834ade7f40489b5c5337ef250f7172894883855f0cff6a63a46b1c7f5",
+      "bytes": 160341
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Prefabs/RifleGirlChibi.prefab.meta",
+      "sha256": "5ee9c08814398ccbb8e95c30c9e65a8e789a9383a170b8de1973e0f76baa78c7",
+      "bytes": 154
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Prefabs.meta",
+      "sha256": "e911e837d40612a9ca7b37f6ddcdcc05423eaf672db97f16a8723e09a7620e8c",
+      "bytes": 172
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiAnimationEvents.cs",
+      "sha256": "72235cc9989e69a98fa31c89f3f784737ef7af668703e6450eb3e4839b874795",
+      "bytes": 437
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiAnimationEvents.cs.meta",
+      "sha256": "b2e16a9d90bbbad4b4a1ad3df779decc8b565ff985ce188f74a70852791c04c8",
+      "bytes": 59
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiPreview.cs",
+      "sha256": "b8185d61679d5ff599d46962248234cad4868afb7388501337edffb4b9930a10",
+      "bytes": 4818
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiPreview.cs.meta",
+      "sha256": "42bbd7023ef9b2969048e885193060ed9ad574169726a64110c00812196c6eae",
+      "bytes": 59
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiPreview.unity",
+      "sha256": "a1fd12c89d37f627ce61ff11364b3a7b2f01fb776e784fc7a821b4417ec524fc",
+      "bytes": 83755
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview/RifleGirlChibiPreview.unity.meta",
+      "sha256": "2f3fe031274a9a7c2b826f8b21cf6a69a1de1d7bcbc0f4139add3fc8dd960396",
+      "bytes": 155
+    },
+    {
+      "path": "Assets/GameResource/Characters/RifleGirlChibi/Preview.meta",
+      "sha256": "a6c72ad4f07c11a234f45522eedb759f514faa48479df911ecb9d0ad5fa7c17c",
+      "bytes": 172
+    },
+    {
+      "path": "ArtSource/Characters/RifleGirlChibi/RifleGirlChibi.blend",
+      "sha256": "c827f4c360950a9349e47df8007f01594ae861a84c30235c0fefc15edac8bfd4",
+      "bytes": 32972533
+    }
+  ]
+}

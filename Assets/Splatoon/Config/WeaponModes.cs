@@ -11,7 +11,8 @@ namespace Splatoon.Config
         [InspectorName("半自动（支持长按）")] SemiAutomatic = 3,
         [InspectorName("旋转枪")] Splatling = 4,
         [InspectorName("泡泡连发（整组耗墨）")] BubbleVolley = 5,
-        [InspectorName("爆破枪（点击或长按）")] Blaster = 6
+        [InspectorName("爆破枪（点击或长按）")] Blaster = 6,
+        [InspectorName("爆炸泼桶（点击或长按）")] Explosher = 7
     }
 
     public enum WeaponMuzzleMode
@@ -26,6 +27,7 @@ namespace Splatoon.Config
         [InspectorName("弹跳泡泡")] BouncingBubble = 1,
         [InspectorName("定时爆破墨弹")] TimedBlaster = 2,
         [InspectorName("普通双枪（三段参考弹道）")] DualiesNormal = 3,
-        [InspectorName("共用三阶段参考墨弹")] ReferencePhased = 4
+        [InspectorName("共用三阶段参考墨弹")] ReferencePhased = 4,
+        [InspectorName("爆炸泼桶穿透墨弹")] Explosher = 5
     }
 }

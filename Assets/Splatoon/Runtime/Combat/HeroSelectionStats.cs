@@ -36,6 +36,7 @@ namespace Splatoon.Combat
                 : w.PelletCount > 1 ? w.SpeedMin : (w.SpeedMin + w.SpeedMax) * .5f;
             var shot = new InkShot { Origin = origin, Velocity = aim.InitialDirection * speed, Charge = charge, Configuration = w, MuzzleIndex = muzzle };
             if (w.ReferenceRules && WeaponSimulation.IsBubble(w)) shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, 0, true);
+            if (WeaponSimulation.IsExplosher(w)) shot.Velocity = ExplosherSimulation.Launch(aim.InitialDirection, w, true);
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             return shot;
         }

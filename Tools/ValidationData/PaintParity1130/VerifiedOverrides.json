@@ -1,0 +1,20 @@
+{
+  "version": "11.3.0",
+  "scale": 0.7488455298082124,
+  "fields": [
+    {
+      "hero": 7,
+      "weapon": "BubbleGirl",
+      "field": "referenceFootDepth",
+      "after": 1.2,
+      "before": 1.0,
+      "sourceField": "NearestParam.DrawSizeCollisionPaintParam.PaintDepthScale",
+      "originalValue": 1.2,
+      "conversionFactor": 1,
+      "evidenceLevel": "source-explicit",
+      "reference": "https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponSlosherBathtub.game__GameParameterTable.json",
+      "reason": "Footprint depth was hard-coded to 1; import the explicit dimensionless nearest-paint depth.",
+      "targetValidated": false
+    }
+  ]
+}

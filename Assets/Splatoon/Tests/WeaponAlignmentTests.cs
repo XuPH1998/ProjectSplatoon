@@ -25,10 +25,10 @@ namespace Splatoon.Tests
             for (int i=1;i<=7;i++)
             {
                 var w=GameplayConfig.GetWeapon(i); WeaponConfigValidation.Validate(w);
-                Assert.That(w.ReferenceRules, Is.EqualTo(i!=3));
+                Assert.That(w.ReferenceRules, Is.True);
                 var hero=GameplayConfig.GetHero(i);
-                Assert.That(hero.MoveSpeed,Is.EqualTo((i==4?.104:i==6?.088:.096)*60*scale).Within(.00001));
-                Assert.That(hero.SwimSpeed,Is.EqualTo((i==4?.2016:i==6?.1728:.192)*60*scale).Within(.00001));
+                Assert.That(hero.MoveSpeed,Is.EqualTo((i==4?.104:i==6||i==3?.088:.096)*60*scale).Within(.00001));
+                Assert.That(hero.SwimSpeed,Is.EqualTo((i==4?.2016:i==6||i==3?.1728:.192)*60*scale).Within(.00001));
             }
             Assert.That(GameplayConfig.GetWeapon(1).FireRate,Is.EqualTo(10));
             Assert.That(GameplayConfig.GetWeapon(1).ShotInk,Is.EqualTo(.92f));
@@ -113,6 +113,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunPreservesFrozenPhysicsAndPaintBaseline()
         {
+            WeaponConfigService.Current.SetForEditor(3, LegacyShotgunFixture.Create());
             foreach(string scenario in new[]{"flat","high-drop","wall-middle","continuous"})
             {
                 var old=JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText($"Tools/ValidationData/WeaponAlignment/Baseline/Measurements/w3-q0-{scenario}-60.json"));

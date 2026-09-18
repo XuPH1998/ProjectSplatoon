@@ -224,7 +224,7 @@ namespace Splatoon.Tests
             var expected=(PlayerSnapshot)boxed;
             using var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp);writer.WriteNetworkSerializable(expected);
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
-            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.EqualTo(525));
+            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.EqualTo(533)); // Includes the existing attack movement deadline.
         }
         [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {

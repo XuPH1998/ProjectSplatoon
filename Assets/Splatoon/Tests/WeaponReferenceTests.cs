@@ -74,6 +74,7 @@ namespace Splatoon.Tests
             var common = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAudit/Common.1130.json"));
             Assert.That(common[swim ? "InkRecoverFrm_Stealth" : "InkRecoverFrm_Std"][2].AsInt, Is.EqualTo(frames));
             var s = Player(1); s.Ink = 0; s.Swimming = swim; s.Grounded = true; s.SwimSource = swim ? SwimSurface.Friendly : SwimSurface.None;
+            s.FriendlyInkContact=swim;s.Movement=swim?MovementMode.GroundInk:MovementMode.Human;
             for (int tick = 1; tick < frames; tick++) ResourceSimulation.Step(ref s, GameplayConfig.DefaultHero, false, false, 1f / 60, tick / 60.0);
             Assert.That(s.Ink, Is.LessThan(100));
             ResourceSimulation.Step(ref s, GameplayConfig.DefaultHero, false, false, 1f / 60, frames / 60.0);
@@ -83,6 +84,8 @@ namespace Splatoon.Tests
         {
             foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
             {
+                // This archived import predates the spinner and bubble heroes.
+                if(hero.Id>5)continue;
                 var w = GameplayConfig.GetWeapon(hero.Id);
                 Assert.That(w.ProjectileGravity, Is.EqualTo(9.8f)); Assert.That(WeaponTimeFixture.ReferenceFrames(w.StraightSeconds), Is.EqualTo(4));
                 Assert.That(WeaponTimeFixture.ReferenceFrames(w.BrakeSeconds), Is.EqualTo(8)); Assert.That(w.BrakeSpeedMultiplier, Is.EqualTo(.66f));

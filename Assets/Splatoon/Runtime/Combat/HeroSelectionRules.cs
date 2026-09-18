@@ -37,6 +37,15 @@ namespace Splatoon.Combat
         public static bool Apply(ref PlayerSnapshot s, int heroId, bool refillInk, PlayerInputFrame input)
         {
             if (s.HeroId == heroId) return false;
+            float heightChange = GameplayConfig.GetHero(heroId).StandingHeight - GameplayConfig.GetHero(s.HeroId).StandingHeight;
+            if (s.AirHumanOffset != 0 && heightChange != 0)
+            {
+                // Keep the implied standing feet fixed when replacing an airborne paper body.
+                float shift = heightChange * .5f;
+                s.Position += UnityEngine.Vector3.up * shift;
+                s.PaperCenter += UnityEngine.Vector3.up * shift;
+                s.AirHumanOffset += shift; s.CameraRebaseOffset -= shift;
+            }
             WeaponSimulation.Cancel(ref s, input, true);
             s.HeroId = heroId; s.HeroRevision++;
             s.AirSwimSource = SwimSurface.None;

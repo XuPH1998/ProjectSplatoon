@@ -81,6 +81,9 @@ namespace Splatoon.Tests
         }
         [Test] public void ContinuousVisualDensityDoesNotAddAuthorityShots()
         {
+            // This fixture emits at 15 Hz; live RifleGirl balance is independently tested.
+            var source=Object.Instantiate(AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>("Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset"));
+            source.fireRate=15;_weapon=source.Snapshot();Object.DestroyImmediate(source);
             for(uint i=0;i<15;i++){var s=Shot(i+1);s.Born+=i/15.0;_flight.Spawn(s,s.Born);}
             Assert.That(_flight.ActiveShots,Is.EqualTo(15));
             _flight.Update(10.999,_camera);
@@ -117,7 +120,7 @@ namespace Splatoon.Tests
         }
         [Test] public void EightShotgunsCanKeepThreeLiveReleasesWithoutDroppingPelletLanes()
         {
-            var shotgun=new WeaponRuntimeConfig(AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>("Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlWeaponConfig.asset"));
+            var shotgun=LegacyShotgunFixture.Create();
             uint id=1;
             for(uint shooter=1;shooter<=8;shooter++)for(uint burst=0;burst<3;burst++)for(byte pellet=0;pellet<8;pellet++)
             {
@@ -131,6 +134,8 @@ namespace Splatoon.Tests
         [Test] public void MuzzleUsesReferenceBurstAndContinuousGateWithoutCollisionCallbacks()
         {
             var ps=Object.Instantiate(_profile.MuzzlePrefab,_root.transform);
+            // Pin the emitter test size independently from later cosmetic asset tuning.
+            var authored=ps.main;authored.startSize=new ParticleSystem.MinMaxCurve(.08f,.1f);
             var muzzle=ps.gameObject.AddComponent<InkMuzzleEmitter>();muzzle.Initialize(_profile);
             muzzle.Shot(41,1,true,10,10);Assert.That(muzzle.BurstCount,Is.EqualTo(1));
             var drops = new ParticleSystem.Particle[160]; int count = ps.GetParticles(drops);

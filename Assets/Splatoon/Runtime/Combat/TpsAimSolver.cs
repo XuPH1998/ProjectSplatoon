@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Splatoon.Config;
 using Splatoon.Prototype;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace Splatoon.Combat
 
         public TpsAimSolution Resolve(PrototypePlayer player, PlayerSnapshot state, byte muzzleIndex)
         {
-            byte? ignoreTeam = (GameplayConfig.GetWeapon(state.HeroId).MotionMode == ProjectileMotionMode.BouncingBubble || WeaponSimulation.IsBlaster(GameplayConfig.GetWeapon(state.HeroId))) ? state.Team : (byte?)null;
+            byte? ignoreTeam = (GameplayConfig.GetWeapon(state.HeroId).MotionMode == ProjectileMotionMode.BouncingBubble || WeaponSimulation.IsBlaster(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId))) ? state.Team : (byte?)null;
             var rotation = Quaternion.Euler(state.Pitch, state.Yaw, 0);
             Vector3 pivot = state.Position + PrototypePlayer.CameraPivotOffset(state, player.Presentation);
             Vector3 camera = PrototypePlayer.CameraPosition(pivot, rotation, player.Presentation);
@@ -42,11 +43,12 @@ namespace Splatoon.Combat
                 GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
             result.Pivot = pivot;
             result.AimHit = aimHit;
-            float radius = GameplayConfig.GetWeapon(state.HeroId).CollisionRadius;
+            var weapon = GameplayConfig.GetWeapon(state.HeroId);
+            float radius = WeaponSimulation.IsExplosher(weapon) ? weapon.ExplosherFieldInitialRadius : weapon.CollisionRadius;
             // Detect an embedded pivot too: casts do not report an origin inside a collider.
-            result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit, null, ignoreTeam)
-                || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.PlayerId, out result.MuzzleHit, null, ignoreTeam)
-                || Overlap(muzzle, radius, player.PlayerId, -result.InitialDirection, out result.MuzzleHit, null, ignoreTeam);
+            result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam)
+                || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.PlayerId, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam)
+                || Overlap(muzzle, radius, player.PlayerId, -result.InitialDirection, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam);
             return result;
         }
 
@@ -88,7 +90,7 @@ namespace Splatoon.Combat
             return p.z > 0 && float.IsFinite(p.x) && float.IsFinite(p.y) ? new Vector2(p.x, p.y) : new Vector2(.5f, .5f);
         }
 
-        public bool ClosestCast(Vector3 origin, Vector3 direction, float distance, float radius, ulong shooter, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null)
+        public bool ClosestCast(Vector3 origin, Vector3 direction, float distance, float radius, ulong shooter, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null)
         {
             closest = default;
             if (distance <= Epsilon || direction.sqrMagnitude <= Epsilon * Epsilon) return false;
@@ -104,7 +106,7 @@ namespace Splatoon.Combat
             } while (true);
             float nearest = float.PositiveInfinity;
             for (int i = 0; i < count; i++)
-                if (Valid(_hits[i].collider, shooter, ignoreTeam) && Matches(_hits[i].collider,playersOnly) && _hits[i].distance < nearest)
+                if (Valid(_hits[i].collider, shooter, ignoreTeam) && !Ignored(_hits[i].collider, ignored) && Matches(_hits[i].collider,playersOnly) && _hits[i].distance < nearest)
                 {
                     var h = _hits[i]; nearest = h.distance;
                     closest = new TpsCollision { Collider = h.collider, Point = h.point, Normal = h.normal, Distance = h.distance };
@@ -112,7 +114,7 @@ namespace Splatoon.Combat
             return nearest < float.PositiveInfinity;
         }
 
-        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null)
+        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null)
         {
             closest = default;
             int count;
@@ -126,7 +128,7 @@ namespace Splatoon.Combat
             for (int i = 0; i < count; i++)
             {
                 var collider = _overlaps[i];
-                if (!Valid(collider, shooter, ignoreTeam) || !Matches(collider,playersOnly)) continue;
+                if (!Valid(collider, shooter, ignoreTeam) || Ignored(collider, ignored) || !Matches(collider,playersOnly)) continue;
                 var paper = collider.GetComponentInParent<SwimBody>();
                 Vector3 point = paper != null && collider == paper.HitVolume && !paper.HitVolume.convex
                     ? paper.ClosestHitPoint(origin) : collider.ClosestPoint(origin);
@@ -140,7 +142,7 @@ namespace Splatoon.Combat
             // Test the same thin prism union analytically for embedded projectiles.
             foreach (var paper in SwimBody.ActiveBodies)
             {
-                if (!paper.FlatHitActive || !Valid(paper.HitVolume, shooter, ignoreTeam) || !Matches(paper.HitVolume,playersOnly)) continue;
+                if (!paper.FlatHitActive || !Valid(paper.HitVolume, shooter, ignoreTeam) || Ignored(paper.HitVolume, ignored) || !Matches(paper.HitVolume,playersOnly)) continue;
                 Vector3 point = paper.ClosestHitPoint(origin), delta = origin - point;
                 float squared = delta.sqrMagnitude;
                 if (squared > radius * radius || squared >= nearest) continue;
@@ -151,6 +153,12 @@ namespace Splatoon.Combat
             return nearest < float.PositiveInfinity;
         }
 
+        static bool Ignored(Collider collider, HashSet<(ulong player, uint life)> ignored)
+        {
+            if (ignored == null) return false;
+            var player = collider.GetComponentInParent<PrototypePlayer>();
+            return player != null && ignored.Contains((player.PlayerId, player.Snapshot.Value.Revision));
+        }
         static bool Matches(Collider collider,bool? playersOnly) => !playersOnly.HasValue || (collider.GetComponentInParent<PrototypePlayer>() != null) == playersOnly.Value;
         public static bool Valid(Collider collider, ulong shooter, byte? ignoreTeam = null)
         {

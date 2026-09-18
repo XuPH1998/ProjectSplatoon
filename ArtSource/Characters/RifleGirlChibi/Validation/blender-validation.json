@@ -1,0 +1,86 @@
+{
+  "head_units": 2.5,
+  "height_without_hat": 1.2,
+  "head_height": 0.48,
+  "source_chin": 1.4696327447891235,
+  "source_crown": 1.7120416164398193,
+  "head_scale": 1.9801255487532905,
+  "bones": 93,
+  "parts": [
+    {
+      "name": "Rifle_Hair",
+      "vertices": 3397,
+      "triangles": 5425,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Hat",
+      "vertices": 317,
+      "triangles": 548,
+      "material_count": 1
+    },
+    {
+      "name": "Body_Jacke",
+      "vertices": 4403,
+      "triangles": 7420,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Jacket",
+      "vertices": 4268,
+      "triangles": 7060,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Boots (1)",
+      "vertices": 5154,
+      "triangles": 7480,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Dress (1)",
+      "vertices": 1410,
+      "triangles": 2472,
+      "material_count": 1
+    },
+    {
+      "name": "Face_01Re",
+      "vertices": 2132,
+      "triangles": 3336,
+      "material_count": 2
+    },
+    {
+      "name": "Rifle_Acc001",
+      "vertices": 1103,
+      "triangles": 1748,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Acc002",
+      "vertices": 260,
+      "triangles": 348,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Belt",
+      "vertices": 2273,
+      "triangles": 3212,
+      "material_count": 1
+    },
+    {
+      "name": "Rifle_Knee",
+      "vertices": 1304,
+      "triangles": 1964,
+      "material_count": 1
+    }
+  ],
+  "unweighted_vertices": 0,
+  "max_influences": 4,
+  "max_weight_sum_error": 1.1102230246251565e-16,
+  "measured_head_units": 2.499999690230499,
+  "measured_body_height": 1.2000000480059427,
+  "measured_head_height": 0.4800000786781311,
+  "t_pose_verified": true,
+  "delivered_blend_verified": true,
+  "delivered_max_weight_sum_error": 4.470348358154297e-08
+}

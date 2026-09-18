@@ -11,6 +11,25 @@ namespace Splatoon.Prototype
             Panel(new Rect(rect.x - 1, rect.y - 1, rect.width + 2, rect.height + 2), new Color(0, 0, 0, .8f));
             Panel(rect, color);
         }
+        void DrawImpactReticle(Vector2 center)
+        {
+            // A small hollow ring marks the predicted impact, separate from the aiming crosshair.
+            var color = new Color(.5f, .9f, 1, .8f);
+            for (int i = 0; i < 64; i++)
+            {
+                if (i % 16 < 3) continue;
+                float angle = i * Mathf.PI * 2 / 64;
+                var point = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 10;
+                Panel(new Rect(point.x - 1.5f, point.y - 1.5f, 3, 3), new Color(0, 0, 0, .6f));
+            }
+            for (int i = 0; i < 64; i++)
+            {
+                if (i % 16 < 3) continue;
+                float angle = i * Mathf.PI * 2 / 64;
+                var point = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 10;
+                Panel(new Rect(point.x - .75f, point.y - .75f, 1.5f, 1.5f), color);
+            }
+        }
         void DrawSpreadReticle(PrototypePlayer local, PlayerSnapshot state, WeaponRuntimeConfig weapon, Vector2 center)
         {
             var camera = Camera.main;

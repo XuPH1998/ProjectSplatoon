@@ -13,20 +13,28 @@ MonoBehaviour:
   m_Name: ShotgunGirlAmmoConfig
   m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
   ammoId: 5
+  bubblePrefab: {fileID: 0}
+  bubbleShotAudio: {fileID: 0}
+  bubbleBounceAudio: {fileID: 0}
+  bubblePopAudio: {fileID: 0}
   flightMigrationVersion: 1
+  flightPrefab: {fileID: 949289641, guid: 67a80872a4b23974e8cc39d79465f467, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: 494a0ec8689349b4be7fa147f89f9781, type: 3}
   burstInterval: 0.02
-  particlesPerBurst: 2
-  visualLifetime: 10
+  particlesPerBurst: 1
+  visualLifetime: 5
   muzzleInterval: 0.06
   muzzleBurstCount: 50
-  maxRibbonGap: 1.5
-  satelliteSpread: 0.1
-  flightPrefab: {fileID: 949289641, guid: 7ed237d6026f4ca0ac049af070544cf8, type: 3}
-  muzzlePrefab: {fileID: 276323219, guid: 494a0ec8689349b4be7fa147f89f9781, type: 3}
-  explosionEnabled: 0
-  explosionPrefab: {fileID: 0}
-  explosionRadius: 0
-  explosionDamage: 0
-  explosionPaint: 0
-  explosionPaintRadiusMin: 0
-  explosionPaintRadiusMax: 0
+  maxRibbonGap: 1.1
+  satelliteSpread: 0
+  explosionEnabled: 1
+  explosionPrefab: {fileID: 6061940137612646960, guid: 2e4114f4a7b0706408263c22e2271fd3, type: 3}
+  explosionRadius: 2.1491866
+  explosionDamage: 35
+  explosionConstantDamage: 1
+  collisionExplosionRadiusRate: 1
+  collisionExplosionDamageRate: 1
+  excludeDirectHitFromExplosion: 0
+  explosionPaint: 1
+  explosionPaintRadiusMin: 3.0665224
+  explosionPaintRadiusMax: 3.3698049

@@ -1,0 +1,18 @@
+{
+  "Assets/GameResource/Weapons/BubbleGirl/BubbleGirlAmmoConfig.asset": "06dc5c9a164eec46cb02886a8785a85910d9c90d9d4f371235fad74d6777831e",
+  "Assets/GameResource/Weapons/BubbleGirl/BubbleGirlWeaponConfig.asset": "2e866df2ef104f1342d9e00ecde7fa334bed52b6acabf14d8b8847571cd10d8f",
+  "Assets/GameResource/Weapons/DualPistolGirl/DualPistolGirlAmmoConfig.asset": "25e7d9665f5057c8685388e6aa7f2e661fa59b34ade49420dc51932958979632",
+  "Assets/GameResource/Weapons/DualPistolGirl/DualPistolGirlWeaponConfig.asset": "bad10947638716745a8d1761503f2cba9996344df150fbf88c9063965c4c34f7",
+  "Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlAmmoConfig.asset": "bdfd693988ba551f5ecb00837aa9ab6c68266232c3b4fcbcf847fd20e7d72f47",
+  "Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset": "709a56fb48f20d20afcaba48ad7d91c7f4235a663420fd7b78cd46da0d9d0816",
+  "Assets/GameResource/Weapons/PistolGirl/PistolGirlAmmoConfig.asset": "78956a9941ce2abcc0f30f08077cfe2b172bd948c725739d6664ab222911d692",
+  "Assets/GameResource/Weapons/PistolGirl/PistolGirlWeaponConfig.asset": "a6e0e9489c121257288973d7c9cf312c8dc1a2476a326b249f29e3b3cc4d4cd3",
+  "Assets/GameResource/Weapons/RifleGirl/RifleGirlAmmoConfig.asset": "c3fb05f44fda800ef15c5bca1dbb9384a11d9267d94caad018d60391185fa347",
+  "Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset": "1a20bf77b1bc41dff750c0860e55fc2a7bd5e0352aa7e0317c7d8b2395a7ebcb",
+  "Assets/GameResource/Weapons/RocketLauncherGirl/RocketLauncherGirlAmmoConfig.asset": "ae85db6a6b808cbc0021f7b2b6660b5064cd424988f1f8df02bef5aa99038064",
+  "Assets/GameResource/Weapons/RocketLauncherGirl/RocketLauncherGirlWeaponConfig.asset": "f6aca7ca5bd43f48b8a2fdde23e36b22d99277d1b539490171e1b7492de24a7e",
+  "Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlAmmoConfig.asset": "1b086d0302acc7509d65d9f82292cb94cb2eb55a8ff8a4890933e854be091909",
+  "Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlWeaponConfig.asset": "7be1e8198229af5b2b603c839ec78e35d5c795af53a21e4b786b75ec54356754",
+  "Config/Luban/source/TbHero.xlsx": "13ed3a0bd9ae207843a1b54391f300a74fb5fb1f8c5f33228c97647a67a07ff9",
+  "Assets/GameResource/Bootstrap/Config/Luban/tbhero.json": "29abfa3420126d57227a3931f37720d57da62d44da622774bd01d9b99191d0b9"
+}

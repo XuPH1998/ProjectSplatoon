@@ -45,7 +45,7 @@ namespace Splatoon.Tests
         }
         void Reset(int hero)
         {
-            player.SwimBody.Bind(PaperBodyTests.Profile(PaperBodyTests.Heroes[hero-1]));
+            player.SwimBody.Bind(PaperBodyTests.Profile(GameplayConfig.GetHero(hero).CharacterPrefabAddress.Split('/').Last()));
             state = new PlayerSnapshot { HeroId=hero,Team=1,Health=100,Ink=100,Grounded=true,Position=new Vector3(0,.04f,1.5f) };
             now=0; motor.Restore(state);
         }
@@ -165,7 +165,7 @@ namespace Splatoon.Tests
             state=before; now=time; motor.Restore(state); Tick(Vector2.right);
             Assert.That(state.Movement,Is.EqualTo(MovementMode.Air));
         }
-        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)]
+        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)] [TestCase(8)]
         public void NeutralWallHasReducedSpeedAndPreservesSourceThroughJumpAndMantle(int hero)
         {
             Reset(hero); PaintWall(0); Enter(Vector2.up);
@@ -232,7 +232,7 @@ namespace Splatoon.Tests
                 CollectionAssert.AreNotEqual(baseline,GameplayContentSignature.Compute(new byte[]{1},"paper-test",player));
             }
             finally { Physics.IgnoreLayerCollision(SwimBody.HitProxyLayer,0,ignored); }
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(24));
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(31)); // Current pre-Sploosh wire contract.
         }
         [Test] public void WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall()
         {

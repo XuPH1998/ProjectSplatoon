@@ -15,6 +15,7 @@ namespace Splatoon.Combat
         BubbleFlightPresentation Bubbles => _bubbles ??= new BubbleFlightPresentation(transform);
         readonly List<(InkImpact impact, AmmoRuntimeConfig ammo)> _bubbleCompletions = new(384);
         public int BubbleRestoredCount { get; private set; }
+        public int ExplosherRestoredCount { get; private set; }
         public int BubbleBounceCount { get; private set; }
         public const int VersionPoolLimit = 12;
         public int VersionPoolCount => _flights.Count;
@@ -100,6 +101,16 @@ namespace Splatoon.Combat
             BubbleBounceCount++;
             Bubbles.Bounce(bounce);
         }
+        public void RestoreExplosher(InkShot shot, double capturedAt)
+        {
+            if (shot.Round < _round || capturedAt < _cutoff || _completed.Contains((shot.Round, shot.Id)) || _shotAmmo.ContainsKey((shot.Round, shot.Id))) return;
+            shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
+            if (shot.Configuration == null || !WeaponSimulation.IsExplosher(shot.Configuration)) return;
+            double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : capturedAt;
+            if (ForAmmo(shot.Configuration.Ammo)?.Spawn(shot, now, true) != true) return;
+            _round = shot.Round; _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo; ExplosherRestoredCount++;
+            // Restore current flight only; never replay the old muzzle or character animation.
+        }
         public void RestoreBubble(InkBubbleState state)
         {
             if (state.Shot.Round < _round || state.Segment.Time < _cutoff || _completed.Contains((state.Shot.Round, state.Shot.Id))) return;
@@ -114,6 +125,7 @@ namespace Splatoon.Combat
         public void Impact(InkImpact impact)
         {
             if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact);
+            if (impact.ContinuesProjectile) return;
             if (_completed.Contains((impact.Round, impact.Id))) return;
             _shotAmmo.TryGetValue((impact.Round, impact.Id), out var ammo);
             if (_completed.Add((impact.Round, impact.Id)))

@@ -1,0 +1,204 @@
+{
+    "human": [
+        {
+            "bone": "pelvis",
+            "human": "Hips"
+        },
+        {
+            "bone": "thigh_l",
+            "human": "LeftUpperLeg"
+        },
+        {
+            "bone": "thigh_r",
+            "human": "RightUpperLeg"
+        },
+        {
+            "bone": "calf_l",
+            "human": "LeftLowerLeg"
+        },
+        {
+            "bone": "calf_r",
+            "human": "RightLowerLeg"
+        },
+        {
+            "bone": "foot_l",
+            "human": "LeftFoot"
+        },
+        {
+            "bone": "foot_r",
+            "human": "RightFoot"
+        },
+        {
+            "bone": "spine_01",
+            "human": "Spine"
+        },
+        {
+            "bone": "spine_02",
+            "human": "Chest"
+        },
+        {
+            "bone": "neck_01",
+            "human": "Neck"
+        },
+        {
+            "bone": "head",
+            "human": "Head"
+        },
+        {
+            "bone": "clavicle_l",
+            "human": "LeftShoulder"
+        },
+        {
+            "bone": "clavicle_r",
+            "human": "RightShoulder"
+        },
+        {
+            "bone": "upperarm_l",
+            "human": "LeftUpperArm"
+        },
+        {
+            "bone": "upperarm_r",
+            "human": "RightUpperArm"
+        },
+        {
+            "bone": "lowerarm_l",
+            "human": "LeftLowerArm"
+        },
+        {
+            "bone": "lowerarm_r",
+            "human": "RightLowerArm"
+        },
+        {
+            "bone": "hand_l",
+            "human": "LeftHand"
+        },
+        {
+            "bone": "hand_r",
+            "human": "RightHand"
+        },
+        {
+            "bone": "ball_l",
+            "human": "LeftToes"
+        },
+        {
+            "bone": "ball_r",
+            "human": "RightToes"
+        },
+        {
+            "bone": "thumb_01_l",
+            "human": "Left Thumb Proximal"
+        },
+        {
+            "bone": "thumb_02_l",
+            "human": "Left Thumb Intermediate"
+        },
+        {
+            "bone": "thumb_03_l",
+            "human": "Left Thumb Distal"
+        },
+        {
+            "bone": "index_01_l",
+            "human": "Left Index Proximal"
+        },
+        {
+            "bone": "index_02_l",
+            "human": "Left Index Intermediate"
+        },
+        {
+            "bone": "middle_01_l",
+            "human": "Left Middle Proximal"
+        },
+        {
+            "bone": "middle_02_l",
+            "human": "Left Middle Intermediate"
+        },
+        {
+            "bone": "middle_03_l",
+            "human": "Left Middle Distal"
+        },
+        {
+            "bone": "ring_01_l",
+            "human": "Left Ring Proximal"
+        },
+        {
+            "bone": "ring_02_l",
+            "human": "Left Ring Intermediate"
+        },
+        {
+            "bone": "ring_03_l",
+            "human": "Left Ring Distal"
+        },
+        {
+            "bone": "pinky_01_l",
+            "human": "Left Little Proximal"
+        },
+        {
+            "bone": "pinky_02_l",
+            "human": "Left Little Intermediate"
+        },
+        {
+            "bone": "pinky_03_l",
+            "human": "Left Little Distal"
+        },
+        {
+            "bone": "thumb_01_r",
+            "human": "Right Thumb Proximal"
+        },
+        {
+            "bone": "thumb_02_r",
+            "human": "Right Thumb Intermediate"
+        },
+        {
+            "bone": "thumb_03_r",
+            "human": "Right Thumb Distal"
+        },
+        {
+            "bone": "index_01_r",
+            "human": "Right Index Proximal"
+        },
+        {
+            "bone": "index_02_r",
+            "human": "Right Index Intermediate"
+        },
+        {
+            "bone": "middle_01_r",
+            "human": "Right Middle Proximal"
+        },
+        {
+            "bone": "middle_02_r",
+            "human": "Right Middle Intermediate"
+        },
+        {
+            "bone": "middle_03_r",
+            "human": "Right Middle Distal"
+        },
+        {
+            "bone": "ring_01_r",
+            "human": "Right Ring Proximal"
+        },
+        {
+            "bone": "ring_02_r",
+            "human": "Right Ring Intermediate"
+        },
+        {
+            "bone": "ring_03_r",
+            "human": "Right Ring Distal"
+        },
+        {
+            "bone": "pinky_01_r",
+            "human": "Right Little Proximal"
+        },
+        {
+            "bone": "pinky_02_r",
+            "human": "Right Little Intermediate"
+        },
+        {
+            "bone": "pinky_03_r",
+            "human": "Right Little Distal"
+        },
+        {
+            "bone": "spine_03",
+            "human": "UpperChest"
+        }
+    ]
+}

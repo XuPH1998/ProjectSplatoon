@@ -33,13 +33,15 @@ namespace Splatoon.Combat
     {
         readonly System.Collections.Generic.HashSet<int> _paintedExplosionSurfaces = new();
         readonly System.Collections.Generic.List<(int surface, Vector3 point)> _explosionPaintSites = new();
+        readonly System.Collections.Generic.List<(int surface, Vector3 normal, float plane)> _explosherPaintPlanes = new();
 
         void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null)
         {
             var ammo = shot.Configuration?.Ammo;
             if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
             float radius = InkExplosionRules.Radius(ammo, collision);
-            Vector3 origin = position + (collision ? normal.normalized * .01f : Vector3.zero);
+            bool explosher = WeaponSimulation.IsExplosher(shot.Configuration);
+            Vector3 origin = position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero);
             var match = PrototypeMatch.Current;
             if (match != null)
             {
@@ -49,8 +51,8 @@ namespace Splatoon.Combat
                 {
                     if (player == null || player.PlayerId == shot.Shooter || player.Snapshot.Value.Team == shot.Team || player.Snapshot.Value.Health <= 0 ||
                         (ammo.ExcludeDirectHitFromExplosion && directVictim == player.PlayerId) ||
-                        !InkExplosionRules.ClosestPoint(player, position, out var target)) continue;
-                    float damage = InkExplosionRules.Damage(ammo, collision, Vector3.Distance(position, target));
+                        !InkExplosionRules.ClosestPoint(player, explosher ? origin : position, out var target)) continue;
+                    float damage = InkExplosionRules.Damage(ammo, collision, Vector3.Distance(explosher ? origin : position, target));
                     Vector3 delta = target - origin;
                     if (damage <= 0 || Occluded(origin, delta, shot.Shooter)) continue;
                     float before = player.Snapshot.Value.Health;
@@ -58,21 +60,24 @@ namespace Splatoon.Combat
                     float actual = before - player.Snapshot.Value.Health;
                     if (actual <= 0) continue;
                     Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = position, Normal = normal,
-                        Hit = true, Shooter = shot.Shooter, Victim = player.PlayerId, Damage = actual, Killed = player.Snapshot.Value.Health <= 0,
+                        Hit = true, ContinuesProjectile = explosher, Time = at ?? shot.Born + shot.Configuration.Lifetime,
+                        Shooter = shot.Shooter, Victim = player.PlayerId, Damage = actual, Killed = player.Snapshot.Value.Health <= 0,
                         ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex });
                 }
             }
             if (ammo.ExplosionPaint && radius > 0)
             {
-                _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear();
+                _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear(); _explosherPaintPlanes.Clear();
                 // First-hit rays produce an actual surface normal and never stamp a wall's
                 // far side. Downward ray guarantees floor coverage, even between fan samples.
-                PaintExplosionRay(shot, origin, Vector3.down, radius, collision);
-                PaintExplosionRay(shot, origin, Vector3.up, radius, collision);
+                float searchRadius = explosher ? ExplosherSimulation.PaintRadius(shot, position) : radius;
+                if (explosher) PaintExplosionRay(shot, origin, -normal, searchRadius, collision);
+                PaintExplosionRay(shot, origin, Vector3.down, searchRadius, collision);
+                PaintExplosionRay(shot, origin, Vector3.up, searchRadius, collision);
                 for (int i = 0; i < 40; i++)
                 {
                     float y = 1 - 2 * (i + .5f) / 40, r = Mathf.Sqrt(1 - y * y), angle = i * 2.39996323f;
-                    PaintExplosionRay(shot, origin, new Vector3(Mathf.Cos(angle) * r, y, Mathf.Sin(angle) * r), radius, collision);
+                    PaintExplosionRay(shot, origin, new Vector3(Mathf.Cos(angle) * r, y, Mathf.Sin(angle) * r), searchRadius, collision);
                 }
             }
             Explosions.Add(new InkExplosionEvent { Round = shot.Round, ShotId = shot.Id, ActionId = shot.ActionId, Shooter = shot.Shooter,
@@ -88,6 +93,24 @@ namespace Splatoon.Combat
             if (!_aim.ClosestCast(origin, direction, distance, 0, shot.Shooter, out var hit, false)) return;
             var surface = hit.Collider.GetComponentInParent<Splatoon.Painting.PaintSurface>();
             if (surface == null) return;
+            if (WeaponSimulation.IsExplosher(shot.Configuration))
+            {
+                // One footprint per receiving plane (a surface can contain floor and walls). Project the explosion centre onto
+                // that plane instead of adding a full circle at every fan ray endpoint.
+                float plane = Vector3.Dot(hit.Point, hit.Normal);
+                foreach (var previous in _explosherPaintPlanes)
+                    if (previous.surface == surface.SurfaceId && Vector3.Dot(previous.normal, hit.Normal) > .999f && Mathf.Abs(previous.plane - plane) < .025f) return;
+                _explosherPaintPlanes.Add((surface.SurfaceId, hit.Normal, plane));
+                float planeDistance = Mathf.Abs(Vector3.Dot(origin - hit.Point, hit.Normal));
+                Vector3 point = origin - hit.Normal * Vector3.Dot(origin - hit.Point, hit.Normal);
+                if (!_aim.ClosestCast(point + hit.Normal * .025f, -hit.Normal, .075f, 0, shot.Shooter, out var projected, false) ||
+                    projected.Collider.GetComponentInParent<PaintSurface>() != surface) point = hit.Point;
+                float radius = Mathf.Sqrt(Mathf.Max(0, distance * distance - planeDistance * planeDistance));
+                if (radius <= .001f) return;
+                uint ordinal = InkShapeAtlas.Hash(shot.Seed ^ (uint)surface.SurfaceId);
+                ApplyPaint(surface, shot, point, hit.Normal, radius, shot.Configuration, ordinal, true, origin);
+                return;
+            }
             if (!shot.Configuration.ReferenceRules && !_paintedExplosionSurfaces.Add(surface.SurfaceId)) return;
             var ammo = shot.Configuration.Ammo;
             uint seed = InkShapeAtlas.Hash(shot.Seed ^ (shot.Configuration.ReferenceRules ? (uint)_explosionPaintSites.Count : shot.Id) ^ (uint)surface.SurfaceId * 0x9e3779b9u);

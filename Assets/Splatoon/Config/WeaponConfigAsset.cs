@@ -87,8 +87,8 @@ namespace Splatoon.Config
         [Header("散布")]
         [InspectorName("达到最大散布所需时长（秒，0为立即）"), Tooltip("散布：达到最大散布所需时长（秒，0为立即）")] public float spreadExpandSeconds = 1f;
         [InspectorName("从最大恢复至最小所需时长（秒，0为立即）"), Tooltip("散布：从最大恢复至最小所需时长（秒，0为立即）")] public float spreadRecoverSeconds = 0.5f;
-        [InspectorName("地面基础散布半角（度，霰弹专用）"), Tooltip("散布：地面基础散布半角（度，霰弹专用）")] public float baseSpreadDegrees = 0f;
-        [InspectorName("空中基础散布半角（度，霰弹专用）"), Tooltip("散布：空中基础散布半角（度，霰弹专用）")] public float baseJumpSpreadDegrees = 0f;
+        [InspectorName("地面基础散布半角（度，旧模式）"), Tooltip("散布：旧模式地面基础半角；爆炸泼桶为零散布。")] public float baseSpreadDegrees = 0f;
+        [InspectorName("空中基础散布半角（度，旧模式）"), Tooltip("散布：旧模式空中基础半角；爆炸泼桶为零散布。")] public float baseJumpSpreadDegrees = 0f;
         [Header("爆破枪")]
         [InspectorName("爆破枪发射间隔（秒）"), Tooltip("爆破枪发射间隔（秒）；爆破枪弹道参考步长为 1/60 秒。") ] public double blasterRepeatSeconds;
         [InspectorName("爆破枪射后动作限制（秒）"), Tooltip("爆破枪射后动作限制（秒）；爆破枪弹道参考步长为 1/60 秒。") ] public double blasterPostSeconds;
@@ -130,7 +130,7 @@ namespace Splatoon.Config
         [InspectorName("跳跃偏置开始恢复（秒）"), Tooltip("跳跃偏置开始恢复（秒）；关闭参考规则时保持旧模式。") ] public double referenceJumpStart = 25.0 / 60;
         [InspectorName("跳跃偏置结束恢复（秒）"), Tooltip("跳跃偏置结束恢复（秒）；关闭参考规则时保持旧模式。") ] public double referenceJumpEnd = 70.0 / 60;
         [InspectorName("旋转枪垂直中心偏置"), Tooltip("旋转枪垂直中心偏置；关闭参考规则时保持旧模式。") ] public float referencePitchBias = .4f;
-        [InspectorName("每颗沿途墨滴预算（小数为概率）"), Tooltip("每颗沿途墨滴预算（小数为概率）；关闭参考规则时保持旧模式。") ] public float referenceTrailBudget = 0;
+        [InspectorName("每颗沿途墨滴预算"), Tooltip("详细射手使用小数余数累计，其他参考武器使用随机小数预算。") ] public float referenceTrailBudget = 0;
         [InspectorName("首次沿途墨滴距离（米）"), Tooltip("首次沿途墨滴距离（米）；关闭参考规则时保持旧模式。") ] public float referenceTrailStart = 0;
         [InspectorName("沿途墨滴随机首相位"), Tooltip("沿途墨滴随机首相位；关闭参考规则时保持旧模式。") ] public bool referenceTrailRandomPhase = false;
         [InspectorName("脚下落墨间隔（发，项目适配）"), Tooltip("脚下落墨间隔（发，项目适配）；关闭参考规则时保持旧模式。") ] public int referenceFootEvery = 1;
@@ -167,6 +167,52 @@ namespace Splatoon.Config
         [InspectorName("第二颗首次反弹落墨半宽（米）"), Tooltip("第二颗首次反弹落墨半宽（米）；关闭参考规则时保持旧模式。") ] public float bubbleLaterBouncePaintRadius = 0;
         [InspectorName("后续泡泡反弹落墨逐颗缩减（米）"), Tooltip("后续泡泡反弹落墨逐颗缩减（米）；关闭参考规则时保持旧模式。") ] public float bubbleBouncePaintDecrement = 0;
         [InspectorName("后三颗消亡落墨半宽（米）"), Tooltip("后三颗消亡落墨半宽（米）；关闭参考规则时保持旧模式。") ] public float bubbleLaterImpactRadius = 0;
+        [Header("射手详细规则（独立启用）")]
+        [InspectorName("启用射手详细涂墨规则"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public bool shooterDetails = false;
+        [InspectorName("射手射后潜墨限制（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterPostSeconds = 0;
+        [InspectorName("射手前后移动速度继承比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterMoveForwardRate = 0;
+        [InspectorName("射手近距离涂墨节点（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintNearDistance = 0;
+        [InspectorName("射手近距离涂墨半宽（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintNearRadius = 0;
+        [InspectorName("射手最大纵深入射角（度）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintAngleMin = 10;
+        [InspectorName("射手最小纵深入射角（度）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintAngleMax = 35;
+        [InspectorName("射手下落最大纵深高度（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterFallHeightMin = 1;
+        [InspectorName("射手下落最小纵深高度（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterFallHeightMax = 10;
+        [InspectorName("射手落墨循环（发）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public int shooterSplitNum = 5;
+        [InspectorName("射手墨滴最小纵深比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashDepthMin = 1;
+        [InspectorName("射手墨滴最大纵深比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashDepthMax = 1.2f;
+        [InspectorName("射手墨滴最大纵深落差（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashHeightMin = 3;
+        [InspectorName("射手墨滴最小纵深落差（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashHeightMax = 10;
+        [InspectorName("射手墨滴横向随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashSideSpeed = 0;
+        [InspectorName("射手墨滴上抛随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashUpSpeed = 0;
+        [InspectorName("射手墨滴前向随机速度下限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashForwardMin = 0;
+        [InspectorName("射手墨滴前向随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashForwardMax = 0;
+        [InspectorName("射手墙墨首段最短时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallFirstMin = 0;
+        [InspectorName("射手墙墨首段最长时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallFirstMax = 0;
+        [InspectorName("射手墙墨中段时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallMiddle = 0;
+        [InspectorName("射手墙墨末段最短时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallLastMin = 0;
+        [InspectorName("射手墙墨末段最长时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallLastMax = 0;
+        [InspectorName("射手墙墨首段目标速度（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallFirstSpeed = 0;
+        [InspectorName("射手离墙墨滴重力（米/秒平方）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallGravity = 0;
+        [InspectorName("射手撞墙墨半宽（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallShockRadius = 0;
+        [Header("爆炸泼桶") ]
+        [InspectorName("爆炸泼桶空中初速（米/秒）"), Tooltip("爆炸泼桶空中初速（米/秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherAirSpeed;
+        [InspectorName("爆炸泼桶水平速度附加上扬比例"), Tooltip("爆炸泼桶水平速度附加上扬比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherUpwardRate;
+        [InspectorName("爆炸泼桶射手横向速度继承比例"), Tooltip("爆炸泼桶射手横向速度继承比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherMoveSideRate;
+        [InspectorName("爆炸泼桶射手前后速度继承比例"), Tooltip("爆炸泼桶射手前后速度继承比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherMoveForwardRate;
+        [InspectorName("爆炸泼桶射手垂直速度继承比例"), Tooltip("爆炸泼桶射手垂直速度继承比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherMoveVerticalRate;
+        [InspectorName("爆炸泼桶初始场景碰撞半径（米）"), Tooltip("爆炸泼桶初始场景碰撞半径（米）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherFieldInitialRadius;
+        [InspectorName("爆炸泼桶初始玩家碰撞半径（米）"), Tooltip("爆炸泼桶初始玩家碰撞半径（米）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherPlayerInitialRadius;
+        [InspectorName("爆炸泼桶场景碰撞成长时间（秒）"), Tooltip("爆炸泼桶场景碰撞成长时间（秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public double explosherFieldGrowSeconds;
+        [InspectorName("爆炸泼桶玩家碰撞成长时间（秒）"), Tooltip("爆炸泼桶玩家碰撞成长时间（秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public double explosherPlayerGrowSeconds;
+        [InspectorName("爆炸泼桶射后潜墨限制（秒）"), Tooltip("爆炸泼桶射后潜墨限制（秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public double explosherPostSeconds;
+        [InspectorName("爆炸泼桶射后移动限制（秒）"), Tooltip("爆炸泼桶射后移动限制（秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public double explosherMoveLimitSeconds;
+        [InspectorName("爆炸泼桶爆炸涂墨近距（米）"), Tooltip("爆炸泼桶爆炸涂墨近距（米）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherPaintNearDistance;
+        [InspectorName("爆炸泼桶爆炸涂墨远距（米）"), Tooltip("爆炸泼桶爆炸涂墨远距（米）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherPaintFarDistance;
+        [InspectorName("爆炸泼桶爆风与涂墨离面偏移（米）"), Tooltip("爆炸泼桶爆风与涂墨离面偏移（米）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherBlastOffset;
+        [InspectorName("爆炸泼桶首次沿途墨滴最大相位"), Tooltip("爆炸泼桶首次沿途墨滴最大相位；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherTrailPhaseMax;
+        [InspectorName("爆炸泼桶脚下墨迹纵深比例"), Tooltip("爆炸泼桶脚下墨迹纵深比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherFootDepth;
         public WeaponRuntimeConfig Snapshot() => new(this);
+        [InspectorName("脚下墨迹纵深比例"), Tooltip("独立于沿途墨迹；泡泡枪取原作 NearestParam 的 PaintDepthScale。默认1保留旧墨迹。爆炸泼桶继续使用其独立配置。")]
+        public float referenceFootDepth = 1;
     }
 }

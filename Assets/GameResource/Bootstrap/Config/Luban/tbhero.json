@@ -32,7 +32,12 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 2,
@@ -67,13 +72,18 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 3,
     "name": "ShotgunGirl",
     "displayName": "白凛",
-    "weaponTypeName": "霰弹枪",
+    "weaponTypeName": "爆炸泼桶",
     "portraitAddress": "Portrait/ShotgunGirl",
     "weaponConfigPath": "Assets/GameResource/Weapons/ShotgunGirl/ShotgunGirlWeaponConfig.asset",
     "characterPrefabAddress": "Character/ShotgunGirl",
@@ -81,8 +91,8 @@
     "maxInk": 100,
     "recoverInk": 10,
     "swimRecoverInk": 33.333332,
-    "moveSpeed": 4.31335,
-    "swimSpeed": 8.6267,
+    "moveSpeed": 3.9539044,
+    "swimSpeed": 7.7640305,
     "neutralSwimSpeed": 3,
     "airSwimSpeed": 6,
     "airSwimGravity": 4,
@@ -102,7 +112,12 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 4,
@@ -137,7 +152,12 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 5,
@@ -172,7 +192,12 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 6,
@@ -207,7 +232,12 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
   },
   {
     "id": 7,
@@ -242,6 +272,51 @@
     "healthRecoverRate": 30,
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
-    "enemyInkHealthFloor": 60
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.8,
+    "bodyRadius": 0.35,
+    "compactHeight": 0.7,
+    "controllerStepOffset": 0.3,
+    "controllerSkinWidth": 0.03
+  },
+  {
+    "id": 8,
+    "name": "SplooshGirl",
+    "displayName": "铃芽",
+    "weaponTypeName": "广域标记枪",
+    "portraitAddress": "Portrait/SplooshGirl",
+    "weaponConfigPath": "Assets/GameResource/Weapons/SplooshGirl/SplooshGirlWeaponConfig.asset",
+    "characterPrefabAddress": "Character/SplooshGirl",
+    "maxHealth": 100,
+    "maxInk": 100,
+    "recoverInk": 10,
+    "swimRecoverInk": 33.333332,
+    "moveSpeed": 4.6727962,
+    "swimSpeed": 9.058036,
+    "neutralSwimSpeed": 3,
+    "airSwimSpeed": 6,
+    "airSwimGravity": 4,
+    "airSwimFallSpeed": 1.5,
+    "airSwimBraking": 30,
+    "enemyInkMultiplier": 0.55,
+    "jumpSpeed": 7,
+    "characterGravity": 22,
+    "moveAcceleration": 40,
+    "swimAcceleration": 50,
+    "wallSwimSpeed": 4,
+    "wallGraceSeconds": 0.1,
+    "wallProbeDistance": 0.6,
+    "wallJumpSpeed": 4,
+    "mantleSeconds": 0.25,
+    "healthRecoverDelay": 1,
+    "healthRecoverRate": 30,
+    "swimHealthRecoverRate": 60,
+    "enemyInkDamageRate": 20,
+    "enemyInkHealthFloor": 60,
+    "standingHeight": 1.2,
+    "bodyRadius": 0.25,
+    "compactHeight": 0.5,
+    "controllerStepOffset": 0.2,
+    "controllerSkinWidth": 0.02
   }
 ]

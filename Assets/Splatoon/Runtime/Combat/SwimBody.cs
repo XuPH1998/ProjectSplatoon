@@ -14,8 +14,7 @@ namespace Splatoon.Combat
         public PaperBodyProfile Profile;
         [FormerlySerializedAs("RemoteBody")] public CapsuleCollider CapsuleHitVolume;
         CharacterController _controller;
-        float _standingHeight;
-        Vector3 _standingCenter;
+
         MaterialPropertyBlock _color;
         PaperCapture _capture;
         public PaperCapture Capture => _capture;
@@ -75,11 +74,6 @@ namespace Splatoon.Combat
         public void ApplyCollision(PlayerSnapshot state)
         {
             if (_controller == null) _controller = GetComponentInParent<CharacterController>();
-            if (_standingHeight == 0)
-            {
-                _standingHeight = _controller != null ? _controller.height : CapsuleHitVolume.height;
-                _standingCenter = _controller != null ? _controller.center : CapsuleHitVolume.center;
-            }
             bool alive = state.Health > 0;
             state = Frame(state);
             HitVolume.enabled = alive && state.ShowsSwimBody;
@@ -91,11 +85,13 @@ namespace Splatoon.Combat
             // Human proxies remain available when remote movement is disabled.
             CapsuleHitVolume.enabled = alive && !HitVolume.enabled &&
                 (state.Swimming || (_controller != null && !_controller.enabled));
-            if (_controller != null)
+            if (_controller != null && alive)
             {
-                CapsuleHitVolume.radius = _controller.radius;
-                CapsuleHitVolume.height = state.Swimming ? .7f : _standingHeight;
-                CapsuleHitVolume.center = state.Swimming ? Vector3.up * .35f : _standingCenter;
+                var shape = HeroBodyShape.For(state.HeroId);
+                bool compact = state.Swimming || state.CompactBody;
+                CapsuleHitVolume.radius = shape.Radius;
+                CapsuleHitVolume.height = compact ? shape.CompactHeight : shape.Height;
+                CapsuleHitVolume.center = compact ? shape.CompactCenter : shape.Center;
             }
         }
 

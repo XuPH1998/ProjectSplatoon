@@ -18,7 +18,7 @@ namespace Splatoon.Editor
         public const string Root = "Assets/GameResource/Characters/Shared/Paper";
         public const string Output = "Reports/PaperBody";
         public static readonly string[] Heroes = { "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl", "BubbleGirl" };
-        public static void ConfigureHero(string hero) => Configure(hero, Shader.Find("Splatoon/PaperBody"));
+        public static void ConfigureHero(string hero, Vector2? size = null) => Configure(hero, Shader.Find("Splatoon/PaperBody"), size);
         static PaperBodyBuilder() => EditorApplication.update += Poll;
         static void Poll()
         {
@@ -56,7 +56,7 @@ namespace Splatoon.Editor
                 foreach (string file in new[]{"Paper.png","PaperPose.anim","PaperHit.asset"})
                     AssetDatabase.DeleteAsset(Root+"/"+hero+"/"+file);
         }
-        static void Configure(string hero,Shader shader)
+        static void Configure(string hero,Shader shader, Vector2? size = null)
         {
             string folder=Root+"/"+hero; Directory.CreateDirectory(folder); AssetDatabase.Refresh();
             string source=$"Assets/GameResource/Characters/{hero}/Prefabs/{hero}Visual.prefab";
@@ -110,7 +110,7 @@ namespace Splatoon.Editor
             if (profile == null) { profile=ScriptableObject.CreateInstance<PaperBodyProfile>(); AssetDatabase.CreateAsset(profile,folder+"/Paper.asset"); }
             profile.CapturePrefab=capture; profile.CaptureCenter=Vector3.up; profile.CaptureHeight=3;
             profile.AnimationReferenceSpeed=referenceSpeed;
-            profile.TextureWidth=512; profile.TextureHeight=1024; profile.Size=new Vector2(.9f,1.8f);
+            profile.TextureWidth=512; profile.TextureHeight=1024; profile.Size=size ?? new Vector2(.9f,1.8f);
             profile.Thickness=.04f; profile.SurfaceOffset=.03f;
             // Measure the actual runtime sampler, including its quantization and
             // retargeting, so the camera envelope covers every supported direction.

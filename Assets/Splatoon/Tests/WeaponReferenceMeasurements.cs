@@ -12,6 +12,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Unity.Netcode;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -34,6 +35,19 @@ namespace Splatoon.Tests
             public int emittedProjectiles;
             public bool fullActions, fullTank;
             public bool targetValidated; // No versioned original capture is bundled.
+            public uint sampleSeed;
+            public int uniqueShotSeeds, completedActions;
+            public double firstPaintSeconds = -1, floorArea, areaAtWindowEnd, inkGenerated;
+            public double emissionWindowSeconds;
+            public float longestCenterlineGap;
+            public long paintPayloadBytes;
+            public string resourceMode;
+        }
+        public sealed class Options
+        {
+            public uint Seed;
+            public double EmissionWindow;
+            public bool ConstantMotion, LegacyDirectIdentity, InheritMotion;
         }
         static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
         static readonly Vector3 Offset = new(1000, 1000, 1000);
@@ -76,14 +90,17 @@ namespace Splatoon.Tests
         }
 
         public static Result Capture(int weapon, float charge, string scenario, int rate, int shotCount, string directory,
-            Action<PaintSurface, Vector3> inspectFloor = null, bool fullActions = false, bool fullTank = false)
+            Action<PaintSurface, Vector3> inspectFloor = null, bool fullActions = false, bool fullTank = false, Options options = null)
         {
+            options ??= new Options();
             InkShapeAtlas.Configure(AssetDatabase.LoadAssetAtPath<Texture2D>(InkShapeAtlas.AssetPath));
             var roots = new List<GameObject>(); var surfaces = new Dictionary<int, PaintSurface>();
             var trace = new StringBuilder("shot,ageSeconds,x,y,z\n");
             var stamps = new StringBuilder("surface,x,y,z,normalX,normalY,normalZ,radiusM,hardness,strength,directionX,directionY,directionZ,depthScale,shapeSeed\n");
             var w = GameplayConfig.GetWeapon(weapon);
             var result = new Result { weapon = weapon, charge = charge, scenario = scenario, driverHz = rate, shotCount = shotCount, fullActions = fullActions, fullTank = fullTank };
+            result.sampleSeed = options.Seed; result.emissionWindowSeconds = options.EmissionWindow;
+            result.resourceMode = fullTank ? (WeaponSimulation.IsSplatling(w) ? "resource-cycle" : "finite-tank") : "unlimited-actions";
             PaintSurface Surface(int id, Vector3 position, Vector2 size, Quaternion rotation, bool floor)
             {
                 var go = new GameObject("Measurement " + id); roots.Add(go); go.SetActive(false);
@@ -97,7 +114,7 @@ namespace Splatoon.Tests
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                var floor = Surface(1, new Vector3(0, 0, 30), new Vector2(16, 80), Quaternion.identity, true);
+                var floor = Surface(1, new Vector3(0, 0, 30), new Vector2(options.ConstantMotion ? 48 : 16, 80), Quaternion.identity, true);
                 if (scenario.StartsWith("wall-"))
                 {
                     float distance = scenario == "wall-near" ? 1 : scenario == "wall-middle" ? 6 : 12;
@@ -111,12 +128,15 @@ namespace Splatoon.Tests
                 }
                 Physics.SyncTransforms();
                 var service = new InkProjectileService();
-                service.TraceObserved = (shot, age, point) => trace.AppendLine($"{shot.Id},{F(age)},{V(point - Offset)}");
+                if (directory != null) service.TraceObserved = (shot, age, point) => trace.AppendLine($"{shot.Id},{F(age)},{V(point - Offset)}");
                 service.PaintObserved = stamp =>
                 {
                     result.paintStamps++; result.lastPaintForward = Mathf.Max(result.lastPaintForward, stamp.Position.z - Offset.z);
+                    if (result.firstPaintSeconds < 0) result.firstPaintSeconds = service.ObservedPaintTime;
+                    using (var writer = new Unity.Netcode.FastBufferWriter(256, Unity.Collections.Allocator.Temp))
+                    { var copy = stamp; writer.WriteNetworkSerializable(copy); result.paintPayloadBytes += writer.Length; }
                     surfaces[stamp.SurfaceId].ApplyRegions(stamp);
-                    stamps.AppendLine($"{stamp.SurfaceId},{V(stamp.Position - Offset)},{V(stamp.Normal)},{F(stamp.Radius)},{F(stamp.Hardness)},{F(stamp.Strength)},{V(stamp.Direction)},{F(stamp.DepthScale)},{stamp.ShapeSeed}");
+                    if (directory != null) stamps.AppendLine($"{stamp.SurfaceId},{V(stamp.Position - Offset)},{V(stamp.Normal)},{F(stamp.Radius)},{F(stamp.Hardness)},{F(stamp.Strength)},{V(stamp.Direction)},{F(stamp.DepthScale)},{stamp.ShapeSeed}");
                 };
                 float angle = scenario == "up30" ? -30 : scenario == "down30" ? 30 : 0;
                 var playerRoot = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
@@ -127,11 +147,13 @@ namespace Splatoon.Tests
                 var state = new PlayerSnapshot { HeroId=weapon, Team=1, Health=100, Ink=100, Revision=1, Grounded=true,
                     Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
                     CurrentSpread=WeaponSimulation.Spread(w,false,charge), BurstShotIndex=1 };
+                state.HeroRevision = options.Seed;
                 int launched = 0; double nextShot = 0;
-                var timeline = fullActions ? ActionTimeline(w, state, charge, shotCount, fullTank) : null;
+                var timeline = fullActions ? ActionTimeline(w, state, charge, shotCount, fullTank, options.EmissionWindow) : null;
+                if (fullActions && options.EmissionWindow > 0) timeline = timeline.Where(e => e.time < options.EmissionWindow - 1e-8).ToList();
                 int plannedShots = fullActions ? timeline.Count : shotCount;
                 double fullDuration = shotCount * ((WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + WeaponTimeFixture.ReferenceFrames(w.ChargeSeconds) + WeaponTimeFixture.ReferenceFrames(w.BurstRecoverySeconds)) / 60.0 + WeaponSimulation.FireInterval(w)) + w.Lifetime + 1;
-                if(fullActions) fullDuration=timeline.Last().time+w.Lifetime+w.PaintDropLifetime+w.WallDropSeconds+1;
+                if(fullActions) fullDuration=(timeline.Count > 0 ? timeline.Last().time : 0)+w.Lifetime+w.PaintDropLifetime+w.WallDropSeconds+1;
                 for (int frame = 0; frame <= (int)Math.Ceiling(fullDuration * rate); frame++)
                 {
                     double now = frame / (double)rate;
@@ -140,12 +162,16 @@ namespace Splatoon.Tests
                         if(fullActions)
                         {
                             var emission=timeline[launched++];state=emission.state;
-                            if(scenario=="moving")state.Position+=Vector3.right*(float)(Math.Sin(emission.time*.4)*5);
-                            if(scenario=="sweep")state.Yaw=(float)(Math.Sin(emission.time*1.5)*30);
+                            if(scenario=="moving")state.Position+=Vector3.right*(options.ConstantMotion ? (float)emission.time*w.ShootMoveSpeed : (float)(Math.Sin(emission.time*.4)*5));
+                            if(scenario=="moving" && options.InheritMotion)state.PlanarVelocity=Vector3.right*w.ShootMoveSpeed;
+                            if(scenario=="sweep")state.Yaw=options.ConstantMotion ? -30 + 20*(float)emission.time : (float)(Math.Sin(emission.time*1.5)*30);
                             service.Spawn(player,state,emission.time,1);continue;
                         }
                         launched++;
-                        state.ShotSequence=(uint)launched; state.FireBurstSequence=(uint)launched;
+                        state.ShotSequence=(uint)launched;
+                        // Action ids use input ticks in production. Reusing the shot ordinal
+                        // in both fields cancels identical hash terms and repeats every seed.
+                        state.FireBurstSequence=options.LegacyDirectIdentity ? (uint)launched : (uint)Math.Round(nextShot*60)+101;
                         state.LastShotMuzzle=(byte)(w.MuzzleMode==WeaponMuzzleMode.AlternatingRightLeft?(launched-1)%2:0);
                         // Explicit per-shot spread, independent of the external projectile driver rate.
                         var spread = WeaponSimulation.IsCharge(w) ? Vector2.one * WeaponSimulation.Spread(w, false, charge)
@@ -161,11 +187,15 @@ namespace Splatoon.Tests
                     }
                     result.peakProjectiles = Math.Max(result.peakProjectiles, service.ActiveCount);
                     service.Simulate(now);
+                    if (options.EmissionWindow > 0 && now <= options.EmissionWindow + 1e-8) result.areaAtWindowEnd = floor.Ownership.PinkArea;
                     if (launched == plannedShots && service.PendingCount == 0) break;
                 }
                 result.emittedProjectiles=launched*w.PelletCount;
-                result.inkSpent=fullTank ? 100 - timeline.Last().state.Ink : fullActions ? WeaponSimulation.IsSplatling(w) ? launched*w.ShotInk : shotCount*w.ShotInk : launched*w.ShotInk;
-                result.attackSeconds=fullActions?timeline.Last().time+WeaponSimulation.FireInterval(w):nextShot;
+                result.completedActions = fullActions ? timeline.Count(e => WeaponSimulation.IsBubble(w) ? e.state.BurstShotIndex == w.BurstCount : WeaponSimulation.IsSplatling(w) ? e.state.SplatlingRemaining == 0 : true) : launched;
+                result.inkSpent=WeaponSimulation.IsBubble(w) && fullActions ? timeline.Count(e=>e.state.BurstShotIndex==1)*w.ShotInk : launched*w.ShotInk;
+                if (fullTank && timeline.Count > 0) result.inkGenerated=Math.Max(0,result.inkSpent + timeline.Last().state.SplatlingReservedInk - (100-timeline.Last().state.Ink));
+                result.attackSeconds=options.EmissionWindow > 0 ? options.EmissionWindow : fullActions?(timeline.Count>0?timeline.Last().time+WeaponSimulation.FireInterval(w):0):nextShot;
+                result.uniqueShotSeeds=service.Spawned.Select(s=>s.Seed).Distinct().Count();
                 result.impacts = service.Impacts.Count;
                 using var hash = SHA256.Create(); using var bytes = new MemoryStream();
                 float minX = float.PositiveInfinity, maxX = float.NegativeInfinity, minZ = float.PositiveInfinity, maxZ = float.NegativeInfinity;
@@ -191,6 +221,13 @@ namespace Splatoon.Tests
                 }
                 result.simulationMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
                 result.connectedReach=ConnectedReach(floor,Offset);
+                result.floorArea=floor.Ownership.PinkArea;
+                float emptyRun=0;
+                for(float z=.0625f;z<result.maxOwnedForward;z+=.125f)
+                {
+                    if(floor.Ownership.At(floor.transform.InverseTransformPoint(Offset+Vector3.forward*z))==1)emptyRun=0;
+                    else {emptyRun+=.125f;result.longestCenterlineGap=Mathf.Max(result.longestCenterlineGap,emptyRun);}
+                }
                 result.ownedAreaPerSecond=result.ownedArea/Math.Max(.00001,result.attackSeconds);
                 result.ownedAreaPer100Ink=result.ownedArea/Math.Max(.00001,result.inkSpent)*100;
                 inspectFloor?.Invoke(floor, Offset);
@@ -216,12 +253,13 @@ namespace Splatoon.Tests
             }
             finally { foreach (var go in roots) UnityEngine.Object.DestroyImmediate(go); Physics.SyncTransforms(); }
         }
-        static List<(double time, PlayerSnapshot state)> ActionTimeline(WeaponRuntimeConfig w, PlayerSnapshot state, float charge, int actions, bool fullTank)
+        internal static List<(double time, PlayerSnapshot state)> ActionTimeline(WeaponRuntimeConfig w, PlayerSnapshot state, float charge, int actions, bool fullTank, double window = 0)
         {
             var result=new List<(double,PlayerSnapshot)>();int started=0;
             for(int frame=0;frame<120000;frame++)
             {
                 double now=frame/60.0;bool spinner=WeaponSimulation.IsSplatling(w);
+                if(window>0 && now>=window-1e-8)return result;
                 double desiredCharge=Math.Max(w.SplatlingMinChargeSeconds,charge*w.ChargeSeconds);
                 if(Math.Abs(desiredCharge-w.SplatlingFirstChargeSeconds)<1e-6)desiredCharge=w.SplatlingFirstChargeSeconds;
                 if(Math.Abs(desiredCharge-w.ChargeSeconds)<1e-6)desiredCharge=w.ChargeSeconds;

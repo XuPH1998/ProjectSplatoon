@@ -37,28 +37,24 @@ namespace Splatoon.Combat
         readonly PrototypeArena _arena;
         PrototypeArena Arena => _arena != null ? _arena : PrototypeArena.Current;
         readonly Transform _root;
-        readonly float _standingHeight;
-        readonly Vector3 _standingCenter;
+        HeroBodyShape _shape;
+        float CompactCenterY => _shape.CompactHeight * .5f;
         readonly Collider[] _overlap = new Collider[32];
         PaperBodyProfile PaperProfile => _root.GetComponent<PrototypePlayer>()?.SwimBody?.Profile;
         public static Vector3 HumanPosition(PlayerSnapshot s) => s.Position - Vector3.up * s.AirHumanOffset;
         public PlayerMotorSimulation(CharacterController controller, PrototypeArena arena = null)
-        { _controller = controller; _arena = arena; _root = controller.transform; _standingHeight = controller.height; _standingCenter = controller.center; }
+        { _controller = controller; _arena = arena; _root = controller.transform; _shape = new HeroBodyShape(controller); }
+        public void BindBody(int heroId) => _shape = HeroBodyShape.For(heroId);
+        public bool CanFitHero(int heroId, Vector3 feet) => HeroBodyShape.For(heroId).Fits(feet, _overlap, WorldMask);
         public void Restore(PlayerSnapshot s, bool updateHitGeometry = true)
         {
+            BindBody(s.HeroId);
             _controller.enabled = false; _root.position = s.Position;
             SetShape(s.Swimming || s.CompactBody); _controller.enabled = s.Health > 0;
             if (updateHitGeometry) _root.GetComponent<PrototypePlayer>()?.SwimBody?.ApplyCollision(s);
             Physics.SyncTransforms();
         }
-        void SetShape(bool ink)
-        {
-            float height = ink ? .7f : _standingHeight;
-            Vector3 center = ink ? Vector3.up * .35f : _standingCenter;
-            if (_controller.height == height && _controller.center == center) return;
-            // Avoid rewriting unchanged controller geometry every simulation tick.
-            _controller.height = height; _controller.center = center;
-        }
+        void SetShape(bool ink) => _shape.Apply(_controller, ink);
         void Rebase(ref PlayerSnapshot s, float height)
         {
             if (Mathf.Abs(height) < .00001f) return;
@@ -80,14 +76,7 @@ namespace Splatoon.Combat
             Rebase(ref s, shift);
             s.AirHumanOffset += shift;
         }
-        public bool CanStand(Vector3 position)
-        {
-            float r = Mathf.Max(.05f, _controller.radius - .025f);
-            Vector3 center = position + _standingCenter;
-            int count = Physics.OverlapCapsuleNonAlloc(center + Vector3.up * (_standingHeight / 2 - r),
-                center - Vector3.up * (_standingHeight / 2 - r), r, _overlap, WorldMask, QueryTriggerInteraction.Ignore);
-            return count == 0;
-        }
+        public bool CanStand(Vector3 position) => _shape.Fits(position, _overlap, WorldMask);
         public static bool Query(Vector3 origin, Vector3 direction, float distance, out InkContact contact)
         {
             if (Physics.Raycast(origin, direction, out var hit, distance, WorldMask, QueryTriggerInteraction.Ignore))
@@ -102,8 +91,10 @@ namespace Splatoon.Combat
         static float WallSpeed(SwimSurface source, cfg.HeroConfig hero) => source == SwimSurface.Neutral ? hero.NeutralSwimSpeed : hero.WallSwimSpeed;
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
+            BindBody(s.HeroId);
             // Committed recovery survives trigger release, cancellation and UI focus changes.
             if (WeaponSimulation.RecoveryLocked(s, now)) { input.Swim = false; shootingMovement = true; }
+            if (now + 1e-8 < s.AttackMoveUntil) shootingMovement = true;
             var previous = s;
             s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
             StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
@@ -122,7 +113,7 @@ namespace Splatoon.Combat
             if (s.Movement == MovementMode.GroundInk && s.Grounded)
                 return PrototypeArena.TryGetGround(s.Position, out byte owner, _controller.slopeLimit) && owner == s.Team;
             if (s.Movement != MovementMode.WallInk) return false;
-            return Query(s.Position + Vector3.up * .35f, -s.WallNormal, _controller.radius + .065f, out var contact) &&
+            return Query(s.Position + Vector3.up * CompactCenterY, -s.WallNormal, _controller.radius + .065f, out var contact) &&
                 contact.Owner == s.Team && contact.Climbable && Vector3.Dot(contact.Normal, s.WallNormal) > .99f;
         }
 
@@ -163,7 +154,7 @@ namespace Splatoon.Combat
             }
             if (s.Movement == MovementMode.WallInk)
             {
-                bool currentFound = Query(s.Position + Vector3.up * .35f + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out var currentWall);
+                bool currentFound = Query(s.Position + Vector3.up * CompactCenterY + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out var currentWall);
                 bool blocked = currentFound && !CanClimb(currentWall, s.Team);
                 if (currentFound && !blocked) BindWall(ref s, currentWall);
                 if (!blocked && input.Swim && !wantsFire && !jump)
@@ -173,16 +164,16 @@ namespace Splatoon.Combat
                     float wallSpeed = WallSpeed(s.SwimSource, c);
                     Vector3 delta = direction * wallSpeed * dt;
                     var next = s.Position + delta;
-                    bool found = Query(next + Vector3.up * .35f + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out var wall);
+                    bool found = Query(next + Vector3.up * CompactCenterY + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out var wall);
                     if (found && CanClimb(wall, s.Team) && wall.Owner == 0 && wallSpeed > c.NeutralSwimSpeed)
                     {
                         delta = direction * c.NeutralSwimSpeed * dt; next = s.Position + delta;
-                        found = Query(next + Vector3.up * .35f + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out wall);
+                        found = Query(next + Vector3.up * CompactCenterY + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out wall);
                     }
                     if (found && CanClimb(wall, s.Team) && Vector3.Dot(wall.Normal, s.WallNormal) > .99f)
                     {
                         s.WallSeenAt = now; BindWall(ref s, wall);
-                        next += s.WallNormal * (_controller.radius + .015f - Vector3.Dot(next + Vector3.up * .35f - wall.Point, s.WallNormal));
+                        next += s.WallNormal * (_controller.radius + .015f - Vector3.Dot(next + Vector3.up * CompactCenterY - wall.Point, s.WallNormal));
                         MoveOnWall(ref s, next - _root.position, input, dt, wantsFire);
                         if (s.Movement == MovementMode.WallInk && input.Move.y > 0) TryMantle(ref s, now);
                         return;
@@ -218,7 +209,7 @@ namespace Splatoon.Combat
             SetShape(useInk || s.CompactBody);
             var aim = Quaternion.Euler(0, s.Yaw, 0);
             if (!detached && (grounded || useInk) && !(grounded && IsEnemy(floor, s.Team)) && input.Swim && !wantsFire && !jump && input.Move.y > 0 &&
-                Query(s.Position + Vector3.up * .35f, aim * Vector3.forward, c.WallProbeDistance, out var entry) && CanClimb(entry, s.Team) &&
+                Query(s.Position + Vector3.up * CompactCenterY, aim * Vector3.forward, c.WallProbeDistance, out var entry) && CanClimb(entry, s.Team) &&
                 TryAttach(ref s, entry, dt))
             {
                 s.WallSeenAt = now; s.Movement = MovementMode.WallInk;
@@ -253,13 +244,13 @@ namespace Splatoon.Combat
         }
         bool TryAttach(ref PlayerSnapshot s, InkContact entry, float dt)
         {
-            float gap = Vector3.Dot(_root.position + Vector3.up * .35f - entry.Point, entry.Normal);
+            float gap = Vector3.Dot(_root.position + Vector3.up * CompactCenterY - entry.Point, entry.Normal);
             SetShape(true);
             _controller.Move(entry.Normal * (_controller.radius + .015f - gap));
             // An obstacle can stop the snap. Bind only after the capsule reaches
             // the wall, and record the real contact and position for prediction.
-            gap = Vector3.Dot(_root.position + Vector3.up * .35f - entry.Point, entry.Normal);
-            if (gap > _controller.radius + .065f || !Query(_root.position + Vector3.up * .35f + entry.Normal * .08f,
+            gap = Vector3.Dot(_root.position + Vector3.up * CompactCenterY - entry.Point, entry.Normal);
+            if (gap > _controller.radius + .065f || !Query(_root.position + Vector3.up * CompactCenterY + entry.Normal * .08f,
                 -entry.Normal, gap + .1f, out var actual) || !CanClimb(actual, s.Team) ||
                 Vector3.Dot(actual.Normal, entry.Normal) < .99f) return false;
             BindWall(ref s, actual);
@@ -295,10 +286,10 @@ namespace Splatoon.Combat
             s.WallSurfaceId = c.Surface.SurfaceId; s.WallRegionId = c.Region.Id; s.WallNormal = c.Normal; s.WallPoint = c.Point;
             s.SwimSource = s.AirSwimSource = c.Owner == s.Team ? SwimSurface.Friendly : SwimSurface.Neutral;
         }
-        static bool ClimbableSeam(Vector3 position, Vector3 normal, byte team, float distance, out SwimSurface source)
+        bool ClimbableSeam(Vector3 position, Vector3 normal, byte team, float distance, out SwimSurface source)
         {
             source = SwimSurface.None;
-            Vector3 origin = position + Vector3.up * .35f + normal * .08f;
+            Vector3 origin = position + Vector3.up * CompactCenterY + normal * .08f;
             foreach (var along in new[] { Vector3.Cross(normal, Vector3.up).normalized, Vector3.up })
             {
                 // Cover both sides of the authored 8 cm seam even when the slower
@@ -328,7 +319,7 @@ namespace Splatoon.Combat
         bool InkPathClear(Vector3 from, Vector3 to)
         {
             Vector3 delta = to - from; float radius = Mathf.Max(.05f, _controller.radius - .04f);
-            return !Physics.CapsuleCast(from + Vector3.up * radius, from + Vector3.up * (.7f-radius), radius,
+            return !Physics.CapsuleCast(from + Vector3.up * radius, from + Vector3.up * (_shape.CompactHeight-radius), radius,
                 delta.normalized, delta.magnitude, WorldMask, QueryTriggerInteraction.Ignore);
         }
         void StepDead(ref PlayerSnapshot s, float dt)

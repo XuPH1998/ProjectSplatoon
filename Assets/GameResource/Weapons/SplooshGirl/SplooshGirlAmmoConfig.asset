@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4fb864519a46f7af76d3fb3f1f3769, type: 3}
+  m_Name: SplooshGirlAmmoConfig
+  m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
+  ammoId: 8
+  bubblePrefab: {fileID: 0}
+  bubbleShotAudio: {fileID: 0}
+  bubbleBounceAudio: {fileID: 0}
+  bubblePopAudio: {fileID: 0}
+  flightMigrationVersion: 1
+  flightPrefab: {fileID: 949289641, guid: a3c6bd43d07743089a19e7f52d4666ed, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: 97c471cf026647bb9187e530a6080f51, type: 3}
+  burstInterval: 0.02
+  particlesPerBurst: 2
+  visualLifetime: 10
+  muzzleInterval: 0.06
+  muzzleBurstCount: 50
+  maxRibbonGap: 1.5
+  satelliteSpread: 0.1
+  explosionEnabled: 0
+  explosionPrefab: {fileID: 0}
+  explosionRadius: 0
+  explosionDamage: 0
+  explosionConstantDamage: 0
+  collisionExplosionRadiusRate: 1
+  collisionExplosionDamageRate: 1
+  excludeDirectHitFromExplosion: 0
+  explosionPaint: 0
+  explosionPaintRadiusMin: 0
+  explosionPaintRadiusMax: 0

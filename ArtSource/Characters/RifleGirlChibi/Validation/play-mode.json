@@ -1,0 +1,21 @@
+{
+    "passed": true,
+    "clips": [
+        "AimIdle",
+        "AimTurn_L90",
+        "AimTurn_R90",
+        "AimWalk_B",
+        "AimWalk_BR",
+        "AimWalk_F",
+        "AimWalk_FL",
+        "Die1",
+        "Die2",
+        "R_AimIdle_AutoShoot"
+    ],
+    "errors": [],
+    "editorIssues": [
+        "ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection.\r\nParameter name: index\nSystem.Collections.Generic.List`1[T].get_Item (System.Int32 index) (at <1eb9db207454431c84a47bcd81e79c37>:0)\nUnityEditor.Search.SearchDatabase+<EnumerateAll>d__80.MoveNext () (at <f29da4183e8c440eae36881e4f178001>:0)\nSystem.Linq.Enumerable.TryGetFirst[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Boolean& found) (at <6faa6124236442759eb396cfbfdad508>:0)\nSystem.Linq.Enumerable.First[TSource] (System.Collections.Generic.IEnumerable`1[T] source) (at <6faa6124236442759eb396cfbfdad508>:0)\nUnityEditor.Search.SearchDatabase.GetDefaultSearchDatabase () (at <f29da4183e8c440eae36881e4f178001>:0)\nUnityEditor.Search.SearchInit.IndexationOnStartup () (at <f29da4183e8c440eae36881e4f178001>:0)\nUnityEditor.EditorApplication.Internal_CallDelayFunctions () (at <5016c3a47c2a4a0cbfa8e12eb592279b>:0)\n"
+    ],
+    "maximumSupportHandError": 1.5269147013441398e-7,
+    "boundary": "Actual Play Mode in isolated Unity editor; preview scene only, no gameplay replacement or target-device test. Unrelated Unity Search startup exceptions are retained separately in editorIssues."
+}

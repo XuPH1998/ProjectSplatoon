@@ -120,6 +120,7 @@ namespace Splatoon.Config
         public readonly bool ReferenceTrailRandomPhase;
         public readonly int ReferenceFootEvery;
         public readonly float ReferenceFootRadius;
+        public readonly float ReferenceFootDepth;
         public readonly float PaintDepthMin;
         public readonly float PaintDepthMax;
         public readonly float PaintDepthBreakMin;
@@ -153,8 +154,93 @@ namespace Splatoon.Config
         public readonly float BubbleBouncePaintDecrement;
         public readonly float BubbleLaterImpactRadius;
         public readonly AmmoRuntimeConfig Ammo;
+        public readonly float ExplosherAirSpeed;
+        public readonly float ExplosherUpwardRate;
+        public readonly float ExplosherMoveSideRate;
+        public readonly float ExplosherMoveForwardRate;
+        public readonly float ExplosherMoveVerticalRate;
+        public readonly float ExplosherFieldInitialRadius;
+        public readonly float ExplosherPlayerInitialRadius;
+        public readonly double ExplosherFieldGrowSeconds;
+        public readonly double ExplosherPlayerGrowSeconds;
+        public readonly double ExplosherPostSeconds;
+        public readonly double ExplosherMoveLimitSeconds;
+        public readonly float ExplosherPaintNearDistance;
+        public readonly float ExplosherPaintFarDistance;
+        public readonly float ExplosherBlastOffset;
+        public readonly float ExplosherTrailPhaseMax;
+        public readonly float ExplosherFootDepth;
+        public readonly bool ShooterDetails;
+        public readonly double ShooterPostSeconds;
+        public readonly float ShooterMoveForwardRate;
+        public readonly float ShooterPaintNearDistance;
+        public readonly float ShooterPaintNearRadius;
+        public readonly float ShooterPaintAngleMin;
+        public readonly float ShooterPaintAngleMax;
+        public readonly float ShooterFallHeightMin;
+        public readonly float ShooterFallHeightMax;
+        public readonly int ShooterSplitNum;
+        public readonly float ShooterSplashDepthMin;
+        public readonly float ShooterSplashDepthMax;
+        public readonly float ShooterSplashHeightMin;
+        public readonly float ShooterSplashHeightMax;
+        public readonly float ShooterSplashSideSpeed;
+        public readonly float ShooterSplashUpSpeed;
+        public readonly float ShooterSplashForwardMin;
+        public readonly float ShooterSplashForwardMax;
+        public readonly double ShooterWallFirstMin;
+        public readonly double ShooterWallFirstMax;
+        public readonly double ShooterWallMiddle;
+        public readonly double ShooterWallLastMin;
+        public readonly double ShooterWallLastMax;
+        public readonly float ShooterWallFirstSpeed;
+        public readonly float ShooterWallGravity;
+        public readonly float ShooterWallShockRadius;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            ShooterDetails = source.shooterDetails;
+            ShooterPostSeconds = source.shooterPostSeconds;
+            ShooterMoveForwardRate = source.shooterMoveForwardRate;
+            ShooterPaintNearDistance = source.shooterPaintNearDistance;
+            ShooterPaintNearRadius = source.shooterPaintNearRadius;
+            ShooterPaintAngleMin = source.shooterPaintAngleMin;
+            ShooterPaintAngleMax = source.shooterPaintAngleMax;
+            ShooterFallHeightMin = source.shooterFallHeightMin;
+            ShooterFallHeightMax = source.shooterFallHeightMax;
+            ShooterSplitNum = source.shooterSplitNum;
+            ShooterSplashDepthMin = source.shooterSplashDepthMin;
+            ShooterSplashDepthMax = source.shooterSplashDepthMax;
+            ShooterSplashHeightMin = source.shooterSplashHeightMin;
+            ShooterSplashHeightMax = source.shooterSplashHeightMax;
+            ShooterSplashSideSpeed = source.shooterSplashSideSpeed;
+            ShooterSplashUpSpeed = source.shooterSplashUpSpeed;
+            ShooterSplashForwardMin = source.shooterSplashForwardMin;
+            ShooterSplashForwardMax = source.shooterSplashForwardMax;
+            ShooterWallFirstMin = source.shooterWallFirstMin;
+            ShooterWallFirstMax = source.shooterWallFirstMax;
+            ShooterWallMiddle = source.shooterWallMiddle;
+            ShooterWallLastMin = source.shooterWallLastMin;
+            ShooterWallLastMax = source.shooterWallLastMax;
+            ShooterWallFirstSpeed = source.shooterWallFirstSpeed;
+            ShooterWallGravity = source.shooterWallGravity;
+            ShooterWallShockRadius = source.shooterWallShockRadius;
+            ExplosherAirSpeed = source.explosherAirSpeed;
+            ExplosherUpwardRate = source.explosherUpwardRate;
+            ExplosherMoveSideRate = source.explosherMoveSideRate;
+            ExplosherMoveForwardRate = source.explosherMoveForwardRate;
+            ExplosherMoveVerticalRate = source.explosherMoveVerticalRate;
+            ExplosherFieldInitialRadius = source.explosherFieldInitialRadius;
+            ExplosherPlayerInitialRadius = source.explosherPlayerInitialRadius;
+            ExplosherFieldGrowSeconds = source.explosherFieldGrowSeconds;
+            ExplosherPlayerGrowSeconds = source.explosherPlayerGrowSeconds;
+            ExplosherPostSeconds = source.explosherPostSeconds;
+            ExplosherMoveLimitSeconds = source.explosherMoveLimitSeconds;
+            ExplosherPaintNearDistance = source.explosherPaintNearDistance;
+            ExplosherPaintFarDistance = source.explosherPaintFarDistance;
+            ExplosherBlastOffset = source.explosherBlastOffset;
+            ExplosherTrailPhaseMax = source.explosherTrailPhaseMax;
+            ExplosherFootDepth = source.explosherFootDepth;
+
             ReferenceRules = source.referenceRules;
             ReferenceBrakeEndSpeed = source.referenceBrakeEndSpeed;
             ReferenceBrakeDrag = source.referenceBrakeDrag;
@@ -175,6 +261,7 @@ namespace Splatoon.Config
             ReferenceTrailRandomPhase = source.referenceTrailRandomPhase;
             ReferenceFootEvery = source.referenceFootEvery;
             ReferenceFootRadius = source.referenceFootRadius;
+            ReferenceFootDepth = source.referenceFootDepth;
             PaintDepthMin = source.paintDepthMin;
             PaintDepthMax = source.paintDepthMax;
             PaintDepthBreakMin = source.paintDepthBreakMin;
@@ -307,6 +394,49 @@ namespace Splatoon.Config
         }
         public void Write(BinaryWriter writer)
         {
+            writer.Write(ShooterDetails);
+            writer.Write(ShooterPostSeconds);
+            writer.Write(ShooterMoveForwardRate);
+            writer.Write(ShooterPaintNearDistance);
+            writer.Write(ShooterPaintNearRadius);
+            writer.Write(ShooterPaintAngleMin);
+            writer.Write(ShooterPaintAngleMax);
+            writer.Write(ShooterFallHeightMin);
+            writer.Write(ShooterFallHeightMax);
+            writer.Write(ShooterSplitNum);
+            writer.Write(ShooterSplashDepthMin);
+            writer.Write(ShooterSplashDepthMax);
+            writer.Write(ShooterSplashHeightMin);
+            writer.Write(ShooterSplashHeightMax);
+            writer.Write(ShooterSplashSideSpeed);
+            writer.Write(ShooterSplashUpSpeed);
+            writer.Write(ShooterSplashForwardMin);
+            writer.Write(ShooterSplashForwardMax);
+            writer.Write(ShooterWallFirstMin);
+            writer.Write(ShooterWallFirstMax);
+            writer.Write(ShooterWallMiddle);
+            writer.Write(ShooterWallLastMin);
+            writer.Write(ShooterWallLastMax);
+            writer.Write(ShooterWallFirstSpeed);
+            writer.Write(ShooterWallGravity);
+            writer.Write(ShooterWallShockRadius);
+            writer.Write(ExplosherAirSpeed);
+            writer.Write(ExplosherUpwardRate);
+            writer.Write(ExplosherMoveSideRate);
+            writer.Write(ExplosherMoveForwardRate);
+            writer.Write(ExplosherMoveVerticalRate);
+            writer.Write(ExplosherFieldInitialRadius);
+            writer.Write(ExplosherPlayerInitialRadius);
+            writer.Write(ExplosherFieldGrowSeconds);
+            writer.Write(ExplosherPlayerGrowSeconds);
+            writer.Write(ExplosherPostSeconds);
+            writer.Write(ExplosherMoveLimitSeconds);
+            writer.Write(ExplosherPaintNearDistance);
+            writer.Write(ExplosherPaintFarDistance);
+            writer.Write(ExplosherBlastOffset);
+            writer.Write(ExplosherTrailPhaseMax);
+            writer.Write(ExplosherFootDepth);
+
             writer.Write(ReferenceRules);
             writer.Write(ReferenceBrakeEndSpeed);
             writer.Write(ReferenceBrakeDrag);
@@ -327,6 +457,7 @@ namespace Splatoon.Config
             writer.Write(ReferenceTrailRandomPhase);
             writer.Write(ReferenceFootEvery);
             writer.Write(ReferenceFootRadius);
+            writer.Write(ReferenceFootDepth);
             writer.Write(PaintDepthMin);
             writer.Write(PaintDepthMax);
             writer.Write(PaintDepthBreakMin);
@@ -464,6 +595,8 @@ namespace Splatoon.Config
             return a.ToArray().AsSpan().SequenceEqual(b.ToArray());
         }
         public bool RequiresRestart(WeaponRuntimeConfig other) => other == null ||
+            ShooterDetails != other.ShooterDetails || ShooterSplitNum != other.ShooterSplitNum || ShooterPostSeconds != other.ShooterPostSeconds ||
+            ExplosherPostSeconds != other.ExplosherPostSeconds || ExplosherMoveLimitSeconds != other.ExplosherMoveLimitSeconds ||
             BlasterRepeatSeconds != other.BlasterRepeatSeconds || BlasterPostSeconds != other.BlasterPostSeconds ||
             ReferenceRules != other.ReferenceRules || ReferenceSpreadEnabled != other.ReferenceSpreadEnabled || MotionMode != other.MotionMode || BubbleVolleySeconds != other.BubbleVolleySeconds || BubbleIntervalSeconds != other.BubbleIntervalSeconds || WeaponPrefabAddress != other.WeaponPrefabAddress || FireMode != other.FireMode || FireRate != other.FireRate || ShotInk != other.ShotInk || StartSeconds != other.StartSeconds || EmergeStartSeconds != other.EmergeStartSeconds || InkRecoverLockSeconds != other.InkRecoverLockSeconds || BurstCount != other.BurstCount || BurstRecoverySeconds != other.BurstRecoverySeconds || ChargeSeconds != other.ChargeSeconds || ChargeMinInk != other.ChargeMinInk || PelletCount != other.PelletCount || MuzzleMode != other.MuzzleMode || SemiBufferSeconds != other.SemiBufferSeconds || SplatlingMinChargeSeconds != other.SplatlingMinChargeSeconds || SplatlingFirstChargeSeconds != other.SplatlingFirstChargeSeconds || SplatlingFirstShootSeconds != other.SplatlingFirstShootSeconds || SplatlingFullShootSeconds != other.SplatlingFullShootSeconds || SplatlingSlowChargeMultiplier != other.SplatlingSlowChargeMultiplier || SplatlingPostSeconds != other.SplatlingPostSeconds;
     }

@@ -128,7 +128,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunRetainsBaseAndRocketStillTightensWithCharge()
         {
-            var shotgun = GameplayConfig.GetWeapon(3);
+            var shotgun = LegacyShotgunFixture.Create();
             Assert.That(SpreadSimulation.Angles(shotgun, false, 0), Is.EqualTo(Vector2.one * 5));
             Assert.That(SpreadSimulation.Angles(shotgun, true, 0), Is.EqualTo(Vector2.one * 5));
             Assert.That(SpreadSimulation.Angles(shotgun, false, 1), Is.EqualTo(Vector2.one * 5));

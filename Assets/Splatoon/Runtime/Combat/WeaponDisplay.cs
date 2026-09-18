@@ -7,10 +7,12 @@ namespace Splatoon.Combat
 {
     public static class WeaponDisplay
     {
-        public static string Mechanism(WeaponRuntimeConfig w) => DualiesNormalSimulation.Enabled(w) ? "全自动 / 右左交替" : w.FireMode switch { WeaponFireMode.Blaster => "快速爆破 / 点击或长按射击", WeaponFireMode.BubbleVolley => "泡泡四连发 / 弹跳与墙面反射", WeaponFireMode.Splatling => "旋转枪 / 两段蓄力连射", WeaponFireMode.Burst => "三连发 / 长按连续", WeaponFireMode.Charge => "蓄力 / 松开发射", WeaponFireMode.SemiAutomatic => w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft ? "半自动 / 右左交替" : w.PelletCount > 1 ? "半自动 / 霰弹齐射" : "半自动 / 点击或长按射击", _ => "全自动" };
-        public static string Damage(WeaponRuntimeConfig w) => WeaponSimulation.IsBlaster(w) ? $"直击 {w.Damage:0} / 爆风 {w.Ammo.ExplosionDamage:0} / 碰撞爆风 {w.Ammo.ExplosionDamage*w.Ammo.CollisionExplosionDamageRate:0.#}" : WeaponSimulation.IsSplatling(w) ? $"未满蓄 {w.ChargePartialMaxDamage:0} / 满蓄 {w.Damage:0} → 远端 {w.DamageMin:0}" : WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinDamage:0}–{w.ChargePartialMaxDamage:0} / 满蓄 {w.Damage:0}" : w.PelletCount > 1 ? $"{w.PelletCount} × {w.Damage:0}→{w.DamageMin:0}" : $"{w.Damage:0} → {w.DamageMin:0}";
+        public static string Mechanism(WeaponRuntimeConfig w) => DualiesNormalSimulation.Enabled(w) ? "全自动 / 右左交替" : w.FireMode switch { WeaponFireMode.Explosher => "抛射穿透，触地爆炸",
+            WeaponFireMode.Blaster => "快速爆破 / 点击或长按射击", WeaponFireMode.BubbleVolley => "泡泡四连发 / 弹跳与墙面反射", WeaponFireMode.Splatling => "旋转枪 / 两段蓄力连射", WeaponFireMode.Burst => "三连发 / 长按连续", WeaponFireMode.Charge => "蓄力 / 松开发射", WeaponFireMode.SemiAutomatic => w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft ? "半自动 / 右左交替" : w.PelletCount > 1 ? "半自动 / 霰弹齐射" : "半自动 / 点击或长按射击", _ => "全自动" };
+        public static string Damage(WeaponRuntimeConfig w) => WeaponSimulation.IsExplosher(w) ? $"直击 {w.Damage:0}／爆风 {w.Ammo.ExplosionDamage:0}／组合 {w.Damage + w.Ammo.ExplosionDamage:0}" : WeaponSimulation.IsBlaster(w) ? $"直击 {w.Damage:0} / 爆风 {w.Ammo.ExplosionDamage:0} / 碰撞爆风 {w.Ammo.ExplosionDamage*w.Ammo.CollisionExplosionDamageRate:0.#}" : WeaponSimulation.IsSplatling(w) ? $"未满蓄 {w.ChargePartialMaxDamage:0} / 满蓄 {w.Damage:0} → 远端 {w.DamageMin:0}" : WeaponSimulation.IsCharge(w) ? $"{w.ChargeMinDamage:0}–{w.ChargePartialMaxDamage:0} / 满蓄 {w.Damage:0}" : w.PelletCount > 1 ? $"{w.PelletCount} × {w.Damage:0}→{w.DamageMin:0}" : $"{w.Damage:0} → {w.DamageMin:0}";
         public static string Cadence(WeaponRuntimeConfig w) => w.FireMode switch
         {
+            WeaponFireMode.Explosher => $"{WeaponSimulation.FireInterval(w):0.###} 秒/发 · 潜墨限制 {w.ExplosherPostSeconds:0.###} 秒 · 移速限制 {w.ExplosherMoveLimitSeconds:0.###} 秒",
             WeaponFireMode.Blaster => $"{w.BlasterRepeatSeconds:0.###} 秒/发 · 射后限制 {w.BlasterPostSeconds:0.###} 秒",
             WeaponFireMode.Splatling => $"一圈 {w.SplatlingFirstChargeSeconds:0.###} 秒 / 满蓄 {w.ChargeSeconds:0.###} 秒 · {w.FireRate:0} 发/秒",
             WeaponFireMode.BubbleVolley => $"{w.BubbleVolleySeconds:0.###} 秒/组，颗间 {w.BubbleIntervalSeconds:0.###} 秒",
@@ -32,6 +34,7 @@ namespace Splatoon.Combat
             : $"地面 {w.BaseSpreadDegrees:0.#}° → {w.SpreadDegrees:0.#}° / 空中 {w.BaseJumpSpreadDegrees:0.#}° → {w.JumpSpreadDegrees:0.#}°";
         public static string ListSummary(WeaponRuntimeConfig w) => w.FireMode switch
         {
+            WeaponFireMode.Explosher => $"直击 {w.Damage:0}／爆风 {w.Ammo.ExplosionDamage:0}／组合 {w.Damage + w.Ammo.ExplosionDamage:0} · {WeaponSimulation.FireInterval(w):0.###} 秒/发\n{Range(w)} · {w.ShotInk:0.##} 墨/发 · 满墨 {Mathf.FloorToInt(100 / w.ShotInk)} 发",
             WeaponFireMode.Blaster => $"直击 {w.Damage:0} / 爆风 {w.Ammo.ExplosionDamage:0} · {w.BlasterRepeatSeconds:0.###} 秒/发\n{Range(w)} · {w.ShotInk:0.##} 墨/发",
             WeaponFireMode.BubbleVolley => $"四颗弹跳泡泡 · 每颗 {w.Damage:0} 伤害 · {w.ShotInk:0.##} 墨/组\n{w.BubbleVolleySeconds:0.###} 秒/组 · 转向甩射、借墙反射",
             WeaponFireMode.Splatling => $"两段蓄力 {w.SplatlingFirstChargeSeconds:0.###}/{w.ChargeSeconds:0.###} 秒 · {w.ChargePartialMaxDamage:0}/满蓄 {w.Damage:0} 伤害\n{Range(w)} · 满蓄 {SplatlingSimulation.Rounds(w,w.ChargeSeconds)} 发 · {w.ShotInk*SplatlingSimulation.Rounds(w,w.ChargeSeconds):0} 墨",
@@ -51,7 +54,7 @@ namespace Splatoon.Combat
             ("耗墨", w.FireMode == WeaponFireMode.Burst ? $"{w.ShotInk:0.##}/发 · {w.ShotInk*w.BurstCount:0.##}/组" : Ink(w)), ("满墨发数", WeaponSimulation.IsBubble(w) ? $"{Mathf.FloorToInt(hero.MaxInk / w.ShotInk)} 组" : WeaponSimulation.IsCharge(w) ? $"点射 {Mathf.FloorToInt(hero.MaxInk / w.ChargeMinInk)} / 满蓄 {Mathf.FloorToInt(hero.MaxInk / w.ShotInk)}" : $"{Mathf.FloorToInt(hero.MaxInk / w.ShotInk)} 发"),
             ("平地参考落点", Range(w) + "（枪口高 1.4 米、无散布）"),
             ("直进距离", $"{new WeaponRangeMetrics(w).Straight:0.##} 米"),
-            ("伤害衰减距离", WeaponSimulation.IsBlaster(w) || WeaponSimulation.IsBubble(w) ? "飞行期间不衰减" : $"{new WeaponRangeMetrics(w).FullDamage:0.##}～{new WeaponRangeMetrics(w).MinimumDamage:0.##} 米；其后保持最低伤害至终止"),
+            ("伤害衰减距离", WeaponSimulation.IsBlaster(w) || WeaponSimulation.IsBubble(w) || WeaponSimulation.IsExplosher(w) ? "飞行期间不衰减" : $"{new WeaponRangeMetrics(w).FullDamage:0.##}～{new WeaponRangeMetrics(w).MinimumDamage:0.##} 米；其后保持最低伤害至终止"),
             ("平地涂墨最远上界", $"{new WeaponRangeMetrics(w).PaintEnvelope:0.##} 米（几何上界，实际墨迹随轮廓与散布变化）"),
             ("地面／空中散布", Spread(w)),
             ("散布扩大／完全恢复", ReferenceSpreadSimulation.Enabled(w) ? $"逐发偏置累积；跳跃 {w.ReferenceJumpStart:0.###}～{w.ReferenceJumpEnd:0.###} 秒恢复" : WeaponSimulation.IsBlaster(w) ? "固定角度；连续射击不扩散" : DualiesNormalSimulation.Enabled(w) ? "随发数增大，停火逐步恢复；首发保留少量偏差" : WeaponSimulation.IsCharge(w) ? "蓄力控制；不使用时间扩散" : $"{w.SpreadExpandSeconds:0.###} / {w.SpreadRecoverSeconds:0.###} 秒"),

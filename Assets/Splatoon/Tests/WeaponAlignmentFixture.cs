@@ -18,6 +18,14 @@ namespace Splatoon.Tests
             foreach (var entry in JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAlignment/Tuning.json"))["fields"].Children)
                 if (entry["hero"].AsInt == hero) values[entry["field"].Value] = entry["after"];
             if (hero == 1) values["weaponTypeName"] = "斯普拉射击枪";
+            if (hero == 3)
+            {
+                var tuning = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/Explosher/Tuning.json"));
+                foreach (string key in tuning["weapons"].Keys) values[key] = tuning["weapons"][key];
+                values["weaponTypeName"] = "爆炸泼桶";
+                values["moveSpeed"] = .088 * 60 * 18 / 24.037;
+                values["swimSpeed"] = .1728 * 60 * 18 / 24.037;
+            }
             if (referenceFrames) WeaponTimeFixture.ToReferenceFrames(values);
             // Compare the fields owned by each historical record; new fields have their
             // own validation/signature checks, including bool serialization semantics.

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "staticChecks": 874,
+  "uniqueUnityTests": 208,
+  "oldWeaponFilesByteIdentical": 196,
+  "legacyPaintCases": 63,
+  "splooshPaintCases": 81,
+  "independentWindowsPlayers": "passed",
+  "paintHash": "3373027149",
+  "paintSequence": "1873",
+  "actualEnemyHitBothSides": true,
+  "build": "Builds/SplooshGirl/InkLan.exe",
+  "physicalTwoMachines": false,
+  "targetDevice": false,
+  "originalGameCaptures": 0
+}

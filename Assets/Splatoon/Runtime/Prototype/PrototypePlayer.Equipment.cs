@@ -34,7 +34,15 @@ namespace Splatoon.Prototype
             string error = HeroSelectionRules.Validate(s, request.Hero, request.Origin, request.Round,
                 PrototypeMatch.Current.State.Value.Round, request.Life, phase, HeroSelectionRules.Development,
                 PrototypeArena.Current != null && PrototypeArena.Current.IsInHeroChangeZone(s.Team, s.Position));
-            if (error == null) HeroSelectionRules.Apply(ref s, request.Hero, phase == MatchPhase.Practice, _lastInput);
+            if (error == null && s.HeroId != request.Hero)
+            {
+                var current = HeroBodyShape.For(s.HeroId); var target = HeroBodyShape.For(request.Hero);
+                bool grows = target.Height > current.Height || target.Radius > current.Radius || target.CompactHeight > current.CompactHeight;
+                if (grows && !_motor.CanFitHero(request.Hero, PlayerMotorSimulation.HumanPosition(s)))
+                    error = "空间不足，无法切换到该英雄";
+            }
+            if (error == null && HeroSelectionRules.Apply(ref s, request.Hero, phase == MatchPhase.Practice, _lastInput))
+            { EnsureHeroPresentation(s.HeroId); _motor.Restore(s); }
             HeroChangeReplyRpc(request.Id, s.HeroRevision, error ?? "当前英雄");
         }
         [Rpc(SendTo.Owner)]

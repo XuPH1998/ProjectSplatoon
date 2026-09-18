@@ -24,10 +24,11 @@ namespace Splatoon.Combat
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
         public static double FireInterval(WeaponRuntimeConfig w) => IsBlaster(w) ? w.BlasterRepeatSeconds : IsBubble(w) ? w.BubbleVolleySeconds : 1.0 / w.FireRate;
+        public static bool IsExplosher(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Explosher;
         public static bool IsBubble(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.BubbleVolley;
         public static bool IsCharge(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Charge;
         public static bool IsBlaster(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Blaster;
-        public static bool IsSemi(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.SemiAutomatic || IsBlaster(w);
+        public static bool IsSemi(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.SemiAutomatic || IsBlaster(w) || IsExplosher(w);
         public static bool RecoveryLocked(PlayerSnapshot s, double now) => now + 1e-8 < s.AttackRecoveryUntil;
         public static bool IsSplatling(WeaponRuntimeConfig w) => w.FireMode == WeaponFireMode.Splatling;
         public static bool WantsFire(PlayerSnapshot s, PlayerInputFrame input, WeaponRuntimeConfig w, double now)
@@ -202,6 +203,12 @@ namespace Splatoon.Combat
             else { s.LeftShotAt = now; s.LeftShotAction = s.ShotActionId; }
             if (w.MuzzleMode == WeaponMuzzleMode.AlternatingRightLeft) s.NextMuzzle = (byte)(1 - s.LastShotMuzzle);
             s.NextShotAt = now + FireInterval(w);
+            if (IsExplosher(w))
+            {
+                s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.ExplosherPostSeconds);
+                s.AttackMoveUntil = Math.Max(s.AttackMoveUntil, now + w.ExplosherMoveLimitSeconds);
+            }
+            if (w.ShooterDetails) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.ShooterPostSeconds);
             if (IsBlaster(w)) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.BlasterPostSeconds);
             s.InkRecoverAt = now + w.InkRecoverLockSeconds; s.ProtectedUntil = 0;
             result = new WeaponFireResult(s.HeroId, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);

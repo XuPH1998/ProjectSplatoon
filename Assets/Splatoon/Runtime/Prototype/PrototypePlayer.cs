@@ -9,7 +9,7 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 30;
+        public const uint ProtocolVersion = 31;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
@@ -39,7 +39,7 @@ namespace Splatoon.Prototype
         public uint HeroRevision, ConsumedRelease;
         public bool AttackNeedsRelease, ChargeReleasePending;
         public double ChargeStartedAt, BurstReadyAt, FireVisualUntil;
-        public double AttackRecoveryUntil;
+        public double AttackRecoveryUntil, AttackMoveUntil;
         public float LastShotCharge;
         public Vector3 Position, Velocity;
         public float Yaw, Pitch, Health, Ink;
@@ -69,7 +69,7 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
-            s.SerializeValue(ref AttackRecoveryUntil);
+            s.SerializeValue(ref AttackRecoveryUntil); s.SerializeValue(ref AttackMoveUntil);
             s.SerializeValue(ref SplatlingChargeSeconds); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
             s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);
             s.SerializeValue(ref SplatlingUpdatedAt); s.SerializeValue(ref SplatlingReleasedAt); s.SerializeValue(ref SplatlingEndedAt);
