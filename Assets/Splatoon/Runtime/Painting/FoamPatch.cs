@@ -22,6 +22,21 @@ namespace Splatoon.Painting
         public int Columns => Bake.Columns;
         public int Rows => Bake.Rows;
         public Vector2 Step => new(Bake.Size.x / (Columns - 1), Bake.Size.y / (Rows - 1));
+        // Ownership depends on triangle barycentric weights and node owners, not surface height.
+        // Avoid constructing world positions, normals and cross products for every score-grid cell.
+        byte OwnerAtLocal(Vector3 p)
+        {
+            var step=Step;
+            float gx=Mathf.Clamp((p.x+Bake.Size.x*.5f)/step.x,0,Columns-1);
+            float gz=Mathf.Clamp((p.z+Bake.Size.y*.5f)/step.y,0,Rows-1);
+            int x=Mathf.Min(Columns-2,(int)gx),z=Mathf.Min(Rows-2,(int)gz),i=z*Columns+x;
+            float u=gx-x,v=gz-z;
+            FoamNode a,b,c;float wa,wb,wc;
+            if(u+v<=1){a=Nodes[i];b=Nodes[i+Columns];c=Nodes[i+1];wa=1-u-v;wb=v;wc=u;}
+            else{a=Nodes[i+1];b=Nodes[i+Columns];c=Nodes[i+Columns+1];wa=1-v;wb=1-u;wc=u+v-1;}
+            if(a.Limit<=0||b.Limit<=0||c.Limit<=0)return 0;
+            return wa>=wb&&wa>=wc?a.Owner:wb>=wc?b.Owner:c.Owner;
+        }
 
         internal FoamPatch(PaintSurface surface, PaintRegion region, FoamPatchBake bake)
         {
@@ -133,9 +148,7 @@ namespace Splatoon.Painting
             {
                 int i=z*grid.Columns+x;
                 if (grid.Cells[i] == 255) continue;
-                var world = Matrix.MultiplyPoint3x4(grid.Center(i));
-                if (Sample(world, out _, out _, out byte team)) grid.Set(i, team);
-                else grid.Set(i, 0);
+                grid.Set(i,OwnerAtLocal(grid.Center(i)));
             }
             _dirtyMin=new Vector2(float.PositiveInfinity,float.PositiveInfinity);_dirtyMax=new Vector2(float.NegativeInfinity,float.NegativeInfinity);
         }

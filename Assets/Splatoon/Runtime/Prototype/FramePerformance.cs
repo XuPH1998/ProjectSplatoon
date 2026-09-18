@@ -15,7 +15,9 @@ namespace Splatoon.Prototype
         public static readonly ProfilerMarker Checkpoint = new("Splatoon.Paint.CheckpointCopy");
         // Reading this field initializes all markers before the probe opens its recorders.
         internal static readonly string[] MarkerNames = { "Splatoon.Paint.Cpu", "Splatoon.Paint.Submit", "Splatoon.Flight.Update",
-            "Splatoon.Muzzle.Emit", "Splatoon.Paper.Sample", "Splatoon.Paper.Render", "Splatoon.Paint.CheckpointCopy" };
+            "Splatoon.Muzzle.Emit", "Splatoon.Paper.Sample", "Splatoon.Paper.Render", "Splatoon.Paint.CheckpointCopy",
+            "Splatoon.Foam.Commit", "Splatoon.Foam.Deposit", "Splatoon.Foam.Round", "Splatoon.Foam.Relax",
+            "Splatoon.Foam.Ownership", "Splatoon.Foam.Mesh", "Splatoon.Foam.Collider", "Splatoon.Foam.Install", "Splatoon.Foam.Presentation" };
         public static long PaintStamps, PaintDraws, PaintCopies, PaintSubmissions, MuzzleParticles;
         public static long CompositePasses, SkippedComposites;
 

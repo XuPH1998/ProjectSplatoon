@@ -58,7 +58,9 @@ namespace Splatoon.Painting
                 if(_indices.Count>0)Mesh.SetNormals(_normals);
                 NormalsDirty=false;LastMeshMs=Ms(start);return;
             }
-            using var meshMarker=MeshMarker.Auto();
+            bool active;
+            using(MeshMarker.Auto())
+            {
             Dirty=NormalsDirty=false;RebuiltGeometry=true;
             _vertices.Clear(); _indices.Clear(); _normals.Clear(); _colors.Clear(); _uv.Clear();
             var inverse=transform.worldToLocalMatrix;
@@ -79,17 +81,20 @@ namespace Splatoon.Painting
             // Boundary skirts close the height volume. Shared top vertices keep neighbouring chunks watertight.
             for (int x=0;x<_nx;x++) { if(_z0==0)Skirt(x,x+1); if(_z0+_nz==Patch.Rows-1)Skirt(_nz*(_nx+1)+x+1,_nz*(_nx+1)+x); }
             for (int z=0;z<_nz;z++) { if(_x0==0)Skirt((z+1)*(_nx+1),z*(_nx+1)); if(_x0+_nx==Patch.Columns-1)Skirt(z*(_nx+1)+_nx,(z+1)*(_nx+1)+_nx); }
-            bool active = _indices.Count > 0;
+            active = _indices.Count > 0;
             Collider.sharedMesh = null; Mesh.Clear();
             if (active)
             {
                 Mesh.SetVertices(_vertices); Mesh.SetNormals(_normals); Mesh.SetColors(_colors); Mesh.SetUVs(0,_uv); Mesh.SetTriangles(_indices,0,true);
-                LastMeshMs=Ms(start);
+            }
+            }
+            LastMeshMs=Ms(start);
+            if(active)
+            {
                 long cook=System.Diagnostics.Stopwatch.GetTimestamp();
                 using(ColliderMarker.Auto())Collider.sharedMesh=Mesh;
                 LastColliderMs=Ms(cook);
             }
-            if(!active)LastMeshMs=Ms(start);
             Collider.enabled = active; _renderer.enabled = active;
         }
         void AddTop(int a,int b,int c,int na,int nb,int nc)

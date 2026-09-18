@@ -20,7 +20,8 @@ namespace Splatoon.Prototype
             public int players, samples, peakPending, errors;
             public uint corrections, appliedPaint, ownershipHash;
             public uint foamRevision,foamHash,foamRound;
-            public double foamCommitP95Ms;
+            public double foamCommitP95Ms,foamCommitP99Ms,foamInstallP95Ms;
+            public int foamInstallSamples,foamColliderRebuildsPeak,foamNormalOnlyPeak,foamFeedbackGroupsPeak;
             public int foamDirtyChunksPeak,foamCommitSamples;
             public long foamBytesSent;
             public double duration, joinSeconds, rttMeanMs, rttP95Ms, frameP95Ms, frameP99Ms, maxCorrection, gcMeanBytes;
@@ -50,8 +51,10 @@ namespace Splatoon.Prototype
         [Serializable] sealed class PlayerShots { public ulong player; public uint shots; }
         readonly List<double> _frames = new(20000), _rtt = new(20000), _snapshotAges = new(20000);
         readonly List<double> _foamTimes=new(4096);
+        readonly List<double> _foamInstallTimes=new(4096);
+        readonly List<Splatoon.Painting.FoamUpdateMetrics> _foamUpdates=new(16384);
+        Splatoon.Painting.FoamTerrainWorld _observedFoam;
         readonly List<string> _foamStates=new(1024);
-        uint _lastFoamCommit;
         readonly Dictionary<ulong, uint> _shots = new(8);
         readonly HashSet<string> _errors = new();
         readonly List<Sample> _samples = new(2400);
@@ -106,6 +109,13 @@ namespace Splatoon.Prototype
                     var getter = typeof(PrototypeMatch).GetProperty("SnapshotInFlightBytes")?.GetGetMethod();
                     if (getter != null) _inFlight = (Func<long>)Delegate.CreateDelegate(typeof(Func<long>), match, getter);
                 }
+                if(_observedFoam!=match.Arena.Foam)
+                {
+                    if(_observedFoam!=null)_observedFoam.Updated-=OnFoamUpdate;
+                    _observedFoam=match.Arena.Foam;
+                    if(_observedFoam!=null)_observedFoam.Updated+=OnFoamUpdate;
+                }
+                if(match.Arena.FoamPresentation!=null)_result.foamFeedbackGroupsPeak=Math.Max(_result.foamFeedbackGroupsPeak,match.Arena.FoamPresentation.PeakGroups);
                 if (_inFlight != null) _result.peakSnapshotInFlightBytes = Math.Max(_result.peakSnapshotInFlightBytes, _inFlight());
                 _result.peakPending = Math.Max(_result.peakPending, player.PendingInputCount);
                 _result.corrections = player.CorrectionCount;
@@ -147,8 +157,6 @@ namespace Splatoon.Prototype
                         var foam=match.Arena.Foam;_result.foamRevision=foam.Revision;_result.foamHash=foam.StateHash();_result.foamRound=match.State.Value.Round;
                         _result.foamBytesSent=match.FoamBytesSent;
                         _foamStates.Add(FormattableString.Invariant($"{elapsed:F3},{_result.foamRound},{foam.Revision},{_result.foamHash},{match.AppliedPaintSequence},{match.Arena.OwnershipHash()}"));
-                        if(foam.CommitCount!=_lastFoamCommit&&foam.LastDirtyChunks>0)
-                        {_lastFoamCommit=foam.CommitCount;_foamTimes.Add(foam.LastCommitMilliseconds);_result.foamDirtyChunksPeak=Math.Max(_result.foamDirtyChunksPeak,foam.LastDirtyChunks);}
                     }
                 }
                 foreach (var pair in PrototypePlayer.ByOwner)
@@ -168,11 +176,27 @@ namespace Splatoon.Prototype
         }
         static double Percentile(List<double> values, double fraction)
         { if (values.Count == 0) return 0; values.Sort(); return values[Math.Min(values.Count - 1, (int)Math.Ceiling(values.Count * fraction) - 1)]; }
+        void OnFoamUpdate(Splatoon.Painting.FoamUpdateMetrics metrics)
+        {
+            if(_done)return;
+            _foamUpdates.Add(metrics);
+            if(metrics.Install)_foamInstallTimes.Add(metrics.TotalMs);
+            else if(metrics.DirtyChunks>0)_foamTimes.Add(metrics.TotalMs);
+            _result.foamDirtyChunksPeak=Math.Max(_result.foamDirtyChunksPeak,metrics.DirtyChunks);
+            _result.foamColliderRebuildsPeak=Math.Max(_result.foamColliderRebuildsPeak,metrics.ColliderRebuilds);
+            _result.foamNormalOnlyPeak=Math.Max(_result.foamNormalOnlyPeak,metrics.NormalOnlyUpdates);
+        }
         void Finish()
         {
             if (_done) return; _done = true;
             _result.duration = Time.realtimeSinceStartupAsDouble - _started; _result.samples = _frames.Count;
             _result.foamCommitSamples=_foamTimes.Count;_result.foamCommitP95Ms=Percentile(_foamTimes,.95);
+            _result.foamCommitP99Ms=Percentile(_foamTimes,.99);
+            _result.foamInstallSamples=_foamInstallTimes.Count;_result.foamInstallP95Ms=Percentile(_foamInstallTimes,.95);
+            var foamCsv=new System.Text.StringBuilder("revision,install,totalMs,depositMs,roundMs,relaxMs,ownershipMs,meshMs,colliderMs,feedbackMs,dirtyChunks,colliderRebuilds,normalOnlyUpdates,ownerUploads\n");
+            foreach(var m in _foamUpdates)foamCsv.AppendLine(FormattableString.Invariant($"{m.Revision},{m.Install},{m.TotalMs:F6},{m.DepositMs:F6},{m.RoundMs:F6},{m.RelaxMs:F6},{m.OwnershipMs:F6},{m.MeshMs:F6},{m.ColliderMs:F6},{m.FeedbackMs:F6},{m.DirtyChunks},{m.ColliderRebuilds},{m.NormalOnlyUpdates},{m.OwnerUploads}"));
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_output)));
+            File.WriteAllText(Path.ChangeExtension(_output,"foam-commits.csv"),foamCsv.ToString());
             _result.errors = _errors.Count;
             double sum = 0; foreach (var value in _rtt) sum += value;
             _result.rttMeanMs = _rtt.Count > 0 ? sum / _rtt.Count : 0;
@@ -214,7 +238,7 @@ namespace Splatoon.Prototype
                 ScreenCapture.CaptureScreenshot(Path.ChangeExtension(_output, ".png"));
             Application.Quit(_result.connected && _result.initialSyncComplete && _result.errors == 0 ? 0 : 4);
         }
-        void OnDestroy() { Application.logMessageReceived -= OnLog; _gc.Dispose(); }
+        void OnDestroy() { if(_observedFoam!=null)_observedFoam.Updated-=OnFoamUpdate;Application.logMessageReceived -= OnLog; _gc.Dispose(); }
 #endif
     }
 }

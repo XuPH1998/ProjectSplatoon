@@ -107,6 +107,32 @@ namespace Splatoon.Tests
             var result=_world.Capture();
             for(int z=0;z<17;z++)for(int x=8;x<17;x++){int i=(z*17+x)*3;Assert.That(result[i],Is.EqualTo(bytes[i]));Assert.That(result[i+1],Is.EqualTo(bytes[i+1]));Assert.That(result[i+2],Is.EqualTo(2));}
         }
+        [TestCase(0f)][TestCase(25f)]
+        public void InstalledOwnershipAndColliderMatchSurfaceOnFlatAndRamp(float slope)
+        {
+            var go=Keep(new GameObject("FoamOwnershipAndCollisionTest"));var arena=go.AddComponent<PrototypeArena>();
+            var floor=Surface(go.transform,1,0);
+            // Exercise the training-map coordinate range; the general fixture is isolated 6 km away.
+            floor.transform.position=new Vector3(10,0,10);floor.transform.rotation=Quaternion.Euler(slope,0,0);arena.RegisterSurfaces();
+            _world=new FoamTerrainWorld(arena,Bake(floor),Keep(new Material(Shader.Find("Splatoon/FoamTerrain"))),1.5f,35);
+            var bytes=_world.Capture();
+            for(int i=0;i<bytes.Length/3;i++)
+            {
+                ushort height=(ushort)(100+(i*79)%700);
+                bytes[i*3]=(byte)height;bytes[i*3+1]=(byte)(height>>8);bytes[i*3+2]=(byte)(1+(i/3)%2);
+            }
+            _world.Restore(bytes,1);Physics.SyncTransforms();
+            var patch=_world.Patches[256];var grid=patch.Region.Grid;
+            for(int i=0;i<grid.Cells.Length;i++)
+            {
+                if(grid.Cells[i]==255)continue;
+                var point=patch.Matrix.MultiplyPoint3x4(grid.Center(i));
+                Assert.That(patch.Sample(point,out var top,out _,out byte owner),Is.True);
+                Assert.That(grid.Cells[i],Is.EqualTo(owner),"Ownership cell "+i);
+                Assert.That(patch.Chunks[0].Collider.Raycast(new Ray(top+Vector3.up*2,Vector3.down),out var hit,3),Is.True);
+                Assert.That(hit.point.y,Is.EqualTo(top.y).Within(.001f),"Collider cell "+i);
+            }
+        }
         [Test]public void ExactDissolutionLeavesNeutralEmptyCell()
         {float h=.3f;byte owner=2;FoamRules.Deposit(ref h,ref owner,1,.2f,1.5f,3);Assert.That(h,Is.EqualTo(0).Within(.000001));Assert.That(owner,Is.Zero);}
         [Test]public void FriendlyGrowthHonorsCeiling()
@@ -235,6 +261,8 @@ namespace Splatoon.Tests
         [Test]public void WarmTerrainCommitHasNoTransientManagedAllocation()
         {
             var setup=World();var stamp=Stamp(setup.floor,1);int changed=0;
+            // Include the installed-change aggregation and observer invocation after warm-up.
+            int presented=0;_world.SurfaceChanged+=change=>presented++;
             for(int i=0;i<120;i++)
             {
                 stamp.Team=(byte)(i%2+1);_world.Queue(setup.floor,stamp,.06f);
