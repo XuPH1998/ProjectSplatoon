@@ -11,13 +11,14 @@ namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
-        public const int PaintProtocolVersion = 9;
-        public const int WeaponSimulationVersion = 13; // Per-hero bodies and opt-in detailed shooter rules; wire layout unchanged.
-        public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
+        public const int PaintProtocolVersion = 10;
+        public const int WeaponSimulationVersion = 14; // Authoritative foam volumes and frozen weapon budgets.
+        public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null,string foamTopology="")
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             w.Write(WeaponSimulationVersion);
+            w.Write(FoamTerrainData.Format);w.Write(foamTopology);
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);

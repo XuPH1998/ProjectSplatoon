@@ -5,6 +5,9 @@ namespace Splatoon.Config
     [CreateAssetMenu(menuName = "喷墨对战/武器配置", fileName = "WeaponConfig")]
     public sealed class WeaponConfigAsset : ScriptableObject
     {
+        [Header("泡沫地形")]
+        [InspectorName("每点耗墨泡沫体积（立方米）")] public float foamVolumePerInk=.06f;
+        [InspectorName("主要落墨体积分配比例")] [Range(0,1)] public float foamPrimaryShare=.8f;
         [Header("泡泡弹道")]
         [InspectorName("弹道运动模式"), Tooltip("弹道运动模式") ] public ProjectileMotionMode motionMode;
         [InspectorName("泡泡组周期（秒，首颗到首颗）"), Tooltip("泡泡组周期（秒，首颗到首颗）") ] public double bubbleVolleySeconds = .55;

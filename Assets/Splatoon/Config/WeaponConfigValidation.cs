@@ -7,6 +7,7 @@ namespace Splatoon.Config
         public static void Validate(WeaponRuntimeConfig w)
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
+            Require(w.FoamVolumePerInk>0 && w.FoamPrimaryShare>0 && w.FoamPrimaryShare<1,"泡沫体积必须为正，主要落墨比例必须在0和1之间");
             Require(w.ReferenceFootDepth > 0, "脚下墨迹纵深比例必须大于0");
             if (w.ShooterDetails)
             {

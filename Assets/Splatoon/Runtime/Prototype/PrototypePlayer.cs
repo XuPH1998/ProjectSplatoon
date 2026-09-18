@@ -9,7 +9,10 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 31;
+        public const uint ProtocolVersion = 32;
+        public uint RequiredFoamRevision;
+        public int FoamSupportRegionKey;
+        public float FoamSupportHeight;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
@@ -93,6 +96,7 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref TurnStartedAt); s.SerializeValue(ref FireStartedAt); s.SerializeValue(ref DiedAt); s.SerializeValue(ref DeathDirection);
             s.SerializeValue(ref AcknowledgedInput); s.SerializeValue(ref SimulationTick); s.SerializeValue(ref ConsumedJump); s.SerializeValue(ref ConsumedFire); s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref RequiredPaintSequence);
+            s.SerializeValue(ref RequiredFoamRevision);s.SerializeValue(ref FoamSupportRegionKey);s.SerializeValue(ref FoamSupportHeight);
             s.SerializeValue(ref FireBurstSequence); s.SerializeValue(ref BurstShotIndex);
             s.SerializeValue(ref SimulatedAt); s.SerializeValue(ref WeaponReadyAt); s.SerializeValue(ref NextShotAt); s.SerializeValue(ref InkRecoverAt); s.SerializeValue(ref LastDamageAt);
             s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread); s.SerializeValue(ref CurrentVerticalSpread);

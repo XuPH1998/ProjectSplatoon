@@ -6,6 +6,7 @@ namespace Splatoon.Config
     /// <summary>Immutable values shared by simulation and the shots emitted under this configuration.</summary>
     public sealed class WeaponRuntimeConfig
     {
+        public readonly float FoamVolumePerInk,FoamPrimaryShare;
         public readonly string WeaponPrefabAddress;
         public readonly WeaponFireMode FireMode;
         public readonly float FireRate;
@@ -198,6 +199,7 @@ namespace Splatoon.Config
         public readonly float ShooterWallShockRadius;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            FoamVolumePerInk=source.foamVolumePerInk;FoamPrimaryShare=source.foamPrimaryShare;
             ShooterDetails = source.shooterDetails;
             ShooterPostSeconds = source.shooterPostSeconds;
             ShooterMoveForwardRate = source.shooterMoveForwardRate;
@@ -394,6 +396,7 @@ namespace Splatoon.Config
         }
         public void Write(BinaryWriter writer)
         {
+            writer.Write(FoamVolumePerInk);writer.Write(FoamPrimaryShare);
             writer.Write(ShooterDetails);
             writer.Write(ShooterPostSeconds);
             writer.Write(ShooterMoveForwardRate);

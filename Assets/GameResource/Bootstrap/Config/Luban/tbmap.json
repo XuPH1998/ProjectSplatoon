@@ -3,6 +3,10 @@
     "id": 1,
     "name": "立体训练场",
     "sceneAddress": "maps/TrainingGround",
-    "cellSize": 0.125
+    "cellSize": 0.125,
+    "foamCellSize": 0.25,
+    "foamChunkSize": 4,
+    "foamMaxHeight": 3,
+    "foamCeilingGap": 0.1
   }
 ]

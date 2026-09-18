@@ -39,9 +39,12 @@ namespace Splatoon.Painting
         public readonly PaintRegion Region;
         public readonly Vector3 Point, Normal;
         public readonly byte Owner;
+        public readonly bool IsFoam;
+        public readonly Vector3 LocalPoint;
+        public readonly uint FoamRevision;
         public bool Climbable => Region != null && Region.Climbable;
-        public InkContact(PaintSurface surface, PaintRegion region, Vector3 point, Vector3 normal, byte owner)
-        { Surface = surface; Region = region; Point = point; Normal = normal; Owner = owner; }
+        public InkContact(PaintSurface surface, PaintRegion region, Vector3 point, Vector3 normal, byte owner, bool isFoam=false, Vector3 localPoint=default, uint foamRevision=0)
+        { Surface = surface; Region = region; Point = point; Normal = normal; Owner = owner; IsFoam=isFoam;LocalPoint=localPoint;FoamRevision=foamRevision; }
     }
 
     public sealed partial class PaintSurface
@@ -63,6 +66,9 @@ namespace Splatoon.Painting
         }
         public bool QueryRegion(Vector3 point, Vector3 normal, out InkContact contact)
         {
+            var foam=Splatoon.Prototype.PrototypeArena.Current?.Foam;
+            if(foam!=null && foam.TryPatch(this,point,normal,out var patch) && patch.Sample(point,out _,out _,out byte team))
+            {contact=new InkContact(this,patch.Region,point,normal,team,true,patch.Local(point),foam.Revision);return true;}
             foreach (var r in _regions)
             {
                 var n = r.Normal(this);
@@ -82,6 +88,7 @@ namespace Splatoon.Painting
             foreach (var r in _regions)
             {
                 var m = r.Matrix(this);
+                if(Splatoon.Prototype.PrototypeArena.Current?.Foam?.IsManaged(this,r)==true)continue;
                 // Never paint the reverse face of a thin wall.
                 if (Vector3.Dot(r.Normal(this), stamp.Normal) < .95f) continue;
                 var inverse = r.Inverse(this);

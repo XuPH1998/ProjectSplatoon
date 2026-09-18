@@ -54,11 +54,21 @@ namespace Splatoon.Prototype
         public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint? shapeSeed = null, Vector3? direction = null, float depthScale = 1, bool clipEnabled = false, Vector4 clip0 = default, Vector4 clip1 = default)
         {
             if (!IsServer || State.Value.Phase == MatchPhase.Finished) return;
-            var sequence = ++PaintSequence;
+            var sequence = PaintSequence+1;
             uint entropy = InkShapeAtlas.Hash(sequence ^ (uint)surface.SurfaceId * 0x9e3779b9u ^ team);
             uint appearance = shapeSeed ?? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy);
             var stamp = new PaintStamp { Sequence = sequence, Round = State.Value.Round, SurfaceId = surface.SurfaceId, Position = position, Normal = normal, Radius = radius, Team = team, Hardness = hardness, Strength = strength, ShapeSeed = appearance, Direction = direction ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clipEnabled, Clip0 = clip0, Clip1 = clip1 };
+            // Legacy direct callers are explicit diagnostics/authoring brushes. Keep them on
+            // the same terrain authority; projectiles supply their emission budget separately.
+            if(Arena.Foam!=null&&Arena.Foam.Queue(surface,stamp,Mathf.PI*radius*radius*.02f*Mathf.Clamp01(strength)))return;
+            PaintSequence=sequence;
             PrototypeArena.Current.Apply(stamp, true); _pending.Add(stamp); _journal.Add(stamp);
+        }
+        public void PaintWithFoam(PaintSurface surface,PaintStamp stamp,float volume)
+        {
+            if(!IsServer||stamp.Round!=State.Value.Round||State.Value.Phase==MatchPhase.Finished)return;
+            if(Arena.Foam!=null&&Arena.Foam.Queue(surface,stamp,volume))return;
+            Paint(surface,stamp.Position,stamp.Normal,stamp.Radius,stamp.Team,stamp.Hardness,stamp.Strength,stamp.ShapeSeed,stamp.Direction,stamp.DepthScale,stamp.ClipEnabled,stamp.Clip0,stamp.Clip1);
         }
         public void AddPlayer(ulong clientId, GameObject prefab)
         {
@@ -111,6 +121,7 @@ namespace Splatoon.Prototype
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
             _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
             ResetSnapshotTransfer(false);
+            ResetFoamSync();
             PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear(); InitialSyncComplete = true;
         }
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer && round > _paintRound) ResetPaint(round); }
@@ -135,8 +146,9 @@ namespace Splatoon.Prototype
             PrototypeApp.Current?.ApplyDebugWeaponChanges();
 #endif
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
+            { CommitFoam(true); s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
+            if(s.Phase!=MatchPhase.Finished)CommitFoam();
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
             Physics.SyncTransforms(); // Publish switched/rotated swim hit volumes before authoritative projectile sweeps.
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
@@ -192,6 +204,7 @@ namespace Splatoon.Prototype
             if (!InitialSyncComplete) return;
             while (_buffered.TryGetValue(_appliedSequence + 1, out var stamp))
             { PrototypeArena.Current.Apply(stamp, true); _buffered.Remove(++_appliedSequence); }
+            DrainFoam();
         }
         public override void OnNetworkDespawn()
         {
@@ -200,6 +213,7 @@ namespace Splatoon.Prototype
             _captureGeneration++; Projectiles.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
             _incoming = null; _checkpoint = null; _checkpointBytes = null; _pending.Clear(); _journal.Clear();
             ResetSnapshotTransfer(true);
+            ResetFoamSync();
             if (Current == this) Current = null;
         }
     }

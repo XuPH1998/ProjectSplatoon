@@ -27,9 +27,11 @@ namespace Splatoon.Prototype
         private bool _cycling;
         private string _address;
         private ushort _port;
+        private bool _foamRoundReset,_foamEndRequested;
         private async UniTaskVoid Start()
         {
             var args = Environment.GetCommandLineArgs();
+            _foamRoundReset=args.Contains("-foamRoundReset");
             _host = args.Contains("-lanSmokeHost"); Active = _host || args.Contains("-lanSmokeClient");
             _inkCase = Arg(args, "-inkSmokeCase", "combat");
             _inkPerfRound = args.Contains("-inkPerfRound");
@@ -60,6 +62,26 @@ namespace Splatoon.Prototype
             if (!Active) return;
             if (_inkCase == "prediction") { PredictionMovementSmoke.ModifyInput(p, ref frame); return; }
             float t=Time.realtimeSinceStartup-_connectedAt;
+            if (_inkCase == "foam")
+            {
+                double server=p.NetworkManager.ServerTime.Time;
+                var foamMatch=PrototypeMatch.Current;if(foamMatch!=null&&foamMatch.State.Value.Phase==MatchPhase.Playing)t=(float)(server-foamMatch.State.Value.StartsAt);
+                var actor=p.PresentedState;
+                float yaw=actor.Team==1?0:180;
+                // Walk around the eight-metre spawn shield before firing into open ground.
+                // Position-based waypoints also tolerate initial synchronization and input delay.
+                float lane=10.5f+(p.PlayerId/2%2)*1.5f;
+                float destination=20+(p.PlayerId/4)*2;
+                bool leaving=Mathf.Abs(actor.Position.z)>destination+.15f;
+                Vector3 direction=Mathf.Abs(actor.Position.x)<lane && Mathf.Abs(actor.Position.z)>25
+                    ? Vector3.right*(actor.Position.x<0?-1:1)
+                    : Vector3.forward*(actor.Team==1?1:-1);
+                Vector3 local=Quaternion.Euler(0,-yaw,0)*direction;
+                frame.Move=leaving?new Vector2(local.x,local.z)*.8f:Vector2.zero;
+                frame.Look=new Vector2(yaw,65);
+                frame.Fire=!leaving&&t>4&&server<32&&!actor.AttackNeedsRelease;frame.Swim=server>34&&server<38;
+                return;
+            }
             // A remote spawn/timeout can require release before firing. Exercise the same legal
             // release/press sequence as a real player so every participant actually fires.
             if (_inkCase == "inkperf")
@@ -117,6 +139,13 @@ namespace Splatoon.Prototype
             var match=PrototypeMatch.Current;var s=match.State.Value;float t=Time.realtimeSinceStartup-_connectedAt;
             if (_inkCase == "inkperf") InkPerformanceSmoke.Tick(match);
             if (_inkCase == "prediction") PredictionMovementSmoke.Tick(match);
+            if (_inkCase == "foam" && match.IsServer)
+            {
+                foreach(var actor in match.Players){var current=actor.Snapshot.Value;if(current.Ink<90){current.Ink=100;actor.Snapshot.Value=current;}}
+                if(_foamRoundReset&&!_started&&s.PlayerCount>=2&&t>5){match.StartRound();_started=true;}
+                if(_foamRoundReset&&_started&&!_foamEndRequested&&s.Phase==MatchPhase.Playing&&match.NetworkManager.ServerTime.Time>38)
+                {var ending=match.State.Value;ending.EndsAt=match.NetworkManager.ServerTime.Time+.1;match.State.Value=ending;_foamEndRequested=true;}
+            }
             if (_inkCase == "map")
             {
                 try { TrainingGroundSmoke.Tick(match); }
@@ -131,6 +160,7 @@ namespace Splatoon.Prototype
                 _lastLog=Time.realtimeSinceStartup;var p=PrototypePlayer.Local.Snapshot.Value;
                 int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
                 Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} pink={s.PinkArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
+                if(_inkCase=="foam")Debug.Log($"[FOAM-PROBE] round={s.Round} players={s.PlayerCount} revision={match.FoamRevision} hash={match.Arena.Foam.StateHash()}");
             }
             if (_inkCase != "inkperf" && _inkCase != "prediction" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {

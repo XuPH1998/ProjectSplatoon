@@ -39,6 +39,9 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         { if(!_buf["simulationRate"].IsNumber) { throw new SerializationException(); }  SimulationRate = _buf["simulationRate"]; }
         { if(!_buf["aimCorrectionDistance"].IsNumber) { throw new SerializationException(); }  AimCorrectionDistance = _buf["aimCorrectionDistance"]; }
         { if(!_buf["aimFarCorrectionDistance"].IsNumber) { throw new SerializationException(); }  AimFarCorrectionDistance = _buf["aimFarCorrectionDistance"]; }
+        { if(!_buf["foamCommitRate"].IsNumber) { throw new SerializationException(); }  FoamCommitRate = _buf["foamCommitRate"]; }
+        { if(!_buf["foamDissolveRatio"].IsNumber) { throw new SerializationException(); }  FoamDissolveRatio = _buf["foamDissolveRatio"]; }
+        { if(!_buf["foamSlopeDegrees"].IsNumber) { throw new SerializationException(); }  FoamSlopeDegrees = _buf["foamSlopeDegrees"]; }
     }
 
     public static GlobalConfig DeserializeGlobalConfig(JSONNode _buf)
@@ -122,6 +125,18 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     /// 瞄准：无命中时远端收敛距离（米，不小于近端距离）
     /// </summary>
     public readonly float AimFarCorrectionDistance;
+    /// <summary>
+    /// 泡沫：权威地形提交频率（Hz，整除模拟频率）
+    /// </summary>
+    public readonly int FoamCommitRate;
+    /// <summary>
+    /// 泡沫：敌方消融效率倍率
+    /// </summary>
+    public readonly float FoamDissolveRatio;
+    /// <summary>
+    /// 泡沫：自由坡面目标角度（度）
+    /// </summary>
+    public readonly float FoamSlopeDegrees;
    
     public const int __ID__ = -958250779;
     public override int GetTypeId() => __ID__;
@@ -152,6 +167,9 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         + "simulationRate:" + SimulationRate + ","
         + "aimCorrectionDistance:" + AimCorrectionDistance + ","
         + "aimFarCorrectionDistance:" + AimFarCorrectionDistance + ","
+        + "foamCommitRate:" + FoamCommitRate + ","
+        + "foamDissolveRatio:" + FoamDissolveRatio + ","
+        + "foamSlopeDegrees:" + FoamSlopeDegrees + ","
         + "}";
     }
 }

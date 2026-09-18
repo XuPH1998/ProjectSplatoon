@@ -232,7 +232,7 @@ namespace Splatoon.Tests
                 CollectionAssert.AreNotEqual(baseline,GameplayContentSignature.Compute(new byte[]{1},"paper-test",player));
             }
             finally { Physics.IgnoreLayerCollision(SwimBody.HitProxyLayer,0,ignored); }
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(31)); // Current pre-Sploosh wire contract.
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(32)); // Foam revision and support wire contract.
         }
         [Test] public void WallJumpCanSwitchTwiceAndAirEntryRejectsEnemyWall()
         {

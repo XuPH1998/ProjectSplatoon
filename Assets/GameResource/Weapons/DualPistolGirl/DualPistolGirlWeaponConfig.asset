@@ -11,6 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: DualPistolGirlWeaponConfig
+  foamVolumePerInk: 0.06
+  foamPrimaryShare: 0.8
   m_EditorClassIdentifier: 
   weaponPrefabAddress: Weapon/DualPistols
   ammoConfig: {fileID: 11400000, guid: c37f636a6a084521ae1bbea51f8db649, type: 2}

@@ -19,6 +19,10 @@ namespace Splatoon.Prototype
             public bool connected, initialSyncComplete;
             public int players, samples, peakPending, errors;
             public uint corrections, appliedPaint, ownershipHash;
+            public uint foamRevision,foamHash,foamRound;
+            public double foamCommitP95Ms;
+            public int foamDirtyChunksPeak,foamCommitSamples;
+            public long foamBytesSent;
             public double duration, joinSeconds, rttMeanMs, rttP95Ms, frameP95Ms, frameP99Ms, maxCorrection, gcMeanBytes;
             public long[] serializedBytesByKind;
             public string[] trafficKinds;
@@ -45,6 +49,9 @@ namespace Splatoon.Prototype
         }
         [Serializable] sealed class PlayerShots { public ulong player; public uint shots; }
         readonly List<double> _frames = new(20000), _rtt = new(20000), _snapshotAges = new(20000);
+        readonly List<double> _foamTimes=new(4096);
+        readonly List<string> _foamStates=new(1024);
+        uint _lastFoamCommit;
         readonly Dictionary<ulong, uint> _shots = new(8);
         readonly HashSet<string> _errors = new();
         readonly List<Sample> _samples = new(2400);
@@ -135,6 +142,14 @@ namespace Splatoon.Prototype
                         requiredPaint = authority.RequiredPaintSequence, paintPending = player.PaintReplayPending,
                         syncPause = player.InitialSyncPauseSeconds, timeoutPause = player.InputTimeoutPauseSeconds,
                         correction = player.LastCorrectionDistance, x = predicted.Position.x, y = predicted.Position.y, z = predicted.Position.z });
+                    if(match.Arena.Foam!=null)
+                    {
+                        var foam=match.Arena.Foam;_result.foamRevision=foam.Revision;_result.foamHash=foam.StateHash();_result.foamRound=match.State.Value.Round;
+                        _result.foamBytesSent=match.FoamBytesSent;
+                        _foamStates.Add(FormattableString.Invariant($"{elapsed:F3},{_result.foamRound},{foam.Revision},{_result.foamHash},{match.AppliedPaintSequence},{match.Arena.OwnershipHash()}"));
+                        if(foam.CommitCount!=_lastFoamCommit&&foam.LastDirtyChunks>0)
+                        {_lastFoamCommit=foam.CommitCount;_foamTimes.Add(foam.LastCommitMilliseconds);_result.foamDirtyChunksPeak=Math.Max(_result.foamDirtyChunksPeak,foam.LastDirtyChunks);}
+                    }
                 }
                 foreach (var pair in PrototypePlayer.ByOwner)
                     if (pair.Value != null && pair.Value.IsSpawned)
@@ -157,6 +172,7 @@ namespace Splatoon.Prototype
         {
             if (_done) return; _done = true;
             _result.duration = Time.realtimeSinceStartupAsDouble - _started; _result.samples = _frames.Count;
+            _result.foamCommitSamples=_foamTimes.Count;_result.foamCommitP95Ms=Percentile(_foamTimes,.95);
             _result.errors = _errors.Count;
             double sum = 0; foreach (var value in _rtt) sum += value;
             _result.rttMeanMs = _rtt.Count > 0 ? sum / _rtt.Count : 0;
@@ -186,6 +202,8 @@ namespace Splatoon.Prototype
             }
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_output)));
             File.WriteAllText(_output, JsonUtility.ToJson(_result, true));
+            File.WriteAllLines(Path.ChangeExtension(_output,".foam.csv"),new[]{"seconds,round,revision,foamHash,paintSequence,ownershipHash"});
+            File.AppendAllLines(Path.ChangeExtension(_output,".foam.csv"),_foamStates);
             using (var csv = new StreamWriter(Path.ChangeExtension(_output, ".csv")))
             {
                 csv.WriteLine("seconds,frameMs,gameRttMs,inputAckMs,pendingInputs,corrections,correctionMetres,lastReplaySteps,paperPoseVersion,acknowledgedInput,appliedPaint,requiredPaint,paintReplayPending,initialSyncPauseSeconds,inputTimeoutPauseSeconds,x,y,z");

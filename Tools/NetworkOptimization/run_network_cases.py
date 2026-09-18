@@ -15,7 +15,7 @@ def free_port():
         sock.bind(("127.0.0.1", 0)); return sock.getsockname()[1]
 
 
-def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario="inkperf", reconnect=False, playing=False):
+def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario="inkperf", reconnect=False, playing=False, foam_reset=False, headless=False):
     output.mkdir(parents=True, exist_ok=True)
     upstream, front = free_port(), free_port()
     handles, processes = [], []
@@ -31,7 +31,9 @@ def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario
                "--seconds", str(seconds + 12), "--output", str(output / "proxy.json")], "proxy")
         common = [str(exe), "-batchmode", "-screen-width", "640", "-screen-height", "360", "-force-d3d11",
                   "-inkSmokeCase", scenario, "-lanAddress", "127.0.0.1", "-networkProbe"]
+        if headless: common.insert(1,"-nographics")
         round_args = ["-inkPerfRound"] if playing else []
+        if foam_reset: round_args += ["-foamRoundReset"]
         start(common + [str(seconds), "-lanSmokeHost", "-lanPort", str(upstream), "-inkLabel", "host",
                         "-networkProbeOutput", str(output / "host.json"), "-logFile", str(output / "host.log")] + round_args, "host")
         begin = time.monotonic()
@@ -52,17 +54,26 @@ def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario
                 # Require actual combat progress; process startup can consume the old 20s delay.
                 while time.monotonic() - begin < seconds - 20:
                     log = (output / "host.log").read_text(encoding="utf-8", errors="replace")
-                    samples = re.findall(r"phase=(\w+) round=(\d+) players=(\d+)[^\r\n]*paintSeq=(\d+)", log)
+                    if scenario == "foam":
+                        foam_samples = re.findall(r"\[FOAM-PROBE\] round=(\d+) players=(\d+) revision=(\d+)", log)
+                        samples = [("Practice", *sample) for sample in foam_samples]
+                    else:
+                        samples = re.findall(r"phase=(\w+) round=(\d+) players=(\d+)[^\r\n]*paintSeq=(\d+)", log)
                     if samples:
                         phase, round_id, count, sequence = samples[-1]
                         count, sequence = int(count), int(sequence)
-                        if time.monotonic() - ready_at >= 20 and count == players - 1 and sequence >= 1500 and (not playing or phase == "Playing"):
-                            late_evidence = {"phase": phase, "round": int(round_id), "players": count, "paintSequence": sequence, "secondsAfterHostReady": time.monotonic() - ready_at}
+                        if time.monotonic() - ready_at >= (10 if scenario == "foam" else 20) and count == players - 1 and sequence >= (20 if scenario == "foam" else 1500) and (not playing or phase == "Playing"):
+                            late_evidence = {"phase": phase, "round": int(round_id), "players": count, "foamRevision" if scenario == "foam" else "paintSequence": sequence, "secondsAfterHostReady": time.monotonic() - ready_at}
                             break
                     time.sleep(.25)
                 if late_evidence is None:
-                    raise RuntimeError("The room did not reach seven active players and 1500 paint stamps before late join.")
+                    threshold = "20 foam revisions" if scenario == "foam" else "1500 paint stamps"
+                    raise RuntimeError(f"The room did not reach seven active players and {threshold} before late join.")
             duration = max(12, seconds - (time.monotonic() - begin) - 3)
+            if scenario == "foam" and reconnect:
+                # The shared cycle fixture leaves again 35 s after reconnecting.
+                # Capture its resumed state before that intentional final departure.
+                duration = min(duration, 65)
             name = f"client-{i}"
             cycle = ["-lanLeaveAfter", "35", "-lanCycles", "1"] if reconnect else []
             start(common + [str(duration), "-lanSmokeClient", "-lanPort", str(front), "-inkLabel", name,
@@ -77,7 +88,7 @@ def run_case(exe, output, rtt, loss, players=2, late=False, seconds=50, scenario
                 process.terminate(); process.wait(timeout=10)
             codes[name] = process.returncode
         result = {"rtt_ms": rtt, "loss_percent": loss, "players": players, "late_join": late,
-                  "scenario": scenario, "reconnect": reconnect, "playing": playing, "late_join_evidence": late_evidence, "exit_codes": codes}
+                  "scenario": scenario, "reconnect": reconnect, "playing": playing,"headless":headless, "late_join_evidence": late_evidence, "exit_codes": codes}
         result["reports"] = {}
         for name, _ in processes:
             path = output / f"{name}.json"

@@ -11,6 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: ShotgunGirlWeaponConfig
+  foamVolumePerInk: 0.06
+  foamPrimaryShare: 0.8
   m_EditorClassIdentifier: 
   weaponPrefabAddress: Weapon/Shotgun
   ammoConfig: {fileID: 11400000, guid: c8b10ff1e647419cbb79c256710469ef, type: 2}

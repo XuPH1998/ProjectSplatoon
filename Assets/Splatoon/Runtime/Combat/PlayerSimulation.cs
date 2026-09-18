@@ -81,8 +81,7 @@ namespace Splatoon.Combat
         {
             if (Physics.Raycast(origin, direction, out var hit, distance, WorldMask, QueryTriggerInteraction.Ignore))
             {
-                var surface = hit.collider.GetComponentInParent<PaintSurface>();
-                if (surface != null && surface.QueryRegion(hit.point, hit.normal, out contact)) return true;
+                if (FoamSurfaceQuery.Contact(hit.collider,hit.point,hit.normal,out contact)) return true;
             }
             contact = default; return false;
         }
@@ -92,12 +91,14 @@ namespace Splatoon.Combat
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
             BindBody(s.HeroId);
+            FollowFoam(ref s);
             // Committed recovery survives trigger release, cancellation and UI focus changes.
             if (WeaponSimulation.RecoveryLocked(s, now)) { input.Swim = false; shootingMovement = true; }
             if (now + 1e-8 < s.AttackMoveUntil) shootingMovement = true;
             var previous = s;
             s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
             StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
+            CaptureFoamSupport(ref s);
             // Traversal source may survive takeoff or seam grace; recovery requires fresh contact.
             s.FriendlyInkContact = HasFriendlyInkContact(s);
             var profile = PaperProfile;
@@ -106,12 +107,52 @@ namespace Splatoon.Combat
             PaperPoseSimulation.Resolve(ref s, previous, profile, now);
             PaperAnimation.Step(ref s, previous, dt, profile);
         }
+        bool HasFoamSupport(PlayerSnapshot s,out byte owner)
+        {
+            owner=0;var world=Arena?.Foam;
+            return s.Grounded&&s.FoamSupportRegionKey!=0&&world!=null&&world.Patches.TryGetValue(s.FoamSupportRegionKey,out var patch)&&
+                FoamSupport.Sample(patch,s,PaperProfile,out var top,out var normal,out owner)&&normal.y>=Mathf.Cos(_controller.slopeLimit*Mathf.Deg2Rad)&&Mathf.Abs(s.Position.y-top.y)<.075f;
+        }
+        public void RefreshTerrainSupport(ref PlayerSnapshot s,double now)
+        {
+            BindBody(s.HeroId);var before=s;FollowFoam(ref s);CaptureFoamSupport(ref s);PaperPoseSimulation.Resolve(ref s,before,PaperProfile,now);
+        }
+        void FollowFoam(ref PlayerSnapshot s)
+        {
+            var world=Arena?.Foam;
+            if(!s.Grounded||s.FoamSupportRegionKey==0||world==null||!world.Patches.TryGetValue(s.FoamSupportRegionKey,out var patch)||
+                !FoamSupport.Sample(patch,s,PaperProfile,out var top,out _,out _))return;
+            float delta=top.y-s.FoamSupportHeight;
+            if(delta< -_shape.StepOffset){s.Grounded=false;s.Movement=MovementMode.Air;s.VerticalSpeed=0;s.FoamSupportRegionKey=0;return;}
+            if(Mathf.Abs(delta)>.0001f)MoveFoamSupport(ref s,delta);
+        }
+        void MoveFoamSupport(ref PlayerSnapshot s,float delta)
+        {
+            bool enabled=_controller.enabled;_controller.enabled=false;s.Position+=Vector3.up*delta;_root.position=s.Position;_controller.enabled=enabled;
+        }
+        void CaptureFoamSupport(ref PlayerSnapshot s)
+        {
+            if(!s.Grounded){s.FoamSupportRegionKey=0;return;}
+            var world=Arena?.Foam;if(world==null)return;
+            FoamPatch patch=null;
+            if(Physics.Raycast(s.Position+Vector3.up*.1f,Vector3.down,out var hit,.3f,WorldMask,QueryTriggerInteraction.Ignore)&&
+                FoamSurfaceQuery.Contact(hit.collider,hit.point,hit.normal,out var contact)&&contact.IsFoam)world.Patches.TryGetValue(contact.Region.Key(contact.Surface),out patch);
+            if(patch==null&&s.FoamSupportRegionKey!=0)world.Patches.TryGetValue(s.FoamSupportRegionKey,out patch);
+            if(patch==null||!FoamSupport.Sample(patch,s,PaperProfile,out var top,out _,out _)){s.FoamSupportRegionKey=0;return;}
+            if(s.ShowsSwimBody&&Mathf.Abs(top.y-s.Position.y)>.001f)
+            {
+                float delta=top.y-s.Position.y;
+                if(delta< -_shape.StepOffset){s.Grounded=false;s.Movement=MovementMode.Air;s.FoamSupportRegionKey=0;return;}
+                MoveFoamSupport(ref s,delta);
+            }
+            s.FoamSupportRegionKey=patch.Key;s.FoamSupportHeight=top.y;
+        }
 
         bool HasFriendlyInkContact(PlayerSnapshot s)
         {
             if (s.Health <= 0 || !s.Swimming || s.Team == 0 || s.Team == 255) return false;
             if (s.Movement == MovementMode.GroundInk && s.Grounded)
-                return PrototypeArena.TryGetGround(s.Position, out byte owner, _controller.slopeLimit) && owner == s.Team;
+                return (HasFoamSupport(s,out byte owner)||PrototypeArena.TryGetGround(s.Position, out owner, _controller.slopeLimit)) && owner == s.Team;
             if (s.Movement != MovementMode.WallInk) return false;
             return Query(s.Position + Vector3.up * CompactCenterY, -s.WallNormal, _controller.radius + .065f, out var contact) &&
                 contact.Owner == s.Team && contact.Climbable && Vector3.Dot(contact.Normal, s.WallNormal) > .99f;
@@ -124,7 +165,7 @@ namespace Splatoon.Combat
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
             s.Yaw = input.Look.x; s.Pitch = input.Look.y;
             bool jump = input.JumpSequence != s.ConsumedJump; s.ConsumedJump = input.JumpSequence;
-            bool groundContact = PrototypeArena.TryGetGround(s.Position, out byte floor, _controller.slopeLimit);
+            bool groundContact = HasFoamSupport(s,out byte floor)||PrototypeArena.TryGetGround(s.Position, out floor, _controller.slopeLimit);
             bool grounded = s.VerticalSpeed <= 0 && s.Grounded && (_controller.isGrounded || groundContact);
             // A flight retains its source across human/paper switches. A fresh
             // airborne spawn (or hero change) defaults to neutral swimming.
@@ -232,7 +273,19 @@ namespace Splatoon.Combat
             s.VerticalSpeed = AirSwimSimulation.VerticalSpeed(s.VerticalSpeed, airSwim, c, dt);
             var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
-            s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
+            var oldPosition=s.Position;
+            s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position;
+            bool foamGround=!jump&&s.VerticalSpeed<=0&&HasFoamSupport(s,out _);
+            if(!foamGround&&s.VerticalSpeed<=0&&s.ShowsSwimBody&&Arena?.Foam!=null)
+            {
+                foreach(var patch in Arena.Foam.PatchValues)
+                {
+                    if(!FoamSupport.Sample(patch,s,PaperProfile,out var top,out var normal,out _)||normal.y<Mathf.Cos(_controller.slopeLimit*Mathf.Deg2Rad))continue;
+                    if(oldPosition.y>=top.y-.001f&&s.Position.y<=top.y)
+                    {MoveFoamSupport(ref s,top.y-s.Position.y);s.FoamSupportRegionKey=patch.Key;s.FoamSupportHeight=top.y;foamGround=true;break;}
+                }
+            }
+            s.Grounded = _controller.isGrounded||foamGround;
             // Resolve the destination before resources/presentation, including landing and fresh enemy paint.
             if (s.Grounded)
             {
@@ -271,7 +324,7 @@ namespace Splatoon.Combat
             // The support point has now reached the floor. Standing from here
             // uses this contact, not the old human origin below the sheet.
             s.AirHumanOffset = 0;
-            PrototypeArena.TryGetGround(s.Position, out byte floor, _controller.slopeLimit);
+            if(!HasFoamSupport(s,out byte floor))PrototypeArena.TryGetGround(s.Position, out floor, _controller.slopeLimit);
             bool allowed = input.Swim && !wantsFire && !IsEnemy(floor, s.Team);
             s.CompactBody = !allowed && (s.Swimming || s.CompactBody) && !CanStand(s.Position);
             s.Swimming = allowed;

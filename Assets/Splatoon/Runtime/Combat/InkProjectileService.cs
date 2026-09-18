@@ -297,6 +297,7 @@ namespace Splatoon.Combat
         }
         public void Simulate(double until)
         {
+            PruneFoamBudgets(until);
             if (!_clockReady)
             {
                 if (_active.Count == 0 && _paintDrops.Count == 0 && _wallDrops.Count == 0) return;
@@ -484,7 +485,7 @@ namespace Splatoon.Combat
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed, Direction = paintDirection ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clip.ClipEnabled, Clip0 = clip.Clip0, Clip1 = clip.Clip1 });
 #endif
             if (PrototypeMatch.Current != null)
-                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed, paintDirection, depthScale, clip.ClipEnabled, clip.Clip0, clip.Clip1);
+                PaintFoam(surface,shot,new PaintStamp { Round=shot.Round,SurfaceId=surface.SurfaceId,Team=shot.Team,Position=point,Normal=normal,Radius=radius,Hardness=w.PaintHardness,Strength=w.PaintStrength,ShapeSeed=shapeSeed,Direction=paintDirection??Vector3.zero,DepthScale=depthScale,ClipEnabled=clip.ClipEnabled,Clip0=clip.Clip0,Clip1=clip.Clip1 },ordinal,impact);
         }
         private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity = null)
         {
@@ -517,6 +518,6 @@ namespace Splatoon.Combat
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });
         }
         public InkShot[] LiveShots() => _active.ConvertAll(a => a.Shot).ToArray();
-        public void Clear() { _active.Clear(); Spawned.Clear(); Bounces.Clear(); Impacts.Clear(); Explosions.Clear(); _exploded.Clear(); _shapes.Clear(); _paintDrops.Clear(); _wallDrops.Clear(); _legacyFeet.Clear(); _clockReady=false; }
+        public void Clear() { ClearFoamBudgets(); _active.Clear(); Spawned.Clear(); Bounces.Clear(); Impacts.Clear(); Explosions.Clear(); _exploded.Clear(); _shapes.Clear(); _paintDrops.Clear(); _wallDrops.Clear(); _legacyFeet.Clear(); _clockReady=false; }
     }
 }

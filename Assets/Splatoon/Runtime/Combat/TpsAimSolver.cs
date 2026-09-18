@@ -95,6 +95,11 @@ namespace Splatoon.Combat
             closest = default;
             if (distance <= Epsilon || direction.sqrMagnitude <= Epsilon * Epsilon) return false;
             direction.Normalize();
+            if (playersOnly != true && Splatoon.Painting.FoamSurfaceQuery.InsideOrNear(origin, radius, out var initialFoam, out var initialPoint, out var initialNormal, out float initialDistance))
+            {
+                closest = new TpsCollision { Collider = initialFoam.Collider, Point = initialPoint, Normal = initialNormal, Distance = initialDistance };
+                return true;
+            }
             int count;
             do
             {
@@ -129,6 +134,7 @@ namespace Splatoon.Combat
             {
                 var collider = _overlaps[i];
                 if (!Valid(collider, shooter, ignoreTeam) || Ignored(collider, ignored) || !Matches(collider,playersOnly)) continue;
+                if(collider.GetComponent<Splatoon.Painting.FoamChunk>()!=null)continue;
                 var paper = collider.GetComponentInParent<SwimBody>();
                 Vector3 point = paper != null && collider == paper.HitVolume && !paper.HitVolume.convex
                     ? paper.ClosestHitPoint(origin) : collider.ClosestPoint(origin);
@@ -137,6 +143,11 @@ namespace Splatoon.Combat
                 nearest = delta.sqrMagnitude;
                 closest = new TpsCollision { Collider = collider, Point = point, Normal = nearest > Epsilon * Epsilon ? delta.normalized : fallbackNormal,
                     Distance = Mathf.Sqrt(nearest) };
+            }
+            if(playersOnly!=true && Splatoon.Painting.FoamSurfaceQuery.InsideOrNear(origin,radius,out var foam,out var foamPoint,out var foamNormal,out float foamDistance))
+            {
+                float squared=foamDistance*foamDistance;
+                if(squared<nearest){nearest=squared;closest=new TpsCollision{Collider=foam.Collider,Point=foamPoint,Normal=foamNormal,Distance=Mathf.Sqrt(squared)};}
             }
             // PhysX may omit a sphere fully contained inside a non-convex mesh.
             // Test the same thin prism union analytically for embedded projectiles.

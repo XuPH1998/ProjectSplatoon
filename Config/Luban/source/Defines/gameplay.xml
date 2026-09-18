@@ -58,6 +58,10 @@
     <var name="name" type="string" comment="场地名称" />
     <var name="sceneAddress" type="string" comment="场景地址" />
     <var name="cellSize" type="float" comment="归属网格边长（米）" />
+    <var name="foamCellSize" type="float" comment="泡沫：高度采样间距（米）" />
+    <var name="foamChunkSize" type="float" comment="泡沫：分块边长（米）" />
+    <var name="foamMaxHeight" type="float" comment="泡沫：最大新增高度（米）" />
+    <var name="foamCeilingGap" type="float" comment="泡沫：顶部障碍间隙（米）" />
   </bean>
   <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id" />
   <bean name="GlobalConfig" comment="Global 强类型配置">
@@ -80,6 +84,9 @@
     <var name="simulationRate" type="int" comment="玩法模拟和输入采样频率（Hz）" />
     <var name="aimCorrectionDistance" type="float" comment="瞄准：近端收敛点距逻辑摄像机的距离（米，必须大于0）" />
     <var name="aimFarCorrectionDistance" type="float" comment="瞄准：无命中时远端收敛距离（米，不小于近端距离）" />
+    <var name="foamCommitRate" type="int" comment="泡沫：权威地形提交频率（Hz，整除模拟频率）" />
+    <var name="foamDissolveRatio" type="float" comment="泡沫：敌方消融效率倍率" />
+    <var name="foamSlopeDegrees" type="float" comment="泡沫：自由坡面目标角度（度）" />
   </bean>
   <table name="TbGlobal" value="GlobalConfig" input="TbGlobal.xlsx" mode="map" index="id" />
 </module>

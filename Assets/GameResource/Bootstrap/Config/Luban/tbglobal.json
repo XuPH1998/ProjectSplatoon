@@ -18,6 +18,9 @@
     "maxPaintMemoryMiB": 128,
     "simulationRate": 60,
     "aimCorrectionDistance": 6,
-    "aimFarCorrectionDistance": 50
+    "aimFarCorrectionDistance": 50,
+    "foamCommitRate": 20,
+    "foamDissolveRatio": 1.5,
+    "foamSlopeDegrees": 35
   }
 ]

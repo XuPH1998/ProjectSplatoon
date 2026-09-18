@@ -44,7 +44,11 @@ namespace Splatoon.Config
                 Require(m.MaxPlayers >= 2 && m.MaxPlayers <= 8 && m.MinPlayers >= 2 && m.MinPlayers <= m.MaxPlayers && m.MatchSeconds > 0, "当前模式要求 2–8 人，每队最多 4 人");
             }
             foreach (var a in tables.TbMap.DataList)
+            {
                 Require(a.CellSize >= .0625f && a.CellSize <= .5f && !string.IsNullOrWhiteSpace(a.SceneAddress), "地图网格或场景地址配置无效");
+                Require(a.FoamCellSize>=.125f&&a.FoamCellSize<=.5f&&a.FoamChunkSize>=a.FoamCellSize&&a.FoamChunkSize<=8&&a.FoamMaxHeight>0&&a.FoamMaxHeight<=10&&a.FoamCeilingGap>=.01f,"泡沫地图参数无效");
+            }
+            Require(global.FoamCommitRate>0&&global.SimulationRate%global.FoamCommitRate==0&&global.FoamDissolveRatio>0&&global.FoamSlopeDegrees>0&&global.FoamSlopeDegrees<=45,"泡沫提交频率、消融或坡度无效");
             Require(global.NetworkTickRate >= 10 && global.NetworkTickRate <= 120 && global.ProjectileStepRate >= global.NetworkTickRate && global.ProjectileStepRate % global.NetworkTickRate == 0 && global.ProjectileStepRate <= 480, "网络频率与子步频率必须整除");
             Require(global.SimulationRate == 60 && global.SimulationRate % global.NetworkTickRate == 0 && global.ProjectileStepRate % global.SimulationRate == 0, "玩法固定 60Hz，输入发送与弹道子步必须整除");
             Require(global.AimCorrectionDistance > 0, "瞄准近端收敛距离必须为有限正数（米）");

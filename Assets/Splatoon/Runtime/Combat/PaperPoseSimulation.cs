@@ -40,6 +40,10 @@ namespace Splatoon.Combat
                 }
                 return;
             }
+            var foam=PrototypeArena.Current?.Foam;
+            if(next==PaperPose.Ground&&foam!=null&&foam.Patches.TryGetValue(s.FoamSupportRegionKey,out var patch)&&
+                FoamSupport.Sample(patch,s,profile,out var support,out var supportNormal,out _))
+            {s.PaperRotation=GroundRotation(supportNormal,s.Yaw);s.PaperCenter=support+supportNormal*offset;return;}
             if (next == PaperPose.Ground && Physics.Raycast(s.Position + Vector3.up * .3f, Vector3.down,
                 out var ground, .65f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore))
             {

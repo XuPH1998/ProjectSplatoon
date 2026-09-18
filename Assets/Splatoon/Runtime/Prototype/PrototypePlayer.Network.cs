@@ -241,8 +241,9 @@ namespace Splatoon.Prototype
         {
             EnsureHeroPresentation(s.HeroId);
             s.SimulatedAt = now; s.SimulationTick++;
+            if (IsServer && PrototypeMatch.Current != null) { s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;s.RequiredFoamRevision=PrototypeMatch.Current.FoamRevision; }
             if (phase == MatchPhase.Finished)
-            { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
+            { _motor.RefreshTerrainSupport(ref s,now);WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             var hero = GameplayConfig.GetHero(s.HeroId);
             var w = GameplayConfig.GetWeapon(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
@@ -252,12 +253,13 @@ namespace Splatoon.Prototype
             bool fire = WeaponSimulation.WantsFire(s, input, w, now);
             _motor.Step(ref s, input, dt, now, fire, WeaponSimulation.IsSplatling(w) ? SplatlingSimulation.MovementSpeed(s, w) : w.ShootMoveSpeed,
                 ((WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsBlaster(w)) || WeaponSimulation.IsBubble(w)) && s.FireVisualUntil > now);
-            if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
             if (s.Health <= 0) { if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
             if (IsServer) SwimBody?.ApplyCollision(s);
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
+            if(s.Grounded&&PrototypeArena.Current?.Foam!=null&&PrototypeArena.Current.Foam.Patches.TryGetValue(s.FoamSupportRegionKey,out var support))
+                FoamSupport.Sample(support,s,SwimBody?.Profile,out _,out _,out floor);
             ResourceSimulation.Step(ref s, hero, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }

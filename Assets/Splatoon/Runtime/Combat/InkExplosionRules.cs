@@ -67,6 +67,9 @@ namespace Splatoon.Combat
             }
             if (ammo.ExplosionPaint && radius > 0)
             {
+                BeginFoamGroup();
+                try
+                {
                 _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear(); _explosherPaintPlanes.Clear();
                 // First-hit rays produce an actual surface normal and never stamp a wall's
                 // far side. Downward ray guarantees floor coverage, even between fan samples.
@@ -79,6 +82,8 @@ namespace Splatoon.Combat
                     float y = 1 - 2 * (i + .5f) / 40, r = Mathf.Sqrt(1 - y * y), angle = i * 2.39996323f;
                     PaintExplosionRay(shot, origin, new Vector3(Mathf.Cos(angle) * r, y, Mathf.Sin(angle) * r), searchRadius, collision);
                 }
+                }
+                finally { EndFoamGroup(shot); }
             }
             Explosions.Add(new InkExplosionEvent { Round = shot.Round, ShotId = shot.Id, ActionId = shot.ActionId, Shooter = shot.Shooter,
                 Team = shot.Team, HeroId = shot.HeroId, ConfigurationRevision = shot.ConfigurationRevision, Seed = shot.Seed,

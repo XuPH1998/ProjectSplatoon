@@ -9,11 +9,20 @@ namespace Splatoon.Prototype
     public sealed partial class PrototypePlayer
     {
         bool _paintReplayPending, _syncReplayPending;
+        bool _foamReplayPending;
+        uint _predictionFoamRevision;
         static readonly ProfilerMarker PredictionReplayMarker = new("Splatoon.Prediction.Reconcile");
 
         void RefreshPredictionPaint(PlayerSnapshot authority, bool initialSyncComplete, uint appliedSequence, MatchPhase phase)
         {
             if (!initialSyncComplete) { _syncReplayPending = true; return; }
+            var match=PrototypeMatch.Current;
+            if(match!=null)
+            {
+                if(authority.RequiredFoamRevision>match.FoamRevision){_foamReplayPending=true;return;}
+                if(_foamReplayPending||_predictionFoamRevision!=match.FoamRevision)
+                {ReconcilePrediction(authority,authority.Movement!=_predicted.Movement,true,appliedSequence,phase);return;}
+            }
             if (!_syncReplayPending && (!_paintReplayPending || appliedSequence < authority.RequiredPaintSequence)) return;
             RecordPaintReplay();
             ReconcilePrediction(authority, false, true, appliedSequence, phase);
@@ -22,6 +31,10 @@ namespace Splatoon.Prototype
         void ReconcilePrediction(PlayerSnapshot authority, bool movementChanged, bool initialSyncComplete, uint appliedSequence, MatchPhase phase)
         {
             using var sample = PredictionReplayMarker.Auto();
+            var match=PrototypeMatch.Current;
+            if(initialSyncComplete&&match!=null&&authority.RequiredFoamRevision>match.FoamRevision)
+            {_foamReplayPending=true;return;}
+            _foamReplayPending=false;_predictionFoamRevision=match?.FoamRevision??0;
             var oldPosition = _predicted.Position;
             bool lifecycle = authority.Revision != _predicted.Revision;
             RecordInputAcknowledgement(authority);

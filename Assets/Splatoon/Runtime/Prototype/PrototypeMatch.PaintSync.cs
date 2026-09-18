@@ -62,11 +62,11 @@ namespace Splatoon.Prototype
             {
                 bool gap = _buffered.Count > 0 && InitialSyncComplete && !_buffered.ContainsKey(_appliedSequence + 1);
                 bool stalled = _incoming != null && Time.unscaledTimeAsDouble - _incoming.LastProgress > GameplayConfig.Global.ConnectionTimeout * 2;
-                if ((gap || stalled || _syncRetryPending) && Time.unscaledTime - _lastGapRequest > 2)
+                if ((gap || stalled || FoamSyncStalled() || _syncRetryPending) && Time.unscaledTime - _lastGapRequest > 2)
                 { _lastGapRequest = Time.unscaledTime; _incoming = null; _syncRetryPending = false; InitialSyncComplete = false; RequestSnapshotRpc(); }
                 return;
             }
-            if (!_capturing && ((_checkpoint == null && _waiting.Count > 0) || PaintSequence - (_checkpoint?.Sequence ?? 0) >= GameplayConfig.Global.CheckpointStamps)) CaptureCheckpoint().Forget();
+            if (!_capturing && ((_checkpoint == null && _waiting.Count > 0) || PaintSequence - (_checkpoint?.Sequence ?? 0) >= GameplayConfig.Global.CheckpointStamps || FoamRevision-(_checkpoint?.FoamRevision??0)>=100)) CaptureCheckpoint().Forget();
             if (_checkpoint != null && _checkpointBytes != null && _waiting.Count > 0)
             {
                 _syncWaiting.Clear(); foreach (var client in _waiting) _syncWaiting.Add(client);
@@ -114,7 +114,7 @@ namespace Splatoon.Prototype
         private async UniTaskVoid CaptureCheckpoint()
         {
             _capturing = true; int generation = _captureGeneration;
-            var checkpoint = new PaintCheckpoint { Round = State.Value.Round, Sequence = PaintSequence, Topology = Arena.BakedTopology, Ownership = Arena.CaptureOwnership() };
+            var checkpoint = new PaintCheckpoint { Round = State.Value.Round, Sequence = PaintSequence, Topology = Arena.BakedTopology, Ownership = Arena.CaptureOwnership(),FoamRevision=FoamRevision,FoamEndRevision=FoamRevision,Foam=Arena.Foam?.Capture()??Array.Empty<byte>() };
             int pending = 0; bool failed = false;
             try
             {
@@ -146,6 +146,7 @@ namespace Splatoon.Prototype
                 await UniTask.SwitchToMainThread();
                 if (generation != _captureGeneration || !IsSpawned) return;
                 _checkpoint = checkpoint; _checkpointBytes = encoded.bytes; _checkpointHash = encoded.hash; _journal.RemoveAll(s => s.Sequence <= checkpoint.Sequence);
+                PruneFoamJournal(checkpoint.FoamRevision);
                 Debug.Log($"[INK] Checkpoint round={checkpoint.Round} seq={checkpoint.Sequence} surfaces={checkpoint.Surfaces.Count} bytes={encoded.bytes.Length} rtMiB={PaintSurface.AllocatedBytes / 1048576f:F1}");
             }
             catch (Exception e) { Debug.LogException(e); }
@@ -155,11 +156,12 @@ namespace Splatoon.Prototype
         {
             // Pin the historical boundary. Later checkpoints may prune the shared journal.
             var journal = _journal.ToArray();
+            var checkpointBytes=EncodeTransferCheckpoint(_checkpoint);
             var manifest = new SnapshotManifest { Id = ++_transferId, Round = _checkpoint.Round,
                 Sequence = _checkpoint.Sequence, EndSequence = PaintSequence, JournalCount = journal.Length,
-                Length = _checkpointBytes.Length, Hash = _checkpointHash, RecordBytes = GameplayConfig.Global.SnapshotChunkBytes };
+                Length = checkpointBytes.Length, Hash = PaintSnapshotCodec.Hash(checkpointBytes), RecordBytes = GameplayConfig.Global.SnapshotChunkBytes };
             var layout = new SnapshotTransferLayout(manifest);
-            var t = new Transfer { Layout = layout, Bytes = _checkpointBytes, Journal = journal, Target = Target(client),
+            var t = new Transfer { Layout = layout, Bytes = checkpointBytes, Journal = journal, Target = Target(client),
                 Window = new SnapshotSendWindow(layout.TotalRecords, GameplayConfig.Global.SnapshotMaxInFlightRecords, Time.unscaledTimeAsDouble) };
             _transfers[client] = t;
             SnapshotBeginClientRpc(manifest, t.Target);
@@ -238,17 +240,19 @@ namespace Splatoon.Prototype
                 var manifest = t.Layout.Manifest;
                 if (PaintSnapshotCodec.Hash(t.Bytes) != manifest.Hash) throw new InvalidOperationException("快照完整性校验失败");
                 var sizes = PrototypeArena.Current.Surfaces.ToDictionary(p => p.Key, p => p.Value.TextureBytes);
-                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Arena.BakedTopology, Arena.OwnershipSizes(), sizes);
+                var checkpoint = PaintSnapshotCodec.Decode(t.Bytes, Arena.BakedTopology, Arena.OwnershipSizes(), sizes,(Arena.Foam?.NodeCount??0)*3);
                 if (checkpoint.Round != _paintRound || checkpoint.Sequence != manifest.Sequence) throw new InvalidOperationException("快照边界不一致");
                 for (uint sequence = manifest.Sequence; sequence < manifest.EndSequence;)
                     if (!_buffered.ContainsKey(++sequence)) throw new InvalidOperationException("补同步历史墨迹缺失");
+                ValidateFoamCheckpoint(checkpoint);
                 PrototypeArena.Current.ClearPaint();
                 Arena.RestoreOwnership(checkpoint.Ownership);
                 foreach (var pair in checkpoint.Surfaces) PrototypeArena.Current.Surfaces[pair.Key].Restore(pair.Value);
+                RestoreFoamCheckpoint(checkpoint);
                 _appliedSequence = checkpoint.Sequence;
                 _obsoletePaint.Clear(); foreach (var sequence in _buffered.Keys) { if (sequence > _appliedSequence) break; _obsoletePaint.Add(sequence); }
                 foreach (var sequence in _obsoletePaint) _buffered.Remove(sequence);
-                _incoming = null; InitialSyncComplete = true; DrainPaint(); AckSnapshotRpc(round, id);
+                _incoming = null; InitialSyncComplete = true; DrainPaint(); DrainFoam(); AckSnapshotRpc(round, id);
                 LastSnapshotSeconds = Time.unscaledTimeAsDouble - _snapshotStarted;
                 Debug.Log($"[INK] Snapshot applied round={_paintRound} seq={_appliedSequence} surfaces={checkpoint.Surfaces.Count} hash={Arena.OwnershipHash()}");
             }

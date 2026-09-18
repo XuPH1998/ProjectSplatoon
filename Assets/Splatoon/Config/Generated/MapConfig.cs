@@ -24,6 +24,10 @@ public sealed partial class MapConfig : Luban.BeanBase
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
         { if(!_buf["sceneAddress"].IsString) { throw new SerializationException(); }  SceneAddress = _buf["sceneAddress"]; }
         { if(!_buf["cellSize"].IsNumber) { throw new SerializationException(); }  CellSize = _buf["cellSize"]; }
+        { if(!_buf["foamCellSize"].IsNumber) { throw new SerializationException(); }  FoamCellSize = _buf["foamCellSize"]; }
+        { if(!_buf["foamChunkSize"].IsNumber) { throw new SerializationException(); }  FoamChunkSize = _buf["foamChunkSize"]; }
+        { if(!_buf["foamMaxHeight"].IsNumber) { throw new SerializationException(); }  FoamMaxHeight = _buf["foamMaxHeight"]; }
+        { if(!_buf["foamCeilingGap"].IsNumber) { throw new SerializationException(); }  FoamCeilingGap = _buf["foamCeilingGap"]; }
     }
 
     public static MapConfig DeserializeMapConfig(JSONNode _buf)
@@ -47,6 +51,22 @@ public sealed partial class MapConfig : Luban.BeanBase
     /// 归属网格边长（米）
     /// </summary>
     public readonly float CellSize;
+    /// <summary>
+    /// 泡沫：高度采样间距（米）
+    /// </summary>
+    public readonly float FoamCellSize;
+    /// <summary>
+    /// 泡沫：分块边长（米）
+    /// </summary>
+    public readonly float FoamChunkSize;
+    /// <summary>
+    /// 泡沫：最大新增高度（米）
+    /// </summary>
+    public readonly float FoamMaxHeight;
+    /// <summary>
+    /// 泡沫：顶部障碍间隙（米）
+    /// </summary>
+    public readonly float FoamCeilingGap;
    
     public const int __ID__ = -1840922722;
     public override int GetTypeId() => __ID__;
@@ -62,6 +82,10 @@ public sealed partial class MapConfig : Luban.BeanBase
         + "name:" + Name + ","
         + "sceneAddress:" + SceneAddress + ","
         + "cellSize:" + CellSize + ","
+        + "foamCellSize:" + FoamCellSize + ","
+        + "foamChunkSize:" + FoamChunkSize + ","
+        + "foamMaxHeight:" + FoamMaxHeight + ","
+        + "foamCeilingGap:" + FoamCeilingGap + ","
         + "}";
     }
 }

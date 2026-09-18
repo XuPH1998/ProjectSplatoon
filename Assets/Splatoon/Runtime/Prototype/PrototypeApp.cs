@@ -143,7 +143,7 @@ namespace Splatoon.Prototype
                 await WeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token, IsWeaponDebugRoom);
                 await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
-                _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
+                _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All,PrototypeArena.Current.FoamData.Signature());
                 Manager.NetworkConfig.ConnectionData = PlayerConnectionPayload.Encode(_signature, SavedUsername);
                 Manager.AddNetworkPrefab(_playerPrefab.Result); Manager.AddNetworkPrefab(_matchPrefab.Result);
                 Status = host ? "正在创建房间…" : "正在连接房主…";

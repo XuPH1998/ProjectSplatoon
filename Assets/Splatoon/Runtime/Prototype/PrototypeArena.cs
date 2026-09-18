@@ -17,6 +17,9 @@ namespace Splatoon.Prototype
         public Vector2 Dimensions = new(32, 64);
         public float OwnershipCellSize = .125f;
         public string BakedTopology;
+        public FoamTerrainData FoamData;
+        public Material FoamMaterial;
+        public FoamTerrainWorld Foam { get; private set; }
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
         PaintSurface[] _paintSurfaces = Array.Empty<PaintSurface>();
         HeroChangeZone[] _heroChangeZones;
@@ -42,6 +45,7 @@ namespace Splatoon.Prototype
         }
         public void InitializeRuntime()
         {
+            if(Foam!=null)return;
             var config = GameplayConfig.Map;
             if (OwnershipCellSize != config.CellSize)
                 throw new InvalidOperationException("场景归属网格与配置不一致");
@@ -51,6 +55,9 @@ namespace Splatoon.Prototype
             if (string.IsNullOrEmpty(BakedTopology) || BakedTopology != ComputeTopology()) throw new InvalidOperationException("地图已修改，请先执行：喷墨对战/地图/校验并烘焙当前地图");
             foreach (var surface in Surfaces.Values) { InkShapeAtlas.Configure(surface.ShapeAtlas); surface.InitializeOwnership(config.CellSize); }
             if (TotalArea <= 0) throw new InvalidOperationException("地图缺少可计分区域");
+            if(FoamData==null || FoamData.SourceTopology!=BakedTopology || FoamData.CellSize!=config.FoamCellSize || FoamData.ChunkSize!=config.FoamChunkSize || FoamData.MaxHeight!=config.FoamMaxHeight || FoamData.CeilingGap!=config.FoamCeilingGap)
+                throw new InvalidOperationException("泡沫烘焙与地图或配置不一致，请执行喷墨对战/地图/烘焙泡沫堆叠");
+            Foam?.Dispose();Foam=new FoamTerrainWorld(this,FoamData,FoamMaterial,GameplayConfig.Global.FoamDissolveRatio,GameplayConfig.Global.FoamSlopeDegrees);
         }
         public void RegisterSurfaces()
         {
@@ -111,16 +118,14 @@ namespace Splatoon.Prototype
         public byte FloorOwner(Vector3 feet)
         {
             if (!Physics.Raycast(feet + Vector3.up * .2f, Vector3.down, out var hit, .55f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return 255;
-            var surface = hit.collider.GetComponent<PaintSurface>();
-            return surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)255;
+            return FoamSurfaceQuery.Contact(hit.collider,hit.point,hit.normal,out var contact)?contact.Owner:(byte)255;
         }
         public static bool TryGetGround(Vector3 feet, out byte owner, float slopeLimit = 45)
         {
             owner = 255;
             if (!Physics.Raycast(feet + Vector3.up * .08f, Vector3.down, out var hit, .16f,
                 PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < Mathf.Cos(slopeLimit * Mathf.Deg2Rad)) return false;
-            var surface = hit.collider.GetComponentInParent<PaintSurface>();
-            owner = surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)0;
+            owner = FoamSurfaceQuery.Contact(hit.collider,hit.point,hit.normal,out var contact)?contact.Owner:(byte)0;
             return true;
         }
         public void Apply(PaintStamp stamp, bool updateOwnership)
@@ -168,7 +173,7 @@ namespace Splatoon.Prototype
             { hash = unchecked((hash ^ (uint)pair.Key) * 16777619); foreach (byte b in pair.Value.Cells) hash = unchecked((hash ^ b) * 16777619); foreach (byte b in pair.Value.State) hash = unchecked((hash ^ b) * 16777619); }
             return hash;
         }
-        public void ClearPaint() { foreach (var surface in Surfaces.Values) surface.Clear(); }
-        private void OnDestroy() { if (Current == this) Current = null; }
+        public void ClearPaint() { foreach (var surface in Surfaces.Values) surface.Clear(); Foam?.Clear(); }
+        private void OnDestroy() { Foam?.Dispose();Foam=null;if (Current == this) Current = null; }
     }
 }
