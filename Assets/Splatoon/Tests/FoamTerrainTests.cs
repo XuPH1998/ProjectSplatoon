@@ -31,6 +31,82 @@ namespace Splatoon.Tests
             FoamRules.Deposit(ref h,ref owner,1,.2f,1.5f,3);
             Assert.That(h,Is.EqualTo(.1f).Within(.00001));Assert.That(owner,Is.EqualTo(1));
         }
+        [Test]public void RoundedDepositConservesVolumeAndSleepsWithoutNewInput()
+        {
+            var setup=World();var stamp=Stamp(setup.floor,1);
+            for(int i=0;i<12;i++){stamp.ShapeSeed=InkShapeAtlas.Pack(0,(uint)(123+i));_world.Queue(setup.floor,stamp,.02f);_world.Commit(false);}
+            Assert.That(_world.PendingVolume,Is.EqualTo(.24).Within(.00024));
+            Assert.That(Math.Abs(_world.CommittedVolume-_world.PendingVolume),Is.LessThanOrEqualTo(_world.QuantizationVolumeBound+.000001));
+            uint rounds=_world.RoundingPassCount;
+            for(int i=0;i<200;i++)_world.Commit(false);
+            Assert.That(_world.RoundingPassCount,Is.EqualTo(rounds));
+            uint revision=_world.Revision;for(int i=0;i<10;i++)_world.Commit(false);
+            Assert.That(_world.Revision,Is.EqualTo(revision));
+        }
+        [Test]public void RoundedShapeIsSeededAndRepeatable()
+        {
+            var setup=World();var stamp=Stamp(setup.floor,1);
+            for(int i=0;i<5;i++){_world.Queue(setup.floor,stamp,.03f);_world.Commit(false);}
+            var expected=_world.Capture();_world.Clear();
+            for(int i=0;i<5;i++){_world.Queue(setup.floor,stamp,.03f);_world.Commit(false);}
+            Assert.That(_world.Capture(),Is.EqualTo(expected));
+            _world.Clear();stamp.ShapeSeed=InkShapeAtlas.Pack(0,8765);
+            for(int i=0;i<5;i++){_world.Queue(setup.floor,stamp,.03f);_world.Commit(false);}
+            Assert.That(_world.Capture(),Is.Not.EqualTo(expected));
+        }
+        [Test]public void InstalledChangesNotifyOnlyLiveAndSignificantUpdates()
+        {
+            World();int notifications=0;uint observedRevision=0;
+            _world.SurfaceChanged+=change=>{notifications++;observedRevision=_world.Revision;};
+            byte[] Delta(ushort height)
+            {
+                using var stream=new MemoryStream();using var writer=new BinaryWriter(stream);
+                writer.Write(1);writer.Write(8*17+8);writer.Write((ushort)1);writer.Write(height);writer.Write((byte)(height==0?0:1));return stream.ToArray();
+            }
+            _world.ApplyDelta(Delta(9),1);Assert.That(notifications,Is.Zero);
+            _world.ApplyDelta(Delta(25),2);Assert.That(notifications,Is.EqualTo(1));Assert.That(observedRevision,Is.EqualTo(2));
+            _world.ApplyDelta(Delta(200),3,present:false);Assert.That(notifications,Is.EqualTo(1));
+            var snapshot=_world.Capture();_world.Clear();_world.Restore(snapshot,3);Assert.That(notifications,Is.EqualTo(1));
+            _world.ApplyDelta(Delta(0),4);Assert.That(notifications,Is.EqualTo(2));
+        }
+        [Test]public void HeightOnlyChangesDoNotUploadOwnershipAndMetricsObserveEveryCommit()
+        {
+            World();var bytes=_world.Capture();for(int i=0;i<289;i++){bytes[i*3]=100;bytes[i*3+2]=1;}_world.Restore(bytes,1);
+            int observed=0;_world.Updated+=m=>observed++;
+            using var stream=new MemoryStream();using var writer=new BinaryWriter(stream);
+            writer.Write(1);writer.Write(8*17+8);writer.Write((ushort)1);writer.Write((ushort)130);writer.Write((byte)1);
+            _world.ApplyDelta(stream.ToArray(),2);
+            Assert.That(_world.LastMetrics.OwnerUploads,Is.Zero);
+            Assert.That(_world.LastMetrics.ColliderRebuilds,Is.EqualTo(1));
+            for(int i=0;i<5;i++)_world.Commit(false);
+            Assert.That(observed,Is.EqualTo(6));
+        }
+        [Test]public void NeighbourNormalRefreshDoesNotRecookUnchangedChunk()
+        {
+            var go=Keep(new GameObject("FoamChunkBoundaryTest"));var arena=go.AddComponent<PrototypeArena>();
+            var floor=Surface(go.transform,1,0);floor.WalkableSize=new Vector2(8,4);floor.InitializeOwnership(.125f);arena.RegisterSurfaces();
+            var data=Bake(floor);var bake=data.Patches[0];bake.Columns=33;bake.Rows=17;bake.Size=new Vector2(8,4);
+            bake.CeilingMm=new ushort[33*17];bake.Edges=new byte[33*17];
+            for(int i=0;i<bake.Edges.Length;i++){bake.CeilingMm[i]=3000;if(i%33<32)bake.Edges[i]|=1;if(i/33<16)bake.Edges[i]|=2;}
+            _world=new FoamTerrainWorld(arena,data,Keep(new Material(Shader.Find("Splatoon/FoamTerrain"))),1.5f,35);
+            var bytes=_world.Capture();for(int i=0;i<bytes.Length;i+=3){bytes[i]=100;bytes[i+2]=1;}_world.Restore(bytes,1);
+            using var stream=new MemoryStream();using var writer=new BinaryWriter(stream);
+            writer.Write(1);writer.Write(8*33+15);writer.Write((ushort)1);writer.Write((ushort)140);writer.Write((byte)1);
+            _world.ApplyDelta(stream.ToArray(),2);
+            Assert.That(_world.LastMetrics.ColliderRebuilds,Is.EqualTo(1));
+            Assert.That(_world.LastMetrics.NormalOnlyUpdates,Is.EqualTo(1));
+            Assert.That(_world.LastMetrics.OwnerUploads,Is.Zero);
+        }
+        [Test]public void LocalRoundingDoesNotRedistributeIntoEnemyFoam()
+        {
+            var setup=World();var bytes=_world.Capture();
+            for(int z=0;z<17;z++)for(int x=0;x<17;x++){int i=(z*17+x)*3;bytes[i]=100;bytes[i+2]=(byte)(x<8?1:2);}
+            _world.Restore(bytes,0);
+            var stamp=Stamp(setup.floor,1);stamp.Position.x-=.5f;stamp.Position.y=.1f;stamp.Radius=.24f;
+            _world.Queue(setup.floor,stamp,.005f);_world.Commit(false);
+            var result=_world.Capture();
+            for(int z=0;z<17;z++)for(int x=8;x<17;x++){int i=(z*17+x)*3;Assert.That(result[i],Is.EqualTo(bytes[i]));Assert.That(result[i+1],Is.EqualTo(bytes[i+1]));Assert.That(result[i+2],Is.EqualTo(2));}
+        }
         [Test]public void ExactDissolutionLeavesNeutralEmptyCell()
         {float h=.3f;byte owner=2;FoamRules.Deposit(ref h,ref owner,1,.2f,1.5f,3);Assert.That(h,Is.EqualTo(0).Within(.000001));Assert.That(owner,Is.Zero);}
         [Test]public void FriendlyGrowthHonorsCeiling()

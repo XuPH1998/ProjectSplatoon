@@ -10,7 +10,14 @@ namespace Splatoon.Painting
         public FoamPatch Patch { get; private set; }
         public MeshCollider Collider { get; private set; }
         public Mesh Mesh { get; private set; }
-        internal bool Dirty;
+        internal bool Dirty,NormalsDirty;
+        public bool RebuiltGeometry { get; private set; }
+        public double LastMeshMs { get; private set; }
+        public double LastColliderMs { get; private set; }
+        public double NextFeedbackTime;
+        static readonly Unity.Profiling.ProfilerMarker MeshMarker=new("Splatoon.Foam.Mesh");
+        static readonly Unity.Profiling.ProfilerMarker ColliderMarker=new("Splatoon.Foam.Collider");
+        static double Ms(long t)=>(System.Diagnostics.Stopwatch.GetTimestamp()-t)*1000d/System.Diagnostics.Stopwatch.Frequency;
         readonly List<Vector3> _vertices = new(), _normals = new();
         readonly List<Color> _colors = new();
         readonly List<Vector2> _uv = new();
@@ -39,7 +46,20 @@ namespace Splatoon.Painting
         }
         internal void Rebuild()
         {
-            if (!Dirty) return; Dirty = false;
+            LastMeshMs=LastColliderMs=0;RebuiltGeometry=false;
+            if(!Dirty&&!NormalsDirty)return;
+            long start=System.Diagnostics.Stopwatch.GetTimestamp();
+            if(!Dirty)
+            {
+                using var normalMarker=MeshMarker.Auto();int index=0;
+                var inverseNormals=transform.worldToLocalMatrix;
+                for(int z=_z0;z<=_z0+_nz;z++)for(int x=_x0;x<=_x0+_nx;x++)
+                    _normals[index++]=inverseNormals.MultiplyVector(Patch.Nodes[z*Patch.Columns+x].Normal).normalized;
+                if(_indices.Count>0)Mesh.SetNormals(_normals);
+                NormalsDirty=false;LastMeshMs=Ms(start);return;
+            }
+            using var meshMarker=MeshMarker.Auto();
+            Dirty=NormalsDirty=false;RebuiltGeometry=true;
             _vertices.Clear(); _indices.Clear(); _normals.Clear(); _colors.Clear(); _uv.Clear();
             var inverse=transform.worldToLocalMatrix;
             for (int z = _z0; z <= _z0+_nz; z++) for (int x = _x0; x <= _x0+_nx; x++)
@@ -64,8 +84,12 @@ namespace Splatoon.Painting
             if (active)
             {
                 Mesh.SetVertices(_vertices); Mesh.SetNormals(_normals); Mesh.SetColors(_colors); Mesh.SetUVs(0,_uv); Mesh.SetTriangles(_indices,0,true);
-                Collider.sharedMesh = Mesh;
+                LastMeshMs=Ms(start);
+                long cook=System.Diagnostics.Stopwatch.GetTimestamp();
+                using(ColliderMarker.Auto())Collider.sharedMesh=Mesh;
+                LastColliderMs=Ms(cook);
             }
+            if(!active)LastMeshMs=Ms(start);
             Collider.enabled = active; _renderer.enabled = active;
         }
         void AddTop(int a,int b,int c,int na,int nb,int nc)

@@ -134,7 +134,7 @@ namespace Splatoon.Prototype
         {
             if(Arena.Foam==null)return;
             Arena.Foam.Restore(checkpoint.Foam,checkpoint.FoamRevision);
-            foreach(var commit in checkpoint.FoamJournal)Arena.Foam.ApplyDelta(commit.Data,commit.Revision,commit.Count);
+            foreach(var commit in checkpoint.FoamJournal)Arena.Foam.ApplyDelta(commit.Data,commit.Revision,commit.Count,false);
             _foamObsolete.Clear();foreach(var pair in _foamBuffered)if(pair.Key<=FoamRevision)_foamObsolete.Add(pair.Key);foreach(uint r in _foamObsolete){_foamBuffered[r].Release();_foamBuffered.Remove(r);}
             _foamObsolete.Clear();foreach(var pair in _foamIncoming)if(pair.Key<=FoamRevision)_foamObsolete.Add(pair.Key);foreach(uint r in _foamObsolete){var incoming=_foamIncoming[r];incoming.Commit.Release();incoming.Commit=null;_foamIncomingPool.Push(incoming);_foamIncoming.Remove(r);}
         }

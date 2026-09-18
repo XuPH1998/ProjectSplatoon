@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 10;
-        public const int WeaponSimulationVersion = 14; // Authoritative foam volumes and frozen weapon budgets.
+        public const int WeaponSimulationVersion = 15; // Rounded, volume-conserving foam deposition.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null,string foamTopology="")
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);

@@ -11,6 +11,26 @@ namespace Splatoon.Painting
     {
         static readonly ProfilerMarker CommitMarker = new("Splatoon.Foam.Commit");
         static readonly ProfilerMarker MeshMarker = new("Splatoon.Foam.MeshAndCollider");
+        static readonly ProfilerMarker DepositMarker = new("Splatoon.Foam.Deposit");
+        static readonly ProfilerMarker RoundMarker = new("Splatoon.Foam.Round");
+        static readonly ProfilerMarker RelaxMarker = new("Splatoon.Foam.Relax");
+        static readonly ProfilerMarker OwnerMarker = new("Splatoon.Foam.Ownership");
+        static readonly ProfilerMarker InstallMarker = new("Splatoon.Foam.Install");
+        readonly HashSet<int> _roundNodes = new();
+        readonly List<int> _roundWork = new(4096);
+        readonly Dictionary<FoamChunk,FoamSurfaceChange> _feedback = new();
+        public event Action<FoamSurfaceChange> SurfaceChanged;
+        public event Action SurfaceReset;
+        public event Action<FoamUpdateMetrics> Updated;
+        public FoamUpdateMetrics LastMetrics { get; private set; }
+        FoamUpdateMetrics _metrics;
+        public bool PresentationEnabled { get; set; } = true;
+        public uint RoundingPassCount { get; private set; }
+        public double PendingVolume { get { double v=0;foreach(var n in _nodes)v+=n.PendingHeight*n.Area;return v; } }
+        public double CommittedVolume { get { double v=0;foreach(var n in _nodes)v+=n.Height*n.Area;return v; } }
+        public double QuantizationVolumeBound { get { double v=0;foreach(var n in _nodes)if(n.PendingHeight>0||n.HeightMm>0)v+=n.Area*.0005;return v; } }
+        static long Clock()=>System.Diagnostics.Stopwatch.GetTimestamp();
+        static double Elapsed(long start)=>(Clock()-start)*1000d/System.Diagnostics.Stopwatch.Frequency;
         readonly Dictionary<int,FoamPatch> _patches = new();
         readonly List<FoamNode> _nodes = new();
         readonly List<Request> _requests = new(256);
@@ -123,6 +143,7 @@ namespace Splatoon.Painting
         void Touch(FoamNode node){_active.Add(node.Id);}
         void Apply(Request request)
         {
+            var lobes = new FoamLobes(request.Stamp.ShapeSeed);
             _candidatePatches.Clear();_visited.Clear();_candidatePatches.Add(request.Patch);_visited.Add(request.Patch.Key);
             float reach=request.Stamp.Radius*Mathf.Max(1,request.Stamp.DepthScale)*2;
             for(int index=0;index<_candidatePatches.Count;index++)
@@ -143,7 +164,7 @@ namespace Splatoon.Painting
                     float coverage=brush.Coverage(node.Base);if(coverage<=0)continue;
                     var local=p.Inverse.MultiplyVector(node.Base-stamp.Position);
                     float d=local.x*local.x/Mathf.Max(.0001f,extent.x*extent.x)+local.z*local.z/Mathf.Max(.0001f,extent.y*extent.y);
-                    float weight=FoamRules.Kernel(d)*coverage;if(weight<=0)continue;
+                    float weight=lobes.Weight(new Vector2(local.x/Mathf.Max(.0001f,extent.x),local.z/Mathf.Max(.0001f,extent.y)))*coverage;if(weight<=0)continue;
                     // Reject disconnected footprints across fixed obstacles using the baked edge graph below.
                     _weights.Add((node,weight));total+=weight*node.Area;
                 }
@@ -160,8 +181,39 @@ namespace Splatoon.Painting
                 if(!_reachable.Contains(item.node.Id))continue;
                 var node=item.node;float limit=LimitGrowth!=null?Mathf.Min(node.Limit,LimitGrowth(node.Base,node.PendingHeight)):node.Limit;
                 FoamRules.Deposit(ref node.PendingHeight,ref node.PendingOwner,request.Stamp.Team,(float)(request.Volume*item.weight/total),_dissolve,limit);
-                Touch(node);
+                Touch(node);_roundNodes.Add(node.Id);
             }
+        }
+        void RoundDeposits()
+        {
+            if(_roundNodes.Count==0)return;
+            _roundWork.Clear();foreach(int id in _roundNodes)_roundWork.Add(id);
+            int deposited=_roundWork.Count;
+            for(int i=0;i<deposited;i++)foreach(var n in _nodes[_roundWork[i]].Neighbours)
+                if(_roundNodes.Add(n.Id))_roundWork.Add(n.Id);
+            _roundWork.Sort(NodeOrder);
+            // Bounded pairwise exchange conserves volume even when node areas differ.
+            // Smooth thickness, preserving a ramp's underlying slope. Never seed empty/enemy cells.
+            for(int pass=0;pass<2;pass++)
+            {
+                RoundingPassCount++;
+                foreach(int id in _roundWork)
+                {
+                    var a=_nodes[id];if(a.PendingHeight<=0)continue;
+                    foreach(var b in a.Neighbours)
+                    {
+                        if(b.Id<=id||!_roundNodes.Contains(b.Id)||b.PendingHeight<=0||a.PendingOwner!=b.PendingOwner)continue;
+                        var high=a.PendingHeight>b.PendingHeight?a:b;var low=high==a?b:a;
+                        float difference=high.PendingHeight-low.PendingHeight;if(difference<=.001f)continue;
+                        float limit=LimitGrowth!=null?Mathf.Min(low.Limit,LimitGrowth(low.Base,low.PendingHeight)):low.Limit;
+                        float volume=Mathf.Min(.25f*difference/(1/high.Area+1/low.Area),Mathf.Max(0,limit-low.PendingHeight)*low.Area);
+                        volume=Mathf.Min(volume,high.PendingHeight*high.Area);
+                        if(volume<=.0000001f)continue;
+                        high.PendingHeight-=volume/high.Area;low.PendingHeight+=volume/low.Area;Touch(high);Touch(low);
+                    }
+                }
+            }
+            _roundNodes.Clear();_roundWork.Clear();
         }
         void Relax()
         {
@@ -188,26 +240,38 @@ namespace Splatoon.Painting
         }
         public byte[] Commit(bool copy=true)
         {
-            long start=System.Diagnostics.Stopwatch.GetTimestamp();
+            long start=Clock();_metrics=default;_feedback.Clear();
             try{return CommitInternal(copy);}
-            finally{LastCommitMilliseconds=(System.Diagnostics.Stopwatch.GetTimestamp()-start)*1000d/System.Diagnostics.Stopwatch.Frequency;CommitCount++;}
+            finally
+            {
+                LastCommitMilliseconds=Elapsed(start);CommitCount++;
+                _metrics.TotalMs=LastCommitMilliseconds;_metrics.Revision=Revision;LastMetrics=_metrics;
+                Updated?.Invoke(_metrics);
+            }
         }
         byte[] CommitInternal(bool copy)
         {
             using var marker=CommitMarker.Auto();LastDirtyChunks=0;
-            foreach(var request in _requests)Apply(request);_requests.Clear();
+            long stage=Clock();using(DepositMarker.Auto()){foreach(var request in _requests)Apply(request);_requests.Clear();}_metrics.DepositMs=Elapsed(stage);
             if(_active.Count==0)return null;
-            Relax();_changed.Clear();_work.Clear();foreach(int id in _active)_work.Add(id);_work.Sort(NodeOrder);_active.Clear();
+            stage=Clock();using(RoundMarker.Auto())RoundDeposits();_metrics.RoundMs=Elapsed(stage);
+            stage=Clock();using(RelaxMarker.Auto())Relax();_metrics.RelaxMs=Elapsed(stage);
+            _changed.Clear();_work.Clear();foreach(int id in _active)_work.Add(id);_work.Sort(NodeOrder);_active.Clear();
             foreach(int id in _work)
             {
                 var node=_nodes[id];ushort h=FoamRules.Quantize(Mathf.Clamp(node.PendingHeight,0,node.Limit));byte owner=h==0?(byte)0:node.PendingOwner;
                 // Preserve sub-millimetre volume on the authority; quantization is only the committed surface.
                 // Otherwise small auxiliary drops disappear every 50 ms and rounding creates/destroys volume.
                 if(node.PendingHeight<=0)node.PendingOwner=0;
-                if(node.HeightMm!=h||node.Owner!=owner){bool geometry=node.HeightMm!=h;node.HeightMm=h;node.Owner=owner;_changed.Add(id);MarkGeometry(node,geometry);Touch(node);}
+                if(node.HeightMm!=h||node.Owner!=owner)
+                {
+                    bool geometry=node.HeightMm!=h,ownership=node.Owner!=owner;
+                    CollectFeedback(node,h,owner);node.HeightMm=h;node.Owner=owner;
+                    _changed.Add(id);MarkGeometry(node,geometry,ownership);Touch(node);
+                }
             }
             if(_changed.Count==0)return null;
-            PublishGeometry();Revision++;
+            PublishGeometry();Revision++;PublishFeedback();
             _deltaStream.SetLength(0);_deltaWriter.Write(_changed.Count);
             for(int n=0;n<_changed.Count;)
             {
@@ -220,20 +284,54 @@ namespace Splatoon.Painting
         void MarkNormal(FoamNode node)
         {
             if(!_dirtyNormals.Add(node.Id))return;
-            foreach(var chunk in node.Chunks){chunk.Dirty=true;_dirtyChunks.Add(chunk);}
+            foreach(var chunk in node.Chunks){chunk.NormalsDirty=true;_dirtyChunks.Add(chunk);}
         }
-        void MarkGeometry(FoamNode node,bool geometry=true)
+        void MarkGeometry(FoamNode node,bool geometry=true,bool ownership=true)
         {
-            if(geometry){MarkNormal(node);foreach(var neighbour in node.Neighbours)MarkNormal(neighbour);}
-            foreach(var patch in node.Patches){patch.MarkOwnership(node.Base);_dirtyPatches.Add(patch);}
+            if(geometry)
+            {
+                foreach(var chunk in node.Chunks){chunk.Dirty=true;_dirtyChunks.Add(chunk);}
+                MarkNormal(node);foreach(var neighbour in node.Neighbours)MarkNormal(neighbour);
+            }
+            if(ownership)foreach(var patch in node.Patches){patch.MarkOwnership(node.Base);_dirtyPatches.Add(patch);}
+        }
+        void CollectFeedback(FoamNode node,ushort height,byte owner)
+        {
+            int delta=height-node.HeightMm;
+            if(!PresentationEnabled||SurfaceChanged==null||Math.Abs(delta)<10||node.Chunks.Count==0)return;
+            // Shared boundary nodes belong to one feedback chunk, avoiding duplicate bursts.
+            var chunk=node.Chunks[0];_feedback.TryGetValue(chunk,out var change);
+            change.Chunk=chunk;
+            float weight=Math.Abs(delta)*node.Area;
+            if(delta>0){change.GrowthPosition+=(node.Base+Vector3.up*(height*.001f))*weight;change.GrowthWeight+=weight;change.GrowthTeam=owner;}
+            else {change.LossPosition+=node.Top*weight;change.LossWeight+=weight;change.LossTeam=node.Owner;}
+            _feedback[chunk]=change;
+        }
+        void PublishFeedback()
+        {
+            long start=Clock();
+            foreach(var pair in _feedback)
+            {
+                var c=pair.Value;
+                if(c.GrowthWeight>0)c.GrowthPosition/=c.GrowthWeight;
+                if(c.LossWeight>0)c.LossPosition/=c.LossWeight;
+                SurfaceChanged?.Invoke(c);
+            }
+            _feedback.Clear();_metrics.FeedbackMs=Elapsed(start);
         }
         void PublishGeometry()
         {
             using var marker=MeshMarker.Auto();LastDirtyChunks=_dirtyChunks.Count;
             foreach(int id in _dirtyNormals)_nodes[id].RefreshNormal();_dirtyNormals.Clear();
-            foreach(var patch in _dirtyPatches)patch.UpdateOwnership();
-            foreach(var chunk in _dirtyChunks)chunk.Rebuild();
-            _dirtyPatches.Clear();_dirtyChunks.Clear();Physics.SyncTransforms();
+            long stage=Clock();using(OwnerMarker.Auto())foreach(var patch in _dirtyPatches){patch.UpdateOwnership();_metrics.OwnerUploads+=patch.OwnerTexture!=null?1:0;}
+            _metrics.OwnershipMs=Elapsed(stage);
+            foreach(var chunk in _dirtyChunks)
+            {
+                chunk.Rebuild();_metrics.MeshMs+=chunk.LastMeshMs;_metrics.ColliderMs+=chunk.LastColliderMs;
+                if(chunk.RebuiltGeometry)_metrics.ColliderRebuilds++;else _metrics.NormalOnlyUpdates++;
+            }
+            _metrics.DirtyChunks=LastDirtyChunks;
+            _dirtyPatches.Clear();_dirtyChunks.Clear();if(_metrics.ColliderRebuilds>0)Physics.SyncTransforms();
         }
         public byte[] Capture()
         {
@@ -251,13 +349,13 @@ namespace Splatoon.Painting
         }
         public void Restore(byte[] bytes,uint revision)
         {
-            ValidateSnapshot(bytes);_requests.Clear();_active.Clear();
+            ValidateSnapshot(bytes);_requests.Clear();_active.Clear();_roundNodes.Clear();_feedback.Clear();_metrics=default;SurfaceReset?.Invoke();
             for(int i=0;i<_nodes.Count;i++)SetNode(i,(ushort)(bytes[i*3]|bytes[i*3+1]<<8),bytes[i*3+2]);
             Revision=revision;PublishGeometry();
         }
-        void SetNode(int id,ushort height,byte owner)
+        void SetNode(int id,ushort height,byte owner,bool feedback=false)
         {
-            var n=_nodes[id];if(n.HeightMm!=height||n.Owner!=owner){bool geometry=n.HeightMm!=height;n.HeightMm=height;n.Owner=owner;MarkGeometry(n,geometry);}
+            var n=_nodes[id];if(n.HeightMm!=height||n.Owner!=owner){bool geometry=n.HeightMm!=height,ownership=n.Owner!=owner;if(feedback)CollectFeedback(n,height,owner);n.HeightMm=height;n.Owner=owner;MarkGeometry(n,geometry,ownership);}
             n.PendingHeight=height*.001f;n.PendingOwner=owner;
         }
         ref struct DeltaReader
@@ -281,23 +379,25 @@ namespace Splatoon.Painting
             }
             if(reader.Position!=size)throw new InvalidDataException("泡沫增量尾部无效");
         }
-        public void ApplyDelta(byte[] bytes,uint revision,int length=-1)
+        public void ApplyDelta(byte[] bytes,uint revision,int length=-1,bool present=true)
         {
+            using var marker=InstallMarker.Auto();long start=Clock();_metrics=default;_metrics.Install=true;_feedback.Clear();
             if(revision!=Revision+1)throw new InvalidDataException("泡沫版本不连续");ValidateDelta(bytes,length);
             var reader=new DeltaReader(bytes,length<0?bytes.Length:length);int remaining=reader.Int();
-            while(remaining>0){int first=reader.Int(),count=reader.Short();for(int i=0;i<count;i++)SetNode(first+i,reader.Short(),reader.Byte());remaining-=count;}
-            Revision=revision;PublishGeometry();
+            while(remaining>0){int first=reader.Int(),count=reader.Short();for(int i=0;i<count;i++)SetNode(first+i,reader.Short(),reader.Byte(),present);remaining-=count;}
+            Revision=revision;PublishGeometry();if(present)PublishFeedback();
+            _metrics.TotalMs=Elapsed(start);_metrics.Revision=Revision;LastMetrics=_metrics;Updated?.Invoke(_metrics);
         }
         public void Clear()
         {
-            _requests.Clear();_active.Clear();for(int i=0;i<_nodes.Count;i++)SetNode(i,0,0);Revision=0;PublishGeometry();
+            _requests.Clear();_active.Clear();_roundNodes.Clear();_feedback.Clear();_metrics=default;SurfaceReset?.Invoke();for(int i=0;i<_nodes.Count;i++)SetNode(i,0,0);Revision=0;PublishGeometry();
         }
         public uint StateHash()
         {uint hash=2166136261;foreach(var n in _nodes){hash=unchecked((hash^(byte)n.HeightMm)*16777619);hash=unchecked((hash^(byte)(n.HeightMm>>8))*16777619);hash=unchecked((hash^n.Owner)*16777619);}return hash;}
         public void Dispose()
         {
             foreach(var p in _patches.Values){foreach(var c in p.Chunks)if(c!=null){if(Application.isPlaying)UnityEngine.Object.Destroy(c.gameObject);else UnityEngine.Object.DestroyImmediate(c.gameObject);}p.Dispose();}
-            _deltaWriter.Dispose();_deltaStream.Dispose();
+            SurfaceReset?.Invoke();SurfaceChanged=null;SurfaceReset=null;Updated=null;_deltaWriter.Dispose();_deltaStream.Dispose();
         }
     }
 }
