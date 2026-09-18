@@ -6,6 +6,9 @@ Shader "Splatoon/FoamTerrain"
         _Pink("Pink",Color)=(.9433962,.27945885,.47586557,1)
         _Blue("Blue",Color)=(.490196,.890196,.909804,1)
         _Grid("Grid",Vector)=(17,17,.0588,.0588)
+        _Pores("Baked foam detail",2D)="gray" {}
+        _FoamDetail("Scale, pore brightness, normal, highlight",Vector)=(2.5,.12,.22,.18)
+        _FoamDistance("Detail fade near/far",Vector)=(6,18,0,0)
     }
     SubShader
     {
@@ -13,8 +16,9 @@ Shader "Splatoon/FoamTerrain"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         TEXTURE2D(_Owners); SAMPLER(sampler_Owners);
+        TEXTURE2D(_Pores); SAMPLER(sampler_Pores);
         CBUFFER_START(UnityPerMaterial)
-        float4 _Pink, _Blue, _Grid;
+        float4 _Pink, _Blue, _Grid, _FoamDetail, _FoamDistance;
         CBUFFER_END
         struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float4 color:COLOR; float2 uv:TEXCOORD0; };
         struct Varyings { float4 positionCS:SV_POSITION; float3 positionWS:TEXCOORD0; float3 normalWS:TEXCOORD1; float2 uv:TEXCOORD2; float height:TEXCOORD3; float fog:TEXCOORD4; };
@@ -32,13 +36,18 @@ Shader "Splatoon/FoamTerrain"
             float2 node=weights.x>=weights.y && weights.x>=weights.z?a:weights.y>=weights.z?b:c;
             return SAMPLE_TEXTURE2D(_Owners,sampler_Owners,(node+.5)*_Grid.zw).r*255;
         }
-        float3 FoamHash(float3 p){return frac(sin(float3(dot(p,float3(127.1,311.7,74.7)),dot(p,float3(269.5,183.3,246.1)),dot(p,float3(113.5,271.9,124.6))))*43758.5453);}
-        float FoamCells(float3 p)
+        half4 FoamDetail(float3 p,float3 n,out half3 perturbation)
         {
-            float3 cell=floor(p),f=frac(p);float d=2;
-            [unroll]for(int z=-1;z<=1;z++)[unroll]for(int y=-1;y<=1;y++)[unroll]for(int x=-1;x<=1;x++)
-            {float3 q=float3(x,y,z);float3 v=q+FoamHash(cell+q)*.65+.175-f;d=min(d,dot(v,v));}
-            return sqrt(d);
+            half3 weights=abs(n);weights*=weights;weights*=weights;
+            weights/=max(dot(weights,half3(1,1,1)),.001);
+            p*=_FoamDetail.x;
+            half4 x=SAMPLE_TEXTURE2D(_Pores,sampler_Pores,p.zy);
+            half4 y=SAMPLE_TEXTURE2D(_Pores,sampler_Pores,p.xz);
+            half4 z=SAMPLE_TEXTURE2D(_Pores,sampler_Pores,p.xy);
+            half2 sx=x.rg*2-1,sy=y.rg*2-1,sz=z.rg*2-1;
+            perturbation=half3(0,sx.y,sx.x)*weights.x+half3(sy.x,0,sy.y)*weights.y+half3(sz.x,sz.y,0)*weights.z;
+            perturbation-=n*dot(perturbation,n);
+            return x*weights.x+y*weights.y+z*weights.z;
         }
         ENDHLSL
         Pass
@@ -58,20 +67,18 @@ Shader "Splatoon/FoamTerrain"
                 float owner=Owner(i.uv);
                 float3 color=owner<.5?float3(.82,.86,.9):owner<1.5?_Pink.rgb:_Blue.rgb;
                 float3 p=i.positionWS;
-                float bubbles=FoamCells(p*18);
                 float3 n=normalize(i.normalWS);
-                // Small pockets change shading only; the silhouette remains the collision mesh.
-                float3 dpdx=ddx(p),dpdy=ddy(p);
-                float3 r1=cross(dpdy,n),r2=cross(n,dpdx);
-                float determinant=dot(dpdx,r1);
-                float3 gradient=(r1*ddx(bubbles)+r2*ddy(bubbles))/max(abs(determinant),1e-7)*sign(determinant);
-                n=normalize(n-gradient*.004);
+                half3 perturbation;
+                half4 detail=FoamDetail(p,n,perturbation);
+                float distanceToCamera=distance(_WorldSpaceCameraPos,p);
+                half fade=1-smoothstep(_FoamDistance.x,_FoamDistance.y,distanceToCamera);
+                n=normalize(n+perturbation*_FoamDetail.z*fade);
                 Light light=GetMainLight(TransformWorldToShadowCoord(p));
                 float shade=saturate(dot(n,light.direction))*.65+.35;
                 float3 view=GetWorldSpaceNormalizeViewDir(p);
-                float rim=pow(1-saturate(dot(n,view)),3)*.22;
-                float highlight=pow(saturate(dot(n,normalize(light.direction+view))),28)*.22;
-                color=lerp(color,float3(1,1,1),.12+smoothstep(.5,.72,bubbles)*.16);
+                float rim=pow(1-saturate(dot(n,view)),3)*.08;
+                float highlight=pow(saturate(dot(n,normalize(light.direction+view))),lerp(10,18,detail.a))*_FoamDetail.w;
+                color=lerp(color,float3(1,1,1),.06+detail.b*_FoamDetail.y*fade);
                 color=color*(SampleSH(n)+light.color*shade*lerp(.5,1,light.shadowAttenuation))+rim+highlight;
                 return half4(MixFog(color,i.fog),1);
             }

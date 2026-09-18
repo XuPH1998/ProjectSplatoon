@@ -60,6 +60,7 @@ namespace Splatoon.Editor
             if(material==null){material=new Material(Shader.Find("Splatoon/FoamTerrain"));AssetDatabase.CreateAsset(material,MaterialPath);}
             material.SetColor("_Pink",PrototypeArena.Pink);material.SetColor("_Blue",PrototypeArena.Blue);EditorUtility.SetDirty(material);
             arena.FoamData=data;arena.FoamMaterial=material;
+            if(arena.FoamAppearance==null)arena.FoamAppearance=AssetDatabase.LoadAssetAtPath<FoamAppearanceProfile>(FoamAppearanceBuilder.ProfilePath);
             EditorUtility.SetDirty(data);EditorUtility.SetDirty(arena);
             Debug.Log($"[FOAM] Baked {data.Patches.Length} independent support patches.");
         }

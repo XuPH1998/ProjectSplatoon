@@ -19,6 +19,9 @@ namespace Splatoon.Prototype
         public string BakedTopology;
         public FoamTerrainData FoamData;
         public Material FoamMaterial;
+        public FoamAppearanceProfile FoamAppearance;
+        public FoamPresentation FoamPresentation { get; private set; }
+        Material _foamRuntimeMaterial;
         public FoamTerrainWorld Foam { get; private set; }
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
         PaintSurface[] _paintSurfaces = Array.Empty<PaintSurface>();
@@ -57,7 +60,14 @@ namespace Splatoon.Prototype
             if (TotalArea <= 0) throw new InvalidOperationException("地图缺少可计分区域");
             if(FoamData==null || FoamData.SourceTopology!=BakedTopology || FoamData.CellSize!=config.FoamCellSize || FoamData.ChunkSize!=config.FoamChunkSize || FoamData.MaxHeight!=config.FoamMaxHeight || FoamData.CeilingGap!=config.FoamCeilingGap)
                 throw new InvalidOperationException("泡沫烘焙与地图或配置不一致，请执行喷墨对战/地图/烘焙泡沫堆叠");
-            Foam?.Dispose();Foam=new FoamTerrainWorld(this,FoamData,FoamMaterial,GameplayConfig.Global.FoamDissolveRatio,GameplayConfig.Global.FoamSlopeDegrees);
+            _foamRuntimeMaterial=FoamMaterial!=null?new Material(FoamMaterial):null;
+            FoamAppearance?.Apply(_foamRuntimeMaterial);
+            Foam?.Dispose();Foam=new FoamTerrainWorld(this,FoamData,_foamRuntimeMaterial,GameplayConfig.Global.FoamDissolveRatio,GameplayConfig.Global.FoamSlopeDegrees);
+            if(FoamAppearance!=null&&SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                FoamPresentation=gameObject.AddComponent<FoamPresentation>();
+                FoamPresentation.Initialize(Foam,FoamAppearance);
+            }
         }
         public void RegisterSurfaces()
         {
@@ -174,6 +184,6 @@ namespace Splatoon.Prototype
             return hash;
         }
         public void ClearPaint() { foreach (var surface in Surfaces.Values) surface.Clear(); Foam?.Clear(); }
-        private void OnDestroy() { Foam?.Dispose();Foam=null;if (Current == this) Current = null; }
+        private void OnDestroy() { Foam?.Dispose();Foam=null;if(_foamRuntimeMaterial!=null)Destroy(_foamRuntimeMaterial);if (Current == this) Current = null; }
     }
 }
