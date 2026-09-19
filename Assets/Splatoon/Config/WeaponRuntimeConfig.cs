@@ -78,6 +78,7 @@ namespace Splatoon.Config
         public readonly float BubbleNormalRetention;
         public readonly float BubbleTangentRetention;
         public readonly float BubbleWallRetention;
+        public readonly float FloatingPitchSpreadDegrees;
         public readonly double BlasterRepeatSeconds;
         public readonly double BlasterPostSeconds;
         public readonly float BlasterPlayerRadius;
@@ -325,6 +326,7 @@ namespace Splatoon.Config
             BubbleNormalRetention = source.bubbleNormalRetention;
             BubbleTangentRetention = source.bubbleTangentRetention;
             BubbleWallRetention = source.bubbleWallRetention;
+            FloatingPitchSpreadDegrees = source.floatingPitchSpreadDegrees;
             Ammo = new AmmoRuntimeConfig(source != null ? source.ammoConfig : null);
             WeaponPrefabAddress = source.weaponPrefabAddress;
             FireMode = source.fireMode;
@@ -584,6 +586,7 @@ namespace Splatoon.Config
             writer.Write(BubbleNormalRetention);
             writer.Write(BubbleTangentRetention);
             writer.Write(BubbleWallRetention);
+            writer.Write(FloatingPitchSpreadDegrees);
             Ammo?.Write(writer);
         }
         public bool SameValues(WeaponRuntimeConfig other)

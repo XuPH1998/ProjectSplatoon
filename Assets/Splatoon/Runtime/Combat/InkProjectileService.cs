@@ -168,6 +168,13 @@ namespace Splatoon.Combat
         { float x=Random01(ref seed)*2-1; return Mathf.Sign(x)*Mathf.Pow(Mathf.Abs(x),gamma); }
         public static Vector3 PelletVelocity(Vector3 direction, WeaponRuntimeConfig w, float spread, int index, uint groupSeed)
         {
+            if (WeaponSimulation.IsFloatingBubble(w))
+            {
+                float yaw = w.PelletCount > 1 ? Mathf.Lerp(-spread, spread, index / (float)(w.PelletCount - 1)) : 0;
+                uint pitchSeed = InkShapeAtlas.Hash(groupSeed ^ ((uint)index + 1) * 277803737u);
+                float pitch = (Random01(ref pitchSeed) * 2 - 1) * w.FloatingPitchSpreadDegrees;
+                return Quaternion.LookRotation(direction) * Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * w.SpeedMin;
+            }
             // Equal-area disk samples; rotate the complete pattern, never cluster eight independent random samples.
             float angle = index * 2.39996323f + Random01(ref groupSeed) * Mathf.PI * 2;
             float radius = Mathf.Sqrt((index + .5f) / w.PelletCount) * Mathf.Tan(spread * Mathf.Deg2Rad);
@@ -234,7 +241,7 @@ namespace Splatoon.Combat
             shot.Charge = state.LastShotCharge;
             shot.Configuration = w; shot.ConfigurationRevision = WeaponConfigService.Current.Revision(state.HeroId); shot.SpreadHorizontal = state.LastShotSpread; shot.SpreadVertical = state.LastShotVerticalSpread;
             float spread = shot.SpreadHorizontal;
-            shot.Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity(aim.InitialDirection, w, spread, pellet, groupSeed)
+            shot.Velocity = w.PelletCount > 1 || WeaponSimulation.IsFloatingBubble(w) ? InkBallistics.PelletVelocity(aim.InitialDirection, w, spread, pellet, groupSeed)
                 : InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
             if (WeaponSimulation.IsSplatling(w)) shot.Velocity = InkBallistics.SplatlingVelocity(aim.InitialDirection,w,shot.Charge,spread,shot.SpreadVertical,ref seed, w.ReferenceRules ? state.LastShotSpreadBias : -1);
@@ -249,9 +256,11 @@ namespace Splatoon.Combat
             if (w.ReferenceRules && WeaponSimulation.IsBubble(w)) shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, shot.VolleyIndex, state.Grounded);
             if (WeaponSimulation.IsExplosher(w)) shot.Velocity = ExplosherSimulation.Launch(aim.InitialDirection, w, state.Grounded, state.PlanarVelocity + Vector3.up * state.VerticalSpeed, state.Yaw);
             if (w.ShooterDetails) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
+            if (WeaponSimulation.IsFloatingBubble(w) && aim.MuzzleBlocked) shot.Origin = aim.MuzzleHit.Center;
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
             if (w.MotionMode == ProjectileMotionMode.BouncingBubble) BeginFlight(shot, shot.Origin, aim.InitialDirection);
+            else if (aim.MuzzleBlocked && WeaponSimulation.IsFloatingBubble(w)) ResolveFloatingBubble(shot, aim.MuzzleHit, 0);
             else if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
             else BeginFlight(shot, aim.Muzzle, aim.InitialDirection, (WeaponSimulation.IsSplatling(w) || DualiesNormalSimulation.Enabled(w)) ? state.Position + Vector3.up * .1f : (Vector3?)null);
             }
@@ -280,7 +289,7 @@ namespace Splatoon.Combat
                 if ((shot.ShotSequence - 1) % config.DualiesFootEvery == 0)
                     PaintTrail(foot ?? muzzle - forward * .6f, shot, config, ref trailSeed, ref ordinal, config.DualiesFootRadius, true);
             }
-            else if (!WeaponSimulation.IsBlaster(config) && shot.PelletIndex == 0 && (!WeaponSimulation.IsSplatling(config) || (shot.ShotSequence-1)%config.SplatlingFootEvery==0))
+            else if (!WeaponSimulation.IsFloatingBubble(config) && !WeaponSimulation.IsBlaster(config) && shot.PelletIndex == 0 && (!WeaponSimulation.IsSplatling(config) || (shot.ShotSequence-1)%config.SplatlingFootEvery==0))
                 PaintTrail(foot ?? (muzzle - forward * .6f), shot, config, ref trailSeed, ref ordinal, WeaponSimulation.IsSplatling(config) ? config.SplatlingFootRadius : -1, true);
             float budget = config.ReferenceRules && (!WeaponSimulation.IsBubble(config) || shot.VolleyIndex == 0) ? config.ReferenceTrailBudget : 0;
             uint scheduleSeed = InkShapeAtlas.Hash(shot.Seed ^ 0xA511E9B3u);
@@ -361,6 +370,7 @@ namespace Splatoon.Combat
                         var position = InkBallistics.Position(a.Shot, w, w.Lifetime);
                         if (!WeaponSimulation.IsExplosher(w)) ResolveExplosion(a.Shot, position, Vector3.up);
                         Impacts.Add(new InkImpact { Id = a.Shot.Id, Round = a.Shot.Round, Team = a.Shot.Team, Position = position, Hit = false,
+                            Time = a.Shot.Born + w.Lifetime,
                             ActionId = a.Shot.ActionId, Lifecycle = a.Shot.Lifecycle, HeroRevision = a.Shot.HeroRevision, PelletIndex = a.Shot.PelletIndex, Shooter = a.Shot.Shooter });
                     }
                     _active.RemoveAt(i);
@@ -376,6 +386,7 @@ namespace Splatoon.Combat
             Vector3 to = InkBallistics.Position(shot, weapon, end - shot.Born);
             Vector3 delta = to - from;
             float distance = delta.magnitude;
+            if (WeaponSimulation.IsFloatingBubble(weapon)) return TraceFloatingBubble(shot, from, delta, start, end);
             if (WeaponSimulation.IsExplosher(weapon)) return TraceExplosher(ref active, from, to, start, end);
             bool blaster = WeaponSimulation.IsBlaster(weapon);
             if (blaster && TraceBlasterCollision(ref active, weapon, from, delta, start, end)) return true;
@@ -477,8 +488,9 @@ namespace Splatoon.Combat
             uint shapeSeed = (w.ReferenceRules || WeaponSimulation.IsSplatling(w) || WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)) ? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy)
                 : _shapes.Select(shot.Shooter, shot.Round, shot.Seed, shot.ShotSequence > 0 ? (shot.ShotSequence - 1) * (uint)w.PelletCount + shot.PelletIndex + 1 : shot.Id, shot.PelletIndex, ordinal, impact);
             var clip = new PaintStamp { Normal = normal, Direction = paintDirection ?? Vector3.zero };
-            if (WeaponSimulation.IsExplosher(w) || (w.ReferenceRules && WeaponSimulation.IsBlaster(w) && sightFrom.HasValue))
-                PopulatePaintClip(ref clip, shot, surface, sightFrom ?? point + normal * .025f, point, radius * Mathf.Max(1, depthScale) * 1.414214f);
+            if (WeaponSimulation.IsFloatingBubble(w) || WeaponSimulation.IsExplosher(w) || (w.ReferenceRules && WeaponSimulation.IsBlaster(w) && sightFrom.HasValue))
+                PopulatePaintClip(ref clip, shot, surface, sightFrom ?? point + normal * .025f, point,
+                    WeaponSimulation.IsFloatingBubble(w) ? radius : radius * Mathf.Max(1, depthScale) * 1.414214f);
 #if UNITY_EDITOR
             PaintObserved?.Invoke(new PaintStamp { Round = shot.Round, SurfaceId = surface.SurfaceId, Team = shot.Team,
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed, Direction = paintDirection ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clip.ClipEnabled, Clip0 = clip.Clip0, Clip1 = clip.Clip1 });

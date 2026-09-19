@@ -391,7 +391,8 @@ namespace Splatoon.Prototype
                     projected.x >= 0 && projected.x <= 1 && projected.y >= 0 && projected.y <= 1;
                 if (ImpactReticleVisible) ImpactReticleViewport = new Vector2(projected.x, projected.y);
             }
-            MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId);
+            MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId,
+                WeaponSimulation.IsFloatingBubble(reticleWeapon) ? s.Team : (byte?)null);
         }
         public override void OnNetworkDespawn()
         {

@@ -23,12 +23,14 @@ namespace Splatoon.Combat
         }
         public Vector3 PositionAt(double time, InkShot shot)
         {
+            if (WeaponSimulation.IsFloatingBubble(shot.Configuration)) return InkBallistics.Position(shot, shot.Configuration, Math.Clamp(time - shot.Born, 0, shot.Configuration.Lifetime));
             if (!shot.Configuration.ReferenceRules) return PositionAt(time, shot.Configuration.ProjectileGravity);
             ReferenceBallistics.Evaluate(Velocity, shot.Configuration, Math.Max(0, time-Time), Time-shot.Born, out var delta, out _);
             return Position + delta;
         }
         public Vector3 VelocityAt(double time, InkShot shot)
         {
+            if (WeaponSimulation.IsFloatingBubble(shot.Configuration)) return InkBallistics.Velocity(shot, shot.Configuration, Math.Clamp(time - shot.Born, 0, shot.Configuration.Lifetime));
             if (!shot.Configuration.ReferenceRules) return VelocityAt(time, shot.Configuration.ProjectileGravity);
             ReferenceBallistics.Evaluate(Velocity, shot.Configuration, Math.Max(0, time-Time), Time-shot.Born, out _, out var velocity);
             return velocity;
@@ -52,7 +54,7 @@ namespace Splatoon.Combat
         {
             destination.Clear();
             foreach (var a in _active)
-                if (a.Shot.Configuration.MotionMode == ProjectileMotionMode.BouncingBubble)
+                if (WeaponSimulation.UsesBubbleMesh(a.Shot.Configuration))
                     destination.Add(new InkBubbleState { Shot = a.Shot, Segment = a.Bubble });
         }
 

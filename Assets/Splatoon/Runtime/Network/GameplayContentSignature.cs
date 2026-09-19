@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 9;
-        public const int WeaponSimulationVersion = 13; // Per-hero bodies and opt-in detailed shooter rules; wire layout unchanged.
+        public const int WeaponSimulationVersion = 15; // Configurable floating bubble count, including centred single shots.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);

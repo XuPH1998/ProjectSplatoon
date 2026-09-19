@@ -50,6 +50,11 @@ namespace Splatoon.Editor
             AddAddress(settings,group,CombatGirlsBuilder.WeaponPath,"Weapon/RifleGirlRifle");
             AddAddress(settings,group,BubbleGirlBuilder.CharacterPath,"Character/BubbleGirl");
             AddAddress(settings,group,BubbleGirlBuilder.Root + "/Prefabs/BubbleGun.prefab","Weapon/BubbleGun");
+            if (File.Exists(BubbleShotgunBuilder.CharacterPath))
+            {
+                AddAddress(settings, group, BubbleShotgunBuilder.CharacterPath, "Character/BubbleShotgunGirl");
+                AddAddress(settings, group, BubbleShotgunBuilder.Root + "/Prefabs/BubbleShotgun.prefab", "Weapon/BubbleShotgun");
+            }
             if (File.Exists(SplooshGirlBuilder.CharacterPath) && File.Exists(SplooshGirlBuilder.WeaponPath))
             { AddAddress(settings,group,SplooshGirlBuilder.CharacterPath,"Character/SplooshGirl"); AddAddress(settings,group,SplooshGirlBuilder.WeaponPath,"Weapon/SplooshGun"); }
             foreach (var pack in CombatGirlsHeroBuilder.Definitions)

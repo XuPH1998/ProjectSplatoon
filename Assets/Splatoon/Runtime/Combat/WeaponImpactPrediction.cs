@@ -16,7 +16,7 @@ namespace Splatoon.Combat
                     state.PlanarVelocity + Vector3.up * state.VerticalSpeed, state.Yaw, shooter, out point);
 
             bool bubble = w.MotionMode == ProjectileMotionMode.BouncingBubble;
-            point = aim.MuzzleHit.Point;
+            point = WeaponSimulation.IsFloatingBubble(w) ? aim.MuzzleHit.Center : aim.MuzzleHit.Point;
             if (aim.MuzzleBlocked && !bubble) return true;
 
             float charge = WeaponSimulation.IsSplatling(w) && state.SplatlingRemaining > 0
@@ -56,7 +56,10 @@ namespace Splatoon.Combat
                     delta *= fraction; distance = delta.magnitude;
                 }
                 if (FirstContact(solver, shot, from, delta, end, state.Team, shooter, out var hit))
-                { point = hit.Point; return true; }
+                {
+                    if (WeaponSimulation.IsFloatingBubble(w)) TpsAimSolver.UnembedFloatingContact(ref hit, w.CollisionRadius);
+                    point = WeaponSimulation.IsFloatingBubble(w) ? hit.Center : hit.Point; return true;
+                }
                 if (atRange) { point = from + delta; return false; }
                 from = to; age = end; travelled += distance;
             }
@@ -69,6 +72,9 @@ namespace Splatoon.Combat
             double age, byte team, ulong shooter, out TpsCollision hit)
         {
             var w = shot.Configuration;
+            if (WeaponSimulation.IsFloatingBubble(w))
+                return solver.Overlap(from, w.CollisionRadius, shooter, -shot.Velocity.normalized, out hit, null, team, floatingMesh: true) ||
+                    solver.ClosestCast(from, delta, delta.magnitude, w.CollisionRadius, shooter, out hit, null, team);
             bool bubble = w.MotionMode == ProjectileMotionMode.BouncingBubble;
             bool blaster = WeaponSimulation.IsBlaster(w);
             bool separate = bubble || blaster || w.ReferenceRules || WeaponSimulation.IsSplatling(w) || DualiesNormalSimulation.Enabled(w);

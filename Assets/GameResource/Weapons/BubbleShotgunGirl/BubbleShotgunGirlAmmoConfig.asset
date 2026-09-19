@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4fb864519a46f7af76d3fb3f1f3769, type: 3}
+  m_Name: BubbleShotgunGirlAmmoConfig
+  m_EditorClassIdentifier: Splatoon::Splatoon.Config.AmmoConfigAsset
+  ammoId: 9
+  bubblePrefab: {fileID: 2864860794442220232, guid: 45926ef787cc10b4eb9d6660df5c02e5, type: 3}
+  bubbleShotAudio: {fileID: 8300000, guid: fc23a7811c5b19446816c76cc8aac983, type: 3}
+  bubbleBounceAudio: {fileID: 0}
+  bubblePopAudio: {fileID: 8300000, guid: 300fc09e9899c1749a95ef9b697efd20, type: 3}
+  flightMigrationVersion: 1
+  flightPrefab: {fileID: 949289641, guid: 7ed237d6026f4ca0ac049af070544cf8, type: 3}
+  muzzlePrefab: {fileID: 276323219, guid: d632b19d2c4d9d443ac373adfea6342e, type: 3}
+  burstInterval: 0.05
+  particlesPerBurst: 1
+  visualLifetime: 4
+  muzzleInterval: 0.05
+  muzzleBurstCount: 6
+  maxRibbonGap: 1.5
+  satelliteSpread: 0.1
+  explosionEnabled: 1
+  explosionPrefab: {fileID: 6061940137612646960, guid: d3ba64a6fba312940bb7703a3f6c3ec4, type: 3}
+  explosionRadius: 2.5
+  explosionDamage: 25
+  explosionConstantDamage: 0
+  collisionExplosionRadiusRate: 1
+  collisionExplosionDamageRate: 1
+  excludeDirectHitFromExplosion: 1
+  explosionPaint: 1
+  explosionPaintRadiusMin: 2.8
+  explosionPaintRadiusMax: 2.8

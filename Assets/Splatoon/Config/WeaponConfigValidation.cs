@@ -23,6 +23,18 @@ namespace Splatoon.Config
                     w.ShooterWallFirstSpeed > 0 && w.ShooterWallShockRadius > 0 && w.WallDropSpeed > 0, "射手墙墨阶段无效");
             }
             w.Ammo.Validate();
+            if (w.MotionMode == ProjectileMotionMode.FloatingBubble)
+                Require(w.FireMode == WeaponFireMode.SemiAutomatic && !w.ReferenceRules && !w.ShooterDetails &&
+                    w.MuzzleMode == WeaponMuzzleMode.Single && w.Ammo.BubblePrefab != null &&
+                    w.Ammo.HasExplosion && w.Ammo.HasExplosionVisual && w.Ammo.ExplosionPaint &&
+                    w.Ammo.ExplosionRadius > 0 && w.Ammo.ExplosionPaintRadiusMin > 0 &&
+                    !w.Ammo.ExplosionConstantDamage && w.Ammo.ExcludeDirectHitFromExplosion &&
+                    w.Ammo.CollisionExplosionRadiusRate == 1 && w.Ammo.CollisionExplosionDamageRate == 1 &&
+                    w.Damage == w.DamageMin && w.SpeedMin == w.SpeedMax &&
+                    w.BrakeSpeedMultiplier < 1 && w.Lifetime > w.StraightSeconds + w.BrakeSeconds &&
+                    w.BaseSpreadDegrees == w.SpreadDegrees && w.BaseJumpSpreadDegrees == w.JumpSpreadDegrees &&
+                    w.SpreadDegrees == w.JumpSpreadDegrees && w.FloatingPitchSpreadDegrees <= 45,
+                    "漂浮泡泡须为半自动齐射、恒定直击、减速飞行、独立衰减爆风和爆炸涂墨");
             foreach (var f in typeof(WeaponRuntimeConfig).GetFields())
             {
                 string name = WeaponConfigLabels.Name(f.Name);
@@ -103,7 +115,7 @@ namespace Splatoon.Config
                 Require(w.EmergeStartSeconds >= w.StartSeconds, "出墨起手时长不得短于人形起手时长");
                 Require(w.DamageMin > 0 && w.DamageMin <= w.Damage && w.DamageReduceStartSeconds >= 0 && w.DamageReduceEndSeconds > w.DamageReduceStartSeconds && w.StraightSeconds >= 0 && w.BrakeSeconds > 0 && w.BrakeSpeedMultiplier > 0 && w.BrakeSpeedMultiplier <= 1 && (w.FireMode != WeaponFireMode.Charge || w.LandingSpreadRecoverSeconds > 0) && w.JumpSpreadDegrees <= 45 && w.TrailSpacing > 0 && w.TrailRadiusMin > 0 && !float.IsInfinity(w.TrailRadiusMin) && w.TrailRadiusMax >= w.TrailRadiusMin && !float.IsInfinity(w.TrailRadiusMax) && w.EffectiveRange > 0, "武器弹道或落墨配置无效");
             Require(w.SplatlingPitchSpread <= 45 && w.ChargeMinSpread <= 45 && w.ChargeMinJumpSpread <= 45, "散布角度不得超过45度");
-            Require(w.BaseSpreadDegrees <= w.SpreadDegrees && w.BaseJumpSpreadDegrees <= w.JumpSpreadDegrees && (w.PelletCount > 1 || (w.BaseSpreadDegrees == 0 && w.BaseJumpSpreadDegrees == 0)), "基础散布仅用于霰弹且不得超过最大散布");
+            Require(w.BaseSpreadDegrees <= w.SpreadDegrees && w.BaseJumpSpreadDegrees <= w.JumpSpreadDegrees && (w.MotionMode == ProjectileMotionMode.FloatingBubble || w.PelletCount > 1 || (w.BaseSpreadDegrees == 0 && w.BaseJumpSpreadDegrees == 0)), "基础散布仅用于霰弹或漂浮泡泡且不得超过最大散布");
         }
         static void Require(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }
     }

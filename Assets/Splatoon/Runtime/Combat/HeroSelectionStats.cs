@@ -156,6 +156,16 @@ namespace Splatoon.Combat
         public static double FullChargeRate(WeaponRuntimeConfig w) => 1 / (w.StartSeconds + w.ChargeSeconds + WeaponSimulation.FireInterval(w));
         public static HeroStat[] Create(WeaponRuntimeConfig w, CharacterPresentationProfile profile, float near, float far)
         {
+            if (WeaponSimulation.IsFloatingBubble(w))
+            {
+                var flight = HeroFlatRange.Calculate(w, profile, 0, near, far);
+                return new[] {
+                    new HeroStat("直击 / 爆风", $"{w.Damage:0} / 0–{w.Ammo.ExplosionDamage:0}", "每颗独立伤害；直击不重复计算同颗爆风"),
+                    new HeroStat("齐射间隔", $"{WeaponSimulation.FireInterval(w):0.#} 秒 / {w.PelletCount} 颗", $"每轮 {w.ShotInk:0} 墨；点击或长按射击"),
+                    new HeroStat($"并排 {w.PelletCount} 发", WeaponDisplay.FloatingHorizontalSpread(w), $"垂直独立随机 ±{w.FloatingPitchSpreadDegrees:0.#}°"),
+                    new HeroStat("爆炸中心", $"{flight.Distance:0.0} 米", $"缓速漂浮；接触或 {w.Lifetime:0.#} 秒到期爆炸")
+                };
+            }
             if (WeaponSimulation.IsBubble(w))
             {
                 var flight = HeroFlatRange.Calculate(w, profile, 0, near, far);

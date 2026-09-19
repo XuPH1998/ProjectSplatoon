@@ -10,6 +10,8 @@ namespace Splatoon.Prototype
         public static readonly Rect Window = new(60, 40, 1160, 640);
         public static readonly Rect Confirm = new(958, 616, 234, 42);
         public static readonly Rect Close = new(1146, 62, 46, 36);
+        public static readonly Rect CardViewport = new(88, 154, 644, 432);
+        public static float ContentHeight(int count) => Mathf.Max(CardViewport.height, Mathf.CeilToInt(count / 2f) * 110 - 8);
         public static Rect Card(int index) => new(88 + index % 2 * 318, 154 + index / 2 * 110, 304, 102);
         public static Rect Portrait(int index) { var r = Card(index); return new Rect(r.x + 12, r.y + 11, 80, 80); }
         public static Matrix4x4 Matrix(float width, float height)
@@ -22,6 +24,7 @@ namespace Splatoon.Prototype
     public sealed partial class PrototypeApp
     {
         readonly HeroSelectionStatsCache _heroStats = new();
+        Vector2 _heroCardScroll;
         GUIStyle _heroHeading, _heroName, _heroCaption, _heroValue, _heroNote, _heroBadge, _heroAction;
         static readonly Color HeroAccent = new(.36f, .87f, .89f);
         static readonly Color HeroMuted = new(.62f, .69f, .79f);
@@ -61,6 +64,9 @@ namespace Splatoon.Prototype
                     _heroOrigin == HeroSelectionOrigin.SpawnArea ? "出生区换装 · 选择你的出战搭档" : "热身准备 · 选择你的出战搭档", _heroCaption);
                 if (GUI.Button(HeroSelectionLayout.Close, "×", _button)) { _fireInputBlocked = true; CloseOverlay(); }
                 int currentId = player.Snapshot.Value.HeroId, index = 0;
+                var heroRows = LubanConfigService.Current.Tables.TbHero.DataList;
+                _heroCardScroll = GUI.BeginScrollView(HeroSelectionLayout.CardViewport, _heroCardScroll,
+                    new Rect(88, 154, 622, HeroSelectionLayout.ContentHeight(heroRows.Count)), false, false);
                 foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
                 {
                     var rect = HeroSelectionLayout.Card(index);
@@ -82,6 +88,7 @@ namespace Splatoon.Prototype
                     if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) { _previewHeroId = hero.Id; _fireInputBlocked = true; }
                     index++;
                 }
+                GUI.EndScrollView();
                 var chosen = GameplayConfig.GetHero(_previewHeroId);
                 var content = Heroes.Get(chosen.Id);
                 GUI.Label(new Rect(742, 142, 430, 34), chosen.DisplayName + "  /  " + chosen.WeaponTypeName, _heroName);

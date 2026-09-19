@@ -35,13 +35,14 @@ namespace Splatoon.Combat
         readonly System.Collections.Generic.List<(int surface, Vector3 point)> _explosionPaintSites = new();
         readonly System.Collections.Generic.List<(int surface, Vector3 normal, float plane)> _explosherPaintPlanes = new();
 
-        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null)
+        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null, Vector3? visibilityOrigin = null)
         {
             var ammo = shot.Configuration?.Ammo;
             if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
             float radius = InkExplosionRules.Radius(ammo, collision);
             bool explosher = WeaponSimulation.IsExplosher(shot.Configuration);
-            Vector3 origin = position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero);
+            bool floating = WeaponSimulation.IsFloatingBubble(shot.Configuration);
+            Vector3 origin = visibilityOrigin ?? (floating ? position : position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero));
             var match = PrototypeMatch.Current;
             if (match != null)
             {
@@ -70,8 +71,8 @@ namespace Splatoon.Combat
                 _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear(); _explosherPaintPlanes.Clear();
                 // First-hit rays produce an actual surface normal and never stamp a wall's
                 // far side. Downward ray guarantees floor coverage, even between fan samples.
-                float searchRadius = explosher ? ExplosherSimulation.PaintRadius(shot, position) : radius;
-                if (explosher) PaintExplosionRay(shot, origin, -normal, searchRadius, collision);
+                float searchRadius = floating ? ammo.ExplosionPaintRadiusMax : explosher ? ExplosherSimulation.PaintRadius(shot, position) : radius;
+                if (explosher || floating) PaintExplosionRay(shot, origin, -normal, searchRadius, collision);
                 PaintExplosionRay(shot, origin, Vector3.down, searchRadius, collision);
                 PaintExplosionRay(shot, origin, Vector3.up, searchRadius, collision);
                 for (int i = 0; i < 40; i++)
@@ -93,7 +94,7 @@ namespace Splatoon.Combat
             if (!_aim.ClosestCast(origin, direction, distance, 0, shot.Shooter, out var hit, false)) return;
             var surface = hit.Collider.GetComponentInParent<Splatoon.Painting.PaintSurface>();
             if (surface == null) return;
-            if (WeaponSimulation.IsExplosher(shot.Configuration))
+            if (WeaponSimulation.IsExplosher(shot.Configuration) || WeaponSimulation.IsFloatingBubble(shot.Configuration))
             {
                 // One footprint per receiving plane (a surface can contain floor and walls). Project the explosion centre onto
                 // that plane instead of adding a full circle at every fan ray endpoint.

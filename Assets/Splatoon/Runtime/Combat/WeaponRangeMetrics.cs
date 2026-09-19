@@ -25,7 +25,13 @@ namespace Splatoon.Combat
             // a bound, not measured owned area or a guaranteed connected swimming path.
             float depth = Mathf.Max(1, Mathf.Max(w.PaintDepthMin, w.PaintDepthMax));
             PaintEnvelope = Flat + Mathf.Max(w.PaintRadiusMin, w.PaintRadiusMax) * depth * Mathf.Sqrt(2);
-            if (WeaponSimulation.IsBlaster(w) || WeaponSimulation.IsExplosher(w)) PaintEnvelope = Flat + w.Ammo.ExplosionPaintRadiusMax * Mathf.Sqrt(2);
+            if (WeaponSimulation.IsFloatingBubble(w))
+            {
+                float height = InkBallistics.Position(shot, w, flat.FlightSeconds).y;
+                float radius = w.Ammo.ExplosionPaintRadiusMax;
+                PaintEnvelope = Flat + Mathf.Sqrt(Mathf.Max(0, radius * radius - height * height));
+            }
+            else if (WeaponSimulation.IsBlaster(w) || WeaponSimulation.IsExplosher(w)) PaintEnvelope = Flat + w.Ammo.ExplosionPaintRadiusMax * Mathf.Sqrt(2);
             else if (w.ReferenceRules && w.ReferenceTrailBudget > 0)
                 PaintEnvelope = Mathf.Max(PaintEnvelope, Flat + w.TrailRadiusMax * Mathf.Max(1, w.TrailDepthScale) * Mathf.Sqrt(2));
         }

@@ -40,7 +40,7 @@ def main():
     blaster_tuning = json.loads((ROOT/'Tools/ValidationData/WeaponAssets/RapidBlaster-Tuning.json').read_text('utf-8'))
     alignment = json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Tuning.json').read_text('utf-8'))
     def aligned(hero, values):
-        values.update(next(r for r in json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Baseline/Values.json').read_text('utf-8')) if r['id']==hero))
+        values.update(next((r for r in json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Baseline/Values.json').read_text('utf-8')) if r['id']==hero), {}))
         values.update({r['field']:r['after'] for r in alignment['fields'] if r['hero']==hero})
         if hero==1: values['weaponTypeName']='斯普拉射击枪'
         if hero==3:
@@ -110,8 +110,19 @@ def main():
             aligned(7,bubble)
             for key, value in bubble.items():
                 check(equal(combined.get(key), value), f'Bubble launch baseline: {key}')
-        check(values.get('baseSpreadDegrees') == 0, f'Ground base: {path}')
-        check(values.get('baseJumpSpreadDegrees') == 0, f'Air base: {path}')
+        if values.get('motionMode') == 6:
+            pellet_count = values.get('pelletCount')
+            check(type(pellet_count) is int and 1 <= pellet_count <= 8, f'Floating bubble pellet count must be 1-8: {path}')
+            for key, value in dict(fireMode=3, fireRate=1, shotInk=16,
+                                   speedMin=18, speedMax=18, lifetime=4, projectileGravity=.05,
+                                   straightSeconds=.1, brakeSeconds=.2, brakeSpeedMultiplier=.02,
+                                   damage=55, damageMin=55, baseSpreadDegrees=30, floatingPitchSpreadDegrees=3,
+                                   spreadDegrees=30, baseJumpSpreadDegrees=30, jumpSpreadDegrees=30).items():
+                check(equal(values.get(key), value), f'Floating bubble: {key}')
+            check(values.get('collisionRadius', 0) >= .6, f'Floating bubble size: {path}')
+        else:
+            check(values.get('baseSpreadDegrees') == 0, f'Ground base: {path}')
+            check(values.get('baseJumpSpreadDegrees') == 0, f'Air base: {path}')
     report = dict(passed=not errors, heroes=len(rows), characterFields=len(columns)-1, weaponPathFields=1,
                   originalWeaponFields=60, newWeaponFields=4, originalValuesCompared=checked, errors=errors)
     output = args.output if args.output is not None else ROOT/'Reports/WeaponAssets'

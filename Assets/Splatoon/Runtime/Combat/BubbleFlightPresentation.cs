@@ -71,6 +71,7 @@ namespace Splatoon.Combat
                 if (_pending.Count < Capacity) _pending[key] = bounce;
                 return;
             }
+            if (WeaponSimulation.IsFloatingBubble(v.Shot.Configuration)) return;
             int at = v.Count;
             for (int i = 0; i < v.Count; i++)
             {
@@ -82,10 +83,10 @@ namespace Splatoon.Combat
             v.Segments[at] = bounce; v.Count++;
             if (sound && at == v.Count - 1) Play(v.Shot.Configuration.Ammo.BubbleBounceAudio, bounce.Position, .09f, bounce.Sequence);
         }
-        public void Complete(InkImpact impact)
+        public void Complete(InkImpact impact, AmmoRuntimeConfig fallback = null)
         {
             var key = (impact.Round, impact.Id); _pending.Remove(key);
-            if (!_active.Remove(key, out var v)) return;
+            if (!_active.Remove(key, out var v)) { Play(fallback?.BubblePopAudio, impact.Position, .17f, impact.Id); return; }
             Play(v.Shot.Configuration.Ammo.BubblePopAudio, impact.Position, .17f, impact.Id);
             if (Application.isPlaying)
                 for (int i = 0; i < 4 && _fragments.Count < 96; i++)
@@ -131,7 +132,8 @@ namespace Splatoon.Combat
                 v.Object.transform.position = segment.PositionAt(time, v.Shot);
                 float squash = segment.Sequence == 0 ? 0 : Mathf.Clamp01(1 - (float)(time - segment.Time) / .12f);
                 v.Object.transform.rotation = segment.Sequence == 0 ? Quaternion.identity : Quaternion.FromToRotation(Vector3.up, segment.Normal);
-                v.Object.transform.localScale = new Vector3(1 + .16f * squash, 1 - .27f * squash, 1 + .16f * squash) * (ReferenceBallistics.BubbleRadius(v.Shot, time-v.Shot.Born, (int)segment.Sequence, false) * 2);
+                float radius = WeaponSimulation.IsFloatingBubble(w) ? w.CollisionRadius : ReferenceBallistics.BubbleRadius(v.Shot, time-v.Shot.Born, (int)segment.Sequence, false);
+                v.Object.transform.localScale = new Vector3(1 + .16f * squash, 1 - .27f * squash, 1 + .16f * squash) * (radius * 2);
             }
             foreach (var key in _expired) { var v = _active[key]; _active.Remove(key); Recycle(v); }
         }

@@ -14,6 +14,7 @@ namespace Splatoon.Config
         [InspectorName("地面法向速度保留比例"), Tooltip("地面法向速度保留比例") ] public float bubbleNormalRetention = .72f;
         [InspectorName("地面切向速度保留比例"), Tooltip("地面切向速度保留比例") ] public float bubbleTangentRetention = .9f;
         [InspectorName("墙面反射速度保留比例"), Tooltip("墙面反射速度保留比例") ] public float bubbleWallRetention = .9f;
+        [InspectorName("漂浮泡泡垂直随机半角（度）"), Tooltip("每颗独立上下偏转；水平按弹丸数量等间距覆盖散布半角，单颗时水平居中。") ] public float floatingPitchSpreadDegrees;
         [Header("模型")]
         [InspectorName("正式武器地址"), Tooltip("模型：正式武器地址")] public string weaponPrefabAddress = "";
         [Header("弹药")]
@@ -65,7 +66,7 @@ namespace Splatoon.Config
         [InspectorName("点射地面散布半角（度）"), Tooltip("蓄力：点射地面散布半角（度）")] public float chargeMinSpread;
         [InspectorName("点射空中散布半角（度）"), Tooltip("蓄力：点射空中散布半角（度）")] public float chargeMinJumpSpread;
         [Header("发射")]
-        [InspectorName("每次有效发射的弹丸数量"), Tooltip("发射：每次有效发射的弹丸数量")] public int pelletCount;
+        [InspectorName("每次有效发射的弹丸数量"), Tooltip("每次有效发射的弹丸数量（1～8）；漂浮泡泡按此数量齐射，整轮消耗一次配置耗墨。")] public int pelletCount;
         [InspectorName("枪口模式"), Tooltip("枪口模式")] public WeaponMuzzleMode muzzleMode;
         [InspectorName("半自动点击缓存时长（秒）"), Tooltip("半自动点击缓存时长（秒）")] public double semiBufferSeconds;
         [Header("旋转枪")]

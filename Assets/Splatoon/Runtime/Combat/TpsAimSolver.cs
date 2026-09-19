@@ -9,7 +9,7 @@ namespace Splatoon.Combat
     public struct TpsCollision
     {
         public Collider Collider;
-        public Vector3 Point, Normal;
+        public Vector3 Point, Normal, Center;
         public float Distance;
     }
 
@@ -32,7 +32,7 @@ namespace Splatoon.Combat
 
         public TpsAimSolution Resolve(PrototypePlayer player, PlayerSnapshot state, byte muzzleIndex)
         {
-            byte? ignoreTeam = (GameplayConfig.GetWeapon(state.HeroId).MotionMode == ProjectileMotionMode.BouncingBubble || WeaponSimulation.IsBlaster(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId))) ? state.Team : (byte?)null;
+            byte? ignoreTeam = (WeaponSimulation.UsesBubbleMesh(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsBlaster(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId))) ? state.Team : (byte?)null;
             var rotation = Quaternion.Euler(state.Pitch, state.Yaw, 0);
             Vector3 pivot = state.Position + PrototypePlayer.CameraPivotOffset(state, player.Presentation);
             Vector3 camera = PrototypePlayer.CameraPosition(pivot, rotation, player.Presentation);
@@ -46,10 +46,22 @@ namespace Splatoon.Combat
             var weapon = GameplayConfig.GetWeapon(state.HeroId);
             float radius = WeaponSimulation.IsExplosher(weapon) ? weapon.ExplosherFieldInitialRadius : weapon.CollisionRadius;
             // Detect an embedded pivot too: casts do not report an origin inside a collider.
-            result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam)
+            result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam, floatingMesh: WeaponSimulation.IsFloatingBubble(weapon))
                 || ClosestCast(pivot, muzzle - pivot, Vector3.Distance(pivot, muzzle), radius, player.PlayerId, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam)
-                || Overlap(muzzle, radius, player.PlayerId, -result.InitialDirection, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam);
+                || Overlap(muzzle, radius, player.PlayerId, -result.InitialDirection, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam, floatingMesh: WeaponSimulation.IsFloatingBubble(weapon));
+            if (result.MuzzleBlocked && WeaponSimulation.IsFloatingBubble(weapon))
+                UnembedFloatingContact(ref result.MuzzleHit, radius);
             return result;
+        }
+
+        public static void UnembedFloatingContact(ref TpsCollision contact, float radius)
+        {
+            if (contact.Collider == null || contact.Collider.GetComponentInParent<PrototypePlayer>() != null ||
+                (contact.Point - contact.Center).sqrMagnitude > 1e-8f) return;
+            Vector3 normal = contact.Normal.sqrMagnitude > .0001f ? contact.Normal.normalized : Vector3.back;
+            float length = contact.Collider.bounds.size.magnitude + radius + 1;
+            if (!contact.Collider.Raycast(new Ray(contact.Center + normal * length, -normal), out var hit, length * 2)) return;
+            contact.Point = hit.point; contact.Normal = hit.normal; contact.Center = hit.point + hit.normal * (radius + .001f);
         }
 
         public static TpsAimSolution Geometry(Vector3 camera, Vector3 forward, Vector3 muzzle,
@@ -73,14 +85,14 @@ namespace Splatoon.Combat
             return r;
         }
 
-        public bool IsObstructed(TpsAimSolution aim, float radius, ulong shooter)
+        public bool IsObstructed(TpsAimSolution aim, float radius, ulong shooter, byte? ignoreTeam = null)
         {
             if (aim.MuzzleBlocked) return true;
             // End at the camera aim depth, not at the near convergence point beyond a close target.
             float forward = Vector3.Dot(aim.InitialDirection, aim.Forward);
             if (forward <= Epsilon) return false;
             float distance = Mathf.Max(0, Vector3.Dot(aim.AimPoint - aim.Muzzle, aim.Forward) / forward);
-            return ClosestCast(aim.Muzzle, aim.InitialDirection, distance, radius, shooter, out var hit)
+            return ClosestCast(aim.Muzzle, aim.InitialDirection, distance, radius, shooter, out var hit, null, ignoreTeam)
                 && hit.Collider != aim.AimHit.Collider;
         }
 
@@ -109,12 +121,12 @@ namespace Splatoon.Combat
                 if (Valid(_hits[i].collider, shooter, ignoreTeam) && !Ignored(_hits[i].collider, ignored) && Matches(_hits[i].collider,playersOnly) && _hits[i].distance < nearest)
                 {
                     var h = _hits[i]; nearest = h.distance;
-                    closest = new TpsCollision { Collider = h.collider, Point = h.point, Normal = h.normal, Distance = h.distance };
+                    closest = new TpsCollision { Collider = h.collider, Point = h.point, Normal = h.normal, Distance = h.distance, Center = origin + direction * h.distance };
                 }
             return nearest < float.PositiveInfinity;
         }
 
-        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null)
+        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null, bool floatingMesh = false)
         {
             closest = default;
             int count;
@@ -131,12 +143,12 @@ namespace Splatoon.Combat
                 if (!Valid(collider, shooter, ignoreTeam) || Ignored(collider, ignored) || !Matches(collider,playersOnly)) continue;
                 var paper = collider.GetComponentInParent<SwimBody>();
                 Vector3 point = paper != null && collider == paper.HitVolume && !paper.HitVolume.convex
-                    ? paper.ClosestHitPoint(origin) : collider.ClosestPoint(origin);
+                    ? paper.ClosestHitPoint(origin) : floatingMesh ? FloatingBubbleOverlap.Point(collider, origin, radius) : collider.ClosestPoint(origin);
                 Vector3 delta = origin - point;
                 if (delta.sqrMagnitude >= nearest) continue;
                 nearest = delta.sqrMagnitude;
                 closest = new TpsCollision { Collider = collider, Point = point, Normal = nearest > Epsilon * Epsilon ? delta.normalized : fallbackNormal,
-                    Distance = Mathf.Sqrt(nearest) };
+                    Distance = Mathf.Sqrt(nearest), Center = origin };
             }
             // PhysX may omit a sphere fully contained inside a non-convex mesh.
             // Test the same thin prism union analytically for embedded projectiles.
@@ -148,7 +160,7 @@ namespace Splatoon.Combat
                 if (squared > radius * radius || squared >= nearest) continue;
                 nearest = squared;
                 closest = new TpsCollision { Collider = paper.HitVolume, Point = point,
-                    Normal = squared > Epsilon * Epsilon ? delta.normalized : fallbackNormal, Distance = Mathf.Sqrt(squared) };
+                    Normal = squared > Epsilon * Epsilon ? delta.normalized : fallbackNormal, Distance = Mathf.Sqrt(squared), Center = origin };
             }
             return nearest < float.PositiveInfinity;
         }

@@ -21,6 +21,8 @@ namespace Splatoon.Combat
 
     public static class WeaponSimulation
     {
+        public static bool IsFloatingBubble(WeaponRuntimeConfig w) => w?.MotionMode == ProjectileMotionMode.FloatingBubble;
+        public static bool UsesBubbleMesh(WeaponRuntimeConfig w) => IsFloatingBubble(w) || w?.MotionMode == ProjectileMotionMode.BouncingBubble;
         public const double ReferenceRate = 60;
         public static double Seconds(int frames) => frames / ReferenceRate;
         public static double FireInterval(WeaponRuntimeConfig w) => IsBlaster(w) ? w.BlasterRepeatSeconds : IsBubble(w) ? w.BubbleVolleySeconds : 1.0 / w.FireRate;

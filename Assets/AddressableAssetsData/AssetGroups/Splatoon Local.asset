@@ -106,6 +106,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e8cdbcb206afef4393645a2abf87760
+    m_Address: Character/BubbleShotgunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5c392e846c0732b4388a701a93d50c50
     m_Address: Assets/GameResource/Weapons/SplooshGirl/SplooshGirlAmmoConfig.asset
     m_ReadOnly: 0
@@ -157,6 +162,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78bd150c7ae5acc418f84863fff0b97a
+    m_Address: Assets/GameResource/Weapons/BubbleShotgunGirl/BubbleShotgunGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7e8e3d51acd04dc29c11b5626aa1850c
     m_Address: Assets/GameResource/Weapons/DualPistolGirl/DualPistolGirlInkFlight.prefab
     m_ReadOnly: 0
@@ -179,6 +189,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8fc6e6c01920f2349a9074deec382a79
     m_Address: Weapon/RifleGirlRifle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 915f5244e4ba327459a9aa6b40fc7a28
+    m_Address: Assets/GameResource/Weapons/BubbleShotgunGirl/BubbleShotgunGirlAmmoConfig.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -210,6 +225,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3c6bd43d07743089a19e7f52d4666ed
     m_Address: Assets/GameResource/Weapons/RifleGirl/RifleGirlInkFlight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3e8bab5a0167364aa5b8dded00936d1
+    m_Address: Weapon/BubbleShotgun
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -290,6 +310,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cbf34571780ef5143ac7d864ae4c70be
     m_Address: Portrait/PistolGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3ba64a6fba312940bb7703a3f6c3ec4
+    m_Address: Assets/GameResource/Weapons/BubbleShotgunGirl/BubbleShotgunExplosion.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
