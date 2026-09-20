@@ -55,7 +55,7 @@ namespace Splatoon.Combat
                         !InkExplosionRules.ClosestPoint(player, explosher ? origin : position, out var target)) continue;
                     float damage = InkExplosionRules.Damage(ammo, collision, Vector3.Distance(explosher ? origin : position, target));
                     Vector3 delta = target - origin;
-                    if (damage <= 0 || Occluded(origin, delta, shot.Shooter)) continue;
+                    if (damage <= 0 || Occluded(origin, delta, shot.Shooter, shot.Team)) continue;
                     float before = player.Snapshot.Value.Health;
                     player.ReceiveDamage(shot.Team, damage, delta.normalized, shot.Shooter);
                     float actual = before - player.Snapshot.Value.Health;
@@ -86,8 +86,8 @@ namespace Splatoon.Combat
                 Position = position, Normal = normal, Collision = collision, Time = at ?? shot.Born + shot.Configuration.Lifetime });
         }
 
-        bool Occluded(Vector3 origin, Vector3 delta, ulong shooter)
-            => delta.sqrMagnitude > .000001f && _aim.ClosestCast(origin, delta, Mathf.Max(0, delta.magnitude - .002f), 0, shooter, out _, false);
+        bool Occluded(Vector3 origin, Vector3 delta, ulong shooter, byte? ignoreTeam = null)
+            => delta.sqrMagnitude > .000001f && _aim.ClosestCast(origin, delta, Mathf.Max(0, delta.magnitude - .002f), 0, shooter, out _, false, ignoreTeam);
 
         void PaintExplosionRay(InkShot shot, Vector3 origin, Vector3 direction, float distance, bool collision)
         {
@@ -139,10 +139,10 @@ namespace Splatoon.Combat
                 var direction = tangent * Mathf.Cos(angle) + bitangent * Mathf.Sin(angle);
                 if (_aim.ClosestCast(start, direction, radius, .01f, shot.Shooter, out var edge, false) && edge.Collider.GetComponentInParent<PaintSurface>() != surface)
                     radius = Mathf.Max(0, edge.Distance - .025f);
-                if (Occluded(origin, start + direction * radius - origin, shot.Shooter))
+                if (Occluded(origin, start + direction * radius - origin, shot.Shooter, shot.Team))
                 {
                     float lo = 0, hi = radius;
-                    for (int k = 0; k < 10; k++) { float mid = (lo + hi) * .5f; if (Occluded(origin, start + direction * mid - origin, shot.Shooter)) hi = mid; else lo = mid; }
+                    for (int k = 0; k < 10; k++) { float mid = (lo + hi) * .5f; if (Occluded(origin, start + direction * mid - origin, shot.Shooter, shot.Team)) hi = mid; else lo = mid; }
                     radius = Mathf.Max(0, lo - .025f);
                 }
                 if (i < 4) stamp.Clip0[i] = radius; else stamp.Clip1[i - 4] = radius;
@@ -166,12 +166,12 @@ namespace Splatoon.Combat
                     edge.Collider.GetComponentInParent<PaintSurface>() != surface)
                     result = Mathf.Min(result, Mathf.Max(0, edge.Distance - .025f));
                 var outer = start + direction * result;
-                if (!Occluded(origin, outer - origin, shot.Shooter)) continue;
+                if (!Occluded(origin, outer - origin, shot.Shooter, shot.Team)) continue;
                 float low = 0, high = result;
                 for (int k = 0; k < 8; k++)
                 {
                     float mid = (low + high) * .5f;
-                    if (Occluded(origin, start + direction * mid - origin, shot.Shooter)) high = mid;
+                    if (Occluded(origin, start + direction * mid - origin, shot.Shooter, shot.Team)) high = mid;
                     else low = mid;
                 }
                 result = Mathf.Max(0, low - .025f);

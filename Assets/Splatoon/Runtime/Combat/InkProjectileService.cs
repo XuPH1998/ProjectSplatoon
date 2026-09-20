@@ -505,6 +505,7 @@ namespace Splatoon.Combat
 #endif
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
+            var subWeapon = collider.GetComponentInParent<ISubWeaponDamageable>();
             float actualDamage = 0; bool killed = false;
             if (victim != null)
             {
@@ -513,6 +514,8 @@ namespace Splatoon.Combat
                     victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), incomingVelocity ?? InkBallistics.Velocity(shot, w, age), shot.Shooter);
                 actualDamage = before - victim.Snapshot.Value.Health; killed = actualDamage > 0 && victim.Snapshot.Value.Health <= 0;
             }
+            else if (subWeapon != null)
+                subWeapon.ReceiveSubWeaponDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge));
             else
             {
                 var surface = collider.GetComponentInParent<PaintSurface>();
@@ -523,7 +526,14 @@ namespace Splatoon.Combat
                     else ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
-            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age);
+            Vector3 explosionPoint = point;
+            if (subWeapon is SubWeaponHitProxy { Kind: SubWeaponKind.InkCurtain })
+            {
+                // Keep the blast origin on the impact side so rays toward targets behind the trigger cross the curtain.
+                Vector3 incoming = incomingVelocity ?? InkBallistics.Velocity(shot, w, age);
+                if (incoming.sqrMagnitude > .000001f) explosionPoint -= incoming.normalized * .025f;
+            }
+            ResolveExplosion(shot, explosionPoint, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true, Time = shot.Born + age,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });

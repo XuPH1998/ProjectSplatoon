@@ -208,7 +208,7 @@ namespace Splatoon.Tests
         {
             var inputs = Inputs(32); var send = new NetworkBatch<PlayerInputFrame>(inputs, 9, 2);
             using var writer = new FastBufferWriter(4096, Allocator.Temp); writer.WriteNetworkSerializable(send);
-            Assert.That(writer.Length, Is.EqualTo(4 + 47 * 2));
+            Assert.That(writer.Length, Is.EqualTo(4 + 56 * 2));
             using var reader = new FastBufferReader(writer, Allocator.None); reader.ReadNetworkSerializable(out NetworkBatch<PlayerInputFrame> received);
             Assert.That(received.Count, Is.EqualTo(2)); Assert.That(received[0].Sequence, Is.EqualTo(10));
             received.Dispose(); send.Dispose(); Assert.That(inputs.Count, Is.EqualTo(32));

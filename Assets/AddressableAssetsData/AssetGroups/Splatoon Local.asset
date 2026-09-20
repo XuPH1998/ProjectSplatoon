@@ -394,6 +394,41 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 25897f95bcc34781a73c9671be5103f2
+    m_Address: Assets/GameResource/SubWeapons/Torpedo/TorpedoConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f6ea1da95ca4f93bc0f47555c072c72
+    m_Address: Assets/GameResource/SubWeapons/SpeedPad/SpeedPadConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6de8fc5e489f48938795a11d20c0f076
+    m_Address: Assets/GameResource/SubWeapons/JumpPad/JumpPadConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6106d90571c84572b617759838e98e87
+    m_Address: Assets/GameResource/SubWeapons/CurlingBomb/CurlingBombConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 004320f57d6a4f8481d115e574a6bd89
+    m_Address: Assets/GameResource/SubWeapons/InkCurtain/InkCurtainConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aac6e584203c4ea58fe61fb50dc7cd04
+    m_Address: Assets/GameResource/SubWeapons/InkMine/InkMineConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0335c85ce7ef450998f20070077fdaca
+    m_Address: Assets/GameResource/SubWeapons/Sprinkler/SprinklerConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c37a37c5f9680ed4fa8b246f400b724d, type: 2}
   m_SchemaSet:

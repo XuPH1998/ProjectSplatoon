@@ -11,6 +11,7 @@ namespace Splatoon.Config
         public static cfg.HeroConfig DefaultHero => GetHero(Mode.HeroId);
         public static cfg.HeroConfig GetHero(int id) => LubanConfigService.Current.Tables.TbHero.Get(id == 0 ? Mode.HeroId : id);
         public static WeaponRuntimeConfig GetWeapon(int heroId) => WeaponConfigService.Current.Get(GetHero(heroId));
+        public static SubWeaponRuntimeConfig GetSubWeapon(int heroId) => SubWeaponConfigService.Current.Get(GetHero(heroId));
         public static cfg.MapConfig Map => LubanConfigService.Current.Tables.TbMap.Get(Mode.MapId);
         public static void Validate(cfg.Tables supplied = null)
         {
@@ -30,6 +31,7 @@ namespace Splatoon.Config
                     c.BodyRadius > 0 && c.ControllerStepOffset <= c.CompactHeight && c.ControllerSkinWidth > 0 && c.ControllerSkinWidth < c.BodyRadius, "英雄碰撞体型无效");
                 Require(c.Id > 0 && c.MaxHealth > 0 && c.MaxInk > 0 && c.MoveSpeed > 0 && c.SwimSpeed > 0 && c.CharacterGravity > 0 && c.JumpSpeed > 0, "英雄角色数值无效");
                 Require(!string.IsNullOrWhiteSpace(c.WeaponConfigPath) && c.WeaponConfigPath.StartsWith("Assets/", StringComparison.Ordinal) && c.WeaponConfigPath.EndsWith(".asset", StringComparison.Ordinal), "武器配置路径必须为 Assets/.../*.asset");
+                Require(string.IsNullOrWhiteSpace(c.SubWeaponConfigPath) || c.SubWeaponConfigPath.StartsWith("Assets/", StringComparison.Ordinal) && c.SubWeaponConfigPath.EndsWith(".asset", StringComparison.Ordinal), "副武器配置路径必须为空或 Assets/.../*.asset");
                 Require(!string.IsNullOrWhiteSpace(c.CharacterPrefabAddress), "角色缺少外观地址");
                 Require(!string.IsNullOrWhiteSpace(c.DisplayName) && !string.IsNullOrWhiteSpace(c.WeaponTypeName) && !string.IsNullOrWhiteSpace(c.PortraitAddress), "英雄缺少名称、主武器类型或头像地址");
                 Require(c.NeutralSwimSpeed > 0 && c.NeutralSwimSpeed < c.MoveSpeed, "无色地面潜墨速度必须大于零且小于普通移动速度");
@@ -38,6 +40,11 @@ namespace Splatoon.Config
                 Require(c.MoveAcceleration > 0 && c.SwimAcceleration > 0 && c.WallSwimSpeed > 0 && c.WallProbeDistance > 0 && c.WallGraceSeconds <= .1f && c.MantleSeconds > 0 && c.EnemyInkHealthFloor <= c.MaxHealth, "移动与恢复配置无效");
             }
             foreach (var hero in tables.TbHero.DataList) WeaponConfigValidation.Validate(WeaponConfigService.Current.Get(hero));
+            foreach (var hero in tables.TbHero.DataList)
+            {
+                var subWeapon = SubWeaponConfigService.Current.Get(hero);
+                if (subWeapon != null) SubWeaponConfigValidation.Validate(subWeapon);
+            }
             foreach (var m in tables.TbRoomMode.DataList)
             {
                 Require(tables.TbHero.GetOrDefault(m.HeroId) != null && tables.TbMap.GetOrDefault(m.MapId) != null, "模式表存在无效引用");

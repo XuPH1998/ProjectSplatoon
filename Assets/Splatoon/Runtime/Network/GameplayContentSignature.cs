@@ -6,13 +6,14 @@ using UnityEngine;
 using Splatoon.Painting;
 using Splatoon.Combat;
 using Splatoon.Prototype;
+using Splatoon.Config;
 
 namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 9;
-        public const int WeaponSimulationVersion = 16; // Calibrated shared camera/aim geometry and form-continuous pivots.
+        public const int WeaponSimulationVersion = 17; // Adds authoritative configuration-driven secondary weapons.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
@@ -50,6 +51,9 @@ namespace Splatoon.Networking
                 foreach (var hero in entries)
                 {
                     hero.WeaponConfig.Write(w); w.Write(hero.Config.WeaponConfigPath);
+                    var subWeapon = SubWeaponConfigService.Current.Get(hero.Config);
+                    w.Write(hero.Config.SubWeaponConfigPath ?? ""); w.Write(subWeapon != null);
+                    subWeapon?.Write(w);
                     w.Write(hero.Config.Id); w.Write(hero.Config.CharacterPrefabAddress); w.Write(hero.WeaponConfig.WeaponPrefabAddress);
                     var profile = hero.Profile;
                     var paper = profile.Paper;

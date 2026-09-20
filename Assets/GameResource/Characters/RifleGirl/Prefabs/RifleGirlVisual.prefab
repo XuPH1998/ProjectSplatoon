@@ -10933,6 +10933,11 @@ MonoBehaviour:
   Weapon: {fileID: 6061532701893978127}
   WeaponSocket: {fileID: 280442919272980320}
   LeftGrip: {fileID: 705384448997087179}
+  LeftWeapon: {fileID: 0}
+  LeftWeaponSocket: {fileID: 0}
+  LeftNozzle: {fileID: 0}
+  AimReference: {fileID: 0}
+  UseSupportGrip: 1
   TeamMarker: {fileID: 7041134702325760045}
   BoundWeaponPrefab: {fileID: 2102103296936374328, guid: 8fc6e6c01920f2349a9074deec382a79, type: 3}
   Nozzle: {fileID: 4218738861481314514}

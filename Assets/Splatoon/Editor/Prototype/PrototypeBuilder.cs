@@ -79,6 +79,11 @@ namespace Splatoon.Editor
                 AddAsset(ammo.bubblePrefab); AddAsset(ammo.bubbleShotAudio); AddAsset(ammo.bubbleBounceAudio); AddAsset(ammo.bubblePopAudio); AddAsset(ammo.flightPrefab); AddAsset(ammo.muzzlePrefab); AddAsset(ammo.explosionPrefab);
                 void AddAsset(UnityEngine.Object asset) { if (asset != null) { var p = AssetDatabase.GetAssetPath(asset); if (!string.IsNullOrEmpty(p)) AddAddress(settings, group, p, p); } }
             }
+            foreach (string guid in AssetDatabase.FindAssets("t:SubWeaponConfigAsset", new[] { "Assets/GameResource/SubWeapons" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                AddAddress(settings, group, path, path);
+            }
             const string portraits = "Assets/GameResource/UI/HeroPortraits";
             if (Directory.Exists(portraits))
                 foreach (string path in Directory.GetFiles(portraits, "*Portrait.png"))

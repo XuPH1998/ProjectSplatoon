@@ -230,7 +230,13 @@ namespace Splatoon.Combat
             if (jump && grounded) s.VerticalSpeed = WeaponSimulation.IsSplatling(weapon) && wantsFire && s.SplatlingRemaining == 0 && s.WeaponPhase != WeaponPhase.Ending
                 ? weapon.SplatlingChargeJumpSpeed : c.JumpSpeed;
             s.VerticalSpeed = AirSwimSimulation.VerticalSpeed(s.VerticalSpeed, airSwim, c, dt);
-            var collisions = _controller.Move((s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt);
+            Vector3 subWeaponVelocity = Vector3.zero;
+            if (now < s.SubWeaponMoveUntil && s.SubWeaponMoveUntil > s.SubWeaponMoveStartedAt)
+            {
+                float remaining = Mathf.Clamp01((float)((s.SubWeaponMoveUntil - now) / (s.SubWeaponMoveUntil - s.SubWeaponMoveStartedAt)));
+                subWeaponVelocity = s.SubWeaponMoveVelocity * remaining;
+            }
+            var collisions = _controller.Move((s.PlanarVelocity + subWeaponVelocity + Vector3.up * s.VerticalSpeed) * dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
             // Resolve the destination before resources/presentation, including landing and fresh enemy paint.

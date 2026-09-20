@@ -9,7 +9,7 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 31;
+        public const uint ProtocolVersion = 32;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
@@ -37,6 +37,10 @@ namespace Splatoon.Prototype
         public ulong RightShotAction, LeftShotAction;
         public int HeroId, BurstRemaining;
         public uint HeroRevision, ConsumedRelease;
+        public uint ConsumedSubWeaponPress, ConsumedSubWeaponRelease;
+        public double SubWeaponCooldownUntil, SubWeaponMoveStartedAt, SubWeaponMoveUntil, SubWeaponTriggerCooldownUntil;
+        public Vector3 SubWeaponMoveVelocity;
+        public byte ActiveSubWeapons;
         public bool AttackNeedsRelease, ChargeReleasePending;
         public double ChargeStartedAt, BurstReadyAt, FireVisualUntil;
         public double AttackRecoveryUntil, AttackMoveUntil;
@@ -82,6 +86,9 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref RightShotAt); s.SerializeValue(ref LeftShotAt);
             s.SerializeValue(ref RightShotAction); s.SerializeValue(ref LeftShotAction);
             s.SerializeValue(ref HeroId); s.SerializeValue(ref HeroRevision); s.SerializeValue(ref ConsumedRelease);
+            s.SerializeValue(ref ConsumedSubWeaponPress); s.SerializeValue(ref ConsumedSubWeaponRelease);
+            s.SerializeValue(ref SubWeaponCooldownUntil); s.SerializeValue(ref SubWeaponMoveStartedAt); s.SerializeValue(ref SubWeaponMoveUntil);
+            s.SerializeValue(ref SubWeaponTriggerCooldownUntil); s.SerializeValue(ref SubWeaponMoveVelocity); s.SerializeValue(ref ActiveSubWeapons);
             s.SerializeValue(ref BurstRemaining); s.SerializeValue(ref ChargeElapsedSeconds); s.SerializeValue(ref AttackNeedsRelease); s.SerializeValue(ref ChargeReleasePending);
             s.SerializeValue(ref ChargeStartedAt); s.SerializeValue(ref BurstReadyAt); s.SerializeValue(ref FireVisualUntil); s.SerializeValue(ref LastShotCharge);
             s.SerializeValue(ref Position); s.SerializeValue(ref Yaw); s.SerializeValue(ref Pitch);

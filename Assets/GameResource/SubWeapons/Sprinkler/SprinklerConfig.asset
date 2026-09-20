@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b850c26642f4d48ad6d3696c4521a45, type: 3}
+  m_Name: SprinklerConfig
+  m_EditorClassIdentifier: 
+  stableId: sprinkler
+  displayName: "\u6492\u58A8\u5668"
+  kind: 6
+  deploymentMode: 1
+  attachSurfaces: 7
+  inkCost: 35
+  cooldownSeconds: 5
+  maxActive: 1
+  lifetimeSeconds: 20
+  maxHealth: 60
+  collisionRadius: 0.3
+  placementRange: 8
+  launchSpeed: 0
+  gravity: 0
+  maxTravelDistance: 0
+  bounceRetention: 0.7
+  scanRadius: 0
+  triggerRadius: 0
+  armingSeconds: 0
+  damage: 0
+  explosionRadius: 0
+  effectInterval: 0.35
+  boostSpeed: 0
+  boostSeconds: 0
+  jumpUpSpeed: 0
+  jumpForwardSpeed: 0
+  perPlayerTriggerCooldown: 0.35
+  width: 0.6
+  height: 0.9
+  paintRadius: 8
+  paintHardness: 0.5
+  paintStrength: 1

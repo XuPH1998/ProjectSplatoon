@@ -16,6 +16,7 @@ namespace Splatoon.Prototype
         public readonly List<PrototypePlayer> Players = new();
         public PrototypeArena Arena => PrototypeArena.Current;
         public readonly InkProjectileService Projectiles = new();
+        public SubWeaponService SubWeapons { get; private set; }
         public readonly MatchCombatStats CombatStats = new();
         public bool CanStartRound => PrototypeRules.CanStart(
             Players.Count(p => p != null && p.IsSpawned && !p.IsTestBot && p.Snapshot.Value.Team == 1),
@@ -40,11 +41,13 @@ namespace Splatoon.Prototype
         private readonly SortedDictionary<uint, PaintStamp> _buffered = new();
         public override void OnNetworkSpawn()
         {
-            Current = this; _paintRound = State.Value.Round;
+            Current = this; _paintRound = State.Value.Round; SubWeaponPresentation.Ensure();
             if (IsServer)
             {
+                SubWeapons = new SubWeaponService(this);
                 State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalArea = Arena.TotalArea };
                 InitialSyncComplete = true; NetworkManager.NetworkTickSystem.Tick += ServerTick;
+                NetworkManager.OnClientConnectedCallback += SendSubWeapons;
                 this.RegisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
                 _networkFrameOffset = NetworkManager.ServerTime.Time - Time.timeAsDouble;
             }
@@ -80,7 +83,7 @@ namespace Splatoon.Prototype
             go.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true); Players.Add(p);
             Debug.Log($"[LAN] Player joined id={clientId} team={team} slot={slot}");
         }
-        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
+        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); SubWeapons?.RemoveOwner(id); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
         public void StartRound()
         {
             if (!IsServer || !CanStartRound || (PrototypeApp.Current != null && PrototypeApp.Current.IsWeaponDebugRoom)) return;
@@ -107,7 +110,8 @@ namespace Splatoon.Prototype
         }
         private void ResetPaint(uint round)
         {
-            _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
+            _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear(); SubWeapons?.Clear();
+            if (!IsServer) SubWeaponPresentation.Current?.Clear();
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
             _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
             ResetSnapshotTransfer(false);
@@ -135,9 +139,11 @@ namespace Splatoon.Prototype
             PrototypeApp.Current?.ApplyDebugWeaponChanges();
 #endif
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
+            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); SubWeapons?.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
+            SubWeapons?.Simulate(1f / GameplayConfig.Global.SimulationRate, now);
+            if (IsServer && SubWeapons != null) { SubWeapons.CopyStates(_subWeaponStates); SubWeaponPresentation.Current?.Apply(_subWeaponStates); }
             Physics.SyncTransforms(); // Publish switched/rotated swim hit volumes before authoritative projectile sweeps.
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
         }
@@ -148,6 +154,11 @@ namespace Splatoon.Prototype
             if (Projectiles.Bounces.Count > 0) { BouncesClientRpc(new NetworkBatch<InkBounce>(Projectiles.Bounces)); Projectiles.Bounces.Clear(); }
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(new NetworkBatch<InkImpact>(Projectiles.Impacts)); Projectiles.Impacts.Clear(); }
             if (Projectiles.Explosions.Count > 0) { ExplosionsClientRpc(new NetworkBatch<InkExplosionEvent>(Projectiles.Explosions)); Projectiles.Explosions.Clear(); }
+            if (SubWeapons != null)
+            {
+                SubWeapons.CopyStates(_subWeaponStates); SubWeaponStatesClientRpc(new NetworkBatch<SubWeaponEntityState>(_subWeaponStates));
+                if (SubWeapons.PendingEvents.Count > 0) { SubWeaponEventsClientRpc(new NetworkBatch<SubWeaponEvent>(SubWeapons.PendingEvents)); SubWeapons.PendingEvents.Clear(); }
+            }
             if (_pending.Count > 0) { PaintClientRpc(new NetworkBatch<PaintStamp>(_pending)); _pending.Clear(); }
             s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.PinkArea = Arena.PinkArea; s.BlueArea = Arena.BlueArea; State.Value = s;
         }
@@ -177,6 +188,18 @@ namespace Splatoon.Prototype
         [ClientRpc] private void ExplosionsClientRpc(NetworkBatch<InkExplosionEvent> explosions)
         { try { for (int i = 0; i < explosions.Count; i++) { var explosion = explosions[i]; if (explosion.Round == _paintRound) InkPresentation.Current?.Explosion(explosion); } } finally { explosions.Dispose(); } }
         [ClientRpc] private void ClearShotsClientRpc(uint round) { if (round == _paintRound) InkPresentation.Current?.Clear(); }
+        readonly List<SubWeaponEntityState> _subWeaponStates = new(16);
+        [ClientRpc] void SubWeaponStatesClientRpc(NetworkBatch<SubWeaponEntityState> states, ClientRpcParams targets = default)
+        { try { SubWeaponPresentation.Ensure().Apply(states); } finally { states.Dispose(); } }
+        [ClientRpc] void SubWeaponEventsClientRpc(NetworkBatch<SubWeaponEvent> events, ClientRpcParams targets = default)
+        { try { for (int i = 0; i < events.Count; i++) SubWeaponPresentation.Ensure().Play(events[i]); } finally { events.Dispose(); } }
+        void SendSubWeapons(ulong client)
+        {
+            if (!IsServer || SubWeapons == null || client == NetworkManager.ServerClientId) return;
+            SubWeapons.CopyStates(_subWeaponStates);
+            SubWeaponStatesClientRpc(new NetworkBatch<SubWeaponEntityState>(_subWeaponStates),
+                new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new[] { client } } });
+        }
         [ClientRpc] private void PaintClientRpc(NetworkBatch<PaintStamp> stamps, ClientRpcParams targets = default)
         {
             try
@@ -197,7 +220,8 @@ namespace Splatoon.Prototype
         {
             this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
-            _captureGeneration++; Projectiles.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
+            if (NetworkManager != null) NetworkManager.OnClientConnectedCallback -= SendSubWeapons;
+            _captureGeneration++; Projectiles.Clear(); SubWeapons?.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
             _incoming = null; _checkpoint = null; _checkpointBytes = null; _pending.Clear(); _journal.Clear();
             ResetSnapshotTransfer(true);
             if (Current == this) Current = null;
