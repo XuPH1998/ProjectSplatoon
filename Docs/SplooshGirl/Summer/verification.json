@@ -1,0 +1,201 @@
+{
+  "model": {
+    "height": 1.5000239592477054,
+    "floor_offset": 0.04432619363069534,
+    "bones": 320,
+    "triangles": 30639,
+    "unweighted_vertices": 0,
+    "source": "ArtSource\\Characters\\SplooshGirlSummer\\Source\\Avatar_Female_Size01_SummerCuteness_UI\\Avatar_Female_Size01_SummerCuteness_UI.fbx",
+    "meshes": [
+      {
+        "name": "Summer_Cuteness_Body_2",
+        "vertices": 6928,
+        "materials": [
+          "MAT_Summer_Body_2_UI",
+          "MAT_Summer_Hair_T_UI"
+        ]
+      },
+      {
+        "name": "Summer_Eyebrow",
+        "vertices": 48,
+        "materials": [
+          "MAT_Summer_Eyebrows_UI"
+        ]
+      },
+      {
+        "name": "Summer_Cuteness_Body_1",
+        "vertices": 13204,
+        "materials": [
+          "MAT_Summer_Cuteness_Body_1_UI",
+          "MAT_Summer_Cuteness_Body_2_UI"
+        ]
+      },
+      {
+        "name": "Summer_Cuteness_HairShadow",
+        "vertices": 340,
+        "materials": [
+          "MAT_HairShadow_UI"
+        ]
+      },
+      {
+        "name": "Summer_Face",
+        "vertices": 3108,
+        "materials": [
+          "MAT_Summer_Eyebrows_UI",
+          "MAT_Summer_Face_UI",
+          "MAT_Summer_Eye_UI"
+        ]
+      },
+      {
+        "name": "Summer_Shy",
+        "vertices": 300,
+        "materials": [
+          "MAT_Summer_Face_UI"
+        ]
+      },
+      {
+        "name": "Summer_Weapon_3",
+        "vertices": 573,
+        "materials": [
+          "MAT_Summer_Weapon_1_UI"
+        ]
+      }
+    ]
+  },
+  "animation": {
+    "clips": 10,
+    "samples": 750,
+    "maxGripError": 2.702826e-07,
+    "avatarValid": true
+  },
+  "tests": {
+    "total": 114,
+    "passed": 107,
+    "failed": 7,
+    "allFailuresReproducedWithOriginalTestCodeAndTables": true,
+    "preExistingFailures": [
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(1)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(2)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(3)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(4)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(5)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(6)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(7)"
+    ]
+  },
+  "body": {
+    "standingHeight": 1.5,
+    "radius": 0.28,
+    "compactHeight": 0.625,
+    "stepOffset": 0.25,
+    "skinWidth": 0.025
+  },
+  "originalAvatarSha256": "ed62ac9f533ea6c06d3e4f0631a75863a95817a0fb215424480bcbaa4028da56",
+  "transitions": {
+    "stages": 17,
+    "frames": 1020,
+    "maxGripErrorMetres": 2.26889438e-06,
+    "maxMuzzleAngleDegrees": 0.07912937,
+    "playMode": true
+  },
+  "renderedPlayModeRegression": {
+    "passed": 1,
+    "failed": 0,
+    "results": "rendered-transitions-tests.xml"
+  },
+  "integrity": {
+    "originalFilesVerified": 33,
+    "testedInputsVerified": 349,
+    "packageFilesVerified": 343,
+    "onlyHero8FieldsChanged": {
+      "standingHeight": {
+        "before": 1.2,
+        "after": 1.5
+      },
+      "bodyRadius": {
+        "before": 0.25,
+        "after": 0.28
+      },
+      "compactHeight": {
+        "before": 0.5,
+        "after": 0.625
+      },
+      "controllerStepOffset": {
+        "before": 0.2,
+        "after": 0.25
+      },
+      "controllerSkinWidth": {
+        "before": 0.02,
+        "after": 0.025
+      }
+    },
+    "otherHeroRowsUnchanged": true,
+    "preservedWeaponAndPortrait": true,
+    "inputComparison": "Exact bytes for binaries; text normalized only for line endings and trailing whitespace.",
+    "originalTestFailuresReproduced": 7
+  },
+  "network": {
+    "passed": true,
+    "client": {
+      "shots8": "234",
+      "respawnRetained": "True",
+      "roundReset": "True",
+      "maxPlayers": "2",
+      "role": "client",
+      "switch8to1to8": "True",
+      "runtimeErrors": "",
+      "resyncRequested": "True",
+      "smallRemoteBody": "True",
+      "appliedSnapshots": "2",
+      "confirmedEnemyProjectileHit": "True",
+      "paperObserved": "True",
+      "receivedDamageDuringFight": "True",
+      "finalPaintHash": "2777567930",
+      "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+      "initialSyncAndCapture": "True",
+      "contentSignature": "52854b86672faae84d97cb6b260139305b3195c517bfc3419e0ee8ebd3745707",
+      "finalPaintSequence": "3462",
+      "passed": "True",
+      "error": ""
+    },
+    "host": {
+      "shots8": "274",
+      "respawnRetained": "True",
+      "roundReset": "True",
+      "maxPlayers": "2",
+      "role": "host",
+      "switch8to1to8": "True",
+      "runtimeErrors": "",
+      "resyncRequested": "False",
+      "smallRemoteBody": "True",
+      "appliedSnapshots": "0",
+      "confirmedEnemyProjectileHit": "True",
+      "paperObserved": "True",
+      "receivedDamageDuringFight": "True",
+      "finalPaintHash": "2777567930",
+      "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+      "initialSyncAndCapture": "True",
+      "contentSignature": "52854b86672faae84d97cb6b260139305b3195c517bfc3419e0ee8ebd3745707",
+      "finalPaintSequence": "3462",
+      "passed": "True",
+      "error": ""
+    },
+    "player": "D:\\XPHUNITY\\ProjectSplatoon-SummerValidation-20260920\\Builds\\SplooshGirl\\InkLan.exe",
+    "environment": "Two independent Windows processes on one PC; not physical two-machine or target-device acceptance."
+  },
+  "build": {
+    "succeeded": true,
+    "unity": "6000.3.9f1",
+    "target": "Windows x64 / Mono / Development",
+    "player": "Builds/SplooshGirlSummer/InkLan.exe",
+    "fullPackageFiles": 343,
+    "packageCopySha256Verified": true,
+    "log": "windows-build-final.log"
+  },
+  "paperContentHash": "04f9831d4f8859823e381e4a12ea0dc16f0af7f4ef3778ee1f1a1eb997e2f3a2",
+  "limitations": [
+    "Seven pre-existing legacy paint baseline failures; original tests and hero tables reproduce identical messages.",
+    "Independent Windows Host and Client ran on one PC; no physical two-machine LAN or target-device performance acceptance.",
+    "Original shader was not supplied; materials reconstructed with project Toon shader; original hair-shadow and shy overlay renderers disabled."
+  ]
+}

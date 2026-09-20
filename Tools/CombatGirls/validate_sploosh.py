@@ -33,7 +33,7 @@ rows = read(ROOT / "Assets/GameResource/Bootstrap/Config/Luban/tbhero.json")
 book = openpyxl.load_workbook(ROOT / "Config/Luban/source/TbHero.xlsx")
 sheet = book["Hero"]
 fields = [sheet.cell(1, c).value for c in range(1, sheet.max_column + 1)]
-check(len(rows) == 8 and rows[-1]["id"] == 8, "eight generated heroes, Sploosh id 8")
+check(any(row["id"] == 8 for row in rows), "Sploosh id 8 is present")
 for i, row in enumerate(rows, 4):
     for col, field in enumerate(fields, 1):
         if field not in row:
@@ -44,10 +44,11 @@ for i, row in enumerate(rows, 4):
               f"source -> Luban hero {row['id']}/{field}")
 shape = ("standingHeight", "bodyRadius", "compactHeight", "controllerStepOffset", "controllerSkinWidth")
 for row in rows:
-    expected = (1.2, .25, .5, .2, .02) if row["id"] == 8 else (1.8, .35, .7, .3, .03)
+    expected = (1.5, .28, .625, .25, .025) if row["id"] == 8 else (1.8, .35, .7, .3, .03)
     check(all(math.isclose(row[key], value, abs_tol=1e-6) for key, value in zip(shape, expected)), f"hero {row['id']} body dimensions")
-check(rows[-1]["name"] == "SplooshGirl" and rows[-1]["displayName"] == "铃芽", "hero identity")
-weapon = ROOT / rows[-1]["weaponConfigPath"]
+sploosh = next(row for row in rows if row["id"] == 8)
+check(sploosh["name"] == "SplooshGirl" and sploosh["displayName"] == "铃芽", "hero identity")
+weapon = ROOT / sploosh["weaponConfigPath"]
 values = dict(re.findall(r"^  (\w+): (.+)$", weapon.read_text(encoding="utf-8-sig"), re.M))
 for key, expected in {"fireRate": 12, "shotInk": .8, "damage": 38, "damageMin": 19, "spreadDegrees": 11.66,
                       "jumpSpreadDegrees": 17.49, "shooterDetails": 1, "shooterSplitNum": 5,
@@ -59,7 +60,7 @@ for resource in ("Characters/SplooshGirl/Prefabs/SplooshGirlVisual.prefab", "Wea
     path = ROOT / "Assets/GameResource" / resource
     check(path.is_file() and Path(str(path) + ".meta").is_file(), resource + " and stable meta")
 group = (ROOT / "Assets/AddressableAssetsData/AssetGroups/Splatoon Local.asset").read_text(encoding="utf-8-sig")
-for address in ("Character/SplooshGirl", "Weapon/SplooshGun", "Portrait/SplooshGirl", rows[-1]["weaponConfigPath"]):
+for address in ("Character/SplooshGirl", "Weapon/SplooshGun", "Portrait/SplooshGirl", sploosh["weaponConfigPath"]):
     check(address in group, "Addressables " + address)
 
 preserved = []

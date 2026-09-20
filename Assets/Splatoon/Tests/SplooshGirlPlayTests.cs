@@ -51,19 +51,19 @@ namespace Splatoon.Tests
             var app = PrototypeApp.Current; yield return app.StartWeaponDebugRoom().ToCoroutine();
             Assert.That(app.InRoom, Is.True, app.Error);
             yield return Wait(() => PrototypePlayer.Local != null, "Host player ready");
-            Assert.That(app.Heroes.PortraitCount, Is.EqualTo(8));
+            Assert.That(app.Heroes.PortraitCount, Is.EqualTo(LubanConfigService.Current.Tables.TbHero.DataList.Count));
             var host = PrototypePlayer.Local; var match = PrototypeMatch.Current;
             host.RequestHeroChange(8, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !host.HeroChangePending && host.Snapshot.Value.HeroId == 8, "Small hero selected");
-            Assert.That(host.GetComponent<CharacterController>().height, Is.EqualTo(1.2f));
+            Assert.That(host.GetComponent<CharacterController>().height, Is.EqualTo(1.5f));
             Assert.That(host.CharacterView.Animator.avatar.isValid, Is.True);
             for (int frame = 0; frame < 10; frame++) yield return null;
-            Capture(host.transform.position + Vector3.up * .65f, "play-character");
+            Capture(host.transform.position + Vector3.up * .8f, "play-character");
             var original = host.transform.position; var bot = match.AddTestBot(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
             Assert.That(bot, Is.Not.Null, match.TestBotMessage);
             app.CaptureMouse(false); match.enabled = false; foreach (var p in match.Players) p.enabled = false;
             var origin = new Vector3(1000, 1000, 1000); Place(host, origin);
-            var roof = new GameObject("Small hero ceiling"); roof.transform.position = origin + Vector3.up * 1.5f;
+            var roof = new GameObject("Small hero ceiling"); roof.transform.position = origin + Vector3.up * 1.7f;
             roof.AddComponent<BoxCollider>().size = new Vector3(3, .2f, 3); Physics.SyncTransforms();
             double Now() => host.NetworkManager.ServerTime.Time;
             try
@@ -91,9 +91,18 @@ namespace Splatoon.Tests
                         ConfigurationRevision = WeaponConfigService.Current.Revision(8) });
                     service.Simulate(born + .2); return service;
                 }
-                for (int hit = 1; hit <= 3; hit++)
-                { Fire(origin + Vector3.up * .65f, Vector3.forward); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(Mathf.Max(0, 100 - 38 * hit))); }
+                Fire(origin + Vector3.up * 1.8f, Vector3.forward);
+                Fire(origin + Vector3.up * .8f + Vector3.right * .6f, Vector3.forward);
+                Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(100), "shots outside the new capsule miss");
+                foreach (float height in new[] { 1.35f, .8f, .35f })
+                {
+                    float before = bot.Snapshot.Value.Health;
+                    Fire(origin + Vector3.up * height, Vector3.forward);
+                    Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(Mathf.Max(0,before-38)), "new upper body, torso and legs remain hittable");
+                }
                 Assert.That(bot.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Dead));
+                bot.SwimBody.ApplyCollision(bot.Snapshot.Value);
+                Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
                 bot.Respawn(); Assert.That(bot.Snapshot.Value.HeroId, Is.EqualTo(8));
                 Place(bot, origin + Vector3.forward * 2, 2);
                 var paper = bot.Snapshot.Value; paper.Swimming = true; paper.SwimSource = SwimSurface.Friendly; paper.Movement = MovementMode.GroundInk;
@@ -102,9 +111,13 @@ namespace Splatoon.Tests
                 var rect = bot.SwimBody.HitRects.OrderByDescending(r => r.width * r.height).First();
                 var point = bot.SwimBody.HitVolume.transform.TransformPoint(new Vector3(rect.center.x, rect.center.y, 0));
                 Fire(point + Vector3.up, Vector3.down); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(62));
-                var blocker = roof; blocker.SetActive(true); blocker.transform.position = origin + Vector3.up * .65f + Vector3.forward;
+                Fire(point + Vector3.up, Vector3.down); Fire(point + Vector3.up, Vector3.down);
+                Assert.That(bot.Snapshot.Value.Health, Is.Zero, "paper silhouette can receive a lethal hit");
+                bot.SwimBody.ApplyCollision(bot.Snapshot.Value); Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
+                bot.Respawn(); Assert.That(bot.GetComponent<CharacterController>().height, Is.EqualTo(1.5f));
+                var blocker = roof; blocker.SetActive(true); blocker.transform.position = origin + Vector3.up * .8f + Vector3.forward;
                 blocker.GetComponent<BoxCollider>().size = new Vector3(3, 3, .1f); Place(bot, origin + Vector3.forward * 2, 2); Physics.SyncTransforms();
-                Fire(origin + Vector3.up * .65f, Vector3.forward); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(100), "wall blocks shot");
+                Fire(origin + Vector3.up * .8f, Vector3.forward); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(100), "wall blocks shot");
                 var solver = new TpsAimSolver(); blocker.transform.position = origin + host.Presentation.MuzzlePosition; Physics.SyncTransforms();
                 Assert.That(solver.Resolve(host, host.Snapshot.Value, 0).MuzzleBlocked, Is.True, "small muzzle cannot shoot through wall");
                 var pivot=origin+host.Presentation.CameraPivot;blocker.transform.position=pivot+host.Presentation.CameraOffset*.5f;
@@ -123,7 +136,10 @@ namespace Splatoon.Tests
                 }
                 finally { WeaponConfigService.Current.SetForEditor(8, w, source); Object.Destroy(clone); }
                 Place(host, original);
-                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; 8 portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; remote small capsule receives 38/38/38; death/respawn keeps hero; live paper hit silhouette; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload.\n");
+                SplooshSummerPlayEvidence.CaptureTransitions(host);
+                Place(bot, original + Vector3.forward * 2, 2);
+                SplooshSummerPlayEvidence.CaptureHitVolumes(bot);
+                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; configured portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; new capsule receives 38/38/38; standing and paper death disable hit proxies; respawn restores 1.5m body; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload; rendered transitions and collision evidence.\n");
             }
             finally { Object.Destroy(roof); }
             yield return app.Leave().ToCoroutine();

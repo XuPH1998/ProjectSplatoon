@@ -38,8 +38,8 @@ namespace Splatoon.Tests
             Assert.That(W.Ammo.AmmoId,Is.EqualTo(8));
             for(int id=1;id<=7;id++)Assert.That(GameplayConfig.GetWeapon(id).ShooterDetails,Is.False);
             var v=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Characters/SplooshGirl/Prefabs/SplooshGirlVisual.prefab").GetComponent<InkCharacterView>();
-            Assert.That(v.Animator.avatar.isHuman&&v.Animator.avatar.isValid,Is.True);Assert.That(v.Profile.Paper.Size,Is.EqualTo(new Vector2(.6f,1.2f)));
-            Assert.That(v.Profile.MuzzlePosition.y,Is.InRange(.4f,1.1f));
+            Assert.That(v.Animator.avatar.isHuman&&v.Animator.avatar.isValid,Is.True);Assert.That(v.Profile.Paper.Size,Is.EqualTo(new Vector2(.75f,1.5f)));
+            Assert.That(v.Profile.MuzzlePosition.y,Is.InRange(.65f,1.4f));
         }
         [TestCase(false,2)] [TestCase(true,8)]
         public void TankCadenceDamageAndIndependentRecovery(bool emerged,int first)
@@ -83,12 +83,12 @@ namespace Splatoon.Tests
             var go=new GameObject("Sploosh body");objects.Add(go);go.layer=8;
             var controller=go.AddComponent<CharacterController>();var motor=new PlayerMotorSimulation(controller);
             var s=Alive();s.Position=new Vector3(500,0,500);motor.Restore(s);
-            Assert.That(controller.height,Is.EqualTo(1.2f));Assert.That(controller.radius,Is.EqualTo(.25f));
-            var roof=new GameObject("low ceiling");objects.Add(roof);roof.transform.position=s.Position+Vector3.up*1.5f;roof.AddComponent<BoxCollider>().size=new Vector3(3,.2f,3);Physics.SyncTransforms();
+            Assert.That(controller.height,Is.EqualTo(1.5f));Assert.That(controller.radius,Is.EqualTo(.28f));
+            var roof=new GameObject("low ceiling");objects.Add(roof);roof.transform.position=s.Position+Vector3.up*1.7f;roof.AddComponent<BoxCollider>().size=new Vector3(3,.2f,3);Physics.SyncTransforms();
             Assert.That(motor.CanFitHero(8,s.Position),Is.True);Assert.That(motor.CanFitHero(1,s.Position),Is.False);
-            s.Swimming=true;motor.Restore(s);Assert.That(controller.height,Is.EqualTo(.5f));Assert.That(controller.center.y,Is.EqualTo(.25f));
+            s.Swimming=true;motor.Restore(s);Assert.That(controller.height,Is.EqualTo(.625f));Assert.That(controller.center.y,Is.EqualTo(.3125f));
             s.Swimming=false;s.HeroId=1;motor.Restore(s);Assert.That(controller.height,Is.EqualTo(1.8f));
-            s.HeroId=8;motor.Restore(s);Assert.That(controller.height,Is.EqualTo(1.2f));
+            s.HeroId=8;motor.Restore(s);Assert.That(controller.height,Is.EqualTo(1.5f));
         }
         [Test] public void AllTenRetargetedClipsKeepSupportGripReachable()
         {
@@ -117,14 +117,14 @@ namespace Splatoon.Tests
             }
             Directory.CreateDirectory("Reports/SplooshGirl");File.WriteAllText("Reports/SplooshGirl/animation.txt",$"clips={clips.Length}\nsamples={samples}\nmaxGripErrorMetres={maximum:R}\n");
         }
-        [Test] public void RemoteCapsuleAndLivePaperUseTheSmallHero()
+        [Test] public void RemoteCapsuleAndLivePaperUseTheSummerHero()
         {
             var go=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));objects.Add(go);
             var player=go.GetComponent<PrototypePlayer>();var body=player.SwimBody;
             body.Bind(PaperBodyTests.Profile("SplooshGirl"));
             var state=Alive();go.GetComponent<CharacterController>().enabled=false;body.ApplyCollision(state);
-            Assert.That(body.CapsuleHitVolume.enabled,Is.True);Assert.That(body.CapsuleHitVolume.height,Is.EqualTo(1.2f));
-            Assert.That(body.CapsuleHitVolume.radius,Is.EqualTo(.25f));Assert.That(body.CapsuleHitVolume.center.y,Is.EqualTo(.6f));
+            Assert.That(body.CapsuleHitVolume.enabled,Is.True);Assert.That(body.CapsuleHitVolume.height,Is.EqualTo(1.5f));
+            Assert.That(body.CapsuleHitVolume.radius,Is.EqualTo(.28f));Assert.That(body.CapsuleHitVolume.center.y,Is.EqualTo(.75f));
             state.Swimming=true;state.SwimSource=SwimSurface.Friendly;state.Movement=MovementMode.GroundInk;
             PaperPoseSimulation.Resolve(ref state,default,body.Profile,0);body.ApplyCollision(state);body.Present(state,Vector3.up*.5f,Quaternion.identity);
             Assert.That(body.FlatHitActive,Is.True);Assert.That(body.HitRects.Count,Is.GreaterThan(4));
@@ -155,13 +155,13 @@ namespace Splatoon.Tests
         }
         [Test] public void AirHeroSwitchKeepsHumanFeetAndRoundTripPosition()
         {
-            var s=Alive();s.Grounded=false;s.Swimming=true;s.Movement=MovementMode.Air;s.Position=new Vector3(50,4,50);s.AirHumanOffset=.57f;
+            var s=Alive();s.Grounded=false;s.Swimming=true;s.Movement=MovementMode.Air;s.Position=new Vector3(50,4,50);s.AirHumanOffset=.72f;
             var feet=PlayerMotorSimulation.HumanPosition(s);var original=s.Position;
             Assert.That(HeroSelectionRules.Apply(ref s,1,true,default),Is.True);
             Assert.That(Vector3.Distance(PlayerMotorSimulation.HumanPosition(s),feet),Is.LessThan(.00001));Assert.That(s.AirHumanOffset,Is.EqualTo(.87f).Within(.00001));
             HeroSelectionRules.Apply(ref s,8,true,default);Assert.That(Vector3.Distance(s.Position,original),Is.LessThan(.00001));
         }
-        [Test] public void SmallAirPaperLandsAtItsVisiblePlaneAndRestoresHumanHeight()
+        [Test] public void SummerAirPaperLandsAtItsVisiblePlaneAndRestoresHumanHeight()
         {
             var floor=new GameObject("Small landing floor");objects.Add(floor);floor.transform.position=new Vector3(500,0,500);
             var box=floor.AddComponent<BoxCollider>();box.size=new Vector3(30,1,30);box.center=Vector3.down*.5f;
@@ -180,11 +180,11 @@ namespace Splatoon.Tests
                 else if(s.PaperCenter.y<.7f)low++;
             }
             Assert.That(s.Grounded,Is.True);Assert.That(low,Is.GreaterThan(5));Assert.That(s.PaperCenter.y,Is.EqualTo(.03f).Within(.004));
-            Assert.That(s.AirHumanOffset,Is.Zero);Assert.That(controller.height,Is.EqualTo(.5f));
-            input.Swim=false;motor.Step(ref s,input,1f/60,6,false);Assert.That(controller.height,Is.EqualTo(1.2f));
+            Assert.That(s.AirHumanOffset,Is.Zero);Assert.That(controller.height,Is.EqualTo(.625f));
+            input.Swim=false;motor.Step(ref s,input,1f/60,6,false);Assert.That(controller.height,Is.EqualTo(1.5f));
             PaperBodyTests.ReleaseTestBody(body);
         }
-        [TestCase(.15f,true)] [TestCase(.6f,false)] public void SmallControllerStepsOverLowButNotHighObstacles(float height,bool canCross)
+        [TestCase(.15f,true)] [TestCase(.6f,false)] public void SummerControllerStepsOverLowButNotHighObstacles(float height,bool canCross)
         {
             var start=new Vector3(550,.04f,550);
             var floor=new GameObject("Step floor");objects.Add(floor);floor.transform.position=new Vector3(550,-.5f,550);floor.AddComponent<BoxCollider>().size=new Vector3(12,1,12);
@@ -192,7 +192,7 @@ namespace Splatoon.Tests
             var go=new GameObject("Small controller"){layer=8};objects.Add(go);var controller=go.AddComponent<CharacterController>();var motor=new PlayerMotorSimulation(controller);
             var state=Alive();state.Position=start;motor.Restore(state);Physics.SyncTransforms();
             for(int t=0;t<60;t++)motor.Step(ref state,new PlayerInputFrame{Move=Vector2.up},1f/60,t/60.0,false);
-            Assert.That(state.Position.z>551.7f,Is.EqualTo(canCross));Assert.That(controller.stepOffset,Is.EqualTo(.2f));
+            Assert.That(state.Position.z>551.7f,Is.EqualTo(canCross));Assert.That(controller.stepOffset,Is.EqualTo(.25f));
         }
         [Test] public void DetailedFieldsAreImmutableSignedAndValidated()
         {

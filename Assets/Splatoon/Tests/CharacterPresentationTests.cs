@@ -58,7 +58,7 @@ namespace Splatoon.Tests
             var expected = new PlayerSnapshot { Position = new Vector3(1, 2, 3), Velocity = Vector3.right * 5, Yaw = 350, BodyYaw = 300, Pitch = -20,
                 Health = 0, Ink = 73, Team = 2, Slot = 1, Revision = 19, TurnDirection = -1, TurnStartYaw = 340,
                 TurnStartedAt = 1.2345, FireStartedAt = 9.876, DeathDirection = 1, DiedAt = 1234.567, RespawnsAt = 1237.567, ProtectedUntil = 0, Grounded = true };
-            using var writer = new FastBufferWriter(512, Allocator.Temp);
+            using var writer = new FastBufferWriter(512, Allocator.Temp, 4096);
             writer.WriteNetworkSerializable(expected);
             using var reader = new FastBufferReader(writer, Allocator.Temp);
             reader.ReadNetworkSerializable(out PlayerSnapshot actual);

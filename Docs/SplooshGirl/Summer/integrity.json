@@ -1,0 +1,31 @@
+{
+  "originalFilesVerified": 33,
+  "testedInputsVerified": 349,
+  "packageFilesVerified": 343,
+  "onlyHero8FieldsChanged": {
+    "standingHeight": {
+      "before": 1.2,
+      "after": 1.5
+    },
+    "bodyRadius": {
+      "before": 0.25,
+      "after": 0.28
+    },
+    "compactHeight": {
+      "before": 0.5,
+      "after": 0.625
+    },
+    "controllerStepOffset": {
+      "before": 0.2,
+      "after": 0.25
+    },
+    "controllerSkinWidth": {
+      "before": 0.02,
+      "after": 0.025
+    }
+  },
+  "otherHeroRowsUnchanged": true,
+  "preservedWeaponAndPortrait": true,
+  "inputComparison": "Exact bytes for binaries; text normalized only for line endings and trailing whitespace.",
+  "originalTestFailuresReproduced": 7
+}

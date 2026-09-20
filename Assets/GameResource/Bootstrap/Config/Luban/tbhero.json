@@ -313,11 +313,11 @@
     "swimHealthRecoverRate": 60,
     "enemyInkDamageRate": 20,
     "enemyInkHealthFloor": 60,
-    "standingHeight": 1.2,
-    "bodyRadius": 0.25,
-    "compactHeight": 0.5,
-    "controllerStepOffset": 0.2,
-    "controllerSkinWidth": 0.02
+    "standingHeight": 1.5,
+    "bodyRadius": 0.28,
+    "compactHeight": 0.625,
+    "controllerStepOffset": 0.25,
+    "controllerSkinWidth": 0.025
   },
   {
     "id": 9,

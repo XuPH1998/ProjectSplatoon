@@ -1,5 +1,7 @@
 # 铃芽与广域标记枪验收
 
+本文保留 2026-09-18 旧 Q 版模型的历史证据。2026-09-20 正式模型已替换为 SummerCuteness；当前体型、模型和验收结论以 [SummerMigration.md](SummerMigration.md) 为准。
+
 验证日期：2026-09-18。Unity 6000.3.9f1，Windows。包为项目正式构建入口生成的 Windows x64 / Mono / Development 版本。
 
 使用独立副本 `D:/XPHUNITY/ProjectSplatoon-RifleGirlChibi-Validation-20260917` 导入、测试和构建，主项目 Editor 保持打开。结果资源、代码和完整 Windows 包已同步回 `D:/XPHUNITY/ProjectSplatoon`。
