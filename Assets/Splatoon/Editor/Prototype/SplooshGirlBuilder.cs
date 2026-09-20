@@ -141,7 +141,8 @@ namespace Splatoon.Editor
             profile.MuzzlePosition = go.transform.InverseTransformPoint(view.Nozzle.position); profile.LeftMuzzlePosition = profile.MuzzlePosition;
             EditorUtility.SetDirty(profile);
             view.TeamMarker.enabled = false;
-            Capture(go, scene, "Assets/GameResource/UI/HeroPortraits/SplooshGirlPortrait.png", 512);
+            // Model calibration previews must not overwrite the authored UI portrait.
+            Capture(go, scene, Report + "/hero-portrait-preview.png", 512);
             Capture(go, scene, Report + "/hero-front.png", 1000);
             graph.Destroy(); Object.DestroyImmediate(go);
         }

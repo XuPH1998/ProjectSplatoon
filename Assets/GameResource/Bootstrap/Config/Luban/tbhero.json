@@ -324,7 +324,7 @@
     "name": "BubbleShotgunGirl",
     "displayName": "泡霰",
     "weaponTypeName": "爆泡霰弹枪",
-    "portraitAddress": "Portrait/ShotgunGirl",
+    "portraitAddress": "Portrait/BubbleShotgunGirl",
     "weaponConfigPath": "Assets/GameResource/Weapons/BubbleShotgunGirl/BubbleShotgunGirlWeaponConfig.asset",
     "characterPrefabAddress": "Character/BubbleShotgunGirl",
     "maxHealth": 100,

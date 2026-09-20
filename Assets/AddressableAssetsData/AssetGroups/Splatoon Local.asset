@@ -121,6 +121,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1ac10375cbe4c8b9341054799268413
+    m_Address: Portrait/BubbleShotgunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 60d14181cb8168345819987b3c087c7c
     m_Address: Portrait/ShotgunGirl
     m_ReadOnly: 0
