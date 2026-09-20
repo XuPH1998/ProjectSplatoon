@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Paper
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.PaperBodyProfile
   CapturePrefab: {fileID: 8823413795299665834, guid: ab49b709533832b47a91221f4cab2848, type: 3}
-  CaptureCenter: {x: -0.007154286, y: 0.5834541, z: -0.1147393}
-  CaptureHeight: 2.1385784
+  CaptureCenter: {x: -0.03667423, y: 0.69690347, z: 0.06348321}
+  CaptureHeight: 2.1012752
   AnimationReferenceSpeed: 4.6727962
   TextureWidth: 512
   TextureHeight: 1024
   Material: {fileID: 2100000, guid: b9a6e41c20394de4b8cdbaef6d94be01, type: 2}
   DisplayMesh: {fileID: 4300000, guid: 6079540dd7460944f887b8bd44899719, type: 2}
-  Size: {x: 0.6, y: 1.2}
+  Size: {x: 0.75, y: 1.5}
   Thickness: 0.04
   SurfaceOffset: 0.03
-  CameraOffset: {x: 0, y: 1.713929, z: 0}
-  ContentHash: 61d28512881a91062e85b302adc1721e0eab55e7a1ca928853387114a11dd1e4
+  CameraOffset: {x: 0, y: 1.8485961, z: 0}
+  ContentHash: 04f9831d4f8859823e381e4a12ea0dc16f0af7f4ef3778ee1f1a1eb997e2f3a2

@@ -1,17 +1,12 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
-using System.Linq;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Prototype;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.Playables;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -35,14 +30,15 @@ namespace Splatoon.Editor
             foreach (var p in new[] { Root + "/Prefabs", WeaponRoot + "/Prefabs", Report, "Assets/GameResource/UI/HeroPortraits" }) Directory.CreateDirectory(p);
             AssetDatabase.Refresh();
             BuildConfig();
+            SplooshSummerBuilder.PrepareModel();
             var scene = EditorSceneManager.NewPreviewScene();
             try { BuildCharacter(scene); }
             finally { EditorSceneManager.ClosePreviewScene(scene); }
-            PaperBodyBuilder.ConfigureHero("SplooshGirl", new Vector2(.6f, 1.2f));
+            PaperBodyBuilder.ConfigureHero("SplooshGirl", new Vector2(.75f, 1.5f));
             var profile = Load<CharacterPresentationProfile>(Root + "/SplooshGirlPresentation.asset");
             profile.Paper.CameraOffset = profile.CameraPivot; EditorUtility.SetDirty(profile.Paper);
             PrototypeBuilder.ConfigureAddressables(); AssetDatabase.SaveAssets();
-            File.WriteAllText(Report + "/assets.txt", "PASS: hero 8, 0.55 rifle, own Avatar/controller binding, measured muzzle, grip basis, live paper and Addressables\n");
+            File.WriteAllText(Report + "/assets.txt", "PASS: hero 8, SummerCuteness, calibrated rifle, own Avatar/controller binding, measured muzzle, grip basis, live paper and Addressables\n");
         }
         public static void InstallBatch()
         { try { Install(); EditorApplication.Exit(0); } catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); } }
@@ -102,71 +98,7 @@ namespace Splatoon.Editor
             w.effectiveRange = ReferenceBallistics.Position(Vector3.zero, Vector3.forward * w.speedMin, w.Snapshot(), F("WeaponParam", "ShotGuideFrame") / 60.0).z;
             WeaponConfigValidation.Validate(w.Snapshot()); EditorUtility.SetDirty(w); AssetDatabase.SaveAssets();
         }
-        static void BuildCharacter(Scene scene)
-        {
-            var go = Object.Instantiate(Load<GameObject>("Assets/GameResource/Characters/RifleGirlChibi/Prefabs/RifleGirlChibi.prefab"));
-            SceneManager.MoveGameObjectToScene(go, scene); go.name = "SplooshGirlVisual";
-            foreach (var component in go.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(component);
-            var animator = go.GetComponent<Animator>(); animator.applyRootMotion = false;
-            var profile = Copy<CharacterPresentationProfile>("Assets/GameResource/Characters/RifleGirl/RifleGirlPresentation.asset", Root + "/SplooshGirlPresentation.asset");
-            // Camera geometry is measured from the completed visual below.
-            profile.CameraCollisionRadius = .15f; profile.CameraCollisionPadding = .06f; profile.CameraShake = .08f;
-            profile.AnimationReferenceSpeed = .104f * 60 * S; profile.SingleShot = profile.DualWield = profile.Splatling = false;
-            profile.WalkPlayback = Load<CharacterPresentationProfile>("Assets/GameResource/Characters/RifleGirl/RifleGirlPresentation.asset").WalkPlayback * 1.5f * profile.AnimationReferenceSpeed / 5f;
-            var view = go.AddComponent<InkCharacterView>(); view.Animator = animator; view.Profile = profile;
-            view.WeaponSocket = go.GetComponentsInChildren<Transform>().Single(t => t.name == "Hand_R_Socket");
-            view.LeftWeaponSocket = go.GetComponentsInChildren<Transform>().Single(t => t.name == "Hand_L_Socket");
-            var original = Load<GameObject>(CombatGirlsBuilder.CharacterPath).GetComponent<InkCharacterView>();
-            view.TeamMarker = Object.Instantiate(original.TeamMarker.gameObject, go.transform).GetComponent<Renderer>();
-            view.TeamMarker.transform.localPosition = new Vector3(0, 1.38f, 0); view.TeamMarker.transform.localScale *= 2f / 3;
-            view.SwimEffect = Object.Instantiate(original.SwimEffect.gameObject, go.transform).GetComponent<ParticleSystem>();
-            view.SwimEffect.transform.localScale *= 2f / 3;
-            var rest = SimpleJSON.JSONNode.Parse(File.ReadAllText("ArtSource/Characters/RifleGirlChibi/Reference/chibi-rest-frames.json"));
-            var q = rest["bones"].Children.Single(n => n["name"].Value == "hand_l")["rotation"];
-            var basis = Quaternion.Inverse(new Quaternion(q["x"], q["y"], q["z"], q["w"])) * animator.GetBoneTransform(HumanBodyBones.LeftHand).rotation;
-            var weapon = Object.Instantiate(Load<GameObject>(CombatGirlsBuilder.WeaponPath)); SceneManager.MoveGameObjectToScene(weapon, scene);
-            weapon.name = "SplooshGun"; weapon.transform.localScale = Vector3.one * .55f;
-            var bindings = weapon.GetComponent<HeroWeaponBindings>(); bindings.LeftGrip.localRotation *= basis;
-            var weaponPrefab = PrefabUtility.SaveAsPrefabAsset(weapon, WeaponPath); Object.DestroyImmediate(weapon);
-            foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 8;
-            CameraFramingBuilder.Apply(view);
-            PrefabUtility.SaveAsPrefabAsset(go, CharacterPath);
-            weapon = Object.Instantiate(weaponPrefab, view.WeaponSocket, false); view.BindWeapon(weapon.GetComponent<HeroWeaponBindings>(), weaponPrefab);
-            var state = new PlayerSnapshot { HeroId = 8, Health = 100, Grounded = true, Team = 1, Revision = 1 };
-            view.Present(state, 0, 0); animator.Update(0);
-            var clip = animator.runtimeAnimatorController.animationClips.First(c => c.name == "AimIdle");
-            var graph = PlayableGraph.Create("Sploosh calibration"); graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
-            var playable = AnimationClipPlayable.Create(graph, clip); AnimationPlayableOutput.Create(graph, "pose", animator).SetSourcePlayable(playable); graph.Play();
-            playable.SetTime(clip.length / 3); graph.Evaluate(0); view.ApplyAim();
-            profile.AimPivot = go.transform.InverseTransformPoint(animator.GetBoneTransform(HumanBodyBones.Chest).position);
-            profile.MuzzlePosition = go.transform.InverseTransformPoint(view.Nozzle.position); profile.LeftMuzzlePosition = profile.MuzzlePosition;
-            EditorUtility.SetDirty(profile);
-            view.TeamMarker.enabled = false;
-            // Model calibration previews must not overwrite the authored UI portrait.
-            Capture(go, scene, Report + "/hero-portrait-preview.png", 512);
-            Capture(go, scene, Report + "/hero-front.png", 1000);
-            graph.Destroy(); Object.DestroyImmediate(go);
-        }
-        static void Capture(GameObject actor, Scene scene, string path, int size)
-        {
-            var cameraObject = new GameObject("Sploosh portrait camera"); SceneManager.MoveGameObjectToScene(cameraObject, scene);
-            var camera = cameraObject.AddComponent<Camera>(); camera.enabled = false; camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
-            camera.orthographic = true; camera.orthographicSize = .78f; camera.nearClipPlane = .01f;
-            camera.transform.position = new Vector3(2.2f, 1.15f, 4); camera.transform.LookAt(new Vector3(0, .66f, 0));
-            camera.backgroundColor = new Color(.19f, .17f, .26f); camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
-            var lightObject = new GameObject("Portrait light"); SceneManager.MoveGameObjectToScene(lightObject, scene);
-            var light = lightObject.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.3f; light.transform.rotation = Quaternion.Euler(35, -25, 0);
-            var rt = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32); rt.Create(); camera.targetTexture = rt;
-            RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = rt });
-            var prior = RenderTexture.active; RenderTexture.active = rt; var image = new Texture2D(size, size, TextureFormat.RGB24, false);
-            image.ReadPixels(new Rect(0, 0, size, size), 0, 0); image.Apply(); File.WriteAllBytes(path, image.EncodeToPNG());
-            RenderTexture.active = prior; camera.targetTexture = null; rt.Release(); Object.DestroyImmediate(rt); Object.DestroyImmediate(image);
-            Object.DestroyImmediate(cameraObject); Object.DestroyImmediate(lightObject);
-            if (!path.StartsWith("Assets/", StringComparison.Ordinal)) return;
-            AssetDatabase.ImportAsset(path);
-            if (AssetImporter.GetAtPath(path) is TextureImporter importer) { importer.mipmapEnabled = false; importer.SaveAndReimport(); }
-        }
+        static void BuildCharacter(Scene scene) => SplooshSummerBuilder.BuildCharacter(scene);
     }
 }
 #endif

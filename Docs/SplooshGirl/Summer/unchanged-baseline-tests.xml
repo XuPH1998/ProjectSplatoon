@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="7" result="Failed(Child)" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.2657195">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="960" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.265720" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="2180" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon-SummerValidation-20260920/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="959" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.226788" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="104388" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="2181" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="959" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.185392" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="2182" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="959" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.158988" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1868" name="SplooshGirlTests" fullname="Splatoon.Tests.SplooshGirlTests" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" testcasecount="32" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.120240" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="ParameterizedMethod" id="1902" name="ExistingHeroesKeepFrozenPaintOwnership" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" testcasecount="7" result="Failed" site="Child" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="1.111709" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1895" name="ExistingHeroesKeepFrozenPaintOwnership(1)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(1)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="803530599" result="Failed" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:42Z" duration="0.473848" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  1 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "9dc8e6b23cfa5e86a85bf0b46ae29fd63461329d09dddc461a6a024e951c3c18"
+  But was:  "db951a2740f15a25e97724fad33c9b06f36d0a1184d21acb41a7539b58ffe195"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1896" name="ExistingHeroesKeepFrozenPaintOwnership(2)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(2)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="513258875" result="Failed" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:42Z" duration="0.078735" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  2 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "6aaf5a68370a3ae39f465e7c3be549e3ddba4d447aebf774b6246fc44b635316"
+  But was:  "a83f47cd38a833acc3e395f3adf395a40ff04f870be06f7d80f9029fc23dfcc4"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1897" name="ExistingHeroesKeepFrozenPaintOwnership(3)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(3)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="1800006635" result="Failed" start-time="2026-09-20 08:24:42Z" end-time="2026-09-20 08:24:43Z" duration="0.100594" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  3 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "c45d988c4446790c7c52728ddf39ddbc724b452b97910a3257e7d99298696108"
+  But was:  "f3d0649c0bb7a4d08b982ab30599ebb99a6b7c8e6b193a23d862890dae4acb73"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1898" name="ExistingHeroesKeepFrozenPaintOwnership(4)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(4)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="670258203" result="Failed" start-time="2026-09-20 08:24:43Z" end-time="2026-09-20 08:24:43Z" duration="0.075667" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  4 flat
+  String lengths are both 64. Strings differ at index 1.
+  Expected: "b9d8e7901c088715587b871fd4fbf48e3d296b02410de27361fd9c6b952871a6"
+  But was:  "b3ab1b973bb24342001fe5461418d15dda186c8434fb4caef08c6eb6331def7f"
+  ------------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1899" name="ExistingHeroesKeepFrozenPaintOwnership(5)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(5)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="249283106" result="Failed" start-time="2026-09-20 08:24:43Z" end-time="2026-09-20 08:24:43Z" duration="0.097046" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  5 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "b8469681f9f6d4ba359d3685299f062d82f54fcbb215ee7b0b554060ca5c3fe3"
+  But was:  "84625cf7bcca58ee71a3a52ec68fa6e865460b87e86a60645ce22e416c9af5a3"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1900" name="ExistingHeroesKeepFrozenPaintOwnership(6)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(6)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="870010113" result="Failed" start-time="2026-09-20 08:24:43Z" end-time="2026-09-20 08:24:43Z" duration="0.189434" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  6 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "45ab6afab83a31c29e087c99886b3505a4213f1f97d68b513c785b48322af91c"
+  But was:  "300602a64a4fcc700024f79ca44d3fe1f6b41fcce85532e70ec1c89e6f807998"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1901" name="ExistingHeroesKeepFrozenPaintOwnership(7)" fullname="Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(7)" methodname="ExistingHeroesKeepFrozenPaintOwnership" classname="Splatoon.Tests.SplooshGirlTests" runstate="Runnable" seed="1723752471" result="Failed" start-time="2026-09-20 08:24:43Z" end-time="2026-09-20 08:24:43Z" duration="0.081024" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  7 flat
+  String lengths are both 64. Strings differ at index 0.
+  Expected: "8f2d138abf3f7820a2500a19388a0b619a497dc88908bcfa971d51a862b1b4dd"
+  But was:  "23b92a00d71fceb310963b85e86b11903d38dbe0faef4f0d1eb099cf44e6e12e"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership (System.Int32 hero) [0x000ca] in D:\XPHUNITY\ProjectSplatoon-SummerValidation-20260920\Assets\Splatoon\Tests\SplooshGirlTests.cs:236
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[Saving results to: C:/Users/wepie/AppData/LocalLow/DefaultCompany/喷墨对战\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

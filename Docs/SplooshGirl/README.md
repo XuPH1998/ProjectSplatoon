@@ -2,9 +2,9 @@
 
 英雄 ID **8**，主武器 **广域标记枪**。进入热身选角或单机武器调试，选择「铃芽」。正式资源通过 Addressables 加载。
 
-沿用 RifleGirlChibi 的 2.5 头身模型、蒙皮、Humanoid Avatar 和原 RifleGirl 的 10 个动作。武器为独立的原步枪 0.55 倍占位模型。本次没有副武器或特殊武器。
+正式模型使用 SummerCuteness 原比例 1.50 米角色，独立 Humanoid Avatar 与动画控制器复用原 RifleGirl 的 10 个动作。原 A 姿势已转换成 T 姿势并重建蒙皮绑定；武器视觉缩放为原步枪的 0.68 倍，保持广域标记枪玩法参数。当前移植、重建和验收记录见 [SummerMigration.md](SummerMigration.md)。
 
-![实际 Play Mode 角色](play-character.png)
+![SummerCuteness 实际 Play Mode 角色](Summer/play-character.png)
 
 ## 资源与制作入口
 
@@ -19,19 +19,19 @@
 | 头像 | `Assets/GameResource/UI/HeroPortraits/SplooshGirlPortrait.png` |
 | 英雄源表 | `Config/Luban/source/TbHero.xlsx` |
 
-Unity 菜单「喷墨对战 / 角色 / 安装铃芽与广域标记枪」只生成本英雄资源，注册角色、武器、武器配置、弹药配置、头像 5 个地址。保留既有 64 个地址。该入口会重设本英雄的制作参数；手工调参后不要无意重跑。
+Unity 菜单「喷墨对战 / 角色 / 重建铃芽 SummerCuteness 模型」重建本英雄 Avatar、材质、控制器、挂点、相机与纸片资源。原「安装铃芽与广域标记枪」入口也使用新模型，但还会初始化武器玩法参数并刷新 Addressables 注册；仅重建美术时使用前一个菜单。模型原始素材、Blender 源文件和重建脚本保存在 `ArtSource/Characters/SplooshGirlSummer`。
 
 批处理入口为 `Splatoon.Editor.SplooshGirlBuilder.InstallBatch`。构建入口 `Splatoon.Editor.SplooshGirlBuilder.BuildBatch` 调用正式 `PrototypeBuilder.BuildWindowsTo`，先构建 Addressables，再构建 Boot 场景，输出整个 `Builds/SplooshGirl` 文件夹。
 
 ## 体型与动画
 
-站立高 1.20 m、半径 0.25 m、潜墨高 0.50 m、台阶偏移 0.20 m、碰撞皮肤 0.02 m；胶囊中心是对应高度的一半。帽子和外伸头发不扩大站立胶囊。原有七名英雄维持 1.8 / .35 / .7 / .3 / .03 m。
+站立高 1.50 m、半径 0.28 m、潜墨高 0.625 m、台阶偏移 0.25 m、碰撞皮肤 0.025 m；胶囊中心是对应高度的一半。源表 `TbHero.xlsx` 经 Luban 生成后提供统一体型。其他英雄的数据保持不变。
 
 `HeroBodyShape` 由快照 HeroId 推导，主机模拟、本地预测、回滚恢复和远端受击代理共用尺寸。主机在体型变大前检查站立空间；不足时保留原英雄并提示「空间不足，无法切换到该英雄」。同体型或缩小体型保留原切换流程。空中换体型保留隐含人形脚底位置，重算纸片原点与相机过渡偏移。
 
-纸片显示尺寸 .6 × 1.2 m，命中网格来自实际动画剪影。纸片和正式人物使用同一套骨骼、动作、武器挂点及已烘焙的左手手腕补偿。空中纸片的可见接触面、物理落地点一致。
+纸片显示尺寸 .75 × 1.5 m，命中网格来自实际动画剪影。纸片和正式人物使用同一套新骨骼、Avatar、控制器及武器挂点，不再依赖旧 Q 版手腕补偿。纸片内容签名随新模型重新生成。空中纸片的可见接触面、物理落地点一致。
 
-AimIdle 持枪采样的局部逻辑枪口为 `(0.117177635, 0.6385543, 0.40609595)` m；枪口绕测量得到的胸部瞄准枢轴变化。实际选角射程通过 `HeroFlatRange` 使用本英雄枪口与相机配置计算；准星落点通过 `WeaponImpactPrediction` 共用权威弹道，并包含前后移动的前向速度分量。
+AimIdle 持枪采样的局部逻辑枪口约为 `(0.0785, 1.0522, 0.5393)` m；枪口绕测量得到的胸部瞄准枢轴变化。相机枢轴高度约 1.8486 m。四方向移动的播放速度按新骨架实际步幅重新测量；根运动关闭。实际选角射程通过 `HeroFlatRange` 使用本英雄枪口与相机配置计算；准星落点通过 `WeaponImpactPrediction` 共用权威弹道，并包含前后移动的前向速度分量。
 
 ## 玩法
 
@@ -44,6 +44,6 @@ AimIdle 持枪采样的局部逻辑枪口为 `(0.117177635, 0.6385543, 0.4060959
 
 详细规则由 `shooterDetails` 独立开关控制，只有铃芽启用。新参数具有中文 Inspector、合法性校验、不可变运行快照、热更新比较及内容签名。改变循环结构、射后限制或开关会重新启动当前攻击配置；飞行中的弹丸和墨滴保留生成时的配置。
 
-玩法模拟版本由 12 升至 13。PlayerSnapshot（协议 31、序列化 533 字节）和 PaintStamp 的既有结构没有增加字段；五发循环复用连射序号。
+本次模型移植不改变玩法模拟协议或弹丸规则；五发循环继续复用连射序号。
 
-参数证据和未证实算法见 [Reference.md](Reference.md)，验证结果与环境边界见 [Acceptance.md](Acceptance.md)。项目验证不能证明与原版实机完全一致。
+参数证据和未证实算法见 [Reference.md](Reference.md)，当前模型验证见 [SummerMigration.md](SummerMigration.md)，旧 Q 版的历史验收见 [Acceptance.md](Acceptance.md)。项目验证不能证明与原版实机完全一致。

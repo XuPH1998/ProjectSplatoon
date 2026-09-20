@@ -1,0 +1,1059 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SummerUpperBody
+  m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000000000000000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 0
+  - m_Path: Armature
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot/Bip001 L Toe0
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot/Skn_L_Foot_Fix
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Calf_Adv
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Calf_Adv/Ctr_L_Leg_Tie_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Calf_Adv/Ctr_L_Leg_Tie_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Calf_Adv/Skn_L_Calf_Shake
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Knee_Fix_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Knee_Fix_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Bip001 L Calf/Skn_L_Knee_Fix_New
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Skn_L_Thigh_Twist
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Skn_L_Thigh_Twist/Skn_L_RouTui
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Skn_L_Thigh_Twist02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 L Thigh/Skn_L_Thigh_Twist02/Skn_L_Thigh_Shake
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot/Bip001 R Toe0
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot/Skn_R_Foot_Fix
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Skn_R_Calf_Adv
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Skn_R_Calf_Adv/Skn_R_Calf_Shake
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Skn_R_Knee_Fix_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Skn_R_Knee_Fix_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Bip001 R Calf/Skn_R_Knee_Fix_New
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist/Skn_R_RouTui
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist/Skn_Tuibao
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist02/Skn_R_RouTui_Tan_New
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 R Thigh/Skn_R_Thigh_Twist02/Skn_R_Thigh_Shake
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0/Bip001 L Finger01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0/Bip001 L Finger01/Bip001
+      L Finger02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0/Bip001 L Finger01/Ctr_L_Hand_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger1
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger1/Bip001 L Finger11
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger1/Bip001 L Finger11/Bip001
+      L Finger12
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger2
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger2/Bip001 L Finger21
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger2/Bip001 L Finger21/Bip001
+      L Finger22
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger3
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger3/Bip001 L Finger31
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger3/Bip001 L Finger31/Bip001
+      L Finger32
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger4
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger4/Bip001 L Finger41
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger4/Bip001 L Finger41/Bip001
+      L Finger42
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_05
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_08
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_08/Ctr_Weapon_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_10
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_11
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_12
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_13
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_14
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_15
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_16
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_17
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_18
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_19
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 Prop1/Ctr_Weapon_01/Ctr_Weapon_20
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Ctr_L_Hand_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Ctr_L_Hand_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Ctr_L_Hand_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Bip001 L Hand/Skn_L_Finesse
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Skn_L_Elbow01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Skn_L_Elbow02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Skn_L_ForeArm_Twist01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Skn_L_ForeArm_Twist01/Skn_L_ForeArm_Twist02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Bip001 L Forearm/Skn_L_ForeArm_Twist01/Skn_L_ForeArm_Twist03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Skn_L_Clavicle_A
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Skn_L_UpArm_Twist01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Bip001 L
+      UpperArm/Skn_L_UpArm_Twist02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Skn_L_Baodai_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 L Clavicle/Skn_L_Baodai_04_S
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_06/Ctr_B_HairA_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_012
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_014
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_02/Ctr_B_HairA_014/Ctr_B_HairA_015
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_017
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_017/Ctr_B_HairA_018
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairA_01/Ctr_B_HairA_017/Ctr_B_HairA_018/Ctr_B_HairA_019
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01/Ctr_B_HairB_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01/Ctr_B_HairB_02/Ctr_B_HairB_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01/Ctr_B_HairB_02/Ctr_B_HairB_06/Ctr_B_HairB_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01/Ctr_B_HairB_02/Ctr_B_HairB_011
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairB_01/Ctr_B_HairB_02/Ctr_B_HairB_011/Ctr_B_HairB_012
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_06/Ctr_B_HairC_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_09
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_011
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_013
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_013/Ctr_B_HairC_014
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_016
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_02/Ctr_B_HairC_016/Ctr_B_HairC_017
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_019
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_019/Ctr_B_HairC_020
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairC_01/Ctr_B_HairC_019/Ctr_B_HairC_020/Ctr_B_HairC_021
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01/Ctr_B_HairD_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01/Ctr_B_HairD_02/Ctr_B_HairD_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01/Ctr_B_HairD_02/Ctr_B_HairD_03/Ctr_B_HairD_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01/Ctr_B_HairD_02/Ctr_B_HairD_03/Ctr_B_HairD_04/Ctr_B_HairD_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairD_01/Ctr_B_HairD_02/Ctr_B_HairD_03/Ctr_B_HairD_04/Ctr_B_HairD_010
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairE_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairF_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_B_HairH_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_Down_Teeth
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairA_01/Ctr_F_HairA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairA_01/Ctr_F_HairA_02/Ctr_F_HairA_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairB_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairB_01/Ctr_F_HairB_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairB_01/Ctr_F_HairB_02/Ctr_F_HairB_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairC_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairC_01/Ctr_F_HairC_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairC_01/Ctr_F_HairC_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairC_01/Ctr_F_HairC_04/Ctr_F_HairC_05
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_F_HairC_01/Ctr_F_HairC_04/Ctr_F_HairC_05/Ctr_F_HairC_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_Hair_Star
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_L_Hair_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_L_Hair_01/Ctr_L_Hair_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_L_Hair_01/Ctr_L_Hair_02/Ctr_L_Hair_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_L_Hair_01/Ctr_L_Hair_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_R_Hair_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_R_Hair_01/Ctr_R_Hair_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_R_Hair_01/Ctr_R_Hair_02/Ctr_R_Hair_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_R_Hair_01/Ctr_R_Hair_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Ctr_Up_Teeth
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/FaceShadowPoint
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_Eye_Shy
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_L_Eye
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_L_Eye/Skn_L_Highlights
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_L_Mouth
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_M_Mouth
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_R_Eye
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_R_Eye/Skn_R_Highlights
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Bip001 Head/Skn_R_Mouth
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Skn_L_Clavicle_B
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 Neck/Skn_R_Clavicle_B
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Button_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Button_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_03/Ctr_Hammer_WingA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_03/Ctr_Hammer_WingA_01/Ctr_Hammer_WingA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_03/Ctr_Hammer_WingB_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Head_03/Ctr_Hammer_WingB_01/Ctr_Hammer_WingB_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_05
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_06
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_08
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_09
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_10
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_11
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_11/Ctr_Hammer_Ribbon_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_11/Ctr_Hammer_Ribbon_01/Ctr_Hammer_Ribbon_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 Prop2/Ctr_Hammer_01/Skn_Hammer_Pole_12
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0/Bip001 R Finger01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0/Bip001 R Finger01/Bip001
+      R Finger02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0/Bip001 R Finger01/Ctr_R_Hand_04
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger1
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger1/Bip001 R Finger11
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger1/Bip001 R Finger11/Bip001
+      R Finger12
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger2
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger2/Bip001 R Finger21
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger2/Bip001 R Finger21/Bip001
+      R Finger22
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger3
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger3/Bip001 R Finger31
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger3/Bip001 R Finger31/Bip001
+      R Finger32
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger4
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger4/Bip001 R Finger41
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger4/Bip001 R Finger41/Bip001
+      R Finger42
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Ctr_R_Hand_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Ctr_R_Hand_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Ctr_R_Hand_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Bip001 R Hand/Skn_R_Finesse
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Skn_R_Elbow01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Skn_R_Elbow02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Skn_R_ForeArm_Twist01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Skn_R_ForeArm_Twist01/Skn_R_ForeArm_Twist02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Bip001 R Forearm/Skn_R_ForeArm_Twist01/Skn_R_ForeArm_Twist03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Skn_R_Clavicle_A
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Skn_R_UpArm_Twist01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Bip001 R
+      UpperArm/Skn_R_UpArm_Twist02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Skn_R_Baodai_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Bip001 R Clavicle/Skn_R_Baodai_07_S
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_B_Cut_BokA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_B_Cut_BokA_01/Ctr_B_Cut_BokA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_B_Cut_BokA_01/Ctr_B_Cut_BokA_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_B_Baodai_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_Huan_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_L_Chibang_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_L_Chibang_01/Ctr_L_Chibang_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_L_Chibang_01/Ctr_L_Chibang_02/Ctr_L_Chibang_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_L_Chibang_01/Ctr_L_Chibang_02/Ctr_L_Chibang_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_L_Chibang_01/Ctr_L_Chibang_05
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_R_Chibang_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_R_Chibang_01/Ctr_R_Chibang_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_R_Chibang_01/Ctr_R_Chibang_02/Ctr_R_Chibang_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_R_Chibang_01/Ctr_R_Chibang_02/Ctr_R_Chibang_07
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_Bao/Ctr_R_Chibang_01/Ctr_R_Chibang_05
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_F_Cut_Bok_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_F_Cut_Bok_01/Ctr_F_Cut_Bok_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Ctr_F_Cut_Bok_01/Ctr_F_Cut_Bok_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_L_Baodai_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_L_Baodai_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_L_Chest
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_L_Clavicle_C
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_R_Baodai_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_R_Baodai_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_R_Chest
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Spine2/Skn_R_Clavicle_C
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_L_Cut_BokA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_L_Cut_BokA_01/Ctr_L_Cut_BokA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_L_Cut_BokA_01/Ctr_L_Cut_BokA_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_R_Cut_BokA_01
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_R_Cut_BokA_01/Ctr_R_Cut_BokA_02
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Bip001 Spine/Ctr_R_Cut_BokA_01/Ctr_R_Cut_BokA_03
+    m_Weight: 1
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Ctr_B_Cut_BokB_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Ctr_B_Cut_BokB_01/Ctr_B_Cut_BokB_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Ctr_B_Cut_BokB_01/Ctr_B_Cut_BokB_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_02/Ctr_L_Cut_BokB_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_02/Ctr_L_Cut_BokB_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_03/Ctr_L_Cut_Skirt_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_L_Pelvis_04
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_02/Ctr_R_Cut_BokB_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_02/Ctr_R_Cut_BokB_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_03/Ctr_R_Cut_Skirt_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Bip001
+      Pelvis/Skn_R_Pelvis_04
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Ctr_Phone_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Ctr_Phone_01/Ctr_Phone_09
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Ctr_Phone_01/Ctr_Phone_09/Ctr_Phone_10
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Bip001/Ctr_Phone_01/Ctr_Phone_09/Ctr_Phone_10/Ctr_Phone_11
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/FX_Root
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03/Ctr_Elf_L_Hand_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03/Ctr_Elf_R_Hand_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03/Skn_Elf_Eye_A_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03/Skn_Elf_Eye_B_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Ctr_Elf_Body_03/Skn_Elf_Eye_C_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02/Ctr_Elf_L_Ear_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02/Ctr_Elf_R_Ear_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02/Skn_Elf_Eye_A_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02/Skn_Elf_Eye_B_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_Body_02/Skn_Elf_Eye_C_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_L_Wing_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_L_Wing_01/Skn_Elf_L_Wing_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_L_Wing_01/Skn_Elf_L_Wing_02/Skn_Elf_L_Wing_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_R_Wing_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_R_Wing_01/Skn_Elf_R_Wing_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Body_01/Skn_Elf_R_Wing_01/Skn_Elf_R_Wing_02/Skn_Elf_R_Wing_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_01
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_02
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_03
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_04
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_05
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_06
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Bone_Root/Skn_Elf_Root/Skn_Elf_Tail_F/Skn_Elf_Tail_07
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Root
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_FX
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_FX_Eye_1
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_FX_Eye_2
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_FX_Eye_3
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Phone
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Phone_Screen
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Weapon_1
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Weapon_2A
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Weapon_2B
+    m_Weight: 0
+  - m_Path: Armature/Avatar_Female_Size01_SummerCuteness_UI/Summer_Weapon_2C
+    m_Weight: 0
+  - m_Path: Summer_Cuteness_Body_1
+    m_Weight: 0
+  - m_Path: Summer_Cuteness_Body_2
+    m_Weight: 0
+  - m_Path: Summer_Cuteness_HairShadow
+    m_Weight: 0
+  - m_Path: Summer_Eyebrow
+    m_Weight: 0
+  - m_Path: Summer_Face
+    m_Weight: 0
+  - m_Path: Summer_Shy
+    m_Weight: 0
+  - m_Path: Summer_Weapon_3
+    m_Weight: 0

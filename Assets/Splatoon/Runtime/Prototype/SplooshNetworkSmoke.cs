@@ -61,7 +61,7 @@ namespace Splatoon.Prototype
             tall |= age >= 20 && s.HeroId == 1; smallAgain |= tall && s.HeroId == 8;
             paper |= s.HeroId == 8 && s.ShowsSwimBody && p.SwimBody.FlatHitActive;
             remoteSmall |= PrototypePlayer.ByOwner.Values.Any(other => other != p && other.Snapshot.Value.HeroId == 8 &&
-                Mathf.Abs(other.SwimBody.CapsuleHitVolume.height - 1.2f) < .001f);
+                Mathf.Abs(other.SwimBody.CapsuleHitVolume.height - Splatoon.Config.GameplayConfig.GetHero(8).StandingHeight) < .001f);
             if (!host && age > 50 && !resync)
             {
                 typeof(PrototypeMatch).GetMethod("RequestSnapshotRpc", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
@@ -115,7 +115,7 @@ namespace Splatoon.Prototype
             if (input.Swim && age >= 42) input.Move = Vector2.up * .2f;
         }
         // Aim the open-lane fixture at the small opponent's torso using the current camera pivot.
-        static float FightPitch(PrototypePlayer player) => Mathf.Atan2(player.Presentation.CameraPivot.y - .6f, 2) * Mathf.Rad2Deg;
+        static float FightPitch(PrototypePlayer player) => Mathf.Atan2(player.Presentation.CameraPivot.y - Splatoon.Config.GameplayConfig.GetHero(8).StandingHeight * .5f, 2) * Mathf.Rad2Deg;
         void Capture(string name)
         {
             if (!captures.Add(name)) return;

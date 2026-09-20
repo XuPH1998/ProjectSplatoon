@@ -1,0 +1,12 @@
+{
+  "identical": true,
+  "failures": {
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(1)": "  1 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"9dc8e6b23cfa5e86a85bf0b46ae29fd63461329d09dddc461a6a024e951c3c18\"\n  But was:  \"db951a2740f15a25e97724fad33c9b06f36d0a1184d21acb41a7539b58ffe195\"\n  -----------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(2)": "  2 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"6aaf5a68370a3ae39f465e7c3be549e3ddba4d447aebf774b6246fc44b635316\"\n  But was:  \"a83f47cd38a833acc3e395f3adf395a40ff04f870be06f7d80f9029fc23dfcc4\"\n  -----------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(3)": "  3 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"c45d988c4446790c7c52728ddf39ddbc724b452b97910a3257e7d99298696108\"\n  But was:  \"f3d0649c0bb7a4d08b982ab30599ebb99a6b7c8e6b193a23d862890dae4acb73\"\n  -----------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(4)": "  4 flat\n  String lengths are both 64. Strings differ at index 1.\n  Expected: \"b9d8e7901c088715587b871fd4fbf48e3d296b02410de27361fd9c6b952871a6\"\n  But was:  \"b3ab1b973bb24342001fe5461418d15dda186c8434fb4caef08c6eb6331def7f\"\n  ------------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(5)": "  5 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"b8469681f9f6d4ba359d3685299f062d82f54fcbb215ee7b0b554060ca5c3fe3\"\n  But was:  \"84625cf7bcca58ee71a3a52ec68fa6e865460b87e86a60645ce22e416c9af5a3\"\n  -----------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(6)": "  6 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"45ab6afab83a31c29e087c99886b3505a4213f1f97d68b513c785b48322af91c\"\n  But was:  \"300602a64a4fcc700024f79ca44d3fe1f6b41fcce85532e70ec1c89e6f807998\"\n  -----------^\n",
+    "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(7)": "  7 flat\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"8f2d138abf3f7820a2500a19388a0b619a497dc88908bcfa971d51a862b1b4dd\"\n  But was:  \"23b92a00d71fceb310963b85e86b11903d38dbe0faef4f0d1eb099cf44e6e12e\"\n  -----------^\n"
+  }
+}
