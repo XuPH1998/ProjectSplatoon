@@ -1,7 +1,8 @@
 param(
     [string]$PlayerPath,
     [int]$Port = 18518,
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+    [switch]$CameraAcceptance
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -17,6 +18,7 @@ try {
         if (Test-Path -LiteralPath $report) { throw "Use a new output directory; existing evidence: $report" }
         $log = Join-Path $OutputDirectory "$role.log"
         $arguments = "-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -splooshRole $role -splooshPort $Port -splooshOutput `"$report`" -logFile `"$log`""
+        if ($CameraAcceptance) { $arguments += ' -cameraAcceptance' }
         $process = Start-Process -FilePath $PlayerPath -WorkingDirectory (Split-Path $PlayerPath -Parent) -ArgumentList $arguments -WindowStyle Hidden -PassThru
         $launched += @{ Role = $role; Process = $process }
     }

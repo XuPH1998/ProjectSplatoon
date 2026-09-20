@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 9;
-        public const int WeaponSimulationVersion = 15; // Configurable floating bubble count, including centred single shots.
+        public const int WeaponSimulationVersion = 16; // Calibrated shared camera/aim geometry and form-continuous pivots.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
@@ -21,6 +21,7 @@ namespace Splatoon.Networking
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);
+            w.Write(p.CameraVerticalFov);
             Write(w, c.center); w.Write(c.radius); w.Write(c.height); w.Write(c.skinWidth); w.Write(c.stepOffset); w.Write(c.slopeLimit); Write(w, player.transform.lossyScale);
             w.Write(c.minMoveDistance); w.Write(c.detectCollisions); w.Write(c.enableOverlapRecovery); w.Write(player.gameObject.layer);
             w.Write(.7f); // Compact locomotion capsule; paper uses a separate hit mesh.
@@ -68,6 +69,7 @@ namespace Splatoon.Networking
                     w.Write(profile.Splatling); w.Write(profile.ShootEndDuration);
                     w.Write(profile.SpineAimWeight); w.Write(profile.RecoilRecovery); w.Write(profile.CameraShake);
                     Write(w, profile.CameraPivot); Write(w, profile.CameraOffset);
+                    w.Write(profile.CameraVerticalFov);
                     w.Write(profile.CameraCollisionRadius); w.Write(profile.CameraCollisionPadding);
                     w.Write(profile.StationarySpeed); w.Write(profile.TurnThreshold); w.Write(profile.MovingTurnSpeed);
                     w.Write(profile.TurnLeftDuration); w.Write(profile.TurnRightDuration);

@@ -133,7 +133,7 @@ namespace Splatoon.Editor
                 AssetDatabase.GetAssetDependencyHash(folder+"/PaperCapture.prefab").ToString()))).Replace("-","").ToLowerInvariant();
             EditorUtility.SetDirty(profile);
             var presentation=AssetDatabase.LoadAssetAtPath<CharacterPresentationProfile>($"Assets/GameResource/Characters/{hero}/{hero}Presentation.asset");
-            presentation.Paper=profile; EditorUtility.SetDirty(presentation);
+            presentation.Paper=profile; profile.CameraOffset=presentation.CameraPivot; EditorUtility.SetDirty(profile); EditorUtility.SetDirty(presentation);
         }
         static T Save<T>(T asset,string path) where T:Object
         { var old=AssetDatabase.LoadAssetAtPath<T>(path); if(old==null) { AssetDatabase.CreateAsset(asset,path); return asset; } EditorUtility.CopySerialized(asset,old); Object.DestroyImmediate(asset); EditorUtility.SetDirty(old); return old; }

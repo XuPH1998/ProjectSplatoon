@@ -1,4 +1,4 @@
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +15,7 @@ namespace Splatoon.Prototype
     {
         static SplooshNetworkSmoke instance;
         public static bool Active => instance != null;
-        bool host, ready, ending, resync, reset, killed, died, respawned, captured, tall, smallAgain, paper, remoteSmall, combatPlaced, receivedShot, confirmedEnemyHit;
+        bool host, ready, ending, resync, reset, killed, died, respawned, captured, tall, smallAgain, paper, remoteSmall, combatPlaced, secondDuel, receivedShot, confirmedEnemyHit;
         float started; double nextSwitch; int players, snapshots, emitted; uint sequence, life, hash, paintSequence;
         readonly HashSet<string> captures = new(); readonly List<string> errors = new();
         static string Arg(string key, string fallback) => HeroSelectionSmoke.Arg(key, fallback);
@@ -67,7 +67,7 @@ namespace Splatoon.Prototype
                 typeof(PrototypeMatch).GetMethod("RequestSnapshotRpc", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                     .Invoke(match, new object[] { default(Unity.Netcode.RpcParams) }); resync = true;
             }
-            if (host && age >= 52 && !combatPlaced)
+            if (host && (age >= 52 && !combatPlaced || age >= 53.8 && !secondDuel))
             {
                 // Put both players in a known open lane. The subsequent shots still come from
                 // each process's normal input, prediction, network command and authority paths.
@@ -75,12 +75,13 @@ namespace Splatoon.Prototype
                 foreach (var other in match.Players)
                 {
                     var fight = other.Snapshot.Value; fight.Revision++; fight.Position = anchor + Vector3.forward * (fight.Team == 1 ? 0 : 2);
-                    fight.Health = fight.Ink = 100; fight.ProtectedUntil = 0; fight.Swimming = fight.CompactBody = false;
+                    fight.Health = fight.Ink = 100; fight.ProtectedUntil = 0; fight.RespawnsAt = fight.DiedAt = 0; fight.Swimming = fight.CompactBody = false;
                     fight.PaperPose = PaperPose.None; fight.AirHumanOffset = 0; fight.Movement = MovementMode.Human; fight.Grounded = true;
-                    fight.Yaw = fight.BodyYaw = fight.Team == 1 ? 0 : 180; fight.Pitch = 0; fight.Velocity = fight.PlanarVelocity = Vector3.zero; fight.VerticalSpeed = 0;
+                    fight.Yaw = fight.BodyYaw = fight.Team == 1 ? 0 : 180; fight.Pitch = FightPitch(other); fight.Velocity = fight.PlanarVelocity = Vector3.zero; fight.VerticalSpeed = 0;
                     fight.AttackNeedsRelease = false; fight.AttackRecoveryUntil = fight.AttackMoveUntil = 0;
                     other.Snapshot.Value = fight; new PlayerMotorSimulation(other.GetComponent<CharacterController>()).Restore(fight);
                 }
+                if (combatPlaced) secondDuel = true;
                 combatPlaced = true;
             }
             receivedShot |= age >= 52 && age < 56 && s.Health < 100 && s.LastDamageAt >= 52;
@@ -106,13 +107,15 @@ namespace Splatoon.Prototype
             double age = player.NetworkManager.ServerTime.Time;
             input.Move = Vector2.zero; input.Look = new Vector2((player.PresentedState.Team == 1 ? 0 : 180) + 22, 12);
             input.Fire = !player.HeroChangePending && player.PresentedState.HeroId == 8 &&
-                (age >= 4 && age < 14 || age >= 28 && age < 40 || age >= 52.5 && age < 55 || age >= 62 && age < 65);
-            if (age >= 52 && age < 56) input.Look = new Vector2(player.PresentedState.Team == 1 ? 0 : 180, 0);
+                (age >= 4 && age < 14 || age >= 28 && age < 40 || (age >= 52.5 && age < 53.4 && player.PresentedState.Team == 1 || age >= 54 && age < 55 && player.PresentedState.Team == 2) || age >= 62 && age < 65);
+            if (age >= 52 && age < 56) input.Look = new Vector2(player.PresentedState.Team == 1 ? 0 : 180, FightPitch(player));
             input.Swim = age >= 15 && age < 19 || age >= 42 && age < 48;
             // Validate growth at the original open spawn. Exercise locomotion after the switch,
             // so moving up against cover cannot turn an expected clearance rejection into a harness failure.
             if (input.Swim && age >= 42) input.Move = Vector2.up * .2f;
         }
+        // Aim the open-lane fixture at the small opponent's torso using the current camera pivot.
+        static float FightPitch(PrototypePlayer player) => Mathf.Atan2(player.Presentation.CameraPivot.y - .6f, 2) * Mathf.Rad2Deg;
         void Capture(string name)
         {
             if (!captures.Add(name)) return;
@@ -141,6 +144,9 @@ namespace Splatoon.Prototype
             if (ending) return; ending = true;
             bool passed = error == null && errors.Count == 0 && players >= 2 && emitted > 25 && paper && remoteSmall && tall && smallAgain &&
                 captured && paintSequence > 0 && respawned && reset && receivedShot && confirmedEnemyHit && (host || resync && snapshots >= 2);
+            string cameraOutput = Arg("-splooshOutput", "Reports/SplooshGirl/network.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(cameraOutput)));
+            passed &= CameraReticleNetworkProbe.Finish(cameraOutput);
             string report = $"passed={passed}\nrole={(host ? "host" : "client")}\nerror={error}\nshots8={emitted}\nmaxPlayers={players}\nsmallRemoteBody={remoteSmall}\npaperObserved={paper}\nswitch8to1to8={tall && smallAgain}\nfinalPaintHash={hash}\nfinalPaintSequence={paintSequence}\ninitialSyncAndCapture={captured}\nresyncRequested={resync}\nappliedSnapshots={snapshots}\nrespawnRetained={respawned}\nroundReset={reset}\n";
             report += $"receivedDamageDuringFight={receivedShot}\nconfirmedEnemyProjectileHit={confirmedEnemyHit}\n";
             var signature = typeof(PrototypeApp).GetField("_signature", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(PrototypeApp.Current) as byte[];

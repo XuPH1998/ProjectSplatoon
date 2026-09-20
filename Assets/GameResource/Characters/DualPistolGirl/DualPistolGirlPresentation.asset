@@ -1136,9 +1136,13 @@ MonoBehaviour:
   DieBackwardDuration: 1.7333335
   SingleShot: 1
   DualWield: 1
+  Splatling: 0
+  ShootEndDuration: 1
   ShotPlaybackSeconds: 0.29999998
-  CameraPivot: {x: 0, y: 1.318465, z: 0}
-  CameraOffset: {x: 0.65, y: 0.15, z: -3.8}
+  CameraPivot: {x: 0, y: 2.1332743, z: 0}
+  CameraOffset: {x: 0.07842324, y: 0, z: -4.728555}
+  CameraVerticalFov: 60
+  CameraReferenceHeight: 1.5684648
   AimPivot: {x: 0, y: 1.250341, z: 0}
   MuzzlePosition: {x: 0.17287843, y: 1.2876639, z: 0.62240547}
   LeftMuzzlePosition: {x: -0.102213815, y: 1.3123783, z: 0.7766106}

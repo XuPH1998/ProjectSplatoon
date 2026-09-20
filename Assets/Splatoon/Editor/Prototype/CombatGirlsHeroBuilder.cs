@@ -209,6 +209,7 @@ namespace Splatoon.Editor
                 animator.applyRootMotion = false; animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 foreach (var t in character.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 8;
                 character.name = p.name + "Visual";
+                CameraFramingBuilder.Apply(view);
                 Report.Add($"{p.name}: avatar={p.avatar}, camera={profile.CameraPivot:R}, muzzleR={profile.MuzzlePosition:R}, muzzleL={profile.LeftMuzzlePosition:R}");
                 Clip(p, p.clips[6]).SampleAnimation(character, 0); Capture(p, character, "target", preview);
                 foreach (var death in new[] { forward, backward })

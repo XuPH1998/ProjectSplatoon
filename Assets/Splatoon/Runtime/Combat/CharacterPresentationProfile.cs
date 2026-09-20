@@ -27,6 +27,9 @@ namespace Splatoon.Combat
         [Header("相机与逻辑枪口，角色根节点坐标")]
         public Vector3 CameraPivot = new(0, 1.5f, 0);
         public Vector3 CameraOffset = new(.65f, .15f, -3.8f);
+        [Range(30, 100)] public float CameraVerticalFov = 60;
+        [Tooltip("Editor-measured standing body height, excluding weapons and effects")]
+        public float CameraReferenceHeight;
         public Vector3 AimPivot = new(0, 1.4f, 0);
         public Vector3 MuzzlePosition = new(.25f, 1.4f, .7f);
         public Vector3 LeftMuzzlePosition = new(-.25f, 1.4f, .7f);
