@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -172,8 +172,16 @@ namespace Splatoon.Tests
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.position=new Vector3(0,-.25f,0);floor.transform.localScale=new Vector3(100,.5f,100);
             var go=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
+            CharacterPresentationProfile historical = null;
             try
             {
+                // This historical range fixture pins its old camera as well as the old weapon.
+                // Current camera/weapon contact parity is covered by WeaponImpactPredictionTests.
+                var view = go.GetComponent<PrototypePlayer>().CharacterView;
+                historical = UnityEngine.Object.Instantiate(view.Profile);
+                historical.CameraPivot = new Vector3(0, 1.315198f, 0);
+                historical.CameraOffset = new Vector3(.65f, .15f, -3.8f);
+                view.Profile = historical;
                 var s=Alive(id);s.Position=Vector3.up*.04f;s.CurrentSpread=s.LastShotSpread=.000001f;s.LastShotVerticalSpread=.000001f;s.LastShotCharge=charge;go.transform.position=s.Position;Physics.SyncTransforms();
                 var service=new InkProjectileService();service.Spawn(go.GetComponent<PrototypePlayer>(),s,0,0);
                 HeroSelectionRules.Apply(ref s,id==1?2:1,false,default);
@@ -181,7 +189,7 @@ namespace Splatoon.Tests
                 service.Simulate(1.3);Assert.That(service.Impacts.Count,Is.EqualTo(1));Assert.That(service.Impacts[0].Position.z,Is.InRange(target*.9f,target*1.1f));
                 Debug.Log($"[WEAPON-RANGE] id={id} charge={charge} floor={service.Impacts[0].Position.z:F3} target={target}");
             }
-            finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(floor);}
+            finally{if(historical!=null)UnityEngine.Object.DestroyImmediate(historical);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(floor);}
         }
     }
 }

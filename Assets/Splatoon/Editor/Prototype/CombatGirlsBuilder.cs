@@ -124,6 +124,7 @@ namespace Splatoon.Editor
             view.LeftGrip = Find(weapon.gameObject, "Left_Handle"); view.Nozzle = muzzle;
             view.BoundWeaponPrefab = weaponPrefab; view.TeamMarker = CreateMarker(character.transform);
             view.SwimEffect = CreateSwimEffect(character.transform);
+            CameraFramingBuilder.Apply(view);
             // Restore the bind pose before saving, so Rebind and every animation share
             // the same canonical transforms rather than a sampled animation pose.
             animator.Rebind();

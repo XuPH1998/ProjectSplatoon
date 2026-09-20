@@ -23,5 +23,5 @@ MonoBehaviour:
   Size: {x: 0.9, y: 1.8}
   Thickness: 0.04
   SurfaceOffset: 0.03
-  CameraOffset: {x: 0, y: 0.9, z: 0}
+  CameraOffset: {x: 0, y: 2.121992, z: 0}
   ContentHash: 9c4e01a99a2a81f061e093e38faa5a6bc90a58fb6c66f109d862e48acf7e0500

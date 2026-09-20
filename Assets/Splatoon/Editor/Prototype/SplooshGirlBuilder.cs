@@ -40,7 +40,7 @@ namespace Splatoon.Editor
             finally { EditorSceneManager.ClosePreviewScene(scene); }
             PaperBodyBuilder.ConfigureHero("SplooshGirl", new Vector2(.6f, 1.2f));
             var profile = Load<CharacterPresentationProfile>(Root + "/SplooshGirlPresentation.asset");
-            profile.Paper.CameraOffset = new Vector3(0, .65f, 0); EditorUtility.SetDirty(profile.Paper);
+            profile.Paper.CameraOffset = profile.CameraPivot; EditorUtility.SetDirty(profile.Paper);
             PrototypeBuilder.ConfigureAddressables(); AssetDatabase.SaveAssets();
             File.WriteAllText(Report + "/assets.txt", "PASS: hero 8, 0.55 rifle, own Avatar/controller binding, measured muzzle, grip basis, live paper and Addressables\n");
         }
@@ -109,7 +109,7 @@ namespace Splatoon.Editor
             foreach (var component in go.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(component);
             var animator = go.GetComponent<Animator>(); animator.applyRootMotion = false;
             var profile = Copy<CharacterPresentationProfile>("Assets/GameResource/Characters/RifleGirl/RifleGirlPresentation.asset", Root + "/SplooshGirlPresentation.asset");
-            profile.CameraPivot = new Vector3(0, 1, 0); profile.CameraOffset = new Vector3(.45f, .12f, -2.8f);
+            // Camera geometry is measured from the completed visual below.
             profile.CameraCollisionRadius = .15f; profile.CameraCollisionPadding = .06f; profile.CameraShake = .08f;
             profile.AnimationReferenceSpeed = .104f * 60 * S; profile.SingleShot = profile.DualWield = profile.Splatling = false;
             profile.WalkPlayback = Load<CharacterPresentationProfile>("Assets/GameResource/Characters/RifleGirl/RifleGirlPresentation.asset").WalkPlayback * 1.5f * profile.AnimationReferenceSpeed / 5f;
@@ -129,6 +129,7 @@ namespace Splatoon.Editor
             var bindings = weapon.GetComponent<HeroWeaponBindings>(); bindings.LeftGrip.localRotation *= basis;
             var weaponPrefab = PrefabUtility.SaveAsPrefabAsset(weapon, WeaponPath); Object.DestroyImmediate(weapon);
             foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 8;
+            CameraFramingBuilder.Apply(view);
             PrefabUtility.SaveAsPrefabAsset(go, CharacterPath);
             weapon = Object.Instantiate(weaponPrefab, view.WeaponSocket, false); view.BindWeapon(weapon.GetComponent<HeroWeaponBindings>(), weaponPrefab);
             var state = new PlayerSnapshot { HeroId = 8, Health = 100, Grounded = true, Team = 1, Revision = 1 };

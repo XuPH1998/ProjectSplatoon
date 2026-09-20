@@ -4,6 +4,9 @@ namespace Splatoon.Combat
 {
     public static class ReticleGeometry
     {
+        public static bool MergeImpact(Vector2 aim, Vector2 impact) => (aim - impact).sqrMagnitude < 16;
+        public static Color StatusColor(bool blocked, bool lowInk) => blocked ? Color.red : lowInk ? Color.yellow : Color.white;
+
         // Return reference-canvas distances, correcting X for non-16:9 Game views.
         public static Vector2 HalfSize(float horizontalDegrees, float verticalDegrees, float verticalFov, float aspect)
         {

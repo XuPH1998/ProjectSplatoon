@@ -1,0 +1,122 @@
+{
+  "commit": "561085918c39d8f8dd08cc0e593600b98049c0d0",
+  "profiles": [
+    {
+      "name": "RifleGirl",
+      "CameraPivot": [
+        0.0,
+        1.315198,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "DualPistolGirl",
+      "CameraPivot": [
+        0.0,
+        1.318465,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "ShotgunGirl",
+      "CameraPivot": [
+        0.0,
+        1.3151984,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "PistolGirl",
+      "CameraPivot": [
+        0.0,
+        1.3151984,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "RocketLauncherGirl",
+      "CameraPivot": [
+        0.0,
+        1.3287002,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "MachineGunGirl",
+      "CameraPivot": [
+        0.0,
+        1.361966,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "BubbleGirl",
+      "CameraPivot": [
+        0.0,
+        1.3151984,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    },
+    {
+      "name": "SplooshGirl",
+      "CameraPivot": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "CameraOffset": [
+        0.45,
+        0.12,
+        -2.8
+      ]
+    },
+    {
+      "name": "BubbleShotgunGirl",
+      "CameraPivot": [
+        0.0,
+        1.3151984,
+        0.0
+      ],
+      "CameraOffset": [
+        0.65,
+        0.15,
+        -3.8
+      ]
+    }
+  ]
+}

@@ -39,6 +39,8 @@ namespace Splatoon.Prototype
         public Vector2 ReticleViewport { get; private set; } = new(.5f, .5f);
         public bool ImpactReticleVisible { get; private set; }
         public Vector2 ImpactReticleViewport { get; private set; }
+        public bool TargetReticleVisible { get; private set; }
+        public Vector2 TargetReticleViewport { get; private set; }
         readonly TpsAimSolver _aimSolver = new();
         public int PendingInputCount => _history.Count;
         CharacterController _controller;
@@ -366,6 +368,7 @@ namespace Splatoon.Prototype
         void LateUpdate()
         {
             ImpactReticleVisible = false;
+            TargetReticleVisible = false;
             if (!IsSpawned) return;
             var s = PresentedState;
             if (!IsServer && !ControlsLocalPlayer) transform.position = Vector3.Lerp(transform.position, s.Position, 1 - Mathf.Exp(-18 * Time.deltaTime));
@@ -379,20 +382,28 @@ namespace Splatoon.Prototype
             SwimBody?.Present(s, !ControlsLocalPlayer && !IsServer ? transform.position - s.Position : _visualOffset, Visual.localRotation);
             if (!ControlsLocalPlayer || _camera == null) return;
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
+            _camera.fieldOfView = Presentation != null ? Presentation.CameraVerticalFov : 60;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
-            if (s.Health > 0 && !s.Swimming &&
-                WeaponImpactPrediction.TryPredict(_aimSolver, aim, reticleWeapon, s, PlayerId, out var landing))
+            if (s.Health > 0 && !s.ShowsSwimBody)
             {
-                var projected = _camera.WorldToViewportPoint(landing);
-                ImpactReticleVisible = projected.z > 0 && float.IsFinite(projected.z) &&
-                    projected.x >= 0 && projected.x <= 1 && projected.y >= 0 && projected.y <= 1;
-                if (ImpactReticleVisible) ImpactReticleViewport = new Vector2(projected.x, projected.y);
+                var prediction = WeaponImpactPrediction.Predict(_aimSolver, aim, reticleWeapon, s, PlayerId);
+                Vector2 landing = default, target = default;
+                ImpactReticleVisible = prediction.HasImpact && ProjectReticle(prediction.Point, out landing);
+                if (ImpactReticleVisible) ImpactReticleViewport = landing;
+                TargetReticleVisible = prediction.HasEnemyContact && ProjectReticle(prediction.EnemyPoint, out target);
+                if (TargetReticleVisible) TargetReticleViewport = target;
             }
             MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId,
                 WeaponSimulation.IsFloatingBubble(reticleWeapon) ? s.Team : (byte?)null);
+        }
+        bool ProjectReticle(Vector3 point, out Vector2 viewport)
+        {
+            var p = _camera.WorldToViewportPoint(point);
+            viewport = new Vector2(p.x, p.y);
+            return p.z > 0 && float.IsFinite(p.z) && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1;
         }
         public override void OnNetworkDespawn()
         {

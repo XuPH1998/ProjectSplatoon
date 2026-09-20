@@ -47,6 +47,7 @@ namespace Splatoon.Editor
             {
                 character.name = "BubbleShotgunGirlVisual"; character.GetComponent<InkCharacterView>().Profile = profile;
                 headSize = MeasureHead(character);
+                CameraFramingBuilder.Apply(character.GetComponent<InkCharacterView>());
                 PrefabUtility.SaveAsPrefabAsset(character, CharacterPath);
             }
             finally { PrefabUtility.UnloadPrefabContents(character); }

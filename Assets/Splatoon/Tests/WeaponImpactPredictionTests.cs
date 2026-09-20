@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -15,7 +15,7 @@ namespace Splatoon.Tests
     public sealed class WeaponImpactPredictionTests
     {
         readonly List<Object> objects = new();
-        static readonly string[] Names = { "", "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl", "BubbleGirl" };
+        static readonly string[] Names = { "", "RifleGirl", "DualPistolGirl", "ShotgunGirl", "PistolGirl", "RocketLauncherGirl", "MachineGunGirl", "BubbleGirl", "SplooshGirl", "BubbleShotgunGirl" };
         [SetUp] public void Setup()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -32,6 +32,7 @@ namespace Splatoon.Tests
             var asset = Object.Instantiate(AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(hero).WeaponConfigPath));
             objects.Add(asset);
             // Remove speed randomness from the actual emitter to compare its centre trajectory.
+            asset.floatingPitchSpreadDegrees = 0;
             asset.speedMin = asset.speedMax = (asset.speedMin + asset.speedMax) * .5f;
             var w = asset.Snapshot(); WeaponConfigService.Current.SetForEditor(hero, w); return w;
         }
@@ -45,14 +46,15 @@ namespace Splatoon.Tests
         }
         static IEnumerable<TestCaseData> Contacts()
         {
-            for (int hero = 1; hero <= 7; hero++)
-                foreach (float pitch in new[] { 0f, 35f }) yield return new TestCaseData(hero, pitch, 1f, 0, false);
-            yield return new TestCaseData(6, 0f, .15f, 0, false);
-            yield return new TestCaseData(6, 0f, .15f, 0, true);
-            yield return new TestCaseData(7, 0f, 1f, 2, false);
+            for (int hero = 1; hero <= 9; hero++)
+                foreach (float pitch in new[] { 0f, 35f }) yield return new TestCaseData(hero, pitch, 1f, 0, false, hero == 2 ? 1 : 0);
+            yield return new TestCaseData(6, 0f, .15f, 0, false, 0);
+            yield return new TestCaseData(6, 0f, .15f, 0, true, 0);
+            yield return new TestCaseData(7, 0f, 1f, 2, false, 0);
+            foreach (float pitch in new[] { 0f, 35f }) yield return new TestCaseData(2, pitch, 1f, 0, false, 0);
         }
         [TestCaseSource(nameof(Contacts))]
-        public void ForecastMatchesActualEmitterAndFirstPhysicsContact(int hero, float pitch, float charge, int bubbleIndex, bool firing)
+        public void ForecastMatchesActualEmitterAndFirstPhysicsContact(int hero, float pitch, float charge, int bubbleIndex, bool firing, int muzzle)
         {
             var w = Weapon(hero); var player = Player(hero); var solver = new TpsAimSolver();
             var floor = Root("Landing floor").AddComponent<BoxCollider>();
@@ -63,7 +65,7 @@ namespace Splatoon.Tests
                 SplatlingChargeSeconds = charge * w.ChargeSeconds, SplatlingReleasedCharge = charge,
                 SplatlingRemaining = firing ? 10 : 0, LastShotCharge = charge,
                 BurstShotIndex = (byte)bubbleIndex, BurstRemaining = bubbleIndex > 0 ? 2 : 0,
-                NextMuzzle = (byte)(hero == 2 ? 1 : 0), LastShotMuzzle = (byte)(hero == 2 ? 1 : 0) };
+                NextMuzzle = (byte)muzzle, LastShotMuzzle = (byte)muzzle };
             Physics.SyncTransforms();
             var aim = solver.Resolve(player, state, state.NextMuzzle);
             Assert.That(WeaponImpactPrediction.TryPredict(solver, aim, w, state, player.PlayerId, out var predicted), Is.True);

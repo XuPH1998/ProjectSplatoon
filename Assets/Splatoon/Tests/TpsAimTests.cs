@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -284,7 +284,7 @@ namespace Splatoon.Tests
             var solver = new TpsAimSolver(); var aim = solver.Resolve(player, state, 0);
             Box(aim.CameraOrigin + aim.Forward * 12, new Vector3(4, 4, .1f));
             aim = solver.Resolve(player, state, 0);
-            Box(Vector3.Lerp(aim.Muzzle, aim.CorrectionPoint, .5f), new Vector3(.08f, 2, .08f));
+            Box(Vector3.Lerp(aim.Muzzle, aim.CorrectionPoint, .5f), new Vector3(.08f, .2f, .08f));
             aim = solver.Resolve(player, state, 0);
             Assert.That(aim.MuzzleBlocked, Is.False);
             Assert.That(solver.IsObstructed(aim, GameplayConfig.GetWeapon(1).CollisionRadius, player.OwnerClientId), Is.True);
@@ -317,7 +317,7 @@ namespace Splatoon.Tests
             var ray = camera.ViewportPointToRay(point);
             Assert.That(Vector3.Cross(ray.direction, (aim.AimPoint - ray.origin).normalized).magnitude, Is.LessThan(.0001));
         }
-        [Test] public void MeasureFloorLandingBeforeAndAfterForNormalAndCompressedCamera()
+        [Test] public void MeasureHistoricalFloorLandingForNormalAndCompressedCamera()
         {
             Box(new Vector3(0, -.25f, 0), new Vector3(200, .5f, 200));
             var csv = new List<string> { "hero,camera,old_floor_x,old_floor_z,new_floor_x,new_floor_z,delta_z,old_fall_start,new_fall_start" };
@@ -329,7 +329,10 @@ namespace Splatoon.Tests
                 foreach (float compression in new[] { 1f, .05f })
                 {
                     string mode = compression == 1 ? "normal" : "compressed";
-                    Vector3 camera = player.Presentation.CameraPivot + player.Presentation.CameraOffset * compression;
+                    // Freeze this retired convergence diagnostic to its historical camera inputs.
+                    var baseline = SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/CameraReticle/baseline-camera.json"))["profiles"][hero - 1];
+                    Vector3 Read(string key) => new Vector3(baseline[key][0].AsFloat, baseline[key][1].AsFloat, baseline[key][2].AsFloat);
+                    Vector3 camera = Read("CameraPivot") + Read("CameraOffset") * compression;
                     Vector3 muzzle = player.MuzzleOffset(0);
                     var aim = TpsAimSolver.Geometry(camera, Vector3.forward, muzzle, 6, 50, float.PositiveInfinity);
                     var corrected = Shot(aim, hero);

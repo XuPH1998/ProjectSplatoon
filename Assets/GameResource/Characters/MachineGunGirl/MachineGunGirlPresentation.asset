@@ -1139,8 +1139,10 @@ MonoBehaviour:
   Splatling: 1
   ShootEndDuration: 1.4666668
   ShotPlaybackSeconds: 0.06
-  CameraPivot: {x: 0, y: 1.361966, z: 0}
-  CameraOffset: {x: 0.65, y: 0.15, z: -3.8}
+  CameraPivot: {x: 0, y: 2.1413288, z: 0}
+  CameraOffset: {x: 0.08348646, y: 0, z: -4.7680902}
+  CameraVerticalFov: 60
+  CameraReferenceHeight: 1.6697292
   AimPivot: {x: 0, y: 1.2533422, z: 0}
   MuzzlePosition: {x: 0.17474192, y: 0.90607595, z: 0.9067824}
   LeftMuzzlePosition: {x: -0.25, y: 1.4, z: 0.7}

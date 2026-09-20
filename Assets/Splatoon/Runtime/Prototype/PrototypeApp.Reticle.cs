@@ -11,56 +11,86 @@ namespace Splatoon.Prototype
             Panel(new Rect(rect.x - 1, rect.y - 1, rect.width + 2, rect.height + 2), new Color(0, 0, 0, .8f));
             Panel(rect, color);
         }
-        void DrawImpactReticle(Vector2 center)
+        void ReticleLine(Vector2 from, Vector2 to, Color color, float width = 1.5f)
         {
-            // A small hollow ring marks the predicted impact, separate from the aiming crosshair.
-            var color = new Color(.5f, .9f, 1, .8f);
-            for (int i = 0; i < 64; i++)
+            var previous = GUI.matrix;
+            try
             {
-                if (i % 16 < 3) continue;
-                float angle = i * Mathf.PI * 2 / 64;
-                var point = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 10;
-                Panel(new Rect(point.x - 1.5f, point.y - 1.5f, 3, 3), new Color(0, 0, 0, .6f));
+                float angle = Mathf.Atan2(to.y - from.y, to.x - from.x) * Mathf.Rad2Deg;
+                GUI.matrix = previous * Matrix4x4.TRS(new Vector3(from.x, from.y, 0), Quaternion.Euler(0, 0, angle), Vector3.one);
+                ReticleBar(new Rect(0, -width * .5f, Vector2.Distance(from, to), width), color);
             }
+            finally { GUI.matrix = previous; }
+        }
+        void ReticleRing(Vector2 center, float radius, Color color, float width = 1.5f)
+        {
+            // Three concentric strokes keep the team colour readable on ink of either team.
+            RingStroke(center, radius, new Color(0, 0, 0, .8f), width + 2);
+            RingStroke(center, radius, color, width);
+        }
+        void RingStroke(Vector2 center, float radius, Color color, float width)
+        {
             for (int i = 0; i < 64; i++)
             {
-                if (i % 16 < 3) continue;
-                float angle = i * Mathf.PI * 2 / 64;
-                var point = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 10;
-                Panel(new Rect(point.x - .75f, point.y - .75f, 1.5f, 1.5f), color);
+                float a = i * Mathf.PI * 2 / 64;
+                var p = center + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius;
+                Panel(new Rect(p.x - width * .5f, p.y - width * .5f, width, width), color);
             }
         }
-        void DrawSpreadReticle(PrototypePlayer local, PlayerSnapshot state, WeaponRuntimeConfig weapon, Vector2 center)
+        void DrawCombatReticle(PrototypePlayer local, PlayerSnapshot state, WeaponRuntimeConfig weapon, Vector2 center)
+        {
+            // HUD positions retain the 1280x720 reference; round marks use a uniform
+            // vertical scale so a 4:3 or ultrawide viewport does not stretch circles.
+            float aspectScale = Screen.width * 720f / (Screen.height * 1280f);
+            var previous = GUI.matrix;
+            GUI.matrix = previous * Matrix4x4.Scale(new Vector3(1 / aspectScale, 1, 1));
+            try { DrawUniformReticle(local, state, weapon, new Vector2(center.x * aspectScale, center.y), aspectScale); }
+            finally { GUI.matrix = previous; }
+        }
+        void DrawUniformReticle(PrototypePlayer local, PlayerSnapshot state, WeaponRuntimeConfig weapon, Vector2 center, float aspectScale)
         {
             var camera = Camera.main;
-            var size = ReticleGeometry.HalfSize(state.CurrentSpread, state.CurrentVerticalSpread,
+            var spread = ReticleGeometry.HalfSize(state.CurrentSpread, state.CurrentVerticalSpread,
                 camera != null ? camera.fieldOfView : 60, camera != null ? camera.aspect : Screen.width / (float)Screen.height);
+            spread.x *= aspectScale;
+            spread = Vector2.Max(spread, Vector2.one * 16);
             bool prepaid = WeaponSimulation.IsSplatling(weapon) && state.SplatlingRemaining > 0;
-            Color color = local.MuzzleBlocked ? Color.red : !prepaid && state.Ink < WeaponSimulation.InkCost(weapon) ? Color.yellow : Color.white;
-            ReticleBar(new Rect(center.x - 1.5f, center.y - 1.5f, 3, 3), color);
-            ReticleBar(new Rect(center.x - 1.5f, center.y - size.y - 12, 3, 12), color);
-            ReticleBar(new Rect(center.x - 1.5f, center.y + size.y, 3, 12), color);
-            ReticleBar(new Rect(center.x - size.x - 12, center.y - 1.5f, 12, 3), color);
-            ReticleBar(new Rect(center.x + size.x, center.y - 1.5f, 12, 3), color);
-            if (WeaponSimulation.IsSplatling(weapon))
+            var color = ReticleGeometry.StatusColor(local.MuzzleBlocked, !prepaid && state.Ink < WeaponSimulation.InkCost(weapon));
+            var team = PrototypeArena.TeamColor(state.Team);
+            var impact = new Vector2(local.ImpactReticleViewport.x * 1280 * aspectScale, (1 - local.ImpactReticleViewport.y) * 720);
+            bool landing = !state.ShowsSwimBody && local.ImpactReticleVisible;
+            bool merge = landing && ReticleGeometry.MergeImpact(center, impact);
+
+            ReticleRing(center, 8, color);
+            if (merge) RingStroke(center, 8, team, .75f);
+            else if (landing)
             {
+                ReticleRing(impact, 8, Color.white, 2.5f);
+                RingStroke(impact, 8, team, 1.5f);
+            }
+            ReticleBar(new Rect(center.x - 1, center.y - 1, 2, 2), color);
+            if (!state.ShowsSwimBody)
                 for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2)
                 {
-                    var corner = center + Vector2.Scale(size, new Vector2(x, y));
-                    float width = Mathf.Min(8, size.x * .5f), height = Mathf.Min(8, size.y * .5f);
-                    ReticleBar(new Rect(corner.x - (x > 0 ? width : 0), corner.y - 1, width, 2), color);
-                    ReticleBar(new Rect(corner.x - 1, corner.y - (y > 0 ? height : 0), 2, height), color);
+                    var corner = center + Vector2.Scale(spread, new Vector2(x, y));
+                    var direction = new Vector2(x, y).normalized;
+                    ReticleLine(corner - direction * 3, corner + direction * 3, color);
                 }
-            }
-            else
+            if (!state.ShowsSwimBody && local.TargetReticleVisible)
             {
-                int segments = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(size.x, size.y) * 5), 48, 256);
-                Color outline = new(color.r, color.g, color.b, .55f);
-                for (int i = 0; i < segments; i++)
+                var target = new Vector2(local.TargetReticleViewport.x * 1280 * aspectScale, (1 - local.TargetReticleViewport.y) * 720);
+                ReticleLine(target - Vector2.one * 4, target + Vector2.one * 4, team);
+                ReticleLine(target + new Vector2(-4, 4), target + new Vector2(4, -4), team);
+            }
+            if (Time.unscaledTimeAsDouble < local.HitConfirmedUntil)
+            {
+                var hitColor = local.LastHitKilled ? new Color(1, .8f, .25f) : Color.white;
+                for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2)
                 {
-                    float angle = i * Mathf.PI * 2 / segments;
-                    Panel(new Rect(center.x + Mathf.Cos(angle) * size.x - .75f, center.y + Mathf.Sin(angle) * size.y - .75f, 1.5f, 1.5f), outline);
+                    var direction = new Vector2(x, y).normalized;
+                    ReticleLine(center + direction * 17, center + direction * 25, hitColor, 2.5f);
                 }
+                if (local.LastHitKilled) GUI.Label(new Rect(center.x + 29, center.y - 13, 90, 35), "击倒", _label);
             }
         }
     }
