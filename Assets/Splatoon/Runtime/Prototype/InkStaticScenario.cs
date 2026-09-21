@@ -65,6 +65,14 @@ namespace Splatoon.Prototype
                     }
                     var probes = GameObject.Find("InkStaticReflections"); if (probes != null) probes.SetActive(false);
                 }
+                else if (Arg("-inkStaticLook") == "today" || Arg("-inkStaticLook") == "rounded")
+                {
+                    foreach (var s in match.Arena.Surfaces.Values)
+                    {
+                        s.FlushDisplay(); s.SetAppearance(true);
+                        s.SetRoundedEdges(Arg("-inkStaticLook") == "rounded");
+                    }
+                }
             }
             // Pace the fixture through the normal authoritative API. A whole dense map in
             // one tick exceeds the existing RPC batch buffer and is not a gameplay workload.

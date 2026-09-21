@@ -14,6 +14,13 @@ namespace Splatoon.Painting
         public bool Enabled = true;
         public float EdgeHeight = .018f, EdgeWidth = .055f, Relief = .002f, BroadRelief = .0005f;
         public float Smoothness = .75f, FineNormalStrength = .25f, FineNormalTiling = .65f, TeamGroove = .001f;
+        [Header("Rounded outer edge (display only)")]
+        public bool RoundedEdges = true;
+        [Min(0)] public float RoundedEdgeHeight = .030f;
+        [Min(.001f)] public float RoundedEdgeWidth = .080f;
+        [Range(.1f, 1.5f)] public float RoundedEdgeMaxSlope = .9f;
+        [Range(.65f, .82f)] public float RoundedEdgeSmoothness = .78f;
+        [Range(0, .08f)] public float RoundedEdgeContactShade = .08f;
         static InkAppearanceProfile _current;
         string _hash;
         void OnValidate() { _hash = null; }
@@ -37,6 +44,21 @@ namespace Splatoon.Painting
             block.SetVector("_InkRelief", new Vector4(EdgeHeight, EdgeWidth, Relief, BroadRelief));
             block.SetVector("_InkFinish", new Vector4(Smoothness, FineNormalStrength, FineNormalTiling, TeamGroove));
             block.SetTexture("_InkFineNormal", FineNormal);
+            block.SetFloat("_InkRoundedEdge", RoundedEdges ? 1 : 0);
+            block.SetVector("_InkRoundedRelief", RoundedRelief);
+            block.SetVector("_InkRoundedFinish", RoundedFinish);
+        }
+        Vector4 RoundedRelief => new Vector4(RoundedEdgeHeight, RoundedEdgeWidth, RoundedEdgeMaxSlope, 0);
+        Vector4 RoundedFinish => new Vector4(RoundedEdgeSmoothness, RoundedEdgeContactShade, 0, 0);
+        public void Bind(Material material)
+        {
+            material.SetFloat("_InkAppearance", Enabled ? 1 : 0);
+            material.SetVector("_InkRelief", new Vector4(EdgeHeight, EdgeWidth, Relief, BroadRelief));
+            material.SetVector("_InkFinish", new Vector4(Smoothness, FineNormalStrength, FineNormalTiling, TeamGroove));
+            material.SetTexture("_InkFineNormal", FineNormal);
+            material.SetFloat("_InkRoundedEdge", RoundedEdges ? 1 : 0);
+            material.SetVector("_InkRoundedRelief", RoundedRelief);
+            material.SetVector("_InkRoundedFinish", RoundedFinish);
         }
         public static byte[] PackVisual(byte[] rgba)
         {

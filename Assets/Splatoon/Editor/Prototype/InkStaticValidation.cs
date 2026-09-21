@@ -16,7 +16,22 @@ namespace Splatoon.Editor
 {
     public static class InkStaticValidation
     {
-        const string Output = InkStaticUpgrade.Output;
+        static string Arg(string key, string fallback = "")
+        { var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, key); return i >= 0 && i + 1 < args.Length ? args[i + 1] : fallback; }
+        static string Output => Arg("-inkValidationOutput", InkStaticUpgrade.Output);
+        static bool RoundedComparison;
+        public static async void RunRounded()
+        {
+            try
+            {
+                Directory.CreateDirectory(Output); RoundedComparison = true; InkStaticUpgrade.LoadTables();
+                ValidateDetail(); ValidateMap(); await CaptureComparison();
+                Check(!ShaderUtil.ShaderHasError(Shader.Find("Splatoon/InkSurface")), "Ink shader errors");
+                File.WriteAllText(Output + "/graphics-result.txt", "PASS: 32-shape detail/coverage parity, bounded accumulation, paired restore/continue, 36 surfaces, unchanged state/ownership/memory across appearance switches, bare-ground equality, rendered comparisons.\n");
+                EditorApplication.Exit(0);
+            }
+            catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+        }
         static void Check(bool ok, string message) { if (!ok) throw new InvalidOperationException(message); }
         public static async void Run()
         {
@@ -130,9 +145,10 @@ namespace Splatoon.Editor
             var probes = GameObject.Find("InkStaticReflections");
             var positions = new[] { new Vector3(0, 5, -9), new Vector3(3, 1.4f, -5), new Vector3(-11, 2.5f, -20), new Vector3(-13, 1, -16), new Vector3(0, 18, -30) };
             var targets = new[] { Vector3.zero, Vector3.zero, new Vector3(-9, 1, -17), new Vector3(-9, 1, -17), Vector3.zero };
-            for (int mode = 0; mode < 3; mode++)
+            string previousState = null;
+            for (int mode = 0; mode < (RoundedComparison ? 2 : 3); mode++)
             {
-                if (probes != null) probes.SetActive(mode == 2);
+                if (probes != null) probes.SetActive(RoundedComparison || mode == 2);
                 // Probe registration is updated by the engine between editor frames.
                 // Rendering every toggle in one executeMethod frame reuses stale probe data.
                 await Task.Delay(150);
@@ -142,7 +158,20 @@ namespace Splatoon.Editor
                 foreach (var s in arena.Surfaces.Values) s.ReleaseGraphics();
                 arena.ClearPaint();
                 foreach (var stamp in comparisonStamps) arena.Apply(stamp, true);
-                foreach (var s in arena.Surfaces.Values) { s.FlushDisplay(); s.SetAppearance(mode != 0); }
+                foreach (var s in arena.Surfaces.Values)
+                {
+                    s.FlushDisplay(); s.SetAppearance(RoundedComparison || mode != 0);
+                    if (RoundedComparison) s.SetRoundedEdges(mode == 1);
+                }
+                if (RoundedComparison)
+                {
+                    string state = string.Join("\n", arena.Surfaces.Values.OrderBy(s => s.SurfaceId).Select(s =>
+                        $"{s.SurfaceId}: {PaintSnapshotCodec.Hash(InkStaticUpgrade.Read(s.Mask))}, {PaintSnapshotCodec.Hash(InkStaticUpgrade.ReadVisual(s))}, {PaintSnapshotCodec.Hash(InkStaticUpgrade.Read(s.DisplayMask))}"));
+                    state += "\nOwnership: " + string.Join(",", arena.CaptureOwnership().OrderBy(p => p.Key).Select(p => p.Key + ":" + PaintSnapshotCodec.Hash(p.Value)));
+                    state += "\nRT bytes: " + PaintSurface.AllocatedBytes + ", checkpoint: " + PaintSurface.CheckpointBytes;
+                    File.WriteAllText(Output + $"/state-{mode}.txt", state);
+                    Check(previousState == null || state == previousState, "Look switch changed paint, ownership, or memory"); previousState = state;
+                }
                 var diagnostic = new List<string>();
                 foreach (var s in arena.Surfaces.Values.Where(s => s.HasPaint))
                 {
@@ -156,10 +185,11 @@ namespace Splatoon.Editor
                 for (int view = 0; view < positions.Length; view++)
                 {
                     camera.transform.position = positions[view]; camera.transform.LookAt(targets[view]);
-                    Capture(camera, Output + $"/view-{view}-{(mode == 0 ? "legacy" : mode == 1 ? "wet-sky" : "wet-probes")}.png");
+                    string look = RoundedComparison ? (mode == 0 ? "today" : "rounded") : (mode == 0 ? "legacy" : mode == 1 ? "wet-sky" : "wet-probes");
+                    Capture(camera, Output + $"/view-{view}-{look}.png");
                 }
             }
-            Check(!File.ReadAllBytes(Output + "/view-1-wet-sky.png").SequenceEqual(File.ReadAllBytes(Output + "/view-1-wet-probes.png")), "Local probes had no rendered effect");
+            if (!RoundedComparison) Check(!File.ReadAllBytes(Output + "/view-1-wet-sky.png").SequenceEqual(File.ReadAllBytes(Output + "/view-1-wet-probes.png")), "Local probes had no rendered effect");
             Cleanup();
             CaptureFixture();
         }
@@ -177,22 +207,44 @@ namespace Splatoon.Editor
             for (int z = -2; z <= 2; z++) for (int x = -3; x <= 3; x++)
                 surface.Apply(new PaintStamp { Position = new Vector3(x * .7f, 0, z * .7f), Normal = Vector3.up, Radius = 1.2f, Hardness = .6f, Strength = 1,
                     Team = (byte)(x > 1 ? 2 : 1), ShapeSeed = InkShapeAtlas.Pack((x + z + 10) % 32, (uint)((x + z + 10) * 12739) << 6) });
+            if (RoundedComparison)
+            {
+                // Isolated small marks exercise the local-width attenuation alongside
+                // the fused patch, mixed teams, and holes in the authored silhouettes.
+                for (int k = 0; k < 4; k++) surface.Apply(new PaintStamp { Position = new Vector3(-1.5f + k, 0, -2.8f),
+                    Normal = Vector3.up, Radius = .10f + k * .08f, Hardness = .6f, Strength = 1, Team = 1,
+                    ShapeSeed = InkShapeAtlas.Pack(k + 5, (uint)(k + 1) * 9719 << 6) });
+            }
             surface.FlushDisplay();
             for (int mode = 0; mode < 2; mode++)
             {
-                surface.SetAppearance(mode != 0);
+                surface.SetAppearance(RoundedComparison || mode != 0);
+                if (RoundedComparison) surface.SetRoundedEdges(mode == 1);
                 for (int view = 0; view < 4; view++)
                 {
                     camera.transform.position = view == 0 ? new Vector3(0, 4, -5) : view == 1 ? new Vector3(1, .65f, -4) : view == 2 ? new Vector3(-3, 1.3f, 3) : new Vector3(-3, 6, 5);
                     camera.transform.LookAt(Vector3.zero);
-                    Capture(camera, Output + $"/fixture-{view}-{(mode == 0 ? "legacy" : "wet")}.png");
+                    string look = RoundedComparison ? (mode == 0 ? "today" : "rounded") : (mode == 0 ? "legacy" : "wet");
+                    Capture(camera, Output + $"/fixture-{view}-{look}.png");
                 }
+            }
+            if (RoundedComparison)
+            {
+                surface.Clear();
+                surface.SetRoundedEdges(false); Capture(camera, Output + "/bare-today.png");
+                surface.SetRoundedEdges(true); Capture(camera, Output + "/bare-rounded.png");
+                Check(File.ReadAllBytes(Output + "/bare-today.png").SequenceEqual(File.ReadAllBytes(Output + "/bare-rounded.png")), "Rounded edges changed bare ground");
             }
             Cleanup(); UnityEngine.Object.DestroyImmediate(material);
         }
         public static async void RenderOnly()
         {
             try { InkStaticUpgrade.LoadTables(); await CaptureComparison(); EditorApplication.Exit(0); }
+            catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+        }
+        public static async void RenderRoundedOnly()
+        {
+            try { Directory.CreateDirectory(Output); RoundedComparison = true; InkStaticUpgrade.LoadTables(); await CaptureComparison(); EditorApplication.Exit(0); }
             catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
         }
         public static void Capture(Camera camera, string path)

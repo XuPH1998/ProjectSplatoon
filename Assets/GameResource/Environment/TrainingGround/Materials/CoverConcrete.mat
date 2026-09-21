@@ -89,6 +89,7 @@ Material:
     - Vector1_dcd729e4cd23406784678484c17def53: 1
     - Vector1_f6677799b193415b8be7686b658a6e85: 9
     - _InkAppearance: 1
+    - _InkRoundedEdge: 1
     - _InkEdgeAAScale: 1
     - _InkEdgeNormalStrength: 0.12
     - _InkEdgeSmoothness: 0.55
@@ -107,6 +108,8 @@ Material:
     - Vector2_e97cb9b7b5564bc9857e7669e2d0b82f: {r: 20, g: 20, b: 0, a: 0}
     - _InkFinish: {r: 0.75, g: 0.25, b: 0.65, a: 0.001}
     - _InkRelief: {r: 0.018, g: 0.055, b: 0.002, a: 0.0005}
+    - _InkRoundedRelief: {r: 0.03, g: 0.08, b: 0.9, a: 0}
+    - _InkRoundedFinish: {r: 0.78, g: 0.08, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &1101065348234378424

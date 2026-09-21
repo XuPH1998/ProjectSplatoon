@@ -2,13 +2,14 @@
 import argparse,json,subprocess,time,os,socket,shutil
 from pathlib import Path
 
-def run_player(exe,out,label,scenario,video=False):
+def run_player(exe,out,label,scenario,video=False,look=None):
     out.mkdir(parents=True,exist_ok=True)
     with socket.socket(socket.AF_INET,socket.SOCK_DGRAM) as s:
         s.bind(('127.0.0.1',0));port=s.getsockname()[1]
     args=[str(exe),'-force-d3d11','-screen-width','1920','-screen-height','1080','-screen-fullscreen','0',
           '-lanSmokeHost','-lanPort',str(port),'-inkSmokeCase','observer','-inkLabel',label,
           '-inkStaticScenario',scenario,'-logFile',str(out/(label+'.log'))]
+    if look:args+=['-inkStaticLook',look]
     if video:args+=['-inkStaticOutput',str(out/label)]
     else:args+=['-frameProbe','60','-frameProbeWarmup','10','-frameProbePlayers','1','-frameProbeQuit',
                 '-frameProbeOutput',str(out/(label+'.json'))]
@@ -32,6 +33,10 @@ def run_player(exe,out,label,scenario,video=False):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--baseline',type=Path,required=True);p.add_argument('--new',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--video-only',action='store_true')
     p.add_argument('--reuse-baseline',type=Path,help='Existing verified baseline results and recording; baseline executable/fixture must be unchanged.')
+    p.add_argument('--baseline-look',choices=['legacy','today','rounded'])
+    p.add_argument('--new-look',choices=['legacy','today','rounded'])
+    p.add_argument('--performance-only',action='store_true')
+    p.add_argument('--gpu-budget-ms',type=float,default=1.5)
     a=p.parse_args()
     out=a.output.resolve();results={}
     out.mkdir(parents=True,exist_ok=True)
@@ -42,7 +47,7 @@ if __name__=='__main__':
                     source=a.reuse_baseline/(label+'-'+scenario+'.json');data=json.loads(source.read_text(encoding='utf-8-sig'))
                     assert data['complete'] and data['errors']==0 and data['renderedFrames']>0
                     shutil.copy2(source,out/source.name);results[label+'-'+scenario]=data
-                else:results[label+'-'+scenario]=run_player(exe.resolve(),out,label+'-'+scenario,scenario)
+                else:results[label+'-'+scenario]=run_player(exe.resolve(),out,label+'-'+scenario,scenario,look=a.baseline_look if label=='baseline' else a.new_look)
         differences={}
         for scenario in ['static','paint']:
             before=results['baseline-'+scenario];after=results['new-'+scenario]
@@ -50,7 +55,12 @@ if __name__=='__main__':
             differences[scenario]={'gpuEvidenceValid':before['gpuTimingAvailable'] and after['gpuTimingAvailable'],
               'gpuP95DeltaMs':m1['gpuFrameMs']['p95']-m0['gpuFrameMs']['p95'],'mainP95DeltaMs':m1['mainThreadMs']['p95']-m0['mainThreadMs']['p95'],
               'baseline':before,'new':after,'baselineSource':str(a.reuse_baseline.resolve()) if a.reuse_baseline else str(out)}
+            differences[scenario]['gpuBudgetMs']=a.gpu_budget_ms
+            differences[scenario]['gpuBudgetPassed']=differences[scenario]['gpuEvidenceValid'] and differences[scenario]['gpuP95DeltaMs']<=a.gpu_budget_ms
         (out/'comparison.json').write_text(json.dumps(differences,indent=2),encoding='utf-8')
-    for label,exe in [('baseline-video',a.baseline),('new-video',a.new)]:
-        if label=='baseline-video' and a.reuse_baseline:shutil.copytree(a.reuse_baseline/label,out/label)
-        else:run_player(exe.resolve(),out,label,'video',True)
+    if not a.performance_only:
+        for label,exe in [('baseline-video',a.baseline),('new-video',a.new)]:
+            if label=='baseline-video' and a.reuse_baseline:shutil.copytree(a.reuse_baseline/label,out/label)
+            else:run_player(exe.resolve(),out,label,'video',True,a.baseline_look if label=='baseline-video' else a.new_look)
+    if not a.video_only and not all(v['gpuBudgetPassed'] for v in differences.values()):
+        raise RuntimeError('GPU budget was not met or GPU timing unavailable; see comparison.json')

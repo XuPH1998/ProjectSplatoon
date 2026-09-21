@@ -17,6 +17,7 @@ CBUFFER_START(UnityPerMaterial)
     float Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,Vector1_b160a6374fb04a77b114bb611b8c55e4;
     float Vector1_8e760635099b4147956bb9600d13cac2,Vector1_b5cc7f6f25194a778cb438f45fbbce66,Vector1_f6677799b193415b8be7686b658a6e85;
     float _InkAppearance; float4 _InkRelief, _InkFinish;
+    float _InkRoundedEdge; float4 _InkRoundedRelief, _InkRoundedFinish;
     float _InkWorldScale,_InkShapeNoiseScale,_InkThreshold;
     float _InkEdgeAAScale,_InkEdgeNormalStrength,_InkEdgeSmoothness;
 CBUFFER_END
@@ -98,7 +99,69 @@ float3 InkBevelGradient(Varyings i,float3 n)
     return ((heights.y-heights.x)/(2*radius.x)*uDual+(heights.w-heights.z)/(2*radius.y)*vDual)
         *((area<0?-1:1)/max(abs(area),1e-8));
 }
-float3 InkWetNormal(Varyings i,float4 mask,float2 uv,float field,out float finish)
+float3 InkRoundedGradient(Varyings i,float3 n,float4 mask,float field,
+    out float interior,out float rim,out float contact)
+{
+    float2 dx=ddx(i.paintUV),dy=ddy(i.paintUV);
+    float determinant=dx.x*dy.y-dx.y*dy.x;
+    float inverse=(determinant<0?-1:1)/max(abs(determinant),1e-12);
+    float3 du=(ddx(i.positionWS)*dy.y-ddy(i.positionWS)*dx.y)*inverse;
+    float3 dv=(ddy(i.positionWS)*dx.x-ddx(i.positionWS)*dy.x)*inverse;
+    float width=max(_InkRoundedRelief.y,.001);
+    // The smallest authored chart gap is four texels. Keep point samples inside
+    // that gap, reject padding, and never borrow a neighbouring chart's ink.
+    float2 radius=max(min(width*.75/max(float2(length(du),length(dv)),1e-4),
+        _MaskTexture_TexelSize.xy*3.5),1e-6);
+    float modulation=field/max(mask.a,1e-5);
+    float center=field;
+    float weight=0,value=0; float2 moment=0,mixed=0; float3 square=0;
+    // Fit a filtered local coverage plane with a 1-2-1 kernel. Missing samples
+    // produce a one-sided fit at chart boundaries rather than a false dark rim.
+    // World noise is locally frozen for this normal-only filter; visibility is
+    // always evaluated from the original, unfiltered field in both passes.
+    [unroll] for(int y=-1;y<=1;y++) [unroll] for(int x=-1;x<=1;x++)
+    {
+        float2 at=i.paintUV+float2(x,y)*radius;
+        float valid=1,coverage=center;
+        if(x!=0 || y!=0)
+        {
+            valid=step(.99,SAMPLE_TEXTURE2D_LOD(_InkIslands,sampler_PointClamp,at,0).r);
+            valid*=all(at>=0) && all(at<=1) ? 1 : 0;
+            float alpha=SAMPLE_TEXTURE2D_LOD(_MaskTexture,sampler_LinearClamp,at,0).a;
+            coverage=alpha*modulation;
+        }
+        float w=(x==0?2:1)*(y==0?2:1)*valid;
+        float2 p=float2(x,y);
+        weight+=w; value+=w*coverage; moment+=w*p; mixed+=w*p*coverage;
+        square+=w*float3(x*x,x*y,y*y);
+    }
+    float mean=value/max(weight,1),support=smoothstep(.12,.5,mean/max(modulation,1e-5));
+    float2 average=moment/max(weight,1);
+    float3 covariance=square-moment.xxy*average.xyy;
+    float2 rhs=mixed-moment*mean;
+    float det=covariance.x*covariance.z-covariance.y*covariance.y;
+    float2 slope=float2(covariance.z*rhs.x-covariance.y*rhs.y,
+        covariance.x*rhs.y-covariance.y*rhs.x)/max(det,1e-5);
+    float3 uDual=cross(dv,n),vDual=cross(n,du);
+    float area=dot(du,uDual);
+    float3 g=(slope.x/radius.x*uDual+slope.y/radius.y*vDual)
+        *((area<0?-1:1)/max(abs(area),1e-8));
+    float magnitude=length(g);
+    float distance=max(0,(mean-dot(slope,average)-_InkThreshold)/max(magnitude,.001));
+    float q=saturate(distance/width);
+    // A short outer rise, a round shoulder, and a longer return to the thin
+    // interior. Both ends and the shoulder have continuous first derivatives.
+    float rise=saturate(q/.45),fall=saturate((q-.45)/.55);
+    float derivative=6*rise*(1-rise)/.45-.75*6*fall*(1-fall)/.55;
+    float pixelWorld=max(length(ddx(i.positionWS)),length(ddy(i.positionWS)));
+    float resolved=1-smoothstep(.5,2,pixelWorld/width);
+    float strength=support*resolved*step(.001,magnitude);
+    rim=(1-smoothstep(.55,1,q))*strength;
+    interior=lerp(1,smoothstep(.15,1,q),strength);
+    contact=min(_InkRoundedFinish.y,.08)*(1-smoothstep(0,.25,q))*strength;
+    return g/max(magnitude,.001)*(derivative*_InkRoundedRelief.x/width)*strength;
+}
+float3 InkWetNormal(Varyings i,float4 mask,float2 uv,float field,out float finish,out float contactShade)
 {
     float3 n=normalize(i.normalWS);
     float2 detail=SAMPLE_TEXTURE2D(_InkVisualTexture,sampler_LinearClamp,i.paintUV).rg/max(mask.a,1.0/255);
@@ -114,9 +177,18 @@ float3 InkWetNormal(Varyings i,float4 mask,float2 uv,float field,out float finis
         float broad=InkNoise(InkDetailUV(i.positionWS,n,1),.7)-.5;
     #endif
     float interiorHeight=(detail.r-.5)*2*_InkRelief.z+broad*_InkRelief.w;
-    float3 gradient=InkBevelGradient(i,n);
+    float rim=0; contactShade=0;
+    float3 gradient;
+    if(_InkRoundedEdge>.5)
+        gradient=InkRoundedGradient(i,n,mask,field,shoulder,rim,contactShade);
+    else gradient=InkBevelGradient(i,n);
     gradient+=shoulder*InkWorldGradient(interiorHeight,i.positionWS,n)-InkWorldGradient(teamEdge*_InkFinish.w,i.positionWS,n);
-    gradient*=min(1,.65/max(length(gradient),1e-5));
+    if(_InkRoundedEdge>.5)
+    {
+        float limit=max(_InkRoundedRelief.z,.1);
+        gradient*=rsqrt(1+dot(gradient,gradient)/(limit*limit));
+    }
+    else gradient*=min(1,.65/max(length(gradient),1e-5));
     float3 inkNormal=normalize(n-gradient);
     float2 fineUV=InkDetailUV(i.positionWS,n,_InkFinish.z);
     float3 fine=UnpackNormal(SAMPLE_TEXTURE2D(_InkFineNormal,sampler_InkFineNormal,fineUV));
@@ -128,6 +200,8 @@ float3 InkWetNormal(Varyings i,float4 mask,float2 uv,float field,out float finis
     // Broaden the specular lobe as the normal field becomes undersampled.
     float variance=dot(ddx(inkNormal),ddx(inkNormal))+dot(ddy(inkNormal),ddy(inkNormal));
     finish=clamp(_InkFinish.x+(detail.g-.5)*.17-teamEdge*.06-saturate(variance*2)*.12,.65,.82);
+    if(_InkRoundedEdge>.5)
+        finish=lerp(finish,clamp(_InkRoundedFinish.x-saturate(variance*2)*.12,.65,.82),rim);
     return inkNormal;
 }
 float3 InkDepthNormal(Varyings i)
@@ -136,8 +210,8 @@ float3 InkDepthNormal(Varyings i)
     if(_InkAppearance<.5) return n;
     float2 uv=InkDetailUV(i.positionWS,n,_InkWorldScale);
     float4 mask=SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV);
-    float field=InkCoverageField(mask.a,uv),finish;
-    return normalize(lerp(n,InkWetNormal(i,mask,uv,field,finish),InkVisibility(field)));
+    float field=InkCoverageField(mask.a,uv),finish,contactShade;
+    return normalize(lerp(n,InkWetNormal(i,mask,uv,field,finish,contactShade),InkVisibility(field)));
 }
 
 #endif

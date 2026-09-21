@@ -39,6 +39,12 @@ namespace Splatoon.Painting
             if (_renderer == null) return;
             _renderer.GetPropertyBlock(_properties); _properties.SetFloat("_InkAppearance", enabled ? 1 : 0); _renderer.SetPropertyBlock(_properties);
         }
+        // Both looks read exactly the same accumulated coverage/detail textures.
+        public void SetRoundedEdges(bool enabled)
+        {
+            if (_renderer == null) return;
+            _renderer.GetPropertyBlock(_properties); _properties.SetFloat("_InkRoundedEdge", enabled ? 1 : 0); _renderer.SetPropertyBlock(_properties);
+        }
         void PadVisual()
         {
             _extend.SetTexture("_UVIslands", _islands); _extend.SetTexture("_VisualTex", _visual);

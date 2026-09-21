@@ -9,6 +9,9 @@ Shader "Splatoon/InkSurface"
         [Normal] _InkFineNormal("Fine normal",2D)="bump" {}
         _InkRelief("Edge height / width / relief / broad",Vector)=(.018,.055,.002,.0005)
         _InkFinish("Smoothness / normal / tiling / groove",Vector)=(.75,.25,.65,.001)
+        [Toggle] _InkRoundedEdge("Rounded outer edge",Float)=0
+        _InkRoundedRelief("Rounded height / width / max slope",Vector)=(.030,.080,.9,0)
+        _InkRoundedFinish("Rounded smoothness / contact shade",Vector)=(.78,.08,0,0)
         _MaskTexture("Ink display",2D)="black" {}
         Texture2D_41271c3c5f484ca2a435c65087a81705("Base texture",2D)="white" {}
         Texture2D_01612b2f09a24a9c9879c83799445b96("Glitter texture",2D)="gray" {}
@@ -65,8 +68,8 @@ Shader "Splatoon/InkSurface"
                 float edgeHalfWidth=max(.5*fwidth(coverageField)*_InkEdgeAAScale,1e-5);
                 float visible=smoothstep(_InkThreshold-edgeHalfWidth,_InkThreshold+edgeHalfWidth,coverageField);
                 float interior=smoothstep(_InkThreshold,_InkThreshold+max(.15,2*edgeHalfWidth),coverageField);
-                float3 inkNormal; float wetFinish=0;
-                if(_InkAppearance>.5) inkNormal=InkWetNormal(i,mask,uv,coverageField,wetFinish);
+                float3 inkNormal; float wetFinish=0,contactShade=0;
+                if(_InkAppearance>.5) inkNormal=InkWetNormal(i,mask,uv,coverageField,wetFinish,contactShade);
                 else
                 {
                 // Filter height only. Filtering the silhouette would grow/shrink gameplay ink.
@@ -90,6 +93,7 @@ Shader "Splatoon/InkSurface"
                 SurfaceData surface=(SurfaceData)0;
                 // InkDisplay stores premultiplied color; do not multiply edge opacity twice.
                 float3 inkColor=mask.a>1e-5 ? mask.rgb/max(mask.a,1e-5) : baseColor;
+                inkColor*=1-contactShade;
                 surface.albedo=lerp(baseColor,inkColor,visible);surface.alpha=1;surface.occlusion=1;surface.normalTS=float3(0,0,1);
                 surface.metallic=lerp(Vector1_b160a6374fb04a77b114bb611b8c55e4,(_InkAppearance>.5?0:Vector1_0de750b9c41b4a5daef844a1599f5ac7),visible);
                 float inkSmoothness=lerp(_InkEdgeSmoothness,Vector1_7bf270fe91494824b4209d2dc1faae23,interior);

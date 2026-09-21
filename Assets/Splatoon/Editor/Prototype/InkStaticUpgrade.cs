@@ -117,6 +117,17 @@ namespace Splatoon.Editor
         public static void LegacyAppearance() => SetEnabled(false);
         [MenuItem("喷墨对战/墨迹静态表现/切换新外观")]
         public static void NewAppearance() => SetEnabled(true);
+        [MenuItem("喷墨对战/墨迹静态表现/圆边对照/今天版（2026-09-21）")]
+        public static void TodayAppearance() => SetRounded(false);
+        [MenuItem("喷墨对战/墨迹静态表现/圆边对照/圆边增强版")]
+        public static void RoundedAppearance() => SetRounded(true);
+        static void SetRounded(bool enabled)
+        {
+            var profile = AssetDatabase.LoadAssetAtPath<InkAppearanceProfile>(InkAppearanceProfile.AssetPath);
+            if (profile == null) throw new InvalidOperationException("缺少墨迹外观配置");
+            profile.RoundedEdges = enabled;
+            SetEnabled(true);
+        }
         static void SetEnabled(bool enabled)
         {
             var profile = AssetDatabase.LoadAssetAtPath<InkAppearanceProfile>(InkAppearanceProfile.AssetPath);
@@ -127,13 +138,15 @@ namespace Splatoon.Editor
                 m.SetFloat("_InkAppearance", enabled ? 1 : 0);
                 if (profile != null)
                 {
-                    m.SetTexture("_InkFineNormal", profile.FineNormal);
-                    m.SetVector("_InkRelief", new Vector4(profile.EdgeHeight, profile.EdgeWidth, profile.Relief, profile.BroadRelief));
-                    m.SetVector("_InkFinish", new Vector4(profile.Smoothness, profile.FineNormalStrength, profile.FineNormalTiling, profile.TeamGroove));
+                    profile.Bind(m);
                 }
                 EditorUtility.SetDirty(m);
             }
-            foreach (var s in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)) s.SetAppearance(enabled);
+            foreach (var s in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None))
+            {
+                s.SetAppearance(enabled);
+                if (profile != null) s.SetRoundedEdges(profile.RoundedEdges);
+            }
             var root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(g => g.name == ProbeRoot);
             if (root != null) { root.SetActive(enabled); EditorSceneManager.MarkSceneDirty(root.scene); if (!Application.isPlaying) EditorSceneManager.SaveScene(root.scene); }
             AssetDatabase.SaveAssets();

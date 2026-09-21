@@ -23,3 +23,9 @@ MonoBehaviour:
   FineNormalStrength: 0.25
   FineNormalTiling: 0.65
   TeamGroove: 0.001
+  RoundedEdges: 1
+  RoundedEdgeHeight: 0.03
+  RoundedEdgeWidth: 0.08
+  RoundedEdgeMaxSlope: 0.9
+  RoundedEdgeSmoothness: 0.78
+  RoundedEdgeContactShade: 0.08
