@@ -17,7 +17,7 @@ namespace Splatoon.Combat
         {
             if (s.Health <= 0) return;
             bool inkRecovery = s.HasInkRecovery && !enemyInk;
-            if (now + 1e-8 >= s.InkRecoverAt && (!triggerHeld || s.Swimming) && s.WeaponPhase == WeaponPhase.Idle)
+            if (now + 1e-8 >= s.InkRecoverAt && s.SubPhase == SubWeaponPhase.Idle && now >= s.MistUntil && (!triggerHeld || s.Swimming) && s.WeaponPhase == WeaponPhase.Idle)
                 s.Ink = PrototypeRules.Recover(s.Ink, c.MaxInk, inkRecovery ? c.SwimRecoverInk : c.RecoverInk, dt);
             if (enemyInk)
             {
@@ -32,7 +32,7 @@ namespace Splatoon.Combat
     /// <summary>The same collision/movement rules run on the authority and the predicting owner.</summary>
     public sealed class PlayerMotorSimulation
     {
-        public const int WorldMask = ~((1 << 8) | (1 << SwimBody.HitProxyLayer));
+        public const int WorldMask = ~((1 << 8) | (1 << SwimBody.HitProxyLayer) | (1 << SubWeaponTarget.Layer));
         readonly CharacterController _controller;
         readonly PrototypeArena _arena;
         PrototypeArena Arena => _arena != null ? _arena : PrototypeArena.Current;
@@ -93,7 +93,7 @@ namespace Splatoon.Combat
         {
             BindBody(s.HeroId);
             // Committed recovery survives trigger release, cancellation and UI focus changes.
-            if (WeaponSimulation.RecoveryLocked(s, now)) { input.Swim = false; shootingMovement = true; }
+            if (WeaponSimulation.RecoveryLocked(s, now) || now < s.SubRecoveryUntil) { input.Swim = false; shootingMovement = true; }
             if (now + 1e-8 < s.AttackMoveUntil) shootingMovement = true;
             var previous = s;
             s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
@@ -162,6 +162,7 @@ namespace Splatoon.Combat
                     Vector3 along = Vector3.Cross(s.WallNormal, Vector3.up).normalized;
                     Vector3 direction = Vector3.up * input.Move.y + along * input.Move.x;
                     float wallSpeed = WallSpeed(s.SwimSource, c);
+                    if (now < s.MistUntil) wallSpeed *= Mathf.Clamp01(s.MistMoveRate);
                     Vector3 delta = direction * wallSpeed * dt;
                     var next = s.Position + delta;
                     bool found = Query(next + Vector3.up * CompactCenterY + s.WallNormal * .08f, -s.WallNormal, c.WallProbeDistance + .08f, out var wall);
@@ -224,6 +225,7 @@ namespace Splatoon.Combat
             float speed = airSwim ? c.AirSwimSpeed : useInk ? (s.SwimSource == SwimSurface.Neutral ? c.NeutralSwimSpeed : c.SwimSpeed)
                 : wantsFire || shootingMovement ? (shootMoveSpeed > 0 ? shootMoveSpeed : weapon.ShootMoveSpeed) : c.MoveSpeed;
             if (grounded && IsEnemy(floor, s.Team)) speed *= c.EnemyInkMultiplier;
+            if (now < s.MistUntil) speed *= Mathf.Clamp01(s.MistMoveRate);
             var desired = aim * new Vector3(input.Move.x, 0, input.Move.y) * speed;
             s.PlanarVelocity = Vector3.MoveTowards(s.PlanarVelocity, desired, (useInk ? c.SwimAcceleration : c.MoveAcceleration) * dt);
             if (grounded && s.VerticalSpeed < 0) s.VerticalSpeed = -2;

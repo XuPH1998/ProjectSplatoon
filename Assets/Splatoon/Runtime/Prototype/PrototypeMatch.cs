@@ -41,6 +41,7 @@ namespace Splatoon.Prototype
         public override void OnNetworkSpawn()
         {
             Current = this; _paintRound = State.Value.Round;
+            EnsureSubPresentation();
             if (IsServer)
             {
                 State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalArea = Arena.TotalArea };
@@ -80,7 +81,7 @@ namespace Splatoon.Prototype
             go.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true); Players.Add(p);
             Debug.Log($"[LAN] Player joined id={clientId} team={team} slot={slot}");
         }
-        public void RemovePlayer(ulong id) { Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
+        public void RemovePlayer(ulong id) { SubWeapons.ClearOwner(id); Players.RemoveAll(p => p == null || (!p.IsTestBot && p.OwnerClientId == id)); CombatStats.Remove(id); _transfers.Remove(id); _waiting.Remove(id); }
         public void StartRound()
         {
             if (!IsServer || !CanStartRound || (PrototypeApp.Current != null && PrototypeApp.Current.IsWeaponDebugRoom)) return;
@@ -108,6 +109,7 @@ namespace Splatoon.Prototype
         private void ResetPaint(uint round)
         {
             _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
+            ClearSubWeapons();
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
             _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
             ResetSnapshotTransfer(false);
@@ -133,16 +135,21 @@ namespace Splatoon.Prototype
             double now = _simulationTime; var s = State.Value;
 #if UNITY_EDITOR
             PrototypeApp.Current?.ApplyDebugWeaponChanges();
+            PrototypeApp.Current?.ApplyDebugSubWeaponChanges();
 #endif
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
             { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
+            if (s.Phase == MatchPhase.Finished) ClearSubWeapons();
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
             Physics.SyncTransforms(); // Publish switched/rotated swim hit volumes before authoritative projectile sweeps.
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
+            if (s.Phase != MatchPhase.Finished) SubWeapons.Step(now, 1f / GameplayConfig.Global.SimulationRate, Players);
+            if (IsHost) foreach (var e in SubWeapons.Lifecycle) SubPresentation.Lifecycle(e);
         }
         private void ServerTick()
         {
+            TickSubWeapons();
             var s = State.Value;
             if (Projectiles.Spawned.Count > 0) { ShotsClientRpc(new NetworkBatch<InkShot>(Projectiles.Spawned)); Projectiles.Spawned.Clear(); }
             if (Projectiles.Bounces.Count > 0) { BouncesClientRpc(new NetworkBatch<InkBounce>(Projectiles.Bounces)); Projectiles.Bounces.Clear(); }
@@ -198,6 +205,7 @@ namespace Splatoon.Prototype
             this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
             _captureGeneration++; Projectiles.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
+            ClearSubWeapons();
             _incoming = null; _checkpoint = null; _checkpointBytes = null; _pending.Clear(); _journal.Clear();
             ResetSnapshotTransfer(true);
             if (Current == this) Current = null;

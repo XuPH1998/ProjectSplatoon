@@ -31,8 +31,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Luban
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a316a1c547186a47a86ab117d26478a
+    m_Address: Assets/GameResource/SubWeapons/SplatBomb/SplatBomb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0a4b407255924cffb30fecdd9eec3a64
     m_Address: Assets/GameResource/Weapons/PistolGirl/PistolGirlInkMuzzle.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10f8e01d858182640915c74b74bf87a3
+    m_Address: Assets/GameResource/SubWeapons/Sprinkler/Sprinkler.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -61,8 +71,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29e651f4f1c061e4e8b67490e9733561
+    m_Address: Assets/GameResource/SubWeapons/CurlingBomb/CurlingBomb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2e4114f4a7b0706408263c22e2271fd3
     m_Address: Assets/GameResource/Weapons/ShotgunGirl/ExplosherExplosion.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ed6719baa615884492cba92a5f677c4
+    m_Address: Assets/GameResource/SubWeapons/Autobomb/Autobomb.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -96,6 +116,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 488eb5c0bab2d4c49a8f0603796c22ab
+    m_Address: Assets/GameResource/SubWeapons/FizzyBomb/FizzyBomb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48d1adeafd3444198a2c13b3b395a791
     m_Address: Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlAmmoConfig.asset
     m_ReadOnly: 0
@@ -116,13 +141,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6099aec9a79bca34298597ce157343bd
-    m_Address: Effects/InkImpact
+  - m_GUID: 5fa026b53f737a344aa81b468e4b4e9f
+    m_Address: Assets/GameResource/SubWeapons/PointSensor/PointSensor.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e1ac10375cbe4c8b9341054799268413
-    m_Address: Portrait/BubbleShotgunGirl
+  - m_GUID: 6099aec9a79bca34298597ce157343bd
+    m_Address: Effects/InkImpact
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -148,6 +173,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 67a80872a4b23974e8cc39d79465f467
     m_Address: Assets/GameResource/Weapons/ShotgunGirl/ExplosherFlight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a6f4a5c3b002e44981b77cdba3f9dfb
+    m_Address: Assets/GameResource/SubWeapons/BurstBomb/BurstBomb.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -212,6 +242,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 997892fe28e88a54ea4c4beb3f250956
+    m_Address: Assets/GameResource/SubWeapons/Torpedo/Torpedo.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9af6fda7a8d345c49258de1a6d5ac60e
     m_Address: Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset
     m_ReadOnly: 0
@@ -243,6 +278,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9c704a85be72c3488bf23b4d2b6e6e8
+    m_Address: Assets/GameResource/SubWeapons/InkMine/InkMine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aa93dcaf1bcfe984e90d4d0ceea911c7
     m_Address: Assets/GameResource/Weapons/BubbleGirl/BubbleBounce.wav
     m_ReadOnly: 0
@@ -265,6 +305,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b53feddf01ac46c29b615ccd8b3cf3c9
     m_Address: Assets/GameResource/Weapons/RifleGirl/RifleGirlAmmoConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6a7ad5bd755eae4486bc14008919ca1
+    m_Address: Assets/GameResource/SubWeapons/SplashWall/SplashWall.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b83ce46d6a3cd9a43b73efd1d6a4740e
+    m_Address: Assets/GameResource/SubWeapons/ToxicMist/ToxicMist.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -348,8 +398,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1ac10375cbe4c8b9341054799268413
+    m_Address: Portrait/BubbleShotgunGirl
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e2b59601cc544b75a7df2f98fa8996eb
     m_Address: Assets/GameResource/Weapons/RocketLauncherGirl/RocketLauncherGirlWeaponConfig.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6f90bd227a4f59429abf86712cae324
+    m_Address: Assets/GameResource/SubWeapons/AngleShooter/AngleShooter.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -373,6 +433,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Luban
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eded2a5a4055ec643b81f4c22208a86f
+    m_Address: Assets/GameResource/SubWeapons/SuctionBomb/SuctionBomb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fb1cad08b7e032441be19a3d4509b542
     m_Address: Character/BubbleGirl

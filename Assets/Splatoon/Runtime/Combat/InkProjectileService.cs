@@ -505,6 +505,8 @@ namespace Splatoon.Combat
 #endif
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
+            var subTarget = collider.GetComponent<SubWeaponTarget>();
+            if (subTarget != null) subTarget.Hit(shot, WeaponSimulation.Damage(w, age, shot.Charge));
             float actualDamage = 0; bool killed = false;
             if (victim != null)
             {
@@ -523,7 +525,7 @@ namespace Splatoon.Combat
                     else ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
-            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age);
+            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age, directObject:subTarget!=null?subTarget.Id:(uint?)null);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true, Time = shot.Born + age,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });

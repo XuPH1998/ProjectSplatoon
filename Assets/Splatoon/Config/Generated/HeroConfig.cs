@@ -26,6 +26,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
         { if(!_buf["weaponTypeName"].IsString) { throw new SerializationException(); }  WeaponTypeName = _buf["weaponTypeName"]; }
         { if(!_buf["portraitAddress"].IsString) { throw new SerializationException(); }  PortraitAddress = _buf["portraitAddress"]; }
         { if(!_buf["weaponConfigPath"].IsString) { throw new SerializationException(); }  WeaponConfigPath = _buf["weaponConfigPath"]; }
+        { if(!_buf["subWeaponConfigPath"].IsString) { throw new SerializationException(); }  SubWeaponConfigPath = _buf["subWeaponConfigPath"]; }
         { if(!_buf["characterPrefabAddress"].IsString) { throw new SerializationException(); }  CharacterPrefabAddress = _buf["characterPrefabAddress"]; }
         { if(!_buf["maxHealth"].IsNumber) { throw new SerializationException(); }  MaxHealth = _buf["maxHealth"]; }
         { if(!_buf["maxInk"].IsNumber) { throw new SerializationException(); }  MaxInk = _buf["maxInk"]; }
@@ -89,6 +90,10 @@ public sealed partial class HeroConfig : Luban.BeanBase
     /// 武器配置资产工程路径（Assets/.../*.asset）
     /// </summary>
     public readonly string WeaponConfigPath;
+    /// <summary>
+    /// 副武器配置资产工程路径（Assets/.../*.asset）
+    /// </summary>
+    public readonly string SubWeaponConfigPath;
     /// <summary>
     /// 模型：正式角色外观地址
     /// </summary>
@@ -234,6 +239,7 @@ public sealed partial class HeroConfig : Luban.BeanBase
         + "weaponTypeName:" + WeaponTypeName + ","
         + "portraitAddress:" + PortraitAddress + ","
         + "weaponConfigPath:" + WeaponConfigPath + ","
+        + "subWeaponConfigPath:" + SubWeaponConfigPath + ","
         + "characterPrefabAddress:" + CharacterPrefabAddress + ","
         + "maxHealth:" + MaxHealth + ","
         + "maxInk:" + MaxInk + ","

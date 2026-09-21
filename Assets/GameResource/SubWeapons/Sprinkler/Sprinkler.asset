@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30d0269362c648c4c8ed28f2dd42169a, type: 3}
+  m_Name: Sprinkler
+  m_EditorClassIdentifier: Splatoon.Config::Splatoon.Config.SubWeaponConfigAsset
+  type: 11
+  common:
+    id: 111
+    displayName: "\u6D12\u58A8\u5668"
+    icon: {fileID: 21300000, guid: c709c2ff6ddade24a8319d185ffbc757, type: 3}
+    heldPrefab: {fileID: 8483588184090107466, guid: 28a6e8e1f68e66e40a43a26ce872d6ce, type: 3}
+    entityPrefab: {fileID: 8483588184090107466, guid: 28a6e8e1f68e66e40a43a26ce872d6ce, type: 3}
+    useAudio: {fileID: 8300000, guid: 2fa3a835d66bb1d4fa1e9871b608c646, type: 3}
+    effectAudio: {fileID: 8300000, guid: 9e47b7cc488eca94aa886eef92c613fd, type: 3}
+    effectMaterial: {fileID: 2100000, guid: 7d493b21d0b88a647a032bf315191d0d, type: 2}
+    inkCost: 60
+    startup: 0.1
+    recovery: 0.2
+    reuse: 0.3
+    inkLock: 1
+  visuals:
+    previewMaterial: {fileID: 2100000, guid: 7d493b21d0b88a647a032bf315191d0d, type: 2}
+    trailMaterial: {fileID: 2100000, guid: 7d493b21d0b88a647a032bf315191d0d, type: 2}
+    impactPrefab: {fileID: 5006319625270432610, guid: 10cc3af6b02efd846b4e04602b48a6d1, type: 3}
+    endPrefab: {fileID: 5127183218188960010, guid: ebff84321f98c784d84f47f92114f3c9, type: 3}
+    trailWidth: 0.075
+    trailLifetime: 0.18
+    previewWidth: 0.035
+    previewAlpha: 0.35
+    impactLifetime: 0.35
+  typeVisuals:
+    deployedPrefab: {fileID: 7413548847601038799, guid: 91bb4ad0e62667c498f5bdf2d36fad6e, type: 3}
+    persistentPrefab: {fileID: 4705703418686844878, guid: 6bb32bae659f5484aa2b74dd537f4602, type: 3}
+    warningPrefab: {fileID: 0}
+    dropletPrefab: {fileID: 3579995680491998471, guid: d394e2e2030df8b43ad4efe27fecf73b, type: 3}
+    trackingPrefab: {fileID: 0}
+    mistEmission: 40
+    wallFlow: 2
+    rotorName: Rotor
+  flight:
+    speed: 50.32242
+    lift: 10.783375
+    gravity: 43.133503
+    drag: 3.6270533
+    radius: 0.15
+    lifetime: 8
+    bounce: 0.45
+  blast:
+    innerDamage: 180
+    innerRadius: 2.6958437
+    outerDamage: 30
+    outerRadius: 5.2419186
+    directDamage: 0
+    middleDamage: 0
+    middleRadius: 0
+  paint:
+    radius: 2.995382
+    hardness: 0.65
+    strength: 1
+    trailSpacing: 0.44930732
+    trailRadius: 0.5616341
+  tracking:
+    radius: 7.4884553
+    speed: 3.7442276
+    duration: 4
+    triggerRadius: 1.1232682
+  mark:
+    duration: 5
+    radius: 5.2419186
+  durability:
+    health: 120
+  deployment:
+    maxCount: 1
+  splat:
+    groundFuse: 1
+  suction:
+    fuse: 2
+  curling:
+    charge: 1
+    fuse: {x: 3.5, y: 1.5}
+    speed: {x: 20.668137, y: 8.986146}
+    innerRadius: 3.4446893
+    outerRadius: 5.990764
+    paintRadius: 3.7442276
+    fullInkLock: 0.5
+    contactDamage: 20
+    contactInterval: 0.6666666666666666
+  autobomb:
+    searchDelay: 0.2
+    fuse: 0.6
+  fizzy:
+    secondCharge: 0.6666666666666666
+    thirdCharge: 1.3333333333333333
+    fuse: 0.5
+    interval: 0.25
+    hopSpeed: 10.783375
+    hopForward: 5.3916874
+    innerRadii: {x: 1.4602488, y: 1.9469982}
+    outerRadii: {x: 3.3698049, y: 4.0812078}
+  torpedo:
+    transform: 0.5
+    rollFuse: 0.5
+    maxActive: 1
+    droplets: 8
+    dropletDamage: 12
+    dropletRadius: 2.995382
+    dropletBlastRadius: 1.9469984
+    dropletPaintRadius: 1.497691
+    dropletFuse: 0.5
+  mine:
+    arm: 0.5
+    fuse: 0.25
+    triggerRadius: 2.2465365
+  sensor:
+    duration: 2
+  mist:
+    radius: 3.7442276
+    duration: 5
+    moveRate: 0.6
+    slowRamp: 1
+    drainThresholds: {x: 3, y: 5}
+    drainRates: {x: 10, y: 20, z: 40}
+  angle:
+    speed: 294.2963
+    range: 44.930733
+    reflections: 8
+    damage: 40
+    trailDuration: 1.5
+    trailRadius: 0.18
+  sprinkler:
+    phases: {x: 8, y: 15}
+    intervals: {x: 0.1, y: 0.2, z: 0.35}
+    range: 5.2419186
+    damage: 20
+    paintRadius: 0.6739609
+    rotationSpeed: 360
+    dropletSpeed: 12
+    dropletGravity: 20
+    dropletLifetime: 1.5
+  wall:
+    expand: 0.5
+    lifetime: 7
+    size: {x: 2.995382, y: 2.6209593, z: 0.11232683}
+    damage: 30
+    interval: 0.5

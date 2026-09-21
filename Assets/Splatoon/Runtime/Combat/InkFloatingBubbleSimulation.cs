@@ -59,6 +59,8 @@ namespace Splatoon.Combat
         {
             TpsAimSolver.UnembedFloatingContact(ref contact, shot.Configuration.CollisionRadius);
             var victim = contact.Collider.GetComponentInParent<PrototypePlayer>();
+            var subTarget = contact.Collider.GetComponent<SubWeaponTarget>();
+            if (subTarget != null) subTarget.Hit(shot, WeaponSimulation.Damage(shot.Configuration, age));
             float actual = 0;
             bool killed = false;
             if (victim != null)
@@ -75,7 +77,7 @@ namespace Splatoon.Combat
             if (victim == null && (contact.Point - contact.Center).sqrMagnitude < 1e-8f)
                 visibilityOrigin = contact.Point + contact.Normal * .01f;
             ResolveExplosion(shot, contact.Center, contact.Normal, true, victim != null ? victim.PlayerId : (ulong?)null,
-                shot.Born + age, visibilityOrigin);
+                shot.Born + age, visibilityOrigin,subTarget!=null?subTarget.Id:(uint?)null);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Time = shot.Born + age,
                 Position = contact.Center, Normal = contact.Normal, Hit = true, Shooter = shot.Shooter,
                 Victim = victim != null ? victim.PlayerId : 0, Damage = actual, Killed = killed,

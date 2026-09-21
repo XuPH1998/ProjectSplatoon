@@ -59,8 +59,11 @@ namespace Splatoon.Prototype
         {
             if (!initialSyncComplete || _predictionPaused) return false;
             RecordPredictionStep();
-            return Step(ref _predicted, frame, 1f / GameplayConfig.Global.SimulationRate,
+            uint subAction = _predicted.SubAction;
+            bool shot = Step(ref _predicted, frame, 1f / GameplayConfig.Global.SimulationRate,
                 _predicted.SimulatedAt + 1.0 / GameplayConfig.Global.SimulationRate, phase);
+            if (_predicted.SubAction != subAction) PrototypeMatch.Current?.SubPresentation?.PredictThrow(this, _predicted, _lastSubLaunch);
+            return shot;
         }
     }
 }

@@ -175,6 +175,8 @@ namespace Splatoon.Combat
         public static bool Valid(Collider collider, ulong shooter, byte? ignoreTeam = null)
         {
             if (collider == null || !collider.enabled) return false;
+            var sub = collider.GetComponent<SubWeaponTarget>();
+            if (sub != null) return sub.CanHit(shooter, ignoreTeam);
             if (collider.isTrigger)
             {
                 var volume = collider.GetComponentInParent<SwimBody>();

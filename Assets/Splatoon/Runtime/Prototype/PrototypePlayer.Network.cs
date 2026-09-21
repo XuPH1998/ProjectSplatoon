@@ -51,7 +51,8 @@ namespace Splatoon.Prototype
         readonly List<PlayerInputFrame> _history = new(128);
         readonly InputBatchSender _inputSender = new();
         readonly InputBatchAssembler _inputAssembler = new();
-        uint _sequence, _jumpSequence, _fireSequence, _releaseSequence;
+        uint _sequence, _jumpSequence, _fireSequence, _releaseSequence, _subPressSequence, _subReleaseSequence;
+        bool _subWasHeld;
         readonly HashSet<(uint life, uint hero, ulong action)> _playedShotActions = new();
         readonly Queue<(uint life, uint hero, ulong action)> _playedShotOrder = new();
         readonly Dictionary<(uint life, uint hero, ulong action), bool> _hitActions = new();
@@ -77,13 +78,15 @@ namespace Splatoon.Prototype
                 Health = hero.MaxHealth, Ink = hero.MaxInk,
                 Position = IsTestBot ? _botPosition : PrototypeArena.Spawn(team, slot), Yaw = IsTestBot ? _botYaw : team == 1 ? 0 : 180, Pitch = 12,
                 AttackNeedsRelease = requireRelease,
+                SubNeedsRelease = true, SubConsumedPress = old.SubConsumedPress, SubConsumedRelease = old.SubConsumedRelease, SubAction = old.SubAction,
                 ProtectedUntil = NetworkManager.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds,
                 Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetWeapon(old.HeroId), false, 0),
                 SimulatedAt = NetworkManager.ServerTime.Time, AcknowledgedInput = old.AcknowledgedInput,
                 ShotSequence = old.ShotSequence, ConsumedFire = old.ConsumedFire, ConsumedJump = old.ConsumedJump };
             SpreadSimulation.Reset(ref s, GameplayConfig.GetWeapon(s.HeroId));
             s.BodyYaw = s.TurnStartYaw = s.Yaw; s.LastDamageAt = s.SimulatedAt;
-            _serverInputs.Clear(); _inputAssembler.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, FireSequence = s.ConsumedFire, JumpSequence = s.ConsumedJump };
+            _serverInputs.Clear(); _inputAssembler.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, HeroRevision=s.HeroRevision,
+                FireSequence = s.ConsumedFire, ReleaseSequence=s.ConsumedRelease, JumpSequence = s.ConsumedJump, SubPressSequence=s.SubConsumedPress,SubReleaseSequence=s.SubConsumedRelease };
             _motor.Restore(s); Snapshot.Value = s;
             PrototypeMatch.Current?.CombatStats.BeginLife(PlayerId, team, s.Revision);
             if (PrototypeMatch.Current != null) Stats.Value = PrototypeMatch.Current.CombatStats.Get(PlayerId);
@@ -132,6 +135,11 @@ namespace Splatoon.Prototype
                 }
             }
             if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) _jumpSequence++;
+            if (Keyboard.current != null && PrototypeApp.Current.CanFireInput)
+            {
+                if (Keyboard.current.eKey.wasPressedThisFrame) _subPressSequence++;
+                if (Keyboard.current.eKey.wasReleasedThisFrame) _subReleaseSequence++;
+            }
         }
         void FixedUpdate()
         {
@@ -142,10 +150,13 @@ namespace Splatoon.Prototype
             var frame = new PlayerInputFrame { Sequence = ++_sequence, Tick = (uint)Math.Max(0, NetworkManager.ServerTime.Time * GameplayConfig.Global.SimulationRate),
                 JumpSequence = _jumpSequence, FireSequence = _fireSequence, Revision = PresentedState.Revision, Look = _look, HeroRevision = PresentedState.HeroRevision,
                 ReleaseSequence = _releaseSequence, CancelFire = !PrototypeApp.Current.HasControl || !PrototypeApp.Current.CanFireInput };
+            frame.SubPressSequence = _subPressSequence; frame.SubReleaseSequence = _subReleaseSequence;
+            frame.CancelSub = frame.CancelFire || !Application.isFocused;
             if (PrototypeApp.Current.HasControl && k != null && PresentedState.Health > 0)
             {
                 frame.Move = new Vector2((k.dKey.isPressed ? 1 : 0) - (k.aKey.isPressed ? 1 : 0), (k.wKey.isPressed ? 1 : 0) - (k.sKey.isPressed ? 1 : 0));
                 frame.Fire = PrototypeApp.Current.CanFireInput && Mouse.current != null && Mouse.current.leftButton.isPressed; frame.Swim = k.leftShiftKey.isPressed;
+                frame.SubHeld = PrototypeApp.Current.CanFireInput && k.eKey.isPressed;
             }
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             PrototypeSmoke.ModifyInput(this, ref frame);
@@ -156,12 +167,16 @@ namespace Splatoon.Prototype
             ExplosherNetworkSmoke.ModifyInput(this, ref frame);
             PaintParityNetworkSmoke.ModifyInput(this, ref frame);
             SplooshNetworkSmoke.ModifyInput(this, ref frame);
+            SubWeaponNetworkSmoke.ModifyInput(this, ref frame);
             if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active || BubbleNetworkSmoke.Active || ExplosherNetworkSmoke.Active || PaintParityNetworkSmoke.Active || SplooshNetworkSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
 #endif
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1);
             if (frame.Fire && !_fireWasHeld && frame.FireSequence == PresentedState.ConsumedFire) frame.FireSequence = ++_fireSequence;
             if (!frame.Fire && _fireWasHeld && frame.ReleaseSequence == PresentedState.ConsumedRelease) frame.ReleaseSequence = ++_releaseSequence;
             _fireWasHeld = frame.Fire;
+            if (frame.SubHeld && !_subWasHeld && frame.SubPressSequence == PresentedState.SubConsumedPress) frame.SubPressSequence = ++_subPressSequence;
+            if (!frame.SubHeld && _subWasHeld && frame.SubReleaseSequence == PresentedState.SubConsumedRelease) frame.SubReleaseSequence = ++_subReleaseSequence;
+            _subWasHeld = frame.SubHeld;
             if (IsServer) AcceptInput(frame);
             else
             {
@@ -222,7 +237,7 @@ namespace Splatoon.Prototype
             if (timedOut)
             {
                 if (!s.InputTimedOut) s.InputExpiredAt = NetworkManager.ServerTime.Time;
-                _serverInputs.Clear(); input.Move = Vector2.zero; input.Fire = input.Swim = false; input.CancelFire = true; input.FireSequence = s.ConsumedFire; input.JumpSequence = s.ConsumedJump;
+                _serverInputs.Clear(); input.Move = Vector2.zero; input.Fire = input.Swim = input.SubHeld = false; input.CancelFire = input.CancelSub = true; input.FireSequence = s.ConsumedFire; input.JumpSequence = s.ConsumedJump;
             }
             s.InputTimedOut = timedOut;
             bool shot = Step(ref s, input, dt, now, phase);
@@ -244,22 +259,37 @@ namespace Splatoon.Prototype
             EnsureHeroPresentation(s.HeroId);
             s.SimulatedAt = now; s.SimulationTick++;
             if (phase == MatchPhase.Finished)
-            { WeaponSimulation.Cancel(ref s, input, true); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
+            { WeaponSimulation.Cancel(ref s, input, true); SubWeaponSimulation.Cancel(ref s, input); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             var hero = GameplayConfig.GetHero(s.HeroId);
             var w = GameplayConfig.GetWeapon(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
+            var subConfig = GameplayConfig.GetSubWeapon(s.HeroId);
+            var subPlacement = IsServer ? PrototypeMatch.Current.SubWeapons.CanUse(PlayerId, s, subConfig) : SubPredictionPlacement(s, subConfig);
+            SubWeaponSimulation.Step(ref s, input, subConfig, dt, now, _motor.CanStand(PlayerMotorSimulation.HumanPosition(s)), subPlacement, out _, deferCommit:true);
+            bool subShot = SubWeaponSimulation.ReadyToCommit(s, now);
+            bool subBlocks = SubWeaponSimulation.BlocksMain(s, now) || subShot;
+            if (subBlocks) { input.Fire = false; input.CancelFire = true; input.Swim = false; }
             bool wasSwimming = s.Swimming;
             bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
             if ((WeaponSimulation.IsSemi(w) || WeaponSimulation.IsSplatling(w)) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
-            bool fire = WeaponSimulation.WantsFire(s, input, w, now);
+            bool fire = WeaponSimulation.WantsFire(s, input, w, now) || subBlocks;
             _motor.Step(ref s, input, dt, now, fire, WeaponSimulation.IsSplatling(w) ? SplatlingSimulation.MovementSpeed(s, w) : w.ShootMoveSpeed,
                 ((WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsBlaster(w)) || WeaponSimulation.IsBubble(w)) && s.FireVisualUntil > now);
+            if (subShot)
+            {
+                subPlacement = IsServer ? PrototypeMatch.Current.SubWeapons.CanUse(PlayerId, s, subConfig) : SubPredictionPlacement(s, subConfig);
+                _lastSubLaunch = SubWeaponService.SolveLaunch(this, s, subConfig, s.SubCharge);
+                if (!_lastSubLaunch.Valid) subPlacement = _lastSubLaunch.Failure;
+                if (SubWeaponSimulation.Commit(ref s, input, subConfig, now, _motor.CanStand(PlayerMotorSimulation.HumanPosition(s)), subPlacement, out float subCharge) && IsServer)
+                    PrototypeMatch.Current.SubWeapons.Spawn(this, s, subCharge, now, PrototypeMatch.Current.State.Value.Round, _lastSubLaunch);
+            }
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
             if (s.Health <= 0) { if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
             if (IsServer) SwimBody?.ApplyCollision(s);
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
+            if (!IsServer && now < s.MistUntil) s.Ink = Mathf.Max(0, s.Ink - s.MistDrainRate * dt);
             ResourceSimulation.Step(ref s, hero, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }
@@ -292,6 +322,7 @@ namespace Splatoon.Prototype
                 s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.DiedAt = now;
                 s.DeathDirection = CharacterFacing.DeathDirection(s.BodyYaw, incomingVelocity);
                 s.Movement = MovementMode.Dead; s.Swimming = false; WeaponSimulation.Cancel(ref s, _lastInput, true);
+                SubWeaponSimulation.Cancel(ref s, _lastInput);
                 s.SwimSource = s.AirSwimSource = SwimSurface.None; s.CompactBody = false; s.PaperPose = PaperPose.None;
                 s.TurnDirection = 0; s.PlanarVelocity = Vector3.zero; _controller.enabled = false;
             }
@@ -384,6 +415,7 @@ namespace Splatoon.Prototype
             var rotation = Quaternion.Euler(_look.y, _look.x, 0); Vector2 kick = CharacterView.CameraKick;
             _camera.fieldOfView = Presentation != null ? Presentation.CameraVerticalFov : 60;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
+            PrototypeMatch.Current?.SubPresentation?.PresentHeld(this, s);
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);

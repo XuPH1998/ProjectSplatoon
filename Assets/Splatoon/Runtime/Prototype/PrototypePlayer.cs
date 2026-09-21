@@ -9,7 +9,15 @@ namespace Splatoon.Prototype
 {
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 31;
+        public const uint ProtocolVersion = 33;
+        public SubWeaponPhase SubPhase;
+        public SubWeaponFailure SubFailure;
+        public bool SubNeedsRelease;
+        public uint SubConsumedPress, SubConsumedRelease, SubAction;
+        public double SubChargeSeconds, SubReleaseAt, SubRecoveryUntil, SubReadyAt, SubUsedAt;
+        public float SubCharge;
+        public double MarkedUntilPink, MarkedUntilBlue, MistUntil, MistExposure;
+        public float MistMoveRate, MistDrainRate;
         public double SplatlingChargeSeconds, ChargeElapsedSeconds;
         public float SplatlingReservedInk, SplatlingReleasedCharge;
         public int SplatlingRemaining, SplatlingLoaded;
@@ -69,6 +77,12 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref SubPhase); s.SerializeValue(ref SubFailure); s.SerializeValue(ref SubNeedsRelease);
+            s.SerializeValue(ref SubConsumedPress); s.SerializeValue(ref SubConsumedRelease); s.SerializeValue(ref SubAction);
+            s.SerializeValue(ref SubChargeSeconds); s.SerializeValue(ref SubReleaseAt); s.SerializeValue(ref SubRecoveryUntil);
+            s.SerializeValue(ref SubReadyAt); s.SerializeValue(ref SubUsedAt); s.SerializeValue(ref SubCharge);
+            s.SerializeValue(ref MarkedUntilPink); s.SerializeValue(ref MarkedUntilBlue);
+            s.SerializeValue(ref MistUntil); s.SerializeValue(ref MistExposure); s.SerializeValue(ref MistMoveRate); s.SerializeValue(ref MistDrainRate);
             s.SerializeValue(ref AttackRecoveryUntil); s.SerializeValue(ref AttackMoveUntil);
             s.SerializeValue(ref SplatlingChargeSeconds); s.SerializeValue(ref SplatlingReservedInk); s.SerializeValue(ref SplatlingReleasedCharge);
             s.SerializeValue(ref SplatlingRemaining); s.SerializeValue(ref SplatlingLoaded); s.SerializeValue(ref SplatlingSlow);

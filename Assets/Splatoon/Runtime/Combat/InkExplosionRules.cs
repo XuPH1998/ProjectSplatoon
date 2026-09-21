@@ -35,7 +35,7 @@ namespace Splatoon.Combat
         readonly System.Collections.Generic.List<(int surface, Vector3 point)> _explosionPaintSites = new();
         readonly System.Collections.Generic.List<(int surface, Vector3 normal, float plane)> _explosherPaintPlanes = new();
 
-        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null, Vector3? visibilityOrigin = null)
+        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null, Vector3? visibilityOrigin = null, uint? directObject = null)
         {
             var ammo = shot.Configuration?.Ammo;
             if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
@@ -44,6 +44,7 @@ namespace Splatoon.Combat
             bool floating = WeaponSimulation.IsFloatingBubble(shot.Configuration);
             Vector3 origin = visibilityOrigin ?? (floating ? position : position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero));
             var match = PrototypeMatch.Current;
+            match?.SubWeapons.DamageObjectsFromMainExplosion(shot, origin, collision, directObject);
             if (match != null)
             {
                 // The match roster contains each authoritative player exactly once. Use the

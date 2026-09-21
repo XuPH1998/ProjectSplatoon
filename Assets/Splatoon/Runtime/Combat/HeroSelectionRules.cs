@@ -47,6 +47,7 @@ namespace Splatoon.Combat
                 s.AirHumanOffset += shift; s.CameraRebaseOffset -= shift;
             }
             WeaponSimulation.Cancel(ref s, input, true);
+            SubWeaponSimulation.Cancel(ref s, input);
             s.HeroId = heroId; s.HeroRevision++;
             s.AirSwimSource = SwimSurface.None;
             WeaponSimulation.ResetPresentation(ref s);

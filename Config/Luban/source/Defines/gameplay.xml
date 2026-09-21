@@ -6,6 +6,7 @@
     <var name="weaponTypeName" type="string" comment="主武器类型显示文案" />
     <var name="portraitAddress" type="string" comment="英雄头像 Addressables 地址" />
     <var name="weaponConfigPath" type="string" comment="武器配置资产工程路径（Assets/.../*.asset）" />
+    <var name="subWeaponConfigPath" type="string" comment="副武器配置资产工程路径（Assets/.../*.asset）" />
     <var name="characterPrefabAddress" type="string" comment="模型：正式角色外观地址" />
     <var name="maxHealth" type="float" comment="角色属性：生命上限" />
     <var name="maxInk" type="float" comment="角色属性：墨水上限" />

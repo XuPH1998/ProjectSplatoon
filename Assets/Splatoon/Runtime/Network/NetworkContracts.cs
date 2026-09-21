@@ -28,12 +28,15 @@ namespace Splatoon.Networking
         public uint Tick, Sequence, JumpSequence, FireSequence, Revision, HeroRevision, ReleaseSequence;
         public Vector2 Move, Look;
         public bool Fire, Swim, CancelFire;
+        public bool SubHeld, CancelSub;
+        public uint SubPressSequence, SubReleaseSequence;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Tick); s.SerializeValue(ref Sequence); s.SerializeValue(ref JumpSequence);
             s.SerializeValue(ref FireSequence); s.SerializeValue(ref Revision);
             s.SerializeValue(ref HeroRevision); s.SerializeValue(ref ReleaseSequence); s.SerializeValue(ref CancelFire);
             s.SerializeValue(ref Move); s.SerializeValue(ref Look); s.SerializeValue(ref Fire); s.SerializeValue(ref Swim);
+            s.SerializeValue(ref SubHeld); s.SerializeValue(ref CancelSub); s.SerializeValue(ref SubPressSequence); s.SerializeValue(ref SubReleaseSequence);
         }
     }
     public enum MatchPhase : byte { [InspectorName("热身")] Practice, [InspectorName("比赛中")] Playing, [InspectorName("已结算")] Finished }

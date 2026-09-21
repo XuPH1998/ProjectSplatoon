@@ -12,12 +12,14 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 10; // Replay folds ink over shared ramp/platform edges.
-        public const int WeaponSimulationVersion = 16; // Calibrated shared camera/aim geometry and form-continuous pivots.
+        public const int WeaponSimulationVersion = 18; // Sub-weapon entities, shared ink, deployable collisions and statuses.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             w.Write(WeaponSimulationVersion);
+            foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.OrderBy(h => h.Id))
+            { w.Write(hero.Id); w.Write(Splatoon.Config.GameplayConfig.GetSubWeapon(hero.Id).ContentHash); }
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);
