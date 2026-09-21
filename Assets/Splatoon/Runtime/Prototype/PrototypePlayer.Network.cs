@@ -387,17 +387,18 @@ namespace Splatoon.Prototype
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
+            MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId,
+                WeaponSimulation.IsFloatingBubble(reticleWeapon) ? s.Team : (byte?)null);
             if (s.Health > 0 && !s.ShowsSwimBody)
             {
                 var prediction = WeaponImpactPrediction.Predict(_aimSolver, aim, reticleWeapon, s, PlayerId);
                 Vector2 landing = default, target = default;
-                ImpactReticleVisible = prediction.HasImpact && ProjectReticle(prediction.Point, out landing);
+                // Only expose the predicted landing point while the muzzle path is obstructed.
+                ImpactReticleVisible = MuzzleBlocked && prediction.HasImpact && ProjectReticle(prediction.Point, out landing);
                 if (ImpactReticleVisible) ImpactReticleViewport = landing;
                 TargetReticleVisible = prediction.HasEnemyContact && ProjectReticle(prediction.EnemyPoint, out target);
                 if (TargetReticleVisible) TargetReticleViewport = target;
             }
-            MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId,
-                WeaponSimulation.IsFloatingBubble(reticleWeapon) ? s.Team : (byte?)null);
         }
         bool ProjectReticle(Vector3 point, out Vector2 viewport)
         {
