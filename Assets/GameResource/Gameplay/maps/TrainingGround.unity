@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 2
@@ -413,7 +413,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -449,7 +449,7 @@ MonoBehaviour:
   SurfaceId: 25
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -915,7 +915,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 1
@@ -1052,7 +1052,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -1088,7 +1088,7 @@ MonoBehaviour:
   SurfaceId: 30
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -1644,7 +1644,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 7
@@ -2035,7 +2035,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -2395,7 +2395,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -2431,7 +2431,7 @@ MonoBehaviour:
   SurfaceId: 31
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -2561,7 +2561,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -2597,7 +2597,7 @@ MonoBehaviour:
   SurfaceId: 32
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 256
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -3080,7 +3080,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -3116,7 +3116,7 @@ MonoBehaviour:
   SurfaceId: 28
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -3560,7 +3560,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -3590,7 +3590,7 @@ MonoBehaviour:
   SurfaceId: 19
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -3853,6 +3853,40 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649637282}
   m_Mesh: {fileID: 4300000, guid: fea51ddca5db2594d8699e7ea843b9ff, type: 2}
+--- !u!1 &664368125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 664368126}
+  m_Layer: 0
+  m_Name: InkStaticReflections
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &664368126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664368125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1089044439}
+  - {fileID: 1918564303}
+  - {fileID: 743927136}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &668244470
 GameObject:
   m_ObjectHideFlags: 0
@@ -3898,7 +3932,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 10
@@ -4326,6 +4360,71 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688510408}
   m_Mesh: {fileID: 4300000, guid: 8385f7aeb2e9b954cb09dbe41604b8f6, type: 2}
+--- !u!1 &743927135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 743927136}
+  - component: {fileID: 743927137}
+  m_Layer: 0
+  m_Name: InkReflection_2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &743927136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743927135}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 664368126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!215 &743927137
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743927135}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 2
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 30, y: 12, z: 28}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 5
+  m_HDR: 1
+  m_BoxProjection: 1
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 8900000, guid: 5f5c1e3ce5f4d974fa5337916cb8c9ce, type: 3}
 --- !u!1 &775122590
 GameObject:
   m_ObjectHideFlags: 0
@@ -4483,7 +4582,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -4519,7 +4618,7 @@ MonoBehaviour:
   SurfaceId: 29
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -4649,7 +4748,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 6
@@ -4817,7 +4916,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 5
@@ -5423,7 +5522,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -6025,7 +6124,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 13
@@ -6162,7 +6261,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -6198,7 +6297,7 @@ MonoBehaviour:
   SurfaceId: 16
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -6440,7 +6539,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 20
@@ -6532,6 +6631,71 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078025042}
   m_Mesh: {fileID: 4300000, guid: e5a73d684c0e78c4e8a4e8f9565a3b29, type: 2}
+--- !u!1 &1089044438
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1089044439}
+  - component: {fileID: 1089044440}
+  m_Layer: 0
+  m_Name: InkReflection_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1089044439
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1089044438}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: -19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 664368126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!215 &1089044440
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1089044438}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 2
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 30, y: 12, z: 28}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 5
+  m_HDR: 1
+  m_BoxProjection: 1
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 8900000, guid: bfb4c653b33ac4b46bd4930e31af4f13, type: 3}
 --- !u!1 &1109376550
 GameObject:
   m_ObjectHideFlags: 0
@@ -6779,7 +6943,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -6815,7 +6979,7 @@ MonoBehaviour:
   SurfaceId: 36
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -7080,7 +7244,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -7110,7 +7274,7 @@ MonoBehaviour:
   SurfaceId: 12
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -7560,7 +7724,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
   priority: 10
@@ -7612,7 +7776,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 4
@@ -8076,7 +8240,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 17
@@ -8213,7 +8377,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -8243,7 +8407,7 @@ MonoBehaviour:
   SurfaceId: 21
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -8576,7 +8740,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 3
@@ -8825,7 +8989,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 18
@@ -9290,7 +9454,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -9326,7 +9490,7 @@ MonoBehaviour:
   SurfaceId: 33
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -9546,7 +9710,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -9576,7 +9740,7 @@ MonoBehaviour:
   SurfaceId: 14
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 256
   ResolutionHeight: 736
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10156,7 +10320,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -10192,7 +10356,7 @@ MonoBehaviour:
   SurfaceId: 22
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 1440
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10524,7 +10688,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -10560,7 +10724,7 @@ MonoBehaviour:
   SurfaceId: 23
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 1024
   ResolutionHeight: 288
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -10673,7 +10837,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4967e1b667bb573fa4f18a1183992152, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Combat.InkPresentation
   StreamPrefab: {fileID: 4838304108438969096, guid: 44d8719a2225d96458480952313d3ed4, type: 3}
   ImpactPrefab: {fileID: 3102718741573700365, guid: 6099aec9a79bca34298597ce157343bd, type: 3}
@@ -10687,7 +10851,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67c7fdd01a2a9c64fb48cd9ed291859b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Prototype.PrototypeArena
   SpawnPoints:
   - {fileID: 1196629538}
@@ -10771,7 +10935,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -10807,7 +10971,7 @@ MonoBehaviour:
   SurfaceId: 35
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -11161,7 +11325,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -11197,7 +11361,7 @@ MonoBehaviour:
   SurfaceId: 34
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 384
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -11589,7 +11753,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -11625,7 +11789,7 @@ MonoBehaviour:
   SurfaceId: 9
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -11755,7 +11919,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 24
@@ -12004,7 +12168,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 11
@@ -12141,7 +12305,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions: []
   SurfaceId: 8
@@ -12345,6 +12509,71 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1914685407}
   m_Mesh: {fileID: 4300000, guid: eb5e350ed0764b04199e5e48b3c767ab, type: 2}
+--- !u!1 &1918564302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1918564303}
+  - component: {fileID: 1918564304}
+  m_Layer: 0
+  m_Name: InkReflection_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1918564303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918564302}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 664368126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!215 &1918564304
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918564302}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 2
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 30, y: 12, z: 28}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 5
+  m_HDR: 1
+  m_BoxProjection: 1
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 8900000, guid: 608f61dfc99253b498ee60bb6d6bd0b6, type: 3}
 --- !u!1 &1940218590
 GameObject:
   m_ObjectHideFlags: 0
@@ -12502,7 +12731,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -12538,7 +12767,7 @@ MonoBehaviour:
   SurfaceId: 26
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 256
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -13251,7 +13480,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -13287,7 +13516,7 @@ MonoBehaviour:
   SurfaceId: 15
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 1440
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -13529,7 +13758,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a85e3d882656778b8f390188f2c0a5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Splatoon::Splatoon.Painting.PaintSurface
   WallRegions:
   - Id: 1
@@ -13565,7 +13794,7 @@ MonoBehaviour:
   SurfaceId: 27
   Scores: 0
   WalkableSize: {x: 0, y: 0}
-  BlockedCells: 
+  BlockedCells:
   Resolution: 512
   ResolutionHeight: 640
   DisplayShader: {fileID: 4800000, guid: 301aa7fd2fade3144b8633fcec41550f, type: 3}
@@ -13767,3 +13996,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1690681426}
+  - {fileID: 664368126}

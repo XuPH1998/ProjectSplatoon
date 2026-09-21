@@ -117,11 +117,11 @@ namespace Splatoon.Editor
                 {
                     Check(surface.Mask != null && surface.HasPaint, "Map fixture missed surface " + surface.SurfaceId);
                     var copy = RenderTexture.GetTemporary(surface.Mask.descriptor); Graphics.CopyTexture(surface.Mask, copy); copies.Add(copy);
-                    var bytes = Bytes(copy); checkpoint.Surfaces.Add(surface.SurfaceId, bytes);
+                    var bytes = Bytes(copy); checkpoint.Surfaces.Add(surface.SurfaceId, bytes); checkpoint.VisualSurfaces.Add(surface.SurfaceId, InkStaticUpgrade.ReadVisual(surface));
                     hashes.Add(new SurfaceHash { id = surface.SurfaceId, width = surface.Resolution, height = surface.Height, stateHash = PaintSnapshotCodec.Hash(bytes) });
                 }
                 long copyBytes = copies.Sum(PaintTextureMemory.Bytes);
-                Check(PaintSurface.AllocatedBytes + copyBytes <= 128L * 1048576, "Actual allocated checkpoint footprint exceeds budget");
+                Check(PaintSurface.AllocatedBytes + copyBytes <= Splatoon.Config.GameplayConfig.Global.MaxPaintMemoryMiB * 1048576L, "Actual allocated checkpoint footprint exceeds budget");
                 var encoded = PaintSnapshotCodec.Encode(checkpoint);
                 var decoded = PaintSnapshotCodec.Decode(encoded, arena.BakedTopology, arena.OwnershipSizes(), arena.Surfaces.ToDictionary(p => p.Key, p => p.Value.TextureBytes));
                 foreach (var pair in checkpoint.Surfaces) Check(decoded.Surfaces[pair.Key].SequenceEqual(pair.Value), "Checkpoint codec changed surface state");

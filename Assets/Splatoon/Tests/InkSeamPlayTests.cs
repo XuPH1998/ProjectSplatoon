@@ -91,11 +91,13 @@ namespace Splatoon.Tests
                 Assert.That(arena.Surfaces.Values.Single(s => s.name == "Platform_-1").Ownership.PinkArea, Is.GreaterThan(0));
                 var ownership = arena.CaptureOwnership();
                 var raw = arena.Surfaces.Values.ToDictionary(s => s.SurfaceId, s => Read(s.Mask));
+                var visual = arena.Surfaces.Values.ToDictionary(s => s.SurfaceId, s => InkAppearanceProfile.PackVisual(Read(s.VisualState)));
                 var display = arena.Surfaces.Values.ToDictionary(s => s.SurfaceId, s => Read(s.DisplayMask));
                 arena.ClearPaint(); arena.RestoreOwnership(ownership);
                 foreach (var s in arena.Surfaces.Values)
                 {
-                    s.Restore(raw[s.SurfaceId]);
+                    s.Restore(raw[s.SurfaceId], visual[s.SurfaceId]);
+                    CollectionAssert.AreEqual(visual[s.SurfaceId], InkAppearanceProfile.PackVisual(Read(s.VisualState)), "Visual restore: " + s.name);
                     CollectionAssert.AreEqual(raw[s.SurfaceId], Read(s.Mask), "Raw restore: " + s.name);
                     CollectionAssert.AreEqual(display[s.SurfaceId], Read(s.DisplayMask), "Display restore: " + s.name);
                 }

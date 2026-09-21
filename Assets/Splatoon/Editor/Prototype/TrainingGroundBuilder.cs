@@ -211,7 +211,8 @@ namespace Splatoon.Editor
                 if(s.Scores&&(Vector3.Distance(s.transform.lossyScale,Vector3.one)>.0001f||s.WalkableSize.x<=0||s.WalkableSize.y<=0))throw new InvalidOperationException("可行走面尺寸或缩放无效："+s.name);
                 s.InitializeOwnership(arena.OwnershipCellSize);
             }
-            if(bytes>128L*1048576)throw new InvalidOperationException("涂色 RT 超过 128 MiB");
+            if (!LubanConfigService.Current.IsReady) InkStaticUpgrade.LoadTables();
+            if(bytes>GameplayConfig.Global.MaxPaintMemoryMiB*1048576L)throw new InvalidOperationException("涂色 RT 超过全局峰值预算");
             if(arena.TotalArea<=0||arena.BakedTopology!=arena.ComputeTopology())throw new InvalidOperationException("地图拓扑未烘焙或没有可计分区域");
             foreach(var p in arena.SpawnPoints)
                 if(!Physics.Raycast(p.position+Vector3.up,Vector3.down,out var hit,2,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore)||hit.collider.GetComponent<PaintSurface>()?.Scores!=true)throw new InvalidOperationException("出生点未落在可行走地面");

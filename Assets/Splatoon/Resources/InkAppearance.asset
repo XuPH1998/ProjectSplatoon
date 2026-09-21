@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05514442ee84d4e48b5c0bc6d84df60d, type: 3}
+  m_Name: InkAppearance
+  m_EditorClassIdentifier: Splatoon::Splatoon.Painting.InkAppearanceProfile
+  DetailAtlas: {fileID: 2800000, guid: 397293c131314264eaf4cbdb94549a58, type: 3}
+  FineNormal: {fileID: 2800000, guid: fba3ffdcec99bc441a050b43f71fe28d, type: 3}
+  Enabled: 1
+  EdgeHeight: 0.018
+  EdgeWidth: 0.055
+  Relief: 0.002
+  BroadRelief: 0.0005
+  Smoothness: 0.75
+  FineNormalStrength: 0.25
+  FineNormalTiling: 0.65
+  TeamGroove: 0.001

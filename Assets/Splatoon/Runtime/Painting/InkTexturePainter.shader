@@ -19,6 +19,7 @@ Shader "Splatoon/InkTexturePainter"
             #include "InkCoverage.hlsl"
             Texture2D<float4> _MainTex;
             Texture2D<float4> _ShapeAtlas;
+            Texture2D<float4> _DetailAtlas, _VisualTex;
             float _PainterTeam;
             float3 _PainterPosition, _PainterNormal, _PainterDirection;
             float _DepthScale, _ClipEnabled;
@@ -38,12 +39,16 @@ Shader "Splatoon/InkTexturePainter"
                 #endif
                 return o;
             }
-            float4 frag(Output i):SV_Target
+            struct PaintOutput { float4 coverage:SV_Target0; float4 visual:SV_Target1; };
+            PaintOutput frag(Output i)
             {
-                if (_PrepareUV>0) return float4(1,0,0,1);
+                PaintOutput result;
+                result.coverage=float4(1,0,0,1); result.visual=0;
+                if (_PrepareUV>0) return result;
                 float4 old=_MainTex.Sample(sampler_LinearClamp,i.uv);
+                result.coverage=old; result.visual=_VisualTex.Sample(sampler_LinearClamp,i.uv);
                 // Registered convex arena meshes have hard, disconnected faces in the atlas.
-                if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return old;
+                if (dot(normalize(i.normalWS),normalize(_PainterNormal))<0.5) return result;
                 float3 n=normalize(_PainterNormal); float3 axis=abs(n.y)>.5?float3(0,0,1):float3(0,1,0);
                 float3 tangent=normalize(cross(n,axis)), bitangent=cross(tangent,n);
                 float3 projected=_PainterDirection-n*dot(_PainterDirection,n);
@@ -53,12 +58,12 @@ Shader "Splatoon/InkTexturePainter"
                     float angle=atan2(plane.y,plane.x); if(angle<0) angle+=6.28318530718;
                     int a=((int)floor(angle*1.27323954474))%8, b=(a+1)%8;
                     float ra=a<4?_Clip0[a]:_Clip1[a-4], rb=b<4?_Clip0[b]:_Clip1[b-4];
-                    if(length(plane)>min(ra,rb)+.00001) return old;
+                    if(length(plane)>min(ra,rb)+.00001) return result;
                 }
                 float2 p=float2(dot(i.positionWS-_PainterPosition,tangent),dot(i.positionWS-_PainterPosition,bitangent)/(_DepthScale>0?_DepthScale:1))/max(.0001,_Radius);
                 float c=_ShapeTransform.x,s=_ShapeTransform.y; p=float2((p.x*c-p.y*s)*_ShapeTransform.z,p.x*s+p.y*c)*.5+.5;
                 int columns=(int)_ShapeLayout.x;
-                float2 tile=float2(_ShapeIndex%columns,_ShapeIndex/columns); float alpha=0;
+                float2 tile=float2(_ShapeIndex%columns,_ShapeIndex/columns); float alpha=0; float2 detail=0;
                 if(all(p>=0)&&all(p<=1))
                 {
                     // Explicit bilinear weights match the CPU lookup. Hardware filtering
@@ -72,11 +77,15 @@ Shader "Splatoon/InkTexturePainter"
                     float b=lerp(_ShapeAtlas.Load(int3(origin+int2(lo.x,hi.y),0)).a,
                                  _ShapeAtlas.Load(int3(origin+hi,0)).a,weight.x);
                     alpha=lerp(a,b,weight.y);
+                    detail=lerp(lerp(_DetailAtlas.Load(int3(origin+lo,0)).rg,_DetailAtlas.Load(int3(origin+int2(hi.x,lo.y),0)).rg,weight.x),
+                                lerp(_DetailAtlas.Load(int3(origin+int2(lo.x,hi.y),0)).rg,_DetailAtlas.Load(int3(origin+hi,0)).rg,weight.x),weight.y);
                 }
                 float h=max(.0001,saturate(_Hardness));
                 float t=saturate((alpha-(1-h))/h);
                 float f=t*t*(3-2*t)*saturate(_Strength);
-                return InkAccumulate(old, _PainterTeam, saturate(f));
+                result.coverage=InkAccumulate(old, _PainterTeam, saturate(f));
+                result.visual=float4(min(floor(saturate(result.visual.rg*(1-f)+detail*f)*255+.5)/255,result.coverage.aa),0,0);
+                return result;
             }
             ENDHLSL
         }

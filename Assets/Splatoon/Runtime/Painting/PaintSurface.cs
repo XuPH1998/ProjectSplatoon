@@ -112,14 +112,17 @@ namespace Splatoon.Painting
                 _instances++; _registeredGraphics = true;
                 _mask = Texture(" State"); CheckpointBytes += TextureBytes;
                 _mask.filterMode = FilterMode.Point; DisplayMask = Texture(" Display"); _islands = Texture(" Islands", islandFormat);
+                InitializeAppearance();
                 var size = new Vector2Int(Resolution, Height);
                 if (!Scratch.TryGetValue(size, out _support)) { _support = Texture(" SharedScratch"); Scratch.Add(size, _support); }
                 Clear();
                 var command = CommandBufferPool.Get("Ink UV islands");
-                command.SetRenderTarget(_islands); command.ClearRenderTarget(false, true, Color.clear); _painter.SetFloat("_PrepareUV", 1);
+                command.DisableScissorRect(); command.SetRenderTarget(_islands); command.SetViewport(new Rect(0, 0, Resolution, Height));
+                command.ClearRenderTarget(false, true, Color.clear); _painter.SetFloat("_PrepareUV", 1);
                 command.DrawMesh(GetComponent<MeshFilter>().sharedMesh, transform.localToWorldMatrix, _painter);
                 Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
                 _renderer.GetPropertyBlock(_properties); _properties.SetTexture("_MaskTexture", DisplayMask);
+                BindAppearance();
                 _properties.SetFloat("_InkWorldScale", GameplayConfig.Global.PaintWorldUvScale);
                 _properties.SetFloat("_InkShapeNoiseScale", GameplayConfig.Global.PaintShapeNoiseScale);
                 _properties.SetFloat("_InkThreshold", GameplayConfig.Global.PaintThreshold); _renderer.SetPropertyBlock(_properties);
@@ -137,6 +140,7 @@ namespace Splatoon.Painting
             var command = CommandBufferPool.Get("Clear ink");
             command.SetRenderTarget(_mask); command.ClearRenderTarget(false, true, Color.clear);
             command.SetRenderTarget(DisplayMask); command.ClearRenderTarget(false, true, Color.clear);
+            command.SetRenderTarget(_visual); command.ClearRenderTarget(false, true, Color.clear);
             Graphics.ExecuteCommandBuffer(command); CommandBufferPool.Release(command);
         }
         public void Apply(PaintStamp stamp)
@@ -154,9 +158,12 @@ namespace Splatoon.Painting
             try
             {
                 command.BeginSample("Splatoon.Paint.GPU");
+                command.DisableScissorRect();
                 // Scratch is shared by equal-size surfaces. Clear atlas gaps before reusing it.
                 command.SetRenderTarget(_support); command.ClearRenderTarget(false, true, Color.clear);
+                command.SetRenderTarget(_visualSupport); command.ClearRenderTarget(false, true, Color.clear);
                 RenderTexture source = _mask, destination = _support;
+                RenderTexture visualSource = _visual, visualDestination = _visualSupport;
                 _brush.SetFloat("_PrepareUV", 0);
                 _brush.SetTexture("_ShapeAtlas", ShapeAtlas);
                 _brush.SetVector("_ShapeLayout", new Vector4(InkShapeAtlas.Columns, InkShapeAtlas.Rows, InkShapeAtlas.CellSize, 0));
@@ -170,12 +177,20 @@ namespace Splatoon.Painting
                     _brush.SetVector("_PainterDirection", stamp.Direction); _brush.SetFloat("_DepthScale", stamp.DepthScale > 0 ? stamp.DepthScale : 1);
                     _brush.SetFloat("_ClipEnabled", stamp.ClipEnabled ? 1 : 0); _brush.SetVector("_Clip0", stamp.Clip0); _brush.SetVector("_Clip1", stamp.Clip1);
                     _brush.SetTexture("_MainTex", source);
-                    command.SetRenderTarget(destination);
+                    _brush.SetTexture("_VisualTex", visualSource);
+                    _paintTargets[0] = destination; _paintTargets[1] = visualDestination;
+                    // Use the destination's (depthless) attachment identity, as URP's
+                    // Gaussian DoF MRT pass does. None inherits the window attachment
+                    // dimensions on D3D11 and drops draws into taller ink atlases.
+                    command.SetRenderTarget(_paintTargets, new RenderTargetIdentifier(destination), 0, CubemapFace.Unknown, -1);
+                    command.SetViewport(new Rect(0, 0, Resolution, Height));
                     // DrawMesh snapshots the property block, preserving every stamp in submission order.
                     command.DrawMesh(_meshFilter.sharedMesh, pending.Matrix, _painter, 0, 0, _brush);
                     (source, destination) = (destination, source);
+                    (visualSource, visualDestination) = (visualDestination, visualSource);
                 }
                 if (source != _mask) { command.CopyTexture(source, _mask); FramePerformance.PaintCopies++; }
+                if (visualSource != _visual) { command.CopyTexture(visualSource, _visual); FramePerformance.PaintCopies++; }
                 command.EndSample("Splatoon.Paint.GPU");
                 Graphics.ExecuteCommandBuffer(command);
                 FramePerformance.PaintDraws += _paintQueue.Count; FramePerformance.PaintSubmissions++;
@@ -188,12 +203,12 @@ namespace Splatoon.Painting
         {
             FlushPaint();
             if (!_displayDirty || _mask == null) return;
-            _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend); _displayDirty = false;
+            _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend, 0); PadVisual(); _displayDirty = false;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (!_diagnosticScheduled) ScheduleDiagnosticReadback();
 #endif
         }
-        public void Restore(byte[] rgba)
+        private void RestoreCoverage(byte[] rgba)
         {
             InkShapeAtlas.Configure(ShapeAtlas);
             if (!GraphicsEnabled) { HasPaint = true; return; } Initialize();
@@ -202,7 +217,7 @@ namespace Splatoon.Painting
             var texture = new Texture2D(Resolution, Height, TextureFormat.RGBA32, false, true);
             var previous = RenderTexture.active;
             try { texture.LoadRawTextureData(rgba); texture.Apply(false, false); Graphics.Blit(texture, _mask);
-                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend); HasPaint = true; }
+                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend, 0); HasPaint = true; }
             finally { RenderTexture.active = previous; DisposeObject(texture); }
         }
         private void OnDisable() => ReleaseGraphics();
@@ -211,6 +226,7 @@ namespace Splatoon.Painting
             _paintQueue.Clear();
             if (_registeredGraphics && --_instances == 0) { foreach (var texture in Scratch.Values) Release(texture); Scratch.Clear(); }
             _registeredGraphics = false;
+            ReleaseAppearance();
             if (_mask != null) CheckpointBytes -= (long)_mask.width * _mask.height * 4;
             Release(_mask); Release(DisplayMask); Release(_islands); _mask = DisplayMask = _support = _islands = null;
             if (_painter != null) DisposeObject(_painter); if (_extend != null) DisposeObject(_extend);

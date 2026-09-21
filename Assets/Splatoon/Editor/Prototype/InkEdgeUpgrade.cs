@@ -58,8 +58,9 @@ namespace Splatoon.Editor
                 material.SetFloat("_InkEdgeSmoothness", .55f);
                 EditorUtility.SetDirty(material);
             }
-            if (PaintTextureMemory.PeakBytes(arena.Surfaces.Values) > 128L * 1048576)
-                throw new InvalidOperationException("墨水精度升级超过 128 MiB 峰值预算");
+            if (!Splatoon.Config.LubanConfigService.Current.IsReady) InkStaticUpgrade.LoadTables();
+            if (PaintTextureMemory.PeakBytes(arena.Surfaces.Values) > Splatoon.Config.GameplayConfig.Global.MaxPaintMemoryMiB * 1048576L)
+                throw new InvalidOperationException("墨水精度升级超过全局峰值预算");
         }
     }
 }

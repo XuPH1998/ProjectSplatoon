@@ -60,7 +60,7 @@ namespace Splatoon.Editor
                 for (int index = 0; index < 32; index++)
                 {
                     surface.Clear(); var stamp = Stamp(surface, index, 1.6f, angle, (index & 1) != 0);
-                    surface.Apply(stamp); surface.FlushDisplay(); var raw = Bytes(surface.Mask);
+                    surface.Apply(stamp); surface.FlushDisplay(); var raw = Bytes(surface.Mask); var visual = InkStaticUpgrade.ReadVisual(surface);
                     int nonzero = 0;
                     for (int y = 0; y < 256; y++) for (int x = 0; x < 256; x++)
                     {
@@ -77,7 +77,7 @@ namespace Splatoon.Editor
                     // Preserve appearance across a late join snapshot followed by mixed, repeated paint.
                     var next = Stamp(surface, (index + 17) % 32, .85f, 9321, true); next.Team = 2; next.Strength = .4f;
                     surface.Apply(next); surface.Apply(next); var uninterrupted = Bytes(surface.Mask);
-                    surface.Clear(); surface.Restore(raw); surface.Apply(next); surface.Apply(next);
+                    surface.Clear(); surface.Restore(raw, visual); surface.Apply(next); surface.Apply(next);
                     Check(uninterrupted.SequenceEqual(Bytes(surface.Mask)), "Snapshot continuation tile " + index);
                 }
                 Destroy(surface);
@@ -89,7 +89,7 @@ namespace Splatoon.Editor
         struct Measurement { public int Width, Height, Pixels; }
         static Measurement Measure(PaintSurface surface, PaintStamp stamp)
         {
-            surface.Clear(); surface.Apply(stamp); surface.FlushDisplay(); var raw = Bytes(surface.Mask);
+            surface.Clear(); surface.Apply(stamp); surface.FlushDisplay(); var raw = Bytes(surface.Mask); var visual = InkStaticUpgrade.ReadVisual(surface);
             int minX = surface.Resolution, maxX = -1, minY = surface.Height, maxY = -1, count = 0;
             for (int y = 0; y < surface.Height; y++) for (int x = 0; x < surface.Resolution; x++)
                 if (raw[(y * surface.Resolution + x) * 4 + 3] >= 128)

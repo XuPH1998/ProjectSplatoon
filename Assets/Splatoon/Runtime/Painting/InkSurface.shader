@@ -2,6 +2,13 @@ Shader "Splatoon/InkSurface"
 {
     Properties
     {
+        _InkAppearance("Persistent wet ink",Float)=0
+        _InkVisualTexture("Visual state",2D)="black" {}
+        _InkStateTexture("Coverage state",2D)="black" {}
+        _InkIslands("UV islands",2D)="white" {}
+        [Normal] _InkFineNormal("Fine normal",2D)="bump" {}
+        _InkRelief("Edge height / width / relief / broad",Vector)=(.018,.055,.002,.0005)
+        _InkFinish("Smoothness / normal / tiling / groove",Vector)=(.75,.25,.65,.001)
         _MaskTexture("Ink display",2D)="black" {}
         Texture2D_41271c3c5f484ca2a435c65087a81705("Base texture",2D)="white" {}
         Texture2D_01612b2f09a24a9c9879c83799445b96("Glitter texture",2D)="gray" {}
@@ -39,49 +46,12 @@ Shader "Splatoon/InkSurface"
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
+            #pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "InkCoverage.hlsl"
-            TEXTURE2D(_MaskTexture); SAMPLER(sampler_MaskTexture);
-            float4 _MaskTexture_TexelSize;
-            TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705); SAMPLER(sampler_Texture2D_41271c3c5f484ca2a435c65087a81705);
-            TEXTURE2D(Texture2D_01612b2f09a24a9c9879c83799445b96); SAMPLER(sampler_Texture2D_01612b2f09a24a9c9879c83799445b96);
-            float4 Texture2D_01612b2f09a24a9c9879c83799445b96_TexelSize;
-            CBUFFER_START(UnityPerMaterial)
-                float4 Color_863351f5ceea4c998ef51baab6dd758b,Color_1bf9c5e6f5c34360a490da1c94e6a7c1;
-                float4 Vector2_e97cb9b7b5564bc9857e7669e2d0b82f,Vector2_55edcb19ba1d459dbb3c027e66abbc1e;
-                float Vector1_7bf270fe91494824b4209d2dc1faae23,Vector1_0de750b9c41b4a5daef844a1599f5ac7;
-                float Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,Vector1_b160a6374fb04a77b114bb611b8c55e4;
-                float Vector1_8e760635099b4147956bb9600d13cac2,Vector1_b5cc7f6f25194a778cb438f45fbbce66,Vector1_f6677799b193415b8be7686b658a6e85;
-                float _InkWorldScale,_InkShapeNoiseScale,_InkThreshold;
-                float _InkEdgeAAScale,_InkEdgeNormalStrength,_InkEdgeSmoothness;
-            CBUFFER_END
-            struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 paintUV:TEXCOORD1; UNITY_VERTEX_INPUT_INSTANCE_ID };
-            struct Varyings { float4 positionCS:SV_POSITION; float3 positionWS:TEXCOORD0; float3 normalWS:TEXCOORD1; float2 paintUV:TEXCOORD2; float fog:TEXCOORD3; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
-            Varyings vert(Attributes i)
-            {
-                Varyings o=(Varyings)0; UNITY_SETUP_INSTANCE_ID(i); UNITY_TRANSFER_INSTANCE_ID(i,o); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                VertexPositionInputs p=GetVertexPositionInputs(i.positionOS.xyz);o.positionCS=p.positionCS;o.positionWS=p.positionWS;
-                o.normalWS=TransformObjectToWorldNormal(i.normalOS);o.paintUV=i.paintUV;o.fog=ComputeFogFactor(p.positionCS.z);return o;
-            }
-            float Glint(float2 texel,float3 n,float3 view)
-            {
-                float2 uv=(texel+.5)*Texture2D_01612b2f09a24a9c9879c83799445b96_TexelSize.xy;
-                float3 jitter=SAMPLE_TEXTURE2D_LOD(Texture2D_01612b2f09a24a9c9879c83799445b96,sampler_PointRepeat,uv,0).rgb-.5;
-                return pow(saturate(dot(normalize(n+normalize(jitter+1e-6)),view)),exp(Vector1_f6677799b193415b8be7686b658a6e85+1));
-            }
-            float FilteredGlitter(float2 uv,float3 n,float3 view)
-            {
-                float2 texel=uv*Texture2D_01612b2f09a24a9c9879c83799445b96_TexelSize.zw-.5;
-                float2 cell=floor(texel),f=frac(texel);
-                // Filter reflected light after the sharp lobe. Filtering random normals first
-                // erases the reference glints; point sampling the lobe makes them shimmer.
-                float sparkle=lerp(lerp(Glint(cell,n,view),Glint(cell+float2(1,0),n,view),f.x),lerp(Glint(cell+float2(0,1),n,view),Glint(cell+1,n,view),f.x),f.y);
-                float footprint=max(length(ddx(texel)),length(ddy(texel)));
-                return sparkle*(1-smoothstep(1,3,footprint));
-            }
+            #include "InkSurfaceCommon.hlsl"
             half4 frag(Varyings i):SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
@@ -95,6 +65,10 @@ Shader "Splatoon/InkSurface"
                 float edgeHalfWidth=max(.5*fwidth(coverageField)*_InkEdgeAAScale,1e-5);
                 float visible=smoothstep(_InkThreshold-edgeHalfWidth,_InkThreshold+edgeHalfWidth,coverageField);
                 float interior=smoothstep(_InkThreshold,_InkThreshold+max(.15,2*edgeHalfWidth),coverageField);
+                float3 inkNormal; float wetFinish=0;
+                if(_InkAppearance>.5) inkNormal=InkWetNormal(i,mask,uv,coverageField,wetFinish);
+                else
+                {
                 // Filter height only. Filtering the silhouette would grow/shrink gameplay ink.
                 float2 texel=_MaskTexture_TexelSize.xy;
                 float heightAlpha=mask.a*.5;
@@ -109,15 +83,17 @@ Shader "Splatoon/InkSurface"
                 float det=dot(dx,cy);
                 float3 gradient=(ddx(height)*cy+ddy(height)*cx)*((det<0?-1:1)/max(abs(det),1e-12));
                 float normalStrength=lerp(_InkEdgeNormalStrength,Vector1_8e760635099b4147956bb9600d13cac2,interior);
-                float3 inkNormal=normalize(n-normalStrength*gradient);
+                inkNormal=normalize(n-normalStrength*gradient);
+                }
                 float3 baseColor=SAMPLE_TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705,sampler_Texture2D_41271c3c5f484ca2a435c65087a81705,uv*Vector2_e97cb9b7b5564bc9857e7669e2d0b82f.xy).rgb*Color_863351f5ceea4c998ef51baab6dd758b.rgb;
-                float sparkle=FilteredGlitter(uv*Vector2_55edcb19ba1d459dbb3c027e66abbc1e.xy,n,view);
+                float sparkle=_InkAppearance>.5?0:FilteredGlitter(uv*Vector2_55edcb19ba1d459dbb3c027e66abbc1e.xy,n,view);
                 SurfaceData surface=(SurfaceData)0;
                 // InkDisplay stores premultiplied color; do not multiply edge opacity twice.
                 float3 inkColor=mask.a>1e-5 ? mask.rgb/max(mask.a,1e-5) : baseColor;
                 surface.albedo=lerp(baseColor,inkColor,visible);surface.alpha=1;surface.occlusion=1;surface.normalTS=float3(0,0,1);
-                surface.metallic=lerp(Vector1_b160a6374fb04a77b114bb611b8c55e4,Vector1_0de750b9c41b4a5daef844a1599f5ac7,visible);
+                surface.metallic=lerp(Vector1_b160a6374fb04a77b114bb611b8c55e4,(_InkAppearance>.5?0:Vector1_0de750b9c41b4a5daef844a1599f5ac7),visible);
                 float inkSmoothness=lerp(_InkEdgeSmoothness,Vector1_7bf270fe91494824b4209d2dc1faae23,interior);
+                if(_InkAppearance>.5) inkSmoothness=wetFinish;
                 surface.smoothness=lerp(Vector1_2c6f3ce4bba145b09c0a22fced0d7f85,inkSmoothness,visible);
                 surface.emission=visible*sparkle*Color_1bf9c5e6f5c34360a490da1c94e6a7c1.rgb;
                 InputData input=(InputData)0;input.positionWS=i.positionWS;input.normalWS=normalize(lerp(n,inkNormal,visible));input.viewDirectionWS=view;
@@ -129,6 +105,30 @@ Shader "Splatoon/InkSurface"
         }
         UsePass "Universal Render Pipeline/Lit/ShadowCaster"
         UsePass "Universal Render Pipeline/Lit/DepthOnly"
-        UsePass "Universal Render Pipeline/Lit/DepthNormals"
+        Pass
+        {
+            Name "DepthNormals"
+            Tags { "LightMode"="DepthNormals" }
+            ZWrite On
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex vert
+            #pragma fragment DepthNormalFragment
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            #include "InkSurfaceCommon.hlsl"
+            half4 DepthNormalFragment(Varyings i):SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(i);
+                float3 n=InkDepthNormal(i);
+                #if defined(_GBUFFER_NORMALS_OCT)
+                    float2 oct=PackNormalOctQuadEncode(n);
+                    return half4(PackFloat2To888(saturate(oct*.5+.5)),0);
+                #else
+                    return half4(n,0);
+                #endif
+            }
+            ENDHLSL
+        }
     }
 }

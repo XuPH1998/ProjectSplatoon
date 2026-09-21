@@ -194,9 +194,9 @@ namespace Splatoon.Prototype
             }
             finally { stamps.Dispose(); }
         }
-        private void DrainPaint()
+        private void DrainPaint(bool restoring = false)
         {
-            if (!InitialSyncComplete) return;
+            if (!InitialSyncComplete && !restoring) return;
             while (_buffered.TryGetValue(_appliedSequence + 1, out var stamp))
             { PrototypeArena.Current.Apply(stamp, true); _buffered.Remove(++_appliedSequence); }
         }

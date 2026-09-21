@@ -92,7 +92,7 @@ namespace Splatoon.Tests
                 yield return Wait(() => presentation.GetComponentsInChildren<InkImpactEffect>().Any(e => e.IsAlive), "Authoritative impact RPC starts layered effect", 3);
                 yield return Wait(() => match.AppliedPaintSequence > beforePaint, "Authoritative impact paints the real map", 3);
                 surface.FlushDisplay();
-                var raw = ReadBytes(surface.Mask); var display = ReadBytes(surface.DisplayMask);
+                var visual = InkAppearanceProfile.PackVisual(ReadBytes(surface.VisualState)); var raw = ReadBytes(surface.Mask); var display = ReadBytes(surface.DisplayMask);
                 int rawCount = raw.Where((v, i) => i % 4 == 3 && v > 0).Count();
                 int displayCount = display.Where((v, i) => i % 4 == 3 && v > 0).Count();
                 Assert.That(rawCount, Is.GreaterThan(0), "Persistent raw ink after actual impact");
@@ -101,7 +101,7 @@ namespace Splatoon.Tests
                 Assert.That(block.GetTexture("_MaskTexture"), Is.SameAs(surface.DisplayMask));
                 var actualStamp = observed.Last(s => s.SurfaceId == surface.SurfaceId);
                 appearanceEvidence.AppendLine(FormattableString.Invariant($"{hero},{match.AppliedPaintSequence},{actualStamp.ShapeSeed},{InkShapeAtlas.Index(actualStamp.ShapeSeed)},{actualStamp.Radius},{rawCount},{displayCount}"));
-                surface.Clear(); surface.Restore(raw); surface.FlushDisplay();
+                surface.Clear(); surface.Restore(raw, visual); surface.FlushDisplay();
                 CollectionAssert.AreEqual(raw, ReadBytes(surface.Mask), "Raw snapshot restores exactly in Play Mode");
                 CollectionAssert.AreEqual(display, ReadBytes(surface.DisplayMask), "Display restores exactly in Play Mode");
                 var active = presentation.GetComponentsInChildren<InkImpactEffect>().First(e => e.IsAlive);

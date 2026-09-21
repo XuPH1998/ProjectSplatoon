@@ -41,16 +41,16 @@ namespace Splatoon.Editor
                 var mesh=surface.GetComponent<MeshFilter>().sharedMesh;int[] t=mesh.triangles;var v=mesh.vertices;
                 Vector3 a=v[t[0]],b=v[t[1]],c=v[t[2]];
                 var stamp=new PaintStamp{SurfaceId=surface.SurfaceId,Position=surface.transform.TransformPoint((a+b+c)/3),Normal=surface.transform.TransformDirection(Vector3.Cross(b-a,c-a).normalized),Radius=1.5f,Hardness=.01f,Strength=.3f,Team=1};
-                surface.Apply(stamp);var initial=Bytes(surface.Mask);
+                surface.Apply(stamp);var initial=Bytes(surface.Mask);var initialVisual=InkStaticUpgrade.ReadVisual(surface);
                 Check(initial.Where((_,i)=>i%4==3).Any(a=>a>0&&a<128),surface.name+" lacks continuous ink");
-                surface.Apply(stamp);var continuous=Bytes(surface.Mask);surface.Clear();surface.Restore(initial);surface.Apply(stamp);
+                surface.Apply(stamp);var continuous=Bytes(surface.Mask);surface.Clear();surface.Restore(initial,initialVisual);surface.Apply(stamp);
                 Check(continuous.SequenceEqual(Bytes(surface.Mask)),surface.name+" restore then paint differs");
                 surface.FlushDisplay(); Check(Bytes(surface.DisplayMask).Any(b=>b>0),surface.name+" empty display");
                 surface.Clear();Check(Bytes(surface.Mask).All(b=>b==0)&&Bytes(surface.DisplayMask).All(b=>b==0),surface.name+" clear left paint");
                 checkpointBytes+=surface.TextureBytes;surfaces++;
             }
             long peak=PaintSurface.AllocatedBytes+checkpointBytes;
-            Check(peak<=128L*1048576,"RT peak exceeds 128 MiB");
+            Check(peak<=Splatoon.Config.GameplayConfig.Global.MaxPaintMemoryMiB*1048576L,"RT peak exceeds 128 MiB");
             Debug.Log($"[INK-LOOK] GPU surfaces={surfaces} continuous/restore/continue/clear=PASS residentMiB={PaintSurface.AllocatedBytes/1048576f:F2} peakMiB={peak/1048576f:F2}");
             foreach(var surface in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)) surface.ReleaseGraphics();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);Check(PaintSurface.AllocatedBytes==0,"RT leaked after unload");

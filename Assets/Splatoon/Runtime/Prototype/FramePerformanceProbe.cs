@@ -94,7 +94,7 @@ namespace Splatoon.Prototype
             if (_done) return;
             double now = Time.realtimeSinceStartupAsDouble;
             var match = PrototypeMatch.Current;
-            bool ready = match != null && match.IsSpawned && match.InitialSyncComplete && match.State.Value.PlayerCount == _players;
+            bool ready = InkStaticScenario.Settled && match != null && match.IsSpawned && match.InitialSyncComplete && match.State.Value.PlayerCount == _players;
             if (!ready)
             {
                 _ready = -1;

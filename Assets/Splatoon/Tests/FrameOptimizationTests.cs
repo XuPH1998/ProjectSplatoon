@@ -125,16 +125,16 @@ namespace Splatoon.Tests
                 sibling.Apply(Stamp(8, Matrix4x4.identity)); sibling.FlushDisplay();
                 long beforeFlushCopies = FramePerformance.PaintCopies, beforeFlushSubmits = FramePerformance.PaintSubmissions;
                 surface.FlushDisplay(); Assert.That(surface.Mask, Is.SameAs(identity));
-                Assert.That(FramePerformance.PaintCopies - beforeFlushCopies, Is.EqualTo(count % 2));
+                Assert.That(FramePerformance.PaintCopies - beforeFlushCopies, Is.EqualTo(2 * (count % 2)));
                 Assert.That(FramePerformance.PaintSubmissions - beforeFlushSubmits, Is.EqualTo(1));
-                var expected = Pixels(mask); CollectionAssert.AreEqual(expected, Pixels(surface.Mask));
+                var expected = Pixels(mask); var visualExpected = InkAppearanceProfile.PackVisual(Pixels(surface.VisualState)); CollectionAssert.AreEqual(expected, Pixels(surface.Mask));
                 // A checkpoint read flushes pending work without publishing a different texture identity.
                 var extra = Stamp(101, matrix); surface.Apply(extra); LegacyDraw(legacy, mesh, matrix, mask, scratch, extra);
                 CollectionAssert.AreEqual(Pixels(mask), Pixels(surface.Mask)); Assert.That(surface.PendingPaintCount, Is.Zero);
                 surface.Apply(first);
-                Assert.Throws<InvalidOperationException>(() => surface.Restore(new byte[1]));
+                Assert.Throws<InvalidOperationException>(() => surface.Restore(new byte[1], new byte[1]));
                 Assert.That(surface.PendingPaintCount, Is.EqualTo(1), "Rejected restores must not discard pending paint");
-                surface.Restore(expected); CollectionAssert.AreEqual(expected, Pixels(surface.Mask));
+                surface.Restore(expected, visualExpected); CollectionAssert.AreEqual(expected, Pixels(surface.Mask));
                 surface.Apply(first); surface.Clear(); Assert.That(Pixels(surface.Mask).All(x => x == 0), Is.True);
             }
             finally

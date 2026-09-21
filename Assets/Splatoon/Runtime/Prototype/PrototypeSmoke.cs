@@ -132,7 +132,7 @@ namespace Splatoon.Prototype
                 int walls = PrototypeArena.Current.Surfaces.Values.Count(x => !x.Scores && x.HasPaint);
                 Debug.Log($"[SMOKE] phase={s.Phase} round={s.Round} players={s.PlayerCount} pink={s.PinkArea} blue={s.BlueArea} hash={match.Arena.OwnershipHash()} hp={p.Health:F0} ink={p.Ink:F1} swim={p.Swimming} pos={p.Position} cells={match.Arena.CellCount} paintSeq={match.AppliedPaintSequence} walls={walls} fps={1f/Time.smoothDeltaTime:F1} rtMiB={Splatoon.Painting.PaintSurface.AllocatedBytes/1048576f:F1}");
             }
-            if (_inkCase != "inkperf" && _inkCase != "prediction" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
+            if (!FramePerformanceProbe.Requested && _inkCase != "inkperf" && _inkCase != "prediction" && !_dumped && t > 25 && SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {
                 _dumped = true;
                 foreach (var surface in PrototypeArena.Current.Surfaces.Values)

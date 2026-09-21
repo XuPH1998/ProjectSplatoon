@@ -126,7 +126,19 @@ namespace Splatoon.Prototype
                 {
                     if (!surface.HasPaint || surface.Mask == null) continue;
                     int id = surface.SurfaceId;
+                    // Both copies are submitted synchronously before yielding at this boundary.
                     var copy = RenderTexture.GetTemporary(surface.Mask.descriptor);
+                    var visualCopy = RenderTexture.GetTemporary(surface.VisualState.descriptor);
+                    Graphics.CopyTexture(surface.VisualState, visualCopy); pending++;
+                    _ = AsyncGPUReadback.Request(visualCopy, 0, TextureFormat.RGBA32, request =>
+                    {
+                        try
+                        {
+                            if (request.hasError) failed = true;
+                            else checkpoint.VisualSurfaces[id] = InkAppearanceProfile.PackVisual(request.GetData<byte>().ToArray());
+                        }
+                        finally { RenderTexture.ReleaseTemporary(visualCopy); pending--; }
+                    });
                     Graphics.CopyTexture(surface.Mask, copy); pending++;
                     _ = AsyncGPUReadback.Request(copy, 0, TextureFormat.RGBA32, request =>
                     {
@@ -244,11 +256,13 @@ namespace Splatoon.Prototype
                     if (!_buffered.ContainsKey(++sequence)) throw new InvalidOperationException("补同步历史墨迹缺失");
                 PrototypeArena.Current.ClearPaint();
                 Arena.RestoreOwnership(checkpoint.Ownership);
-                foreach (var pair in checkpoint.Surfaces) PrototypeArena.Current.Surfaces[pair.Key].Restore(pair.Value);
+                foreach (var pair in checkpoint.Surfaces) PrototypeArena.Current.Surfaces[pair.Key].Restore(pair.Value, checkpoint.VisualSurfaces[pair.Key]);
                 _appliedSequence = checkpoint.Sequence;
                 _obsoletePaint.Clear(); foreach (var sequence in _buffered.Keys) { if (sequence > _appliedSequence) break; _obsoletePaint.Add(sequence); }
                 foreach (var sequence in _obsoletePaint) _buffered.Remove(sequence);
-                _incoming = null; InitialSyncComplete = true; DrainPaint(); AckSnapshotRpc(round, id);
+                _incoming = null; DrainPaint(true);
+                foreach (var surface in PrototypeArena.Current.Surfaces.Values) surface.FlushDisplay();
+                InitialSyncComplete = true; AckSnapshotRpc(round, id);
                 LastSnapshotSeconds = Time.unscaledTimeAsDouble - _snapshotStarted;
                 Debug.Log($"[INK] Snapshot applied round={_paintRound} seq={_appliedSequence} surfaces={checkpoint.Surfaces.Count} hash={Arena.OwnershipHash()}");
             }

@@ -21,18 +21,25 @@ namespace Splatoon.Painting
         public static long Bytes(RenderTexture texture) =>
             (long)GraphicsFormatUtility.ComputeMipmapSize(texture.width, texture.height, texture.graphicsFormat);
 
-        // Two RGBA targets, one occupancy target, one worst-case RGBA checkpoint per surface,
-        // plus one shared RGBA scratch per distinct size. No mipmaps or MSAA are used.
-        public static long PeakBytes(IEnumerable<PaintSurface> surfaces, int islandBytesPerPixel = 2)
+        public static GraphicsFormat SelectVisualFormat(Func<GraphicsFormat, bool> supported = null)
+        {
+            supported ??= f => SystemInfo.IsFormatSupported(f, GraphicsFormatUsage.Render | GraphicsFormatUsage.Sample | GraphicsFormatUsage.Linear | GraphicsFormatUsage.ReadPixels);
+            foreach (var f in new[] { GraphicsFormat.R8G8_UNorm, GraphicsFormat.R8G8B8A8_UNorm }) if (supported(f)) return f;
+            throw new NotSupportedException("当前设备无法存储和读回墨迹细节");
+        }
+
+        // Coverage/display + occupancy + visual state and paired GPU checkpoint per surface;
+        // coverage/visual scratch shared per distinct size. No mipmaps or MSAA.
+        public static long PeakBytes(IEnumerable<PaintSurface> surfaces, int islandBytesPerPixel = 2, int visualBytesPerPixel = 2)
         {
             long bytes = 0;
             var sizes = new HashSet<Vector2Int>();
             foreach (var surface in surfaces)
             {
-                bytes += (long)surface.Resolution * surface.Height * (12 + islandBytesPerPixel);
+                bytes += (long)surface.Resolution * surface.Height * (12 + islandBytesPerPixel + 2 * visualBytesPerPixel);
                 sizes.Add(new Vector2Int(surface.Resolution, surface.Height));
             }
-            foreach (var size in sizes) bytes += (long)size.x * size.y * 4;
+            foreach (var size in sizes) bytes += (long)size.x * size.y * (4 + visualBytesPerPixel);
             return bytes;
         }
     }

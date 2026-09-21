@@ -15,7 +15,7 @@ namespace Splatoon.Prototype
     public sealed class InkEdgeNetworkProbe : MonoBehaviour
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        [Serializable] sealed class SurfaceState { public int id, bytes; public uint hash; }
+        [Serializable] sealed class SurfaceState { public int id, bytes, visualBytes; public uint hash, visualHash; }
         [Serializable] sealed class Sample
         {
             public uint sequence, ownershipHash;
@@ -86,7 +86,13 @@ namespace Splatoon.Prototype
                     if (request.hasError) throw new InvalidOperationException("Ink edge readback failed");
                     uint hash = 2166136261; var data = request.GetData<byte>();
                     foreach (byte value in data) hash = unchecked((hash ^ value) * 16777619);
-                    states.Add(new SurfaceState { id = surface.SurfaceId, bytes = data.Length, hash = hash });
+                    int bytes = data.Length;
+                    var visualRequest = AsyncGPUReadback.Request(surface.VisualState, 0, TextureFormat.RGBA32);
+                    await UniTask.WaitUntil(() => visualRequest.done);
+                    if (visualRequest.hasError) throw new InvalidOperationException("Ink visual readback failed");
+                    var visual = InkAppearanceProfile.PackVisual(visualRequest.GetData<byte>().ToArray());
+                    states.Add(new SurfaceState { id = surface.SurfaceId, bytes = bytes, hash = hash,
+                        visualBytes = visual.Length, visualHash = PaintSnapshotCodec.Hash(visual) });
                 }
                 if (match != null && match.IsSpawned && sequence == match.AppliedPaintSequence)
                 {

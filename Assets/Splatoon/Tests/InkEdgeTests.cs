@@ -29,8 +29,8 @@ namespace Splatoon.Tests
                     surfaces[i] = objects[i].AddComponent<PaintSurface>();
                     surfaces[i].Resolution = 32; surfaces[i].ResolutionHeight = i == 2 ? 64 : 32;
                 }
-                Assert.That(PaintTextureMemory.PeakBytes(surfaces, 1), Is.EqualTo(32L * 32 * (4 * 13 + 3 * 4)));
-                Assert.That(PaintTextureMemory.PeakBytes(surfaces, 2), Is.EqualTo(32L * 32 * (4 * 14 + 3 * 4)));
+                Assert.That(PaintTextureMemory.PeakBytes(surfaces, 1), Is.EqualTo(32L * 32 * (4 * 17 + 3 * 6)));
+                Assert.That(PaintTextureMemory.PeakBytes(surfaces, 2), Is.EqualTo(32L * 32 * (4 * 18 + 3 * 6)));
                 Assert.That(surfaces[2].TextureBytes, Is.EqualTo(32 * 64 * 4));
             }
             finally { foreach (var go in objects) UnityEngine.Object.DestroyImmediate(go); }

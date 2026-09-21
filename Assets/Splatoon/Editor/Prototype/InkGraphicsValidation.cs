@@ -35,11 +35,11 @@ namespace Splatoon.Editor
                 int pixels = painted.GetPixels32().Count(c => c.a > 128 && c.r > 128);
                 File.WriteAllBytes("Reports/InkGraphics/mask-" + surface.SurfaceId + ".png", painted.EncodeToPNG());
                 if (pixels < 10) throw new InvalidOperationException("Empty painted mask: " + surface.name + " pixels=" + pixels);
-                var bytes = painted.GetRawTextureData<byte>().ToArray();
+                var bytes = painted.GetRawTextureData<byte>().ToArray(); var visual = InkStaticUpgrade.ReadVisual(surface);
                 surface.Clear();
                 var clear = Read(surface.Mask);
                 if (clear.GetPixels32().Any(c => c.a != 0)) throw new InvalidOperationException("Clear failed: " + surface.name);
-                surface.Restore(bytes);
+                surface.Restore(bytes, visual);
                 var restored = Read(surface.Mask);
                 if (!bytes.SequenceEqual(restored.GetRawTextureData<byte>().ToArray())) throw new InvalidOperationException("Restore differs: " + surface.name);
                 Debug.Log($"[INK-GPU] surface={surface.SurfaceId} name={surface.name} paintedPixels={pixels} face/clear/restore=PASS");

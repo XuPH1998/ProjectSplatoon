@@ -10,6 +10,7 @@ namespace Splatoon.Painting
         public string Topology;
         public Dictionary<int, byte[]> Ownership = new();
         public readonly Dictionary<int, byte[]> Surfaces = new();
+        public readonly Dictionary<int, byte[]> VisualSurfaces = new();
     }
     public static class PaintSnapshotCodec
     {
@@ -18,13 +19,15 @@ namespace Splatoon.Painting
         { uint hash = 2166136261; for (int i = offset; i < offset + count; i++) hash = unchecked((hash ^ bytes[i]) * 16777619); return hash; }
         public static byte[] Encode(PaintCheckpoint checkpoint)
         {
+            ValidatePairs(checkpoint);
             using var output = new MemoryStream();
             using (var zip = new DeflateStream(output, CompressionLevel.Fastest, true))
             using (var writer = new BinaryWriter(zip))
             {
-                writer.Write(5); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
+                writer.Write(6); writer.Write(checkpoint.Round); writer.Write(checkpoint.Sequence);
                 writer.Write(checkpoint.Topology);
                 WriteMaps(writer, checkpoint.Ownership); WriteMaps(writer, checkpoint.Surfaces);
+                WriteMaps(writer, checkpoint.VisualSurfaces);
             }
             return output.ToArray();
         }
@@ -37,14 +40,25 @@ namespace Splatoon.Painting
         {
             using var input = new MemoryStream(compressed); using var zip = new DeflateStream(input, CompressionMode.Decompress);
             using var reader = new BinaryReader(zip);
-            if (reader.ReadInt32() != 5) throw new InvalidDataException("涂色快照版本不一致");
+            if (reader.ReadInt32() != 6) throw new InvalidDataException("涂色快照版本不一致");
             var result = new PaintCheckpoint { Round = reader.ReadUInt32(), Sequence = reader.ReadUInt32() };
             result.Topology = reader.ReadString();
             if (result.Topology != topology) throw new InvalidDataException("地图拓扑不一致");
             ReadMaps(reader, result.Ownership, ownershipBytes, true);
             ReadMaps(reader, result.Surfaces, surfaceBytes, false);
+            var visualBytes = new Dictionary<int, int>();
+            foreach (var pair in surfaceBytes) visualBytes.Add(pair.Key, pair.Value / 2);
+            ReadMaps(reader, result.VisualSurfaces, visualBytes, false);
+            ValidatePairs(result);
             if (zip.ReadByte() != -1) throw new InvalidDataException("快照包含多余数据");
             return result;
+        }
+        static void ValidatePairs(PaintCheckpoint checkpoint)
+        {
+            if (checkpoint.Surfaces.Count != checkpoint.VisualSurfaces.Count) throw new InvalidDataException("覆盖与细节表面数量不匹配");
+            foreach (var pair in checkpoint.Surfaces)
+                if (pair.Value == null || pair.Value.Length % 4 != 0 || !checkpoint.VisualSurfaces.TryGetValue(pair.Key, out var visual) ||
+                    visual == null || visual.Length != pair.Value.Length / 2) throw new InvalidDataException("覆盖与细节快照未成对");
         }
         static void ReadMaps(BinaryReader reader, Dictionary<int, byte[]> maps, IReadOnlyDictionary<int, int> sizes, bool ownership)
         {
