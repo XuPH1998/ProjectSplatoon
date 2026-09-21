@@ -20,7 +20,12 @@ namespace Splatoon.Combat
             count = (int)(Math.Floor(n * budget + 1e-8) - Math.Floor((n - 1) * budget + 1e-8));
             int phase = (int)((n - 1) % w.ShooterSplitNum);
             first = w.ReferenceTrailStart + phase * (w.TrailSpacing / w.ShooterSplitNum);
-            foot = n % w.ShooterSplitNum == 0;
+            foot = w.DetailedPaint ? Foot(shotInHold, shotInHold, w) : n % w.ShooterSplitNum == 0;
+        }
+        public static bool Foot(uint roundIndex, uint shotSequence, WeaponRuntimeConfig w)
+        {
+            uint n = Math.Max(1u, w.FootSequence == FootSequenceBasis.ActionRound ? roundIndex : shotSequence);
+            return w.ReferenceFootRadius > 0 && (n - 1) % (uint)w.ReferenceFootEvery == (uint)w.FootPhase;
         }
         public static float ImpactRadius(float distance, WeaponRuntimeConfig w) => distance <= w.PaintDistanceMiddle
             ? Mathf.Lerp(w.ShooterPaintNearRadius, w.PaintRadiusMax, Mathf.InverseLerp(w.ShooterPaintNearDistance, w.PaintDistanceMiddle, distance))

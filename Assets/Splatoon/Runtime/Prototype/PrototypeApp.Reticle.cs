@@ -52,6 +52,8 @@ namespace Splatoon.Prototype
             var camera = Camera.main;
             var spread = ReticleGeometry.HalfSize(state.CurrentSpread, state.CurrentVerticalSpread,
                 camera != null ? camera.fieldOfView : 60, camera != null ? camera.aspect : Screen.width / (float)Screen.height);
+            bool guided = weapon.AimMode == WeaponAimMode.WeaponReference;
+            if (guided) spread = local.GuideSpreadHalfSize;
             spread.x *= aspectScale;
             spread = Vector2.Max(spread, Vector2.one * 16);
             bool prepaid = WeaponSimulation.IsSplatling(weapon) && state.SplatlingRemaining > 0;
@@ -68,7 +70,9 @@ namespace Splatoon.Prototype
                 ReticleRing(impact, 8, Color.white, 2.5f);
                 RingStroke(impact, 8, team, 1.5f);
             }
-            ReticleBar(new Rect(center.x - 1, center.y - 1, 2, 2), color);
+            var dot = guided ? new Vector2(local.DirectionReticleViewport.x * 1280 * aspectScale,
+                (1 - local.DirectionReticleViewport.y) * 720) : center;
+            ReticleBar(new Rect(dot.x - 1, dot.y - 1, 2, 2), color);
             if (!state.ShowsSwimBody)
                 for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2)
                 {

@@ -94,7 +94,7 @@ MonoBehaviour:
   paintDistanceFar: 18.72113824520531
   referenceTrailBudget: 1.0
   referenceTrailStart: 0.0
-  referenceTrailRandomPhase: 0
+  referenceTrailRandomPhase: 1
   referenceFootRadius: 1.1574156508715732
   trailDepthScale: 1.5
   wallDropRadius: 0.48674959437533805
@@ -111,35 +111,3 @@ MonoBehaviour:
   referenceJumpStart: 0.4166666666666667
   referenceJumpEnd: 1.1666666666666667
   referencePitchBias: 0.4
-  aimMode: 1
-  angularSpread: 1
-  inheritForwardMovement: 1
-  detailedPaint: 1
-  shooterDetails: 0
-  footSequence: 0
-  footPhase: 0
-  shotGuideSeconds: 0.18333333333333332
-  shooterMoveForwardRate: 0
-  shooterSplitNum: 8
-  shooterPaintNearDistance: 0.0
-  shooterPaintNearRadius: 1.572575612597246
-  shooterSplashDepthMin: 1.5
-  shooterSplashDepthMax: 1.5
-  shooterSplashHeightMin: 2.246536589424637
-  shooterSplashHeightMax: 7.488455298082124
-  shooterPaintAngleMin: 10
-  shooterPaintAngleMax: 35
-  shooterFallHeightMin: 1.1232682947123185
-  shooterFallHeightMax: 7.488455298082124
-  shooterSplashSideSpeed: 2.4711902483671007
-  shooterSplashUpSpeed: 0.6739609768273911
-  shooterSplashForwardMin: 0.44930731788492745
-  shooterSplashForwardMax: 0.8986146357698549
-  shooterWallGravity: 21.56675125847652
-  shooterWallFirstMin: 0.25
-  shooterWallFirstMax: 0.5
-  shooterWallMiddle: 0.08333333333333333
-  shooterWallLastMin: 0.25
-  shooterWallLastMax: 0.5
-  shooterWallFirstSpeed: 2.6958439073095644
-  shooterWallShockRadius: 0.9734991887506761

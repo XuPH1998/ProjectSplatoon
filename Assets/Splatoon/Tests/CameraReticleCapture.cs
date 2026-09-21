@@ -72,10 +72,10 @@ static class CameraReticleCapture
         var sizeType = assembly.GetType("UnityEditor.GameViewSize");
         var kindType = assembly.GetType("UnityEditor.GameViewSizeType");
         var size = Activator.CreateInstance(sizeType, Enum.ToObject(kindType, 1), width, height, "Camera reticle acceptance");
-        int builtIn = (int)sizeGroup.GetType().GetMethod("GetBuiltinCount").Invoke(sizeGroup, null);
         sizeGroup.GetType().GetMethod("AddCustomSize").Invoke(sizeGroup, new[] { size });
         int count = (int)sizeGroup.GetType().GetMethod("GetTotalCount").Invoke(sizeGroup, null);
-        customSizes.Add(count - 1 - builtIn);
+        // RemoveCustomSize consumes the same absolute index as selectedSizeIndex.
+        customSizes.Add(count - 1);
         selected.SetValue(view, count - 1);
         for (int i = 0; i < 5; i++) { view.Repaint(); await UniTask.NextFrame(); }
         if (Screen.width != width || Screen.height != height) throw new Exception($"Resolution {Screen.width}x{Screen.height}, expected {width}x{height}");

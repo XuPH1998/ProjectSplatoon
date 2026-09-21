@@ -30,7 +30,15 @@ namespace Splatoon.Combat
             var root = Vector3.up * StandingRootHeight;
             var origin = root + profile.MuzzleOffset(0, muzzle);
             var camera = root + profile.CameraPivot + profile.CameraOffset;
-            var aim = TpsAimSolver.Geometry(camera, Vector3.forward, origin, nearDistance, farDistance, float.PositiveInfinity);
+            var aim = w.AimMode == WeaponAimMode.WeaponReference
+                ? WeaponLaunch.Geometry(camera, Vector3.forward, origin, w, charge)
+                : TpsAimSolver.Geometry(camera, Vector3.forward, origin, nearDistance, farDistance, float.PositiveInfinity);
+            if (w.AimMode == WeaponAimMode.WeaponReference)
+            {
+                var reference = WeaponLaunch.Representative(aim, w, charge);
+                reference.MuzzleIndex = muzzle;
+                return reference;
+            }
             float speed = WeaponSimulation.IsCharge(w) ? WeaponSimulation.Speed(w, charge)
                 : WeaponSimulation.IsSplatling(w) ? Mathf.Lerp(w.ChargeMinSpeed, (w.SpeedMin + w.SpeedMax) * .5f, SplatlingSimulation.RangeCharge(w, charge))
                 : w.PelletCount > 1 ? w.SpeedMin : (w.SpeedMin + w.SpeedMax) * .5f;

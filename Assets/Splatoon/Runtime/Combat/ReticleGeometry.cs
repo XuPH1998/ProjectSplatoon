@@ -4,6 +4,28 @@ namespace Splatoon.Combat
 {
     public static class ReticleGeometry
     {
+        public static Vector2 GuideHalfSize(Camera camera, TpsAimSolution aim, Splatoon.Config.WeaponRuntimeConfig w,
+            Splatoon.Prototype.PlayerSnapshot state, double age)
+        {
+            // Surface contact can be offset by the sweep radius or the embedded-muzzle guard.
+            // Measure only angular displacement around the centre trajectory, not that offset.
+            var representative = WeaponLaunch.Representative(aim, w, WeaponLaunch.PreviewCharge(state, w), state.PlanarVelocity, state.Yaw);
+            var center = camera.WorldToViewportPoint(InkBallistics.Position(representative, w, age));
+            var basis = WeaponLaunch.Basis(aim.InitialDirection);
+            var size = Vector2.zero;
+            for (int i = 0; i < 4; i++)
+            {
+                float x = i < 2 ? (i == 0 ? -1 : 1) * Mathf.Tan(state.CurrentSpread * Mathf.Deg2Rad) : 0;
+                float y = i >= 2 ? (i == 2 ? -1 : 1) * Mathf.Tan(state.CurrentVerticalSpread * Mathf.Deg2Rad) : 0;
+                var boundary = aim;
+                boundary.InitialDirection = basis * new Vector3(x, y, 1).normalized;
+                var shot = WeaponLaunch.Representative(boundary, w, WeaponLaunch.PreviewCharge(state, w), state.PlanarVelocity, state.Yaw);
+                var projected = camera.WorldToViewportPoint(InkBallistics.Position(shot, w, age));
+                if (projected.z <= 0 || !float.IsFinite(projected.x) || !float.IsFinite(projected.y)) continue;
+                size = Vector2.Max(size, new Vector2(Mathf.Abs(projected.x - center.x) * 1280, Mathf.Abs(projected.y - center.y) * 720));
+            }
+            return Vector2.Max(size, Vector2.one * 6);
+        }
         public static bool MergeImpact(Vector2 aim, Vector2 impact) => (aim - impact).sqrMagnitude < 16;
         public static Color StatusColor(bool blocked, bool lowInk) => blocked ? Color.red : lowInk ? Color.yellow : Color.white;
 

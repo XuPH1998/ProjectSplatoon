@@ -5,19 +5,51 @@ using UnityEngine;
 
 namespace Splatoon.Combat
 {
-    public enum PredictedImpactKind { None, World, Player, Expiry }
+    public enum PredictedImpactKind { None, World, Player, Expiry, GuideEnd }
     public struct WeaponImpactForecast
     {
         public PredictedImpactKind Kind;
         public Vector3 Point, EnemyPoint;
         public ulong EnemyId;
         public bool HasEnemyContact;
-        public bool HasImpact => Kind != PredictedImpactKind.None;
+        public double Age;
+        public TpsCollision Contact;
+        public bool HasImpact => Kind == PredictedImpactKind.World || Kind == PredictedImpactKind.Player || Kind == PredictedImpactKind.Expiry;
     }
 
     /// <summary>Visual-only centre trajectory. Never samples gameplay randomness or applies impacts.</summary>
     public static class WeaponImpactPrediction
     {
+        public static WeaponImpactForecast Guide(TpsAimSolver solver, TpsAimSolution aim, WeaponRuntimeConfig w,
+            PlayerSnapshot state, ulong shooter)
+        {
+            var result = new WeaponImpactForecast();
+            if (aim.MuzzleBlocked) { SetContact(ref result, aim.MuzzleHit, state.Team); return result; }
+            var shot = WeaponLaunch.Representative(aim, w, WeaponLaunch.PreviewCharge(state, w), state.PlanarVelocity, state.Yaw);
+            double horizon = Math.Min(w.ShotGuideSeconds, w.Lifetime);
+            var from = shot.Origin;
+            for (double age = 0; age < horizon - 1e-8;)
+            {
+                double end = Math.Min(age + 1.0 / 60, horizon);
+                var to = InkBallistics.Position(shot, w, end);
+                var delta = to - from;
+                if (FirstContact(solver, shot, from, delta, end, state.Team, shooter, out var contact))
+                {
+                    SetContact(ref result, contact, state.Team);
+                    result.Age = age + (end - age) * Mathf.Clamp01(contact.Distance / Mathf.Max(.000001f, delta.magnitude));
+                    return result;
+                }
+                from = to; age = end;
+            }
+            result.Point = from; result.Age = horizon;
+            result.Kind = w.Ammo.HasExplosion && horizon >= w.Lifetime - 1e-8 ? PredictedImpactKind.Expiry : PredictedImpactKind.GuideEnd;
+            return result;
+        }
+
+        public static bool GuideObstructed(TpsAimSolution aim, WeaponImpactForecast guide) => aim.MuzzleBlocked ||
+            guide.Kind == PredictedImpactKind.World && Mathf.Abs(guide.Contact.Normal.y) < .5f &&
+            guide.Contact.Collider != aim.AimHit.Collider;
+
         public static bool TryPredict(TpsAimSolver solver, TpsAimSolution aim, WeaponRuntimeConfig w,
             PlayerSnapshot state, ulong shooter, out Vector3 point)
         {
@@ -54,7 +86,9 @@ namespace Splatoon.Combat
                 shot.VolleyIndex = (byte)(BubbleVolleySimulation.Pending(state) ? state.BurstShotIndex : 0);
                 shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, shot.VolleyIndex, state.Grounded);
             }
-            if (w.ShooterDetails) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
+            if (w.AngularSpread || w.AimMode == WeaponAimMode.WeaponReference)
+                shot = WeaponLaunch.Representative(aim, w, charge, state.PlanarVelocity, state.Yaw);
+            else if (w.InheritsMovement) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             var segment = InkBounce.Initial(shot);
             double step = w.ReferenceRules || WeaponSimulation.IsBlaster(w) || DualiesNormalSimulation.Enabled(w)
@@ -91,6 +125,7 @@ namespace Splatoon.Combat
 
         static void SetContact(ref WeaponImpactForecast result, TpsCollision hit, byte team, bool centre = false)
         {
+            result.Contact = hit;
             result.Point = centre ? hit.Center : hit.Point;
             var player = hit.Collider != null ? hit.Collider.GetComponentInParent<PrototypePlayer>() : null;
             result.Kind = player != null ? PredictedImpactKind.Player : PredictedImpactKind.World;
@@ -164,7 +199,7 @@ namespace Splatoon.Combat
             byte? ignoreTeam = bubble || blaster ? team : (byte?)null;
             bool worldOverlap = solver.Overlap(from, worldRadius, shooter, -delta.normalized, out var world, false);
             bool playerOverlap = solver.Overlap(from, playerRadius, shooter, -delta.normalized, out var player, true, ignoreTeam);
-            if (worldOverlap || playerOverlap) { hit = worldOverlap ? world : player; return true; }
+            if (worldOverlap || playerOverlap) { hit = worldOverlap ? world : player; hit.Distance = 0; return true; }
             bool worldHit = solver.ClosestCast(from, delta, delta.magnitude, worldRadius, shooter, out world, false);
             bool playerHit = solver.ClosestCast(from, delta, delta.magnitude, playerRadius, shooter, out player, true, ignoreTeam);
             hit = worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;

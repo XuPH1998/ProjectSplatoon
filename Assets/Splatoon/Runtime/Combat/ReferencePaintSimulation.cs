@@ -43,9 +43,11 @@ namespace Splatoon.Combat
             while (a.TrailCount < a.TrailBudget && a.NextTrailDistance <= reached + .00001f)
             {
                 float fraction = length > .000001f ? Mathf.Clamp01((a.NextTrailDistance - a.TrailTravelled) / length) : 0;
-                Vector3 dropVelocity = w.ShooterDetails ? ShooterDetailSimulation.SplashVelocity(a.Shot.Velocity, w, ref a.TrailSeed) : Vector3.zero;
+                uint dropSeed = w.DetailedPaint ? WeaponLaunch.Stream(a.Shot.Seed, WeaponLaunch.DropStream, (uint)a.TrailCount) : a.TrailSeed;
+                Vector3 dropVelocity = w.UsesDetailedPaint ? ShooterDetailSimulation.SplashVelocity(a.Shot.Velocity, w, ref dropSeed) : Vector3.zero;
                 QueuePaintDrop(a.Shot, Vector3.Lerp(from, to, fraction), start + (end - start) * fraction,
-                    Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref a.TrailSeed)), ++a.PaintOrdinal, a.Shot.Velocity, w.TrailDepthScale, dropVelocity, scaleDepthWithFall: w.ShooterDetails);
+                    Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref dropSeed)), ++a.PaintOrdinal, a.Shot.Velocity, w.TrailDepthScale, dropVelocity, scaleDepthWithFall: w.UsesDetailedPaint);
+                if (!w.DetailedPaint) a.TrailSeed = dropSeed;
                 a.TrailCount++; a.NextTrailDistance += w.TrailSpacing;
             }
             a.TrailTravelled = reached;
@@ -66,7 +68,7 @@ namespace Splatoon.Combat
                     var from = d.Origin + d.Velocity * (float)a + Vector3.down * (float)(.5 * d.Gravity * a * a);
                     var to = d.Origin + d.Velocity * (float)b + Vector3.down * (float)(.5 * d.Gravity * b * b);
                     // Non-paintable geometry blocks the drop too. No teleport through floors.
-                    Vector3 rayDirection = w.ShooterDetails ? (to - from).normalized : Vector3.down;
+                    Vector3 rayDirection = w.UsesDetailedPaint ? (to - from).normalized : Vector3.down;
                     if (Physics.Raycast(from - rayDirection * .001f, rayDirection, out var hit, Vector3.Distance(from, to) + .001f,
                         PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore))
                     {
@@ -82,8 +84,8 @@ namespace Splatoon.Combat
             for (int i = _wallDrops.Count - 1; i >= 0; i--)
             {
                 var d = _wallDrops[i]; var w = d.Shot.Configuration;
-                double duration = w.ShooterDetails ? d.FirstSeconds + w.ShooterWallMiddle + d.LastSeconds : w.WallDropSeconds;
-                float target = w.ShooterDetails ? ShooterDetailSimulation.WallDistance(until - d.Born, d.FirstSeconds, d.LastSeconds, w)
+                double duration = w.UsesDetailedPaint ? d.FirstSeconds + w.ShooterWallMiddle + d.LastSeconds : w.WallDropSeconds;
+                float target = w.UsesDetailedPaint ? ShooterDetailSimulation.WallDistance(until - d.Born, d.FirstSeconds, d.LastSeconds, w)
                     : (float)Math.Min(w.WallDropSeconds, Math.Max(0, until - d.Born)) * w.WallDropSpeed;
                 bool done = false;
                 // Fixed spatial samples make wall coverage independent of outer frame rate.
@@ -101,9 +103,9 @@ namespace Splatoon.Combat
                     if (!Physics.Raycast(point, -d.Normal, out var hit, .075f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) ||
                         hit.collider.GetComponentInParent<PaintSurface>() != d.Surface)
                     {
-                        double age = w.ShooterDetails ? ShooterDetailSimulation.WallAge(d.Distance, d.FirstSeconds, d.LastSeconds, w) : d.Distance / w.WallDropSpeed;
+                        double age = w.UsesDetailedPaint ? ShooterDetailSimulation.WallAge(d.Distance, d.FirstSeconds, d.LastSeconds, w) : d.Distance / w.WallDropSpeed;
                         QueuePaintDrop(d.Shot, point, d.Born + age, w.WallDropGroundRadius, ++d.Ordinal, Vector3.down, 1,
-                            Vector3.zero, w.ShooterDetails ? w.ShooterWallGravity : -1); done = true; break;
+                            Vector3.zero, w.UsesDetailedPaint ? w.ShooterWallGravity : -1); done = true; break;
                     }
                     ApplyPaint(d.Surface, d.Shot, hit.point, hit.normal, w.WallDropRadius, w, ++d.Ordinal, false, null, Vector3.down, 1.2f);
                 }
@@ -113,25 +115,30 @@ namespace Splatoon.Combat
         void PaintReferenceImpact(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, Vector3 incoming, double age, ref uint ordinal)
         {
             var w = shot.Configuration;
+            // The blaster's zero-width ordinary impact is painted by its explosion only.
+            if (w.DetailedPaint && WeaponSimulation.IsBlaster(w)) return;
             float distance = new Vector2(point.x - shot.Origin.x, point.z - shot.Origin.z).magnitude;
             float fraction = Mathf.InverseLerp(w.PaintDistanceMiddle, w.PaintDistanceFar, distance);
             float radius = Mathf.Lerp(w.PaintRadiusMax, w.PaintRadiusMin, fraction);
             if (WeaponSimulation.IsBubble(w) && shot.VolleyIndex > 0) radius = w.BubbleLaterImpactRadius;
             bool falling = shot.Origin.y - point.y >= w.PaintBreakHeight;
             float depth = Mathf.Lerp(falling ? w.PaintDepthBreakMax : w.PaintDepthMax, falling ? w.PaintDepthBreakMin : w.PaintDepthMin, fraction);
-            if (w.ShooterDetails)
+            if (w.UsesDetailedPaint)
             {
                 radius = ShooterDetailSimulation.ImpactRadius(distance, w);
                 depth = ShooterDetailSimulation.ImpactDepth(incoming, normal, Mathf.Max(0, shot.Origin.y - point.y), age, w);
                 if (Mathf.Abs(normal.y) < .5f) { radius = w.ShooterWallShockRadius; depth = 1; }
             }
             ApplyPaint(surface, shot, point, normal, radius, w, ++ordinal, true, null, incoming, depth);
-            if (Mathf.Abs(normal.y) < .5f && w.WallDropRadius > 0 && w.WallDropSeconds > 0 && w.WallDropSpeed > 0)
+            QueueReferenceWall(surface, shot, point, normal, age, 0x10000u + ordinal * 4096);
+        }
+        void QueueReferenceWall(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, double age, uint wallOrdinal)
+        {
+            var w = shot.Configuration;
+            if (Mathf.Abs(normal.y) < .5f && w.WallDropRadius > 0 && (w.UsesDetailedPaint || w.WallDropSeconds > 0) && w.WallDropSpeed > 0)
             {
-                // Separate ordinal range prevents later wall drips colliding with trail seeds.
-                uint wallOrdinal = 0x10000u + ordinal * 4096;
                 double first = 0, last = 0;
-                if (w.ShooterDetails) ShooterDetailSimulation.WallTiming(shot, wallOrdinal, out first, out last);
+                if (w.UsesDetailedPaint) ShooterDetailSimulation.WallTiming(shot, wallOrdinal, out first, out last);
                 _wallDrops.Add(new WallDrop { Shot = shot, Surface = surface, Origin = point, Normal = normal, Born = shot.Born + age, Ordinal = wallOrdinal, FirstSeconds = first, LastSeconds = last });
             }
         }

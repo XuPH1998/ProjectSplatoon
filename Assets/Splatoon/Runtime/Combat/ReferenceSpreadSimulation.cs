@@ -15,8 +15,8 @@ namespace Splatoon.Combat
         public static void Before(ref PlayerSnapshot s, WeaponRuntimeConfig w, double now)
         {
             double dt = s.SpreadInitialized ? Math.Max(0, now - s.SpreadUpdatedAt) : 0;
+            if (!s.SpreadInitialized) Reset(ref s, w);
             s.SpreadInitialized = true; s.SpreadUpdatedAt = now;
-            if (s.DualiesGroundBias <= 0) Reset(ref s, w);
             s.DualiesJumpAge = s.Grounded || s.DualiesWasGrounded ? 0 : s.DualiesJumpAge + dt;
             s.DualiesWasGrounded = s.Grounded;
             if (!s.SpreadFiring) s.DualiesGroundBias -= (float)Math.Max(0, now - Math.Max(now - dt, s.NextShotAt)) * w.ReferenceBiasRecovery;

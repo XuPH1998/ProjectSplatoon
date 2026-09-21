@@ -37,7 +37,7 @@ namespace Splatoon.Editor
         {
             public readonly WeaponFireMode Fire;
             public readonly ProjectileMotionMode Motion;
-            public readonly bool Reference, ReferenceSpread, Shooter;
+            public readonly bool Reference, ReferenceSpread, Shooter, Detailed, Inherit;
 
             public Selection(SerializedObject serialized, WeaponConfigAsset asset)
             {
@@ -46,11 +46,15 @@ namespace Splatoon.Editor
                 var reference = serialized.FindProperty(nameof(asset.referenceRules));
                 var spread = serialized.FindProperty(nameof(asset.referenceSpreadEnabled));
                 var shooter = serialized.FindProperty(nameof(asset.shooterDetails));
+                var detailed = serialized.FindProperty(nameof(asset.detailedPaint));
+                var inherit = serialized.FindProperty(nameof(asset.inheritForwardMovement));
                 Fire = fire.hasMultipleDifferentValues ? asset.fireMode : (WeaponFireMode)fire.intValue;
                 Motion = motion.hasMultipleDifferentValues ? asset.motionMode : (ProjectileMotionMode)motion.intValue;
                 Reference = reference.hasMultipleDifferentValues ? asset.referenceRules : reference.boolValue;
                 ReferenceSpread = Reference && (spread.hasMultipleDifferentValues ? asset.referenceSpreadEnabled : spread.boolValue);
                 Shooter = shooter.hasMultipleDifferentValues ? asset.shooterDetails : shooter.boolValue;
+                Detailed = detailed.hasMultipleDifferentValues ? asset.detailedPaint : detailed.boolValue;
+                Inherit = inherit.hasMultipleDifferentValues ? asset.inheritForwardMovement : inherit.boolValue;
             }
         }
 
@@ -240,6 +244,10 @@ namespace Splatoon.Editor
                 case nameof(WeaponConfigAsset.shooterDetails):
                     // Leave an enabled toggle reachable when correcting an incompatible mode.
                     return value.Shooter || value.Fire == WeaponFireMode.Automatic && value.Motion == ProjectileMotionMode.ReferencePhased;
+                case nameof(WeaponConfigAsset.shooterPostSeconds):
+                    return value.Fire == WeaponFireMode.Automatic || value.Fire == WeaponFireMode.Splatling || blaster || dualies;
+                case nameof(WeaponConfigAsset.shooterMoveForwardRate):
+                    return value.Inherit || value.Shooter;
                 case nameof(WeaponConfigAsset.spreadExpandSeconds):
                 case nameof(WeaponConfigAsset.spreadRecoverSeconds):
                 case nameof(WeaponConfigAsset.baseSpreadDegrees):
@@ -258,7 +266,7 @@ namespace Splatoon.Editor
             if (name.StartsWith("bubble", StringComparison.Ordinal)) return bubble && value.Reference;
             if (name.StartsWith("explosher", StringComparison.Ordinal)) return value.Motion == ProjectileMotionMode.Explosher;
             if (name.StartsWith("shooter", StringComparison.Ordinal))
-                return value.Shooter && value.Fire == WeaponFireMode.Automatic && value.Motion == ProjectileMotionMode.ReferencePhased;
+                return value.Detailed || value.Shooter;
             if (name.StartsWith("referenceBias", StringComparison.Ordinal) || name.StartsWith("referenceJump", StringComparison.Ordinal))
                 return value.ReferenceSpread;
             if (name.StartsWith("reference", StringComparison.Ordinal) || ReferencePaintField(name)) return value.Reference;

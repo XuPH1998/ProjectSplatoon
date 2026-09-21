@@ -2,9 +2,19 @@ using UnityEngine;
 
 namespace Splatoon.Config
 {
+    public enum WeaponAimMode { [InspectorName("相机命中点")] CameraHit, [InspectorName("武器参考点")] WeaponReference }
+    public enum FootSequenceBasis { [InspectorName("累计射击序号")] ShotSequence, [InspectorName("本轮射击序号")] ActionRound }
     [CreateAssetMenu(menuName = "喷墨对战/武器配置", fileName = "WeaponConfig")]
     public sealed class WeaponConfigAsset : ScriptableObject
     {
+        [Header("瞄准与独立发射规则")]
+        [InspectorName("瞄准几何"), Tooltip("武器参考点不随相机射线命中深度改变；引导位置使用真实中心弹道。")] public WeaponAimMode aimMode;
+        [InspectorName("弹道引导时间（秒）"), Tooltip("ShotGuideFrame / 60 的项目解释，仅限制准星预测，不改变弹丸寿命。")] public double shotGuideSeconds;
+        [InspectorName("继承前后移动速度"), Tooltip("按人物前向的有符号速度投影，使用下方继承倍率。")] public bool inheritForwardMovement;
+        [InspectorName("启用角度域偏置散布"), Tooltip("一次角度域取样；普通弹为圆锥分布，消防栓横纵独立。")] public bool angularSpread;
+        [InspectorName("启用独立详细涂墨"), Tooltip("独立启用墨滴分相、墨滴飞行和墙墨阶段，不改变射击动作时长。")] public bool detailedPaint;
+        [InspectorName("脚下墨计数依据"), Tooltip("累计射击或本轮动作计数，与沿途分相独立。")] public FootSequenceBasis footSequence;
+        [InspectorName("脚下墨触发相位"), Tooltip("从零计数；0 为首发，周期减一为周期末发。")] public int footPhase;
         [Header("泡泡弹道")]
         [InspectorName("弹道运动模式"), Tooltip("弹道运动模式") ] public ProjectileMotionMode motionMode;
         [InspectorName("泡泡组周期（秒，首颗到首颗）"), Tooltip("泡泡组周期（秒，首颗到首颗）") ] public double bubbleVolleySeconds = .55;
@@ -131,7 +141,7 @@ namespace Splatoon.Config
         [InspectorName("跳跃偏置开始恢复（秒）"), Tooltip("跳跃偏置开始恢复（秒）；关闭参考规则时保持旧模式。") ] public double referenceJumpStart = 25.0 / 60;
         [InspectorName("跳跃偏置结束恢复（秒）"), Tooltip("跳跃偏置结束恢复（秒）；关闭参考规则时保持旧模式。") ] public double referenceJumpEnd = 70.0 / 60;
         [InspectorName("旋转枪垂直中心偏置"), Tooltip("旋转枪垂直中心偏置；关闭参考规则时保持旧模式。") ] public float referencePitchBias = .4f;
-        [InspectorName("每颗沿途墨滴预算"), Tooltip("详细射手使用小数余数累计，其他参考武器使用随机小数预算。") ] public float referenceTrailBudget = 0;
+        [InspectorName("每颗沿途墨滴预算"), Tooltip("独立详细涂墨使用小数累计和分相，其他参考武器保留原有调度。") ] public float referenceTrailBudget = 0;
         [InspectorName("首次沿途墨滴距离（米）"), Tooltip("首次沿途墨滴距离（米）；关闭参考规则时保持旧模式。") ] public float referenceTrailStart = 0;
         [InspectorName("沿途墨滴随机首相位"), Tooltip("沿途墨滴随机首相位；关闭参考规则时保持旧模式。") ] public bool referenceTrailRandomPhase = false;
         [InspectorName("脚下落墨间隔（发，项目适配）"), Tooltip("脚下落墨间隔（发，项目适配）；关闭参考规则时保持旧模式。") ] public int referenceFootEvery = 1;
@@ -169,32 +179,32 @@ namespace Splatoon.Config
         [InspectorName("后续泡泡反弹落墨逐颗缩减（米）"), Tooltip("后续泡泡反弹落墨逐颗缩减（米）；关闭参考规则时保持旧模式。") ] public float bubbleBouncePaintDecrement = 0;
         [InspectorName("后三颗消亡落墨半宽（米）"), Tooltip("后三颗消亡落墨半宽（米）；关闭参考规则时保持旧模式。") ] public float bubbleLaterImpactRadius = 0;
         [Header("射手详细规则（独立启用）")]
-        [InspectorName("启用射手详细涂墨规则"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public bool shooterDetails = false;
-        [InspectorName("射手射后潜墨限制（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterPostSeconds = 0;
-        [InspectorName("射手前后移动速度继承比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterMoveForwardRate = 0;
-        [InspectorName("射手近距离涂墨节点（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintNearDistance = 0;
-        [InspectorName("射手近距离涂墨半宽（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintNearRadius = 0;
-        [InspectorName("射手最大纵深入射角（度）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintAngleMin = 10;
-        [InspectorName("射手最小纵深入射角（度）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterPaintAngleMax = 35;
-        [InspectorName("射手下落最大纵深高度（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterFallHeightMin = 1;
-        [InspectorName("射手下落最小纵深高度（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterFallHeightMax = 10;
-        [InspectorName("射手落墨循环（发）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public int shooterSplitNum = 5;
-        [InspectorName("射手墨滴最小纵深比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashDepthMin = 1;
-        [InspectorName("射手墨滴最大纵深比例"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashDepthMax = 1.2f;
-        [InspectorName("射手墨滴最大纵深落差（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashHeightMin = 3;
-        [InspectorName("射手墨滴最小纵深落差（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashHeightMax = 10;
-        [InspectorName("射手墨滴横向随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashSideSpeed = 0;
-        [InspectorName("射手墨滴上抛随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashUpSpeed = 0;
-        [InspectorName("射手墨滴前向随机速度下限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashForwardMin = 0;
-        [InspectorName("射手墨滴前向随机速度上限（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterSplashForwardMax = 0;
-        [InspectorName("射手墙墨首段最短时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallFirstMin = 0;
-        [InspectorName("射手墙墨首段最长时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallFirstMax = 0;
-        [InspectorName("射手墙墨中段时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallMiddle = 0;
-        [InspectorName("射手墙墨末段最短时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallLastMin = 0;
-        [InspectorName("射手墙墨末段最长时间（秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public double shooterWallLastMax = 0;
-        [InspectorName("射手墙墨首段目标速度（米/秒）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallFirstSpeed = 0;
-        [InspectorName("射手离墙墨滴重力（米/秒平方）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallGravity = 0;
-        [InspectorName("射手撞墙墨半宽（米）"), Tooltip("仅在启用射手详细规则时生效；未证实算法见 SplooshGirl 说明。")] public float shooterWallShockRadius = 0;
+        [InspectorName("旧版射手组合开关"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public bool shooterDetails = false;
+        [InspectorName("射手射后潜墨限制（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterPostSeconds = 0;
+        [InspectorName("射手前后移动速度继承比例"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterMoveForwardRate = 0;
+        [InspectorName("射手近距离涂墨节点（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterPaintNearDistance = 0;
+        [InspectorName("射手近距离涂墨半宽（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterPaintNearRadius = 0;
+        [InspectorName("射手最大纵深入射角（度）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterPaintAngleMin = 10;
+        [InspectorName("射手最小纵深入射角（度）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterPaintAngleMax = 35;
+        [InspectorName("射手下落最大纵深高度（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterFallHeightMin = 1;
+        [InspectorName("射手下落最小纵深高度（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterFallHeightMax = 10;
+        [InspectorName("射手落墨循环（发）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public int shooterSplitNum = 5;
+        [InspectorName("射手墨滴最小纵深比例"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashDepthMin = 1;
+        [InspectorName("射手墨滴最大纵深比例"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashDepthMax = 1.2f;
+        [InspectorName("射手墨滴最大纵深落差（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashHeightMin = 3;
+        [InspectorName("射手墨滴最小纵深落差（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashHeightMax = 10;
+        [InspectorName("射手墨滴横向随机速度上限（米/秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashSideSpeed = 0;
+        [InspectorName("射手墨滴上抛随机速度上限（米/秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashUpSpeed = 0;
+        [InspectorName("射手墨滴前向随机速度下限（米/秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashForwardMin = 0;
+        [InspectorName("射手墨滴前向随机速度上限（米/秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterSplashForwardMax = 0;
+        [InspectorName("射手墙墨首段最短时间（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterWallFirstMin = 0;
+        [InspectorName("射手墙墨首段最长时间（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterWallFirstMax = 0;
+        [InspectorName("射手墙墨中段时间（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterWallMiddle = 0;
+        [InspectorName("射手墙墨末段最短时间（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterWallLastMin = 0;
+        [InspectorName("射手墙墨末段最长时间（秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public double shooterWallLastMax = 0;
+        [InspectorName("射手墙墨首段目标速度（米/秒）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterWallFirstSpeed = 0;
+        [InspectorName("射手离墙墨滴重力（米/秒平方）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterWallGravity = 0;
+        [InspectorName("射手撞墙墨半宽（米）"), Tooltip("参数来源与项目假设见 Docs/AimBallistics/Design.md；详细涂墨与发射动作分别配置。")] public float shooterWallShockRadius = 0;
         [Header("爆炸泼桶") ]
         [InspectorName("爆炸泼桶空中初速（米/秒）"), Tooltip("爆炸泼桶空中初速（米/秒）；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherAirSpeed;
         [InspectorName("爆炸泼桶水平速度附加上扬比例"), Tooltip("爆炸泼桶水平速度附加上扬比例；原作参考帧率60 Hz，距离已换算为项目米制。") ] public float explosherUpwardRate;

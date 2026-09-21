@@ -6,6 +6,13 @@ namespace Splatoon.Config
     /// <summary>Immutable values shared by simulation and the shots emitted under this configuration.</summary>
     public sealed class WeaponRuntimeConfig
     {
+        public readonly WeaponAimMode AimMode;
+        public readonly double ShotGuideSeconds;
+        public readonly bool InheritForwardMovement, AngularSpread, DetailedPaint;
+        public readonly FootSequenceBasis FootSequence;
+        public readonly int FootPhase;
+        public bool UsesDetailedPaint => DetailedPaint || ShooterDetails;
+        public bool InheritsMovement => InheritForwardMovement || ShooterDetails;
         public readonly string WeaponPrefabAddress;
         public readonly WeaponFireMode FireMode;
         public readonly float FireRate;
@@ -199,6 +206,13 @@ namespace Splatoon.Config
         public readonly float ShooterWallShockRadius;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            AimMode = source.aimMode;
+            ShotGuideSeconds = source.shotGuideSeconds;
+            InheritForwardMovement = source.inheritForwardMovement;
+            AngularSpread = source.angularSpread;
+            DetailedPaint = source.detailedPaint;
+            FootSequence = source.footSequence;
+            FootPhase = source.footPhase;
             ShooterDetails = source.shooterDetails;
             ShooterPostSeconds = source.shooterPostSeconds;
             ShooterMoveForwardRate = source.shooterMoveForwardRate;
@@ -396,6 +410,13 @@ namespace Splatoon.Config
         }
         public void Write(BinaryWriter writer)
         {
+            writer.Write((int)AimMode);
+            writer.Write(ShotGuideSeconds);
+            writer.Write(InheritForwardMovement);
+            writer.Write(AngularSpread);
+            writer.Write(DetailedPaint);
+            writer.Write((int)FootSequence);
+            writer.Write(FootPhase);
             writer.Write(ShooterDetails);
             writer.Write(ShooterPostSeconds);
             writer.Write(ShooterMoveForwardRate);
@@ -598,6 +619,8 @@ namespace Splatoon.Config
             return a.ToArray().AsSpan().SequenceEqual(b.ToArray());
         }
         public bool RequiresRestart(WeaponRuntimeConfig other) => other == null ||
+            AimMode != other.AimMode || AngularSpread != other.AngularSpread || DetailedPaint != other.DetailedPaint ||
+            FootSequence != other.FootSequence || FootPhase != other.FootPhase || ReferenceFootEvery != other.ReferenceFootEvery ||
             ShooterDetails != other.ShooterDetails || ShooterSplitNum != other.ShooterSplitNum || ShooterPostSeconds != other.ShooterPostSeconds ||
             ExplosherPostSeconds != other.ExplosherPostSeconds || ExplosherMoveLimitSeconds != other.ExplosherMoveLimitSeconds ||
             BlasterRepeatSeconds != other.BlasterRepeatSeconds || BlasterPostSeconds != other.BlasterPostSeconds ||

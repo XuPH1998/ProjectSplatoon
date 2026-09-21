@@ -221,7 +221,7 @@ namespace Splatoon.Combat
             ObservedPaintTime = born;
 #endif
             var w = GameplayConfig.GetWeapon(state.HeroId);
-            var aim = _aim.Resolve(player, state, state.LastShotMuzzle);
+            var aim = _aim.Resolve(player, state, state.LastShotMuzzle, state.LastShotCharge);
             uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.PlayerId ^ state.HeroRevision);
             groupSeed ^= (uint)(player.PlayerId >> 32) ^ (state.Revision > 1 ? InkShapeAtlas.Hash(state.Revision - 1) : 0);
             if (groupSeed == 0) groupSeed = 1;
@@ -241,6 +241,11 @@ namespace Splatoon.Combat
             shot.Charge = state.LastShotCharge;
             shot.Configuration = w; shot.ConfigurationRevision = WeaponConfigService.Current.Revision(state.HeroId); shot.SpreadHorizontal = state.LastShotSpread; shot.SpreadVertical = state.LastShotVerticalSpread;
             float spread = shot.SpreadHorizontal;
+            if (w.AngularSpread)
+                shot.Velocity = WeaponLaunch.Velocity(aim, w, shot.Charge, state.PlanarVelocity, state.Yaw,
+                    spread, shot.SpreadVertical, state.LastShotSpreadBias, shot.Seed, true);
+            else
+            {
             shot.Velocity = w.PelletCount > 1 || WeaponSimulation.IsFloatingBubble(w) ? InkBallistics.PelletVelocity(aim.InitialDirection, w, spread, pellet, groupSeed)
                 : InkBallistics.LaunchVelocity(aim.InitialDirection, w, ref seed, spread);
             if (WeaponSimulation.IsCharge(w)) shot.Velocity = shot.Velocity.normalized * WeaponSimulation.Speed(w, shot.Charge);
@@ -255,10 +260,14 @@ namespace Splatoon.Combat
                 shot.Velocity = DualiesNormalSimulation.LaunchVelocity(aim.InitialDirection, w, spread, state.LastShotSpreadBias > 0 ? state.LastShotSpreadBias : w.ReferenceBiasMin, ref seed);
             if (w.ReferenceRules && WeaponSimulation.IsBubble(w)) shot.Velocity = ReferenceBallistics.BubbleLaunch(aim.InitialDirection, w, shot.VolleyIndex, state.Grounded);
             if (WeaponSimulation.IsExplosher(w)) shot.Velocity = ExplosherSimulation.Launch(aim.InitialDirection, w, state.Grounded, state.PlanarVelocity + Vector3.up * state.VerticalSpeed, state.Yaw);
-            if (w.ShooterDetails) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
+            if (w.InheritsMovement) shot.Velocity = ShooterDetailSimulation.InheritMovement(shot.Velocity, state.PlanarVelocity, state.Yaw, w);
+            }
             if (WeaponSimulation.IsFloatingBubble(w) && aim.MuzzleBlocked) shot.Origin = aim.MuzzleHit.Center;
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
+            if (w.DetailedPaint && pellet == 0 && ShooterDetailSimulation.Foot(shot.RoundIndex, shot.ShotSequence, w))
+                QueuePaintDrop(shot, state.Position + Vector3.up * .1f, born, w.ReferenceFootRadius,
+                    WeaponLaunch.FootOrdinal, aim.InitialDirection, w.ReferenceFootDepth);
             if (w.MotionMode == ProjectileMotionMode.BouncingBubble) BeginFlight(shot, shot.Origin, aim.InitialDirection);
             else if (aim.MuzzleBlocked && WeaponSimulation.IsFloatingBubble(w)) ResolveFloatingBubble(shot, aim.MuzzleHit, 0);
             else if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
@@ -274,7 +283,8 @@ namespace Splatoon.Combat
             uint trailSeed = shot.Seed ^ 0x9E3779B9u, ordinal = 0;
             if (trailSeed == 0) trailSeed = 1;
             var config = shot.Configuration;
-            if (config.ShooterDetails)
+            if (config.DetailedPaint) { /* Foot paint is scheduled at accepted emission, including an immediately blocked shot. */ }
+            else if (config.ShooterDetails)
             {
                 ShooterDetailSimulation.Schedule(shot.RoundIndex, config, out _, out _, out bool feet);
                 if (feet) QueuePaintDrop(shot, foot ?? muzzle - forward * .6f, shot.Born, config.ReferenceFootRadius, ++ordinal, forward, config.ReferenceFootDepth);
@@ -295,7 +305,7 @@ namespace Splatoon.Combat
             uint scheduleSeed = InkShapeAtlas.Hash(shot.Seed ^ 0xA511E9B3u);
             int count = (int)budget + (InkBallistics.Random01(ref scheduleSeed) < budget - (int)budget ? 1 : 0);
             float first = config.ReferenceTrailStart + (config.ReferenceTrailRandomPhase ? InkBallistics.Random01(ref scheduleSeed) * config.TrailSpacing : 0);
-            if (config.ShooterDetails) ShooterDetailSimulation.Schedule(shot.RoundIndex, config, out count, out first, out _);
+            if (config.UsesDetailedPaint) ShooterDetailSimulation.Schedule(shot.RoundIndex, config, out count, out first, out _);
             if (WeaponSimulation.IsExplosher(config)) first = Mathf.Lerp(config.ReferenceTrailStart, config.ExplosherTrailPhaseMax * config.TrailSpacing, InkBallistics.Random01(ref scheduleSeed));
             _active.Add(new Active { Pierced = WeaponSimulation.IsExplosher(config) ? new HashSet<(ulong, uint)>() : null, TrailBudget = count, NextTrailDistance = first, Shot = shot, SimulatedUntil = shot.Born, LastTrail = muzzle, TrailSeed = trailSeed, PaintOrdinal = ordinal,
                 CorrectionAt = config.ReferenceRules || DualiesNormalSimulation.Enabled(config) || WeaponSimulation.IsBlaster(config) ? double.PositiveInfinity : shot.Born + InkBallistics.CorrectionAge(shot, config),

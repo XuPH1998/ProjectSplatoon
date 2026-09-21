@@ -117,35 +117,3 @@ MonoBehaviour:
   wallDropGroundRadius: 0.44930731788492745
   wallDropSpeed: 2.6958439073095644
   wallDropSeconds: 1.0833333333333333
-  aimMode: 1
-  angularSpread: 1
-  inheritForwardMovement: 1
-  detailedPaint: 1
-  shooterDetails: 0
-  footSequence: 0
-  footPhase: 0
-  shotGuideSeconds: 0.11666666666666667
-  shooterMoveForwardRate: 2.0
-  shooterSplitNum: 5
-  shooterPaintNearDistance: 0.0
-  shooterPaintNearRadius: 1.4976910596164248
-  shooterSplashDepthMin: 1.0
-  shooterSplashDepthMax: 1.2
-  shooterSplashHeightMin: 2.246536589424637
-  shooterSplashHeightMax: 7.488455298082124
-  shooterPaintAngleMin: 10
-  shooterPaintAngleMax: 35
-  shooterFallHeightMin: 1.1232682947123185
-  shooterFallHeightMax: 7.488455298082124
-  shooterSplashSideSpeed: 2.4711902483671007
-  shooterSplashUpSpeed: 0.6739609768273911
-  shooterSplashForwardMin: 0.44930731788492745
-  shooterSplashForwardMax: 0.8986146357698549
-  shooterWallGravity: 21.56675125847652
-  shooterWallFirstMin: 0.3333333333333333
-  shooterWallFirstMax: 0.6666666666666666
-  shooterWallMiddle: 0.16666666666666666
-  shooterWallLastMin: 0.25
-  shooterWallLastMax: 0.5833333333333334
-  shooterWallFirstSpeed: 2.6958439073095644
-  shooterWallShockRadius: 0.9734991887506761

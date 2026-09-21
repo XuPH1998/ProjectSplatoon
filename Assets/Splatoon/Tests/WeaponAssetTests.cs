@@ -83,7 +83,7 @@ namespace Splatoon.Tests
         }
         [Test] public void LegacyCommittedBurstKeepsGrowingAfterReleaseUntilItsFinalRound()
         {
-            var w = Changed(1, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.fireMode = WeaponFireMode.Burst; a.burstCount = 3; a.fireRate = 15; a.startSeconds = 0 / 60.0; a.burstRecoverySeconds = 8 / 60.0; });
+            var w = Changed(1, a => { WeaponAlignmentFixture.DisableReconstruction(a); a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.fireMode = WeaponFireMode.Burst; a.burstCount = 3; a.fireRate = 15; a.startSeconds = 0 / 60.0; a.burstRecoverySeconds = 8 / 60.0; });
             var s = Alive(1);
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, t == 0);
             Assert.That(s.ShotSequence, Is.EqualTo(3)); Assert.That(s.SpreadFiring, Is.False);
@@ -140,7 +140,7 @@ namespace Splatoon.Tests
         }
         [Test] public void LegacyZeroDurationUsesMaxForFinalShotBeforeImmediateRecovery()
         {
-            var w = Changed(6, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadExpandSeconds = 0; a.spreadRecoverSeconds = 0; }); var s = Alive();
+            var w = Changed(6, a => { WeaponAlignmentFixture.DisableReconstruction(a); a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadExpandSeconds = 0; a.spreadRecoverSeconds = 0; }); var s = Alive();
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, false);
             Assert.That(s.ShotSequence, Is.EqualTo(1)); Assert.That(s.LastShotSpread, Is.EqualTo(3)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(2));
             Assert.That(s.CurrentSpread, Is.Zero); Assert.That(s.CurrentVerticalSpread, Is.Zero);
@@ -175,7 +175,7 @@ namespace Splatoon.Tests
         [Test] public void LegacyLiveSpreadChangePreservesProgressAndOldShotConfiguration()
         {
             var old = WeaponAlignmentFixture.LegacySpread(6); WeaponConfigService.Current.Replace(6, old); uint revision = WeaponConfigService.Current.Revision(6);
-            var next = Changed(6, a => { a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadDegrees = 4; a.splatlingPitchSpread = 3; a.spreadExpandSeconds = 2; a.projectileGravity = 0; a.damage = 45; });
+            var next = Changed(6, a => { WeaponAlignmentFixture.DisableReconstruction(a); a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadDegrees = 4; a.splatlingPitchSpread = 3; a.spreadExpandSeconds = 2; a.projectileGravity = 0; a.damage = 45; });
             var s = Alive(); s.SpreadProgress = .5f;
             Assert.That(old.RequiresRestart(next), Is.False); Assert.That(old.SameValues(next), Is.False);
             WeaponConfigService.Current.Replace(6, next); SpreadSimulation.Refresh(ref s, next);

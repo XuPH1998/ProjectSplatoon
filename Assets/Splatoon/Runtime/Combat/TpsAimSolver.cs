@@ -30,7 +30,7 @@ namespace Splatoon.Combat
         RaycastHit[] _hits = new RaycastHit[64];
         Collider[] _overlaps = new Collider[64];
 
-        public TpsAimSolution Resolve(PrototypePlayer player, PlayerSnapshot state, byte muzzleIndex)
+        public TpsAimSolution Resolve(PrototypePlayer player, PlayerSnapshot state, byte muzzleIndex, float? charge = null)
         {
             byte? ignoreTeam = (WeaponSimulation.UsesBubbleMesh(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsBlaster(GameplayConfig.GetWeapon(state.HeroId)) || WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId))) ? state.Team : (byte?)null;
             var rotation = Quaternion.Euler(state.Pitch, state.Yaw, 0);
@@ -39,11 +39,13 @@ namespace Splatoon.Combat
             Vector3 forward = rotation * Vector3.forward;
             bool hit = ClosestCast(camera, forward, ProbeDistance, 0, player.PlayerId, out var aimHit, null, ignoreTeam);
             Vector3 muzzle = state.Position + Quaternion.Euler(0, state.Yaw, 0) * player.MuzzleOffset(state.Pitch, muzzleIndex);
-            var result = Geometry(camera, forward, muzzle, GameplayConfig.Global.AimCorrectionDistance,
-                GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
+            var weapon = GameplayConfig.GetWeapon(state.HeroId);
+            var result = weapon.AimMode == WeaponAimMode.WeaponReference
+                ? WeaponLaunch.Geometry(camera, forward, muzzle, weapon, charge ?? WeaponLaunch.PreviewCharge(state, weapon))
+                : Geometry(camera, forward, muzzle, GameplayConfig.Global.AimCorrectionDistance,
+                    GameplayConfig.Global.AimFarCorrectionDistance, hit ? aimHit.Distance : float.PositiveInfinity);
             result.Pivot = pivot;
             result.AimHit = aimHit;
-            var weapon = GameplayConfig.GetWeapon(state.HeroId);
             float radius = WeaponSimulation.IsExplosher(weapon) ? weapon.ExplosherFieldInitialRadius : weapon.CollisionRadius;
             // Detect an embedded pivot too: casts do not report an origin inside a collider.
             result.MuzzleBlocked = Overlap(pivot, radius, player.PlayerId, -forward, out result.MuzzleHit, WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(state.HeroId)) ? false : (bool?)null, ignoreTeam, floatingMesh: WeaponSimulation.IsFloatingBubble(weapon))

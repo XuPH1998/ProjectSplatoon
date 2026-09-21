@@ -37,6 +37,8 @@ namespace Splatoon.Prototype
         public bool LastHitKilled { get; private set; }
         public bool MuzzleBlocked { get; private set; }
         public Vector2 ReticleViewport { get; private set; } = new(.5f, .5f);
+        public Vector2 DirectionReticleViewport { get; private set; } = new(.5f, .5f);
+        public Vector2 GuideSpreadHalfSize { get; private set; }
         public bool ImpactReticleVisible { get; private set; }
         public Vector2 ImpactReticleViewport { get; private set; }
         public bool TargetReticleVisible { get; private set; }
@@ -419,14 +421,23 @@ namespace Splatoon.Prototype
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
+            DirectionReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.CameraOrigin + aim.Forward * TpsAimSolver.ProbeDistance);
             MuzzleBlocked = WeaponSimulation.IsExplosher(reticleWeapon) ? aim.MuzzleBlocked : _aimSolver.IsObstructed(aim, reticleWeapon.CollisionRadius, PlayerId,
                 WeaponSimulation.IsFloatingBubble(reticleWeapon) ? s.Team : (byte?)null);
             if (s.Health > 0 && !s.ShowsSwimBody)
             {
-                var prediction = WeaponImpactPrediction.Predict(_aimSolver, aim, reticleWeapon, s, PlayerId);
+                bool guided = reticleWeapon.AimMode == WeaponAimMode.WeaponReference;
+                var prediction = guided ? WeaponImpactPrediction.Guide(_aimSolver, aim, reticleWeapon, s, PlayerId)
+                    : WeaponImpactPrediction.Predict(_aimSolver, aim, reticleWeapon, s, PlayerId);
+                if (guided)
+                {
+                    ReticleViewport = TpsAimSolver.ReticleViewport(_camera, prediction.Point);
+                    MuzzleBlocked = WeaponImpactPrediction.GuideObstructed(aim, prediction);
+                    GuideSpreadHalfSize = ReticleGeometry.GuideHalfSize(_camera, aim, reticleWeapon, s, prediction.Age);
+                }
                 Vector2 landing = default, target = default;
                 // Only expose the predicted landing point while the muzzle path is obstructed.
-                ImpactReticleVisible = MuzzleBlocked && prediction.HasImpact && ProjectReticle(prediction.Point, out landing);
+                ImpactReticleVisible = !guided && MuzzleBlocked && prediction.HasImpact && ProjectReticle(prediction.Point, out landing);
                 if (ImpactReticleVisible) ImpactReticleViewport = landing;
                 TargetReticleVisible = prediction.HasEnemyContact && ProjectReticle(prediction.EnemyPoint, out target);
                 if (TargetReticleVisible) TargetReticleViewport = target;

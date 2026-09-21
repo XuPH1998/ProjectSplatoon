@@ -69,17 +69,18 @@ namespace Splatoon.Combat
             }
             if (ammo.ExplosionPaint && radius > 0)
             {
+                double paintAge = (at ?? shot.Born + shot.Configuration.Lifetime) - shot.Born;
                 _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear(); _explosherPaintPlanes.Clear();
                 // First-hit rays produce an actual surface normal and never stamp a wall's
                 // far side. Downward ray guarantees floor coverage, even between fan samples.
                 float searchRadius = floating ? ammo.ExplosionPaintRadiusMax : explosher ? ExplosherSimulation.PaintRadius(shot, position) : radius;
-                if (explosher || floating) PaintExplosionRay(shot, origin, -normal, searchRadius, collision);
-                PaintExplosionRay(shot, origin, Vector3.down, searchRadius, collision);
-                PaintExplosionRay(shot, origin, Vector3.up, searchRadius, collision);
+                if (explosher || floating) PaintExplosionRay(shot, origin, -normal, searchRadius, collision, paintAge);
+                PaintExplosionRay(shot, origin, Vector3.down, searchRadius, collision, paintAge);
+                PaintExplosionRay(shot, origin, Vector3.up, searchRadius, collision, paintAge);
                 for (int i = 0; i < 40; i++)
                 {
                     float y = 1 - 2 * (i + .5f) / 40, r = Mathf.Sqrt(1 - y * y), angle = i * 2.39996323f;
-                    PaintExplosionRay(shot, origin, new Vector3(Mathf.Cos(angle) * r, y, Mathf.Sin(angle) * r), searchRadius, collision);
+                    PaintExplosionRay(shot, origin, new Vector3(Mathf.Cos(angle) * r, y, Mathf.Sin(angle) * r), searchRadius, collision, paintAge);
                 }
             }
             Explosions.Add(new InkExplosionEvent { Round = shot.Round, ShotId = shot.Id, ActionId = shot.ActionId, Shooter = shot.Shooter,
@@ -90,7 +91,7 @@ namespace Splatoon.Combat
         bool Occluded(Vector3 origin, Vector3 delta, ulong shooter)
             => delta.sqrMagnitude > .000001f && _aim.ClosestCast(origin, delta, Mathf.Max(0, delta.magnitude - .002f), 0, shooter, out _, false);
 
-        void PaintExplosionRay(InkShot shot, Vector3 origin, Vector3 direction, float distance, bool collision)
+        void PaintExplosionRay(InkShot shot, Vector3 origin, Vector3 direction, float distance, bool collision, double age)
         {
             if (!_aim.ClosestCast(origin, direction, distance, 0, shot.Shooter, out var hit, false)) return;
             var surface = hit.Collider.GetComponentInParent<Splatoon.Painting.PaintSurface>();
@@ -127,6 +128,8 @@ namespace Splatoon.Combat
             // Keep the entire stamp visible. A wide stamp on the floor could otherwise
             // reach behind a nearby wall even though its centre passed the visibility ray.
             ApplyPaint(surface, shot, hit.Point, hit.Normal, r, shot.Configuration, seed, true, origin);
+            if (shot.Configuration.DetailedPaint && WeaponSimulation.IsBlaster(shot.Configuration))
+                QueueReferenceWall(surface, shot, hit.Point, hit.Normal, age, 0x20000000u + (uint)_explosionPaintSites.Count * 4096);
         }
 
         void PopulatePaintClip(ref PaintStamp stamp, InkShot shot, PaintSurface surface, Vector3 origin, Vector3 point, float extent)

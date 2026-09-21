@@ -32,7 +32,13 @@ namespace Splatoon.Tests
             foreach (var key in values.Keys) if (expected.HasKey(key)) expected[key] = values[key];
         }
         public static WeaponRuntimeConfig LegacySpread(int hero) => WeaponAssetTests.Changed(hero, a =>
-        { a.referenceRules = false; a.referenceSpreadEnabled = false; if (a.motionMode == ProjectileMotionMode.ReferencePhased) a.motionMode = ProjectileMotionMode.Ballistic; });
+        { DisableReconstruction(a); a.referenceRules = false; a.referenceSpreadEnabled = false; if (a.motionMode == ProjectileMotionMode.ReferencePhased) a.motionMode = ProjectileMotionMode.Ballistic; });
+        public static void DisableReconstruction(WeaponConfigAsset a)
+        {
+            a.aimMode = WeaponAimMode.CameraHit; a.shotGuideSeconds = 0;
+            a.angularSpread = a.detailedPaint = a.inheritForwardMovement = false;
+            a.footSequence = FootSequenceBasis.ShotSequence; a.footPhase = 0;
+        }
     }
 }
 #endif

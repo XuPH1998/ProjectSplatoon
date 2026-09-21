@@ -1,0 +1,1055 @@
+{
+  "referenceVersion": "11.3.0",
+  "scale": 0.7488455298082124,
+  "originalAlgorithmVerified": false,
+  "weapons": {
+    "RifleGirl": {
+      "source": "Tools/ValidationData/WeaponAlignment/WeaponShooterNormal.1130.json",
+      "sha256": "dfca9f45fd0df3b6afab8f6ec0e47034912f3a6fc411936b9fd7257fe85c4cb9",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.13333333333333333,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 2.0,
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+        },
+        "referenceTrailBudget": {
+          "value": 1.5,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 8,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.8986146357698549,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 6.889378874235554,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.543220867828764,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 0.0,
+          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 1.44527187252985,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1,
+          "evidence": "Project default: DepthScaleMin=1, scale=1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.2,
+          "evidence": "Project default: DepthScaleMax=1.2, scale=1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.3333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.6666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.16666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 1.1681990265008113,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.48674959437533805,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": [
+        4
+      ]
+    },
+    "PistolGirl": {
+      "source": "Tools/ValidationData/WeaponAlignment/WeaponShooterPrecision.1130.json",
+      "sha256": "317493845cbdb503a49015451b0e5b2f00cdf90f748b07e44e81ff1cca036f1d",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.06666666666666667,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 2.0,
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+        },
+        "referenceTrailBudget": {
+          "value": 1.5,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 6,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.8611723592794442,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 7.114032533178018,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.543220867828764,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 0.0,
+          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 1.6399717102799851,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1,
+          "evidence": "Project default: DepthScaleMin=1, scale=1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.2,
+          "evidence": "Project default: DepthScaleMax=1.2, scale=1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.3333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.6666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.16666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 1.1681990265008113,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.48674959437533805,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        },
+        "referenceSpreadEnabled": {
+          "value": 1,
+          "evidence": "Zero angular envelope; enable shared spread state without changing accuracy"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": []
+    },
+    "SplooshGirl": {
+      "source": "Tools/ValidationData/SplooshGirl/WeaponShooterShort.1130.json",
+      "sha256": "4766d778180949833438b93fd945131cd76835adfda6a11feb6f7b2b3803c315",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 5,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 4,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.1,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 2.0,
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+        },
+        "referenceTrailBudget": {
+          "value": 1.4,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 5,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.8611723592794442,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 4.493073178849274,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.4467695635894664,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 1.4976910596164248,
+          "evidence": "PaintParam.DistanceNear * 0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 1.9245330116071058,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1,
+          "evidence": "Project default: DepthScaleMin=1, scale=1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.2,
+          "evidence": "Project default: DepthScaleMax=1.2, scale=1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.3333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.6666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.16666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 1.1681990265008113,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.48674959437533805,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": []
+    },
+    "DualPistolGirl": {
+      "source": "Tools/ValidationData/WeaponAlignment/WeaponManeuverGallon.1130.json",
+      "sha256": "a65b5fc265a615263ed826bce09213fa90697bb2cfe44af588625c1887a16c89",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 5,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.11666666666666667,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 2.0,
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+        },
+        "referenceTrailBudget": {
+          "value": 2.0,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 5,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.7488455298082124,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 5.2419187086574865,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.591446519948413,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 0.0,
+          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 1.4976910596164248,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1.0,
+          "evidence": "SplashPaintParam.DepthScaleMin * 1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.2,
+          "evidence": "Project default: DepthScaleMax=1.2, scale=1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.3333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.6666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.16666666666666666,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 0.9734991887506761,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.48674959437533805,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": []
+    },
+    "MachineGunGirl": {
+      "source": "Tools/ValidationData/WeaponAlignment/WeaponSpinnerHyper.1130.json",
+      "sha256": "1f92f4f4266070e59c7ab3775fb90c75624018899bb3b9bced915a6a3e2630ed",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.18333333333333332,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 0,
+          "evidence": "Project default: ZRate=0, scale=1"
+        },
+        "referenceTrailBudget": {
+          "value": 1.0,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 8,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.0,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 17.597869950492992,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.1574156508715732,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 0.0,
+          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 1.572575612597246,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "paintDistanceFar": {
+          "value": 18.72113824520531,
+          "evidence": "PaintParam.DistanceFar * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1.5,
+          "evidence": "SplashPaintParam.DepthScaleMin * 1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.5,
+          "evidence": "SplashPaintParam.DepthScaleMax * 1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.5,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.08333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 2.6958439073095644,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 0.9734991887506761,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.48674959437533805,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": []
+    },
+    "RocketLauncherGirl": {
+      "source": "Tools/ValidationData/WeaponAlignment/WeaponBlasterLight.1130.json",
+      "sha256": "e749fc9ccd6919f71c1a9287f9351710f48cfd81e260fc1ba759db157986cae1",
+      "fields": {
+        "aimMode": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "angularSpread": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "inheritForwardMovement": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "detailedPaint": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shooterDetails": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceTrailRandomPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "referenceFootEvery": {
+          "value": 1,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footSequence": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "footPhase": {
+          "value": 0,
+          "evidence": "Approved project reconstruction / independent capability and schedule"
+        },
+        "shotGuideSeconds": {
+          "value": 0.25,
+          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+        },
+        "shooterMoveForwardRate": {
+          "value": 2.0,
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+        },
+        "referenceTrailBudget": {
+          "value": 11.0,
+          "evidence": "SplashSpawnParam.SpawnNum * 1"
+        },
+        "shooterSplitNum": {
+          "value": 1,
+          "evidence": "SplashSpawnParam.SplitNum * 1"
+        },
+        "referenceTrailStart": {
+          "value": 0.6739609768273912,
+          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+        },
+        "trailSpacing": {
+          "value": 1.2131297582893041,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+        },
+        "referenceFootRadius": {
+          "value": 1.3838665390855767,
+          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+        },
+        "shooterPaintNearDistance": {
+          "value": 0.0,
+          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+        },
+        "shooterPaintNearRadius": {
+          "value": 0.0,
+          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+        },
+        "shooterSplashDepthMin": {
+          "value": 1,
+          "evidence": "Project default: DepthScaleMin=1, scale=1"
+        },
+        "shooterSplashDepthMax": {
+          "value": 1.2,
+          "evidence": "Project default: DepthScaleMax=1.2, scale=1"
+        },
+        "shooterSplashHeightMin": {
+          "value": 2.246536589424637,
+          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+        },
+        "shooterSplashHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+        },
+        "shooterPaintAngleMin": {
+          "value": 10,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterPaintAngleMax": {
+          "value": 35,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMin": {
+          "value": 1.1232682947123185,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterFallHeightMax": {
+          "value": 7.488455298082124,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashSideSpeed": {
+          "value": 2.4711902483671007,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashUpSpeed": {
+          "value": 0.6739609768273911,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMin": {
+          "value": 0.44930731788492745,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterSplashForwardMax": {
+          "value": 0.8986146357698549,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallGravity": {
+          "value": 21.56675125847652,
+          "evidence": "Explicit project approximation, generalized from the documented Sploosh profile"
+        },
+        "shooterWallFirstMin": {
+          "value": 0.25,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+        },
+        "shooterWallFirstMax": {
+          "value": 0.5,
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+        },
+        "shooterWallMiddle": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+        },
+        "shooterWallLastMin": {
+          "value": 0.3333333333333333,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+        },
+        "shooterWallLastMax": {
+          "value": 0.5833333333333334,
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+        },
+        "shooterWallFirstSpeed": {
+          "value": 3.145151225194492,
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+        },
+        "wallDropSpeed": {
+          "value": 1.7972292715397098,
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+        },
+        "shooterWallShockRadius": {
+          "value": 0.9734991887506761,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+        },
+        "wallDropRadius": {
+          "value": 0.7488455298082124,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+        },
+        "wallDropGroundRadius": {
+          "value": 0.44930731788492745,
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+        },
+        "referenceBiasMin": {
+          "value": 0.0,
+          "evidence": "WeaponParam.Stand_DegBiasMin * 1"
+        },
+        "referenceBiasMax": {
+          "value": 0.0,
+          "evidence": "WeaponParam.Stand_DegBiasMax * 1"
+        },
+        "referenceBiasPerShot": {
+          "value": 0.0,
+          "evidence": "WeaponParam.Stand_DegBiasKf * 1"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": []
+    }
+  }
+}

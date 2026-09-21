@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 10; // Replay folds ink over shared ramp/platform edges.
-        public const int WeaponSimulationVersion = 18; // Sub-weapon entities, shared ink, deployable collisions and statuses.
+        public const int WeaponSimulationVersion = 19; // Weapon reference aiming, independent launch streams and phased paint.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);

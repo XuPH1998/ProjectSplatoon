@@ -66,7 +66,9 @@ namespace Splatoon.Editor
             w.projectileGravity = F("MoveParam", "FreeGravity") * 3600 * S;
             w.brakeSeconds = 4.0 / 60; w.referenceBrakeDrag = .36f; w.referenceBrakeGravity = .07f * 3600 * S; w.referenceFreeDrag = .02f;
             w.collisionRadius = F("CollisionParam", "InitRadiusForField") * S; w.referencePlayerRadius = F("CollisionParam", "InitRadiusForPlayer") * S;
-            w.referenceRules = w.referenceSpreadEnabled = w.shooterDetails = true; w.motionMode = ProjectileMotionMode.ReferencePhased;
+            w.referenceRules = w.referenceSpreadEnabled = true; w.shooterDetails = false; w.motionMode = ProjectileMotionMode.ReferencePhased;
+            w.aimMode = WeaponAimMode.WeaponReference; w.shotGuideSeconds = F("WeaponParam", "ShotGuideFrame") / 60.0;
+            w.angularSpread = w.inheritForwardMovement = w.detailedPaint = true;
             w.spreadDegrees = F("WeaponParam", "Stand_DegSwerve"); w.jumpSpreadDegrees = F("WeaponParam", "Jump_DegSwerve");
             w.referenceBiasMin = F("WeaponParam", "Stand_DegBiasMin"); w.referenceBiasMax = F("WeaponParam", "Stand_DegBiasMax");
             w.referenceBiasPerShot = F("WeaponParam", "Stand_DegBiasKf"); w.referenceBiasRecovery = F("WeaponParam", "Stand_DegBiasDecrease") * 60;
@@ -82,7 +84,8 @@ namespace Splatoon.Editor
             w.shooterPaintAngleMin = 10; w.shooterPaintAngleMax = 35; w.shooterFallHeightMin = 1.5f * S; w.shooterFallHeightMax = 10 * S;
             w.trailSpacing = F("SplashSpawnParam", "SpawnBetweenLength") * S; w.referenceTrailStart = F("SplashSpawnParam", "SpawnNearestLength") * S;
             w.referenceTrailBudget = F("SplashSpawnParam", "SpawnNum"); w.shooterSplitNum = (int)F("SplashSpawnParam", "SplitNum");
-            w.referenceFootEvery = w.shooterSplitNum; w.referenceTrailRandomPhase = false;
+            w.referenceFootEvery = 5; w.footSequence = FootSequenceBasis.ActionRound; w.footPhase = 4;
+            w.referenceTrailRandomPhase = false;
             w.trailRadiusMin = w.trailRadiusMax = F("SplashPaintParam", "WidthHalf") * S; w.referenceFootRadius = F("SplashPaintParam", "WidthHalfNearest") * S;
             w.shooterSplashHeightMin = F("SplashPaintParam", "DepthMaxDropHeight") * S; w.shooterSplashHeightMax = F("SplashPaintParam", "DepthMinDropHeight") * S;
             w.shooterSplashDepthMin = 1; w.shooterSplashDepthMax = 1.2f; w.referenceFootDepth = w.trailDepthScale = 1.2f;

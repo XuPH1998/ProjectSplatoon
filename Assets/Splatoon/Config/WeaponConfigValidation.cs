@@ -7,13 +7,23 @@ namespace Splatoon.Config
         public static void Validate(WeaponRuntimeConfig w)
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
+            Require(Enum.IsDefined(typeof(WeaponAimMode), w.AimMode) && Enum.IsDefined(typeof(FootSequenceBasis), w.FootSequence), "瞄准模式或脚下墨计数依据无效");
+            if (w.AimMode == WeaponAimMode.WeaponReference)
+                Require(w.ReferenceRules && w.PelletCount == 1 && double.IsFinite(w.ShotGuideSeconds) && w.ShotGuideSeconds > 0 && w.ShotGuideSeconds <= w.Lifetime, "武器参考点需要单颗参考弹道和有效引导时间");
+            if (w.InheritsMovement) Require(float.IsFinite(w.ShooterMoveForwardRate) && w.ShooterMoveForwardRate >= 0, "移动继承倍率无效");
+            if (w.AngularSpread) Require(w.ReferenceRules && (w.ReferenceSpreadEnabled || w.MotionMode == ProjectileMotionMode.DualiesNormal), "角度域散布需要逐发偏置规则");
+            Require(double.IsFinite(w.ShooterPostSeconds) && w.ShooterPostSeconds >= 0, "射后动作时间无效");
             Require(w.ReferenceFootDepth > 0, "脚下墨迹纵深比例必须大于0");
             if (w.ShooterDetails)
             {
                 Require(w.ReferenceRules && w.ReferenceSpreadEnabled && w.FireMode == WeaponFireMode.Automatic &&
                     w.MotionMode == ProjectileMotionMode.ReferencePhased && w.PelletCount == 1 && w.MuzzleMode == WeaponMuzzleMode.Single && !w.Ammo.ExplosionEnabled, "射手详细规则要求单发自动参考墨弹");
-                Require(w.ShooterSplitNum > 0 && w.ShooterSplitNum <= 64 && w.ShooterPaintNearRadius > 0 &&
-                    w.PaintDistanceMiddle > w.ShooterPaintNearDistance && w.PaintDistanceFar > w.PaintDistanceMiddle &&
+            }
+            if (w.UsesDetailedPaint)
+            {
+                Require(w.ReferenceRules && w.PelletCount == 1 && w.FootPhase >= 0 && w.FootPhase < w.ReferenceFootEvery, "详细涂墨需要单颗参考弹道和有效脚下墨相位");
+                Require(w.ShooterSplitNum > 0 && w.ShooterSplitNum <= 64 && w.ShooterPaintNearRadius >= 0 &&
+                    (w.FireMode == WeaponFireMode.Blaster || w.PaintDistanceMiddle > w.ShooterPaintNearDistance) && w.PaintDistanceFar > w.PaintDistanceMiddle &&
                     w.ShooterPaintAngleMax > w.ShooterPaintAngleMin && w.ShooterPaintAngleMax <= 90 &&
                     w.ShooterFallHeightMax > w.ShooterFallHeightMin && w.ShooterSplashHeightMax > w.ShooterSplashHeightMin &&
                     w.ShooterSplashDepthMin > 0 && w.ShooterSplashDepthMax >= w.ShooterSplashDepthMin &&
@@ -93,7 +103,7 @@ namespace Splatoon.Config
             {
                 Require(w.ReferenceBrakeEndSpeed > 0 && w.ReferenceBrakeDrag >= 0 && w.ReferenceBrakeDrag < 1 && w.ReferenceFreeDrag >= 0 && w.ReferenceFreeDrag < 1 && w.ReferenceBrakeGravity >= 0 && w.ReferencePlayerRadius >= w.CollisionRadius, "参考弹道或碰撞无效");
                 Require(w.ReferenceTrailBudget >= 0 && w.ReferenceTrailBudget <= 64 && w.ReferenceFootEvery > 0 && w.ReferenceFootRadius >= 0 && w.PaintDepthMin > 0 && w.PaintDepthMax >= w.PaintDepthMin && w.PaintDepthBreakMin > 0 && w.PaintDepthBreakMax >= w.PaintDepthBreakMin && w.PaintDistanceFar > w.PaintDistanceMiddle && w.TrailDepthScale > 0 && w.PaintDropGravity > 0 && w.PaintDropLifetime > 0 && w.PaintDropLifetime <= 10, "参考涂墨配置无效");
-                if (w.ReferenceSpreadEnabled) Require(w.ReferenceBiasMin > 0 && w.ReferenceBiasMax >= w.ReferenceBiasMin && w.ReferenceBiasMax < 1 && w.ReferenceJumpBias >= w.ReferenceBiasMax && w.ReferenceJumpBias < 1 && w.ReferenceJumpEnd > w.ReferenceJumpStart && w.ReferencePitchBias > 0 && w.ReferencePitchBias < 1, "参考散布配置无效");
+                if (w.ReferenceSpreadEnabled) Require(w.ReferenceBiasMin >= 0 && w.ReferenceBiasMax >= w.ReferenceBiasMin && w.ReferenceBiasMax < 1 && w.ReferenceJumpBias >= w.ReferenceBiasMax && w.ReferenceJumpBias < 1 && w.ReferenceJumpEnd > w.ReferenceJumpStart && w.ReferencePitchBias >= 0 && w.ReferencePitchBias < 1 && w.ReferenceBiasPerShot >= 0 && w.ReferenceBiasRecovery >= 0, "参考散布配置无效");
                 if (w.MotionMode == ProjectileMotionMode.BouncingBubble) Require(w.BubbleAirSpeed > 0 && w.BubbleLaterSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterAirSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterFieldRadius > 2*w.BubbleRadiusDecrement && w.BubbleLaterPlayerRadius >= w.BubbleLaterFieldRadius && w.BubbleInitialRadiusRate > 0 && w.BubbleInitialRadiusRate <= 1 && w.BubbleFieldGrowSeconds > 0 && w.BubblePlayerGrowSeconds > 0 && w.BubbleBounceRadiusRate > 0 && w.BubbleBounceRadiusRate <= 1 && w.BubbleBouncePaintRate > 0 && w.BubbleBouncePaintRate <= 1, "参考泡泡参数无效");
             }
                 Require(w.ShootMoveSpeed > 0 && w.BurstCount > 0, "射击移动速度与每组发数必须大于零");

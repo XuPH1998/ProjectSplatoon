@@ -210,7 +210,7 @@ namespace Splatoon.Combat
                 s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.ExplosherPostSeconds);
                 s.AttackMoveUntil = Math.Max(s.AttackMoveUntil, now + w.ExplosherMoveLimitSeconds);
             }
-            if (w.ShooterDetails) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.ShooterPostSeconds);
+            if (w.ShooterPostSeconds > 0) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.ShooterPostSeconds);
             if (IsBlaster(w)) s.AttackRecoveryUntil = Math.Max(s.AttackRecoveryUntil, now + w.BlasterPostSeconds);
             s.InkRecoverAt = now + w.InkRecoverLockSeconds; s.ProtectedUntil = 0;
             result = new WeaponFireResult(s.HeroId, charge, s.ShotActionId, s.LastShotMuzzle, w.PelletCount);

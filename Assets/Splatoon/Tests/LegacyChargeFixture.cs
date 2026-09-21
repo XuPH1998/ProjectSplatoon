@@ -27,6 +27,7 @@ namespace Splatoon.Tests
                 JsonUtility.FromJsonOverwrite(ReferenceRow().ToString(), copy);
                 copy.motionMode = ProjectileMotionMode.Ballistic;
                 copy.referenceRules = false; copy.referenceSpreadEnabled = false;
+                WeaponAlignmentFixture.DisableReconstruction(copy);
                 edit?.Invoke(copy); return copy.Snapshot();
             }
             finally { UnityEngine.Object.DestroyImmediate(copy); }
