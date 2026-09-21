@@ -11,7 +11,7 @@ namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
-        public const int PaintProtocolVersion = 9;
+        public const int PaintProtocolVersion = 10; // Replay folds ink over shared ramp/platform edges.
         public const int WeaponSimulationVersion = 16; // Calibrated shared camera/aim geometry and form-continuous pivots.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {

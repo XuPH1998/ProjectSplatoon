@@ -139,6 +139,7 @@ namespace Splatoon.Tests
             }
             finally
             {
+                go.GetComponent<PaintSurface>()?.ReleaseGraphics(); second.GetComponent<PaintSurface>()?.ReleaseGraphics();
                 Object.DestroyImmediate(go); Object.DestroyImmediate(second); Object.DestroyImmediate(mesh); Object.DestroyImmediate(legacy);
                 if (mask != null) { mask.Release(); Object.DestroyImmediate(mask); } if (scratch != null) { scratch.Release(); Object.DestroyImmediate(scratch); }
             }
@@ -304,6 +305,7 @@ namespace Splatoon.Tests
             {
                 foreach (var rt in states.Values) { rt.Release(); Object.DestroyImmediate(rt); }
                 foreach (var rt in scratch.Values) { rt.Release(); Object.DestroyImmediate(rt); }
+                foreach (var surface in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<PaintSurface>())) surface.ReleaseGraphics();
                 Object.DestroyImmediate(legacy); UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene,true);
             }
         }

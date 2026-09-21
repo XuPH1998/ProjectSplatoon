@@ -19,6 +19,9 @@ namespace Splatoon.Prototype
         public string BakedTopology;
         public readonly SortedDictionary<int, PaintSurface> Surfaces = new();
         PaintSurface[] _paintSurfaces = Array.Empty<PaintSurface>();
+        readonly GroundPaintSeams _groundSeams = new();
+        readonly HashSet<PaintSurface> _paintedSurfaces = new();
+        readonly List<(PaintSurface surface, PaintStamp stamp)> _seamQueue = new();
         HeroChangeZone[] _heroChangeZones;
         public void RegisterHeroChangeZones() => _heroChangeZones = GetComponentsInChildren<HeroChangeZone>(true);
         public bool IsInHeroChangeZone(byte team, Vector3 position)
@@ -58,6 +61,7 @@ namespace Splatoon.Prototype
             foreach (var surface in GetComponentsInChildren<PaintSurface>(true))
                 if (surface.SurfaceId <= 0 || !Surfaces.TryAdd(surface.SurfaceId, surface)) throw new InvalidOperationException("表面 ID 重复或无效");
             _paintSurfaces = Surfaces.Values.ToArray();
+            _groundSeams.Build(_paintSurfaces);
         }
         public string ComputeTopology()
         {
@@ -126,14 +130,27 @@ namespace Splatoon.Prototype
         public void Apply(PaintStamp stamp, bool updateOwnership)
         {
             using var marker = FramePerformance.PaintCpu.Auto(); FramePerformance.PaintStamps++;
-            var brush = new InkShapeAtlas.Brush(stamp);
             if (!Surfaces.TryGetValue(stamp.SurfaceId, out var surface)) throw new InvalidOperationException("未知涂色表面：" + stamp.SurfaceId);
+            _paintedSurfaces.Clear(); _seamQueue.Clear();
+            ApplyPlane(surface, stamp, updateOwnership);
+            for (int i = 0; i < _seamQueue.Count; i++)
+            {
+                var pending = _seamQueue[i]; var links = _groundSeams.From(pending.surface);
+                if (links == null || Vector3.Dot(pending.surface.transform.up, pending.stamp.Normal) < .9999f) continue;
+                foreach (var link in links)
+                    if (!_paintedSurfaces.Contains(link.Target) && link.TryFold(pending.stamp, out var folded))
+                        ApplyPlane(link.Target, folded, updateOwnership);
+            }
+        }
+        void ApplyPlane(PaintSurface surface, PaintStamp stamp, bool updateOwnership)
+        {
+            var brush = new InkShapeAtlas.Brush(stamp);
             ApplyToSurface(surface, stamp, brush, updateOwnership);
             // A floor split into rendering tiles is still one continuous paintable plane.
             // Only coplanar neighbours participate, so a bridge never paints the ground below it.
             foreach (var neighbour in _paintSurfaces)
             {
-                if (neighbour == surface) continue;
+                if (_paintedSurfaces.Contains(neighbour)) continue;
                 foreach (var region in neighbour.CachedRegions)
                 {
                     if (Vector3.Dot(region.Normal(neighbour), stamp.Normal) < .9999f) continue;
@@ -145,8 +162,10 @@ namespace Splatoon.Prototype
                 }
             }
         }
-        private static void ApplyToSurface(PaintSurface surface, PaintStamp stamp, InkShapeAtlas.Brush brush, bool updateOwnership)
+        private void ApplyToSurface(PaintSurface surface, PaintStamp stamp, InkShapeAtlas.Brush brush, bool updateOwnership)
         {
+            _paintedSurfaces.Add(surface);
+            if (surface.Scores) _seamQueue.Add((surface, stamp));
             surface.Apply(stamp);
             if (updateOwnership) surface.ApplyRegions(stamp, brush);
         }

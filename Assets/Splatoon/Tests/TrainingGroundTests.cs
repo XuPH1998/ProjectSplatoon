@@ -83,7 +83,11 @@ namespace Splatoon.Tests
                 Assert.That(arena.FloorOwner(new Vector3(.2f, 0, 1)), Is.EqualTo(1));
                 Assert.That(arena.FloorOwner(new Vector3(.2f, 3, 1)), Is.Zero);
             }
-            finally { config.Reset(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
+            finally
+            {
+                foreach (var surface in UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)) surface.ReleaseGraphics();
+                config.Reset(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            }
         }
         [Test] public void AuthoredRoutesAllowHighPlatformJumpDropAndOuterLaneTraversal()
         {
