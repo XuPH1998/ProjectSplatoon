@@ -4,7 +4,7 @@ namespace Splatoon.Prototype
 {
     public sealed partial class PrototypeApp
     {
-        GUIStyle _bubblePrompt, _bubbleKey, _bubbleTimer;
+        GUIStyle _bubblePrompt, _bubbleKey, _bubbleTimer, _bubbleRescueHint, _bubbleMoveHint;
         void DrawBubbleHud(PrototypePlayer local, PlayerSnapshot state)
         {
             if (local == null || !HasControl || PrototypeMatch.Current.State.Value.Phase == Splatoon.Networking.MatchPhase.Finished) return;
@@ -13,9 +13,14 @@ namespace Splatoon.Prototype
             _bubbleTimer ??= new GUIStyle(_label) { fontSize = 27, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
             if (state.IsBubble)
             {
-                GUI.Box(new Rect(350, 215, 580, 105), GUIContent.none);
-                GUI.Label(new Rect(355, 220, 570, 50), $"等待队友解救  {System.Math.Max(0, state.BubbleUntil - Manager.ServerTime.Time):0.0} 秒", _bubbleTimer);
-                GUI.Label(new Rect(365, 271, 550, 36), "W A S D 缓慢移动 · 队友靠近按 F 解救", _small);
+                _bubbleRescueHint ??= new GUIStyle(_label) { fontSize = 36, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+                _bubbleRescueHint.normal.textColor = new Color(1f, .85f, .3f);
+                _bubbleMoveHint ??= new GUIStyle(_label) { fontSize = 20, alignment = TextAnchor.MiddleCenter };
+                Panel(new Rect(310, 205, 660, 142), new Color(.04f, .065f, .09f, .95f));
+                Panel(new Rect(310, 205, 660, 4), new Color(1f, .85f, .3f));
+                GUI.Label(new Rect(325, 217, 630, 52), "靠近队友，等待解救", _bubbleRescueHint);
+                GUI.Label(new Rect(325, 271, 630, 36), $"剩余等待时间  {System.Math.Max(0, state.BubbleUntil - Manager.ServerTime.Time):0.0} 秒", _bubbleTimer);
+                GUI.Label(new Rect(325, 307, 630, 32), "W A S D 缓慢移动 · 队友靠近按 F 解救", _bubbleMoveHint);
                 return;
             }
             var target = local.BubbleInteractionTarget;
