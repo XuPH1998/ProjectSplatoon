@@ -95,7 +95,7 @@ namespace Splatoon.Combat
                 if (damage > 0)
                     Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Time = time, Team = shot.Team,
                         Position = contact.Point, Normal = contact.Normal, Hit = true, ContinuesProjectile = true,
-                        Shooter = shot.Shooter, Victim = victim.PlayerId, Damage = damage, Killed = victim.Snapshot.Value.Health <= 0,
+                        Shooter = shot.Shooter, Victim = victim.PlayerId, Damage = damage, Killed = victim.Snapshot.Value.IsDead,
                         ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex });
             }
             if (worldHit)

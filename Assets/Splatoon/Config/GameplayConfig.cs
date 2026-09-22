@@ -42,6 +42,9 @@ namespace Splatoon.Config
             foreach (var hero in tables.TbHero.DataList) WeaponConfigValidation.Validate(WeaponConfigService.Current.Get(hero));
             foreach (var m in tables.TbRoomMode.DataList)
             {
+                Require(m.BubbleSeconds > 0 && m.BubbleMoveSpeed > 0 && m.BubbleGravity > 0 && m.BubbleFallSpeed > 0 &&
+                    m.BubbleBounceSpeed > 0 && m.BubbleInteractionRange > 0 && m.BubblePaintRadius > 0 && m.BubblePadding >= .2f,
+                    "待救泡泡参数必须为正，人物包裹余量至少0.2米");
                 Require(tables.TbHero.GetOrDefault(m.HeroId) != null && tables.TbMap.GetOrDefault(m.MapId) != null, "模式表存在无效引用");
                 Require(m.MaxPlayers >= 2 && m.MaxPlayers <= 8 && m.MinPlayers >= 2 && m.MinPlayers <= m.MaxPlayers && m.MatchSeconds > 0, "当前模式要求 2–8 人，每队最多 4 人");
             }

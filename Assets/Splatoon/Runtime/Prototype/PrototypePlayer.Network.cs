@@ -84,7 +84,9 @@ namespace Splatoon.Prototype
                 ProtectedUntil = NetworkManager.ServerTime.Time + GameplayConfig.Mode.ProtectionSeconds,
                 Grounded = true, Movement = MovementMode.Human, CurrentSpread = WeaponSimulation.Spread(GameplayConfig.GetWeapon(old.HeroId), false, 0),
                 SimulatedAt = NetworkManager.ServerTime.Time, AcknowledgedInput = old.AcknowledgedInput,
+                BubbleEvent = old.BubbleEvent, ConsumedInteract = old.ConsumedInteract,
                 ShotSequence = old.ShotSequence, ConsumedFire = old.ConsumedFire, ConsumedJump = old.ConsumedJump };
+            _downedBy = null; _downedTeam = 0;
             SpreadSimulation.Reset(ref s, GameplayConfig.GetWeapon(s.HeroId));
             s.BodyYaw = s.TurnStartYaw = s.Yaw; s.LastDamageAt = s.SimulatedAt;
             _serverInputs.Clear(); _inputAssembler.Clear(); _lastInput = new PlayerInputFrame { Look = new Vector2(s.Yaw, s.Pitch), Revision = s.Revision, HeroRevision=s.HeroRevision,
@@ -124,7 +126,8 @@ namespace Splatoon.Prototype
         {
             if (!IsSpawned || !ControlsLocalPlayer) return;
             UpdateGameLatency(); UpdatePredictionDiagnostics();
-            if (!PrototypeApp.Current.HasControl) return;
+            if (!PrototypeApp.Current.HasControl) { BubbleInteractionTarget = null; return; }
+            CaptureBubbleInteraction();
             if (Mouse.current != null)
             {
                 Vector2 delta = Mouse.current.delta.ReadValue();
@@ -152,13 +155,14 @@ namespace Splatoon.Prototype
             var frame = new PlayerInputFrame { Sequence = ++_sequence, Tick = (uint)Math.Max(0, NetworkManager.ServerTime.Time * GameplayConfig.Global.SimulationRate),
                 JumpSequence = _jumpSequence, FireSequence = _fireSequence, Revision = PresentedState.Revision, Look = _look, HeroRevision = PresentedState.HeroRevision,
                 ReleaseSequence = _releaseSequence, CancelFire = !PrototypeApp.Current.HasControl || !PrototypeApp.Current.CanFireInput };
+            frame.InteractSequence = _interactSequence; frame.InteractTarget = _interactTarget; frame.InteractTargetLife = _interactTargetLife;
             frame.SubPressSequence = _subPressSequence; frame.SubReleaseSequence = _subReleaseSequence;
             frame.CancelSub = frame.CancelFire || !Application.isFocused;
-            if (PrototypeApp.Current.HasControl && k != null && PresentedState.Health > 0)
+            if (PrototypeApp.Current.HasControl && k != null && PresentedState.CanMove)
             {
                 frame.Move = new Vector2((k.dKey.isPressed ? 1 : 0) - (k.aKey.isPressed ? 1 : 0), (k.wKey.isPressed ? 1 : 0) - (k.sKey.isPressed ? 1 : 0));
-                frame.Fire = PrototypeApp.Current.CanFireInput && Mouse.current != null && Mouse.current.leftButton.isPressed; frame.Swim = k.leftShiftKey.isPressed;
-                frame.SubHeld = PrototypeApp.Current.CanFireInput && k.eKey.isPressed;
+                frame.Fire = PresentedState.IsAlive && PrototypeApp.Current.CanFireInput && Mouse.current != null && Mouse.current.leftButton.isPressed; frame.Swim = PresentedState.IsAlive && k.leftShiftKey.isPressed;
+                frame.SubHeld = PresentedState.IsAlive && PrototypeApp.Current.CanFireInput && k.eKey.isPressed;
             }
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             PrototypeSmoke.ModifyInput(this, ref frame);
@@ -170,6 +174,7 @@ namespace Splatoon.Prototype
             PaintParityNetworkSmoke.ModifyInput(this, ref frame);
             SplooshNetworkSmoke.ModifyInput(this, ref frame);
             SubWeaponNetworkSmoke.ModifyInput(this, ref frame);
+            RescueBubbleNetworkSmoke.ModifyInput(this, ref frame);
             if (PrototypeSmoke.Active || RifleGirlSmoke.Active || ShooterMovementSmoke.Active || HeroSelectionSmoke.Active || BubbleNetworkSmoke.Active || ExplosherNetworkSmoke.Active || PaintParityNetworkSmoke.Active || SplooshNetworkSmoke.Active) { _look = frame.Look; frame.CancelFire = false; }
 #endif
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1);
@@ -219,6 +224,7 @@ namespace Splatoon.Prototype
             if (!float.IsFinite(frame.Move.x) || !float.IsFinite(frame.Move.y) || !float.IsFinite(frame.Look.x) || !float.IsFinite(frame.Look.y)) return;
             if (Math.Abs((long)frame.Tick - (long)(NetworkManager.ServerTime.Time * GameplayConfig.Global.SimulationRate)) > GameplayConfig.Global.SimulationRate * 3) return;
             frame.Move = Vector2.ClampMagnitude(frame.Move, 1); frame.Look.x = Mathf.Repeat(frame.Look.x, 360); frame.Look.y = Mathf.Clamp(frame.Look.y, -65, 75);
+            QueueBubbleInteraction(frame);
             _serverInputs.Add(frame.Sequence, frame); _lastReceivedAt = NetworkManager.ServerTime.Time;
         }
         public void Simulate(float dt, double now, MatchPhase phase)
@@ -228,7 +234,7 @@ namespace Splatoon.Prototype
             if (ApplyTeamRequest(phase)) return;
             var s = Snapshot.Value;
             ApplyHeroRequest(ref s, phase);
-            if (s.Health <= 0 && now >= s.RespawnsAt && phase != MatchPhase.Finished) { Respawn(); return; }
+            if (s.IsDead && now >= s.RespawnsAt && phase != MatchPhase.Finished) { Respawn(); return; }
             if (_serverInputs.Count > 0)
             {
                 var pair = _serverInputs.First(); _serverInputs.Remove(pair.Key); _lastInput = pair.Value;
@@ -262,6 +268,12 @@ namespace Splatoon.Prototype
             s.SimulatedAt = now; s.SimulationTick++;
             if (phase == MatchPhase.Finished)
             { WeaponSimulation.Cancel(ref s, input, true); SubWeaponSimulation.Cancel(ref s, input); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
+            if (s.IsBubble)
+            {
+                WeaponSimulation.Cancel(ref s, input, true); SubWeaponSimulation.Cancel(ref s, input);
+                _controller.enabled = false; BubbleMotor.Step(ref s, input, dt); transform.position = s.Position;
+                if (IsServer) SwimBody?.ApplyCollision(s); return false;
+            }
             var hero = GameplayConfig.GetHero(s.HeroId);
             var w = GameplayConfig.GetWeapon(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
@@ -321,19 +333,14 @@ namespace Splatoon.Prototype
             if (s.Health < before) s.LastDamageAt = now;
             if (s.Health <= 0)
             {
-                s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds; s.DiedAt = now;
-                s.DeathDirection = CharacterFacing.DeathDirection(s.BodyYaw, incomingVelocity);
-                s.Movement = MovementMode.Dead; s.Swimming = false; WeaponSimulation.Cancel(ref s, _lastInput, true);
-                SubWeaponSimulation.Cancel(ref s, _lastInput);
-                s.SwimSource = s.AirSwimSource = SwimSurface.None; s.CompactBody = false; s.PaperPose = PaperPose.None;
-                s.TurnDirection = 0; s.PlanarVelocity = Vector3.zero; _controller.enabled = false;
+                EnterBubble(ref s, attackerTeam, attackerClientId, incomingVelocity, now);
             }
             Snapshot.Value = s;
             var match = PrototypeMatch.Current;
             if (match != null)
             {
-                match.CombatStats.RecordDamage(PlayerId, s.Revision, attackerClientId, attackerTeam, before - s.Health, s.Health <= 0, now, match.State.Value.Phase);
-                if (s.Health <= 0) match.PublishCombatStats();
+                match.CombatStats.RecordDamage(PlayerId, s.Revision, attackerClientId, attackerTeam, before - s.Health, false, now, match.State.Value.Phase);
+                if (s.IsBubble) match.CombatStats.RecordDowned(PlayerId, s.Revision, now);
             }
         }
         public void PredictShotFeedback(PlayerSnapshot state) => PlayShotFeedback(state.ShotActionId, state.LastShotMuzzle, state.HeroId, state.Revision, state.HeroRevision, WeaponSimulation.IsBubble(GameplayConfig.GetWeapon(state.HeroId)) ? state.SimulatedAt : state.LastShotMuzzle == 1 ? state.LeftShotAt : state.RightShotAt);
@@ -408,8 +415,9 @@ namespace Splatoon.Prototype
             _visualOffset *= Mathf.Exp(-18 * Time.deltaTime); Visual.localPosition = _visualRest + _visualOffset;
             var bodyRotation = Quaternion.Euler(0, s.BodyYaw, 0);
             Visual.localRotation = ControlsLocalPlayer ? bodyRotation : Quaternion.Slerp(Visual.localRotation, bodyRotation, 1 - Mathf.Exp(-20 * Time.deltaTime));
-            if (ControlsLocalPlayer && s.Health > 0) { s.Yaw = _look.x; s.Pitch = _look.y; }
+            if (ControlsLocalPlayer && s.CanMove) { s.Yaw = _look.x; s.Pitch = _look.y; }
             CharacterView.Present(s, Time.deltaTime, ControlsLocalPlayer && !IsServer ? s.SimulatedAt : NetworkManager.ServerTime.Time);
+            PresentBubble(s);
             // Clients publish only the final displayed pose, never intermediate replay poses.
             if (!IsServer) SwimBody?.ApplyCollision(s);
             SwimBody?.Present(s, !ControlsLocalPlayer && !IsServer ? transform.position - s.Position : _visualOffset, Visual.localRotation);
@@ -418,6 +426,7 @@ namespace Splatoon.Prototype
             _camera.fieldOfView = Presentation != null ? Presentation.CameraVerticalFov : 60;
             _camera.transform.SetPositionAndRotation(CameraPosition(CameraPivot, rotation, Presentation), rotation * Quaternion.Euler(kick.x, kick.y, 0));
             PrototypeMatch.Current?.SubPresentation?.PresentHeld(this, s);
+            if (!s.IsAlive) { MuzzleBlocked = false; return; }
             var aim = _aimSolver.Resolve(this, s, s.NextMuzzle);
             var reticleWeapon = GameplayConfig.GetWeapon(s.HeroId);
             ReticleViewport = TpsAimSolver.ReticleViewport(_camera, aim.AimPoint);
@@ -454,6 +463,7 @@ namespace Splatoon.Prototype
             GameLatency.Reset(); ResetPredictionDiagnostics();
             _paintReplayPending = _syncReplayPending = _predictionPaused = false;
             _teamRequest = null; _heroRequest = null; TeamChangePending = HeroChangePending = false;
+            DisposeBubble();
             _heroView?.Dispose(); _heroView = null;
             Snapshot.OnValueChanged -= Reconcile; ByOwner.Remove(PlayerId);
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= SendInput;

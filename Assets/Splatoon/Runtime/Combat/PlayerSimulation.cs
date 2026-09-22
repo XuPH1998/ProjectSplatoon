@@ -7,7 +7,7 @@ using Splatoon.Prototype;
 
 namespace Splatoon.Combat
 {
-    public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead }
+    public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead, Bubble }
     public enum SwimSurface : byte { None, Friendly, Neutral }
     public enum WeaponPhase : byte { Idle, Starting, Firing, Ending, Charging, BurstCooldown }
 

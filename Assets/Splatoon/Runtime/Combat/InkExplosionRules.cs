@@ -63,7 +63,7 @@ namespace Splatoon.Combat
                     if (actual <= 0) continue;
                     Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = position, Normal = normal,
                         Hit = true, ContinuesProjectile = explosher, Time = at ?? shot.Born + shot.Configuration.Lifetime,
-                        Shooter = shot.Shooter, Victim = player.PlayerId, Damage = actual, Killed = player.Snapshot.Value.Health <= 0,
+                        Shooter = shot.Shooter, Victim = player.PlayerId, Damage = actual, Killed = player.Snapshot.Value.IsDead,
                         ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex });
                 }
             }

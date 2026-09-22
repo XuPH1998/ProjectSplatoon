@@ -9,6 +9,14 @@
     "matchSeconds": 180,
     "respawnSeconds": 3,
     "protectionSeconds": 2,
-    "friendlyFire": false
+    "friendlyFire": false,
+    "bubbleSeconds": 10,
+    "bubbleMoveSpeed": 0.6,
+    "bubbleGravity": 2,
+    "bubbleFallSpeed": 1,
+    "bubbleBounceSpeed": 0.8,
+    "bubbleInteractionRange": 1,
+    "bubblePaintRadius": 4,
+    "bubblePadding": 0.2
   }
 ]

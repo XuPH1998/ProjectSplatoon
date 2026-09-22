@@ -108,6 +108,7 @@ namespace Splatoon.Prototype
         }
         private void ResetPaint(uint round)
         {
+            _bubbleInteractions.Clear();
             _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
             ClearSubWeapons();
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
@@ -142,6 +143,8 @@ namespace Splatoon.Prototype
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             if (s.Phase == MatchPhase.Finished) ClearSubWeapons();
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
+            Physics.SyncTransforms();
+            ResolveBubbleInteractions(now);
             Physics.SyncTransforms(); // Publish switched/rotated swim hit volumes before authoritative projectile sweeps.
             if (s.Phase != MatchPhase.Finished) Projectiles.Simulate(now);
             if (s.Phase != MatchPhase.Finished) SubWeapons.Step(now, 1f / GameplayConfig.Global.SimulationRate, Players);

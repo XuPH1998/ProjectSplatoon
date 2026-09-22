@@ -69,7 +69,7 @@ namespace Splatoon.Combat
                 victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(shot.Configuration, age),
                     InkBallistics.Velocity(shot, shot.Configuration, age), shot.Shooter);
                 actual = before - victim.Snapshot.Value.Health;
-                killed = actual > 0 && victim.Snapshot.Value.Health <= 0;
+                killed = actual > 0 && victim.Snapshot.Value.IsDead;
             }
             // Sweeps return a surface contact and the moving sphere's centre separately.
             // An embedded spawn uses the nearest visible surface for occlusion rays only.

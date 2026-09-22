@@ -30,6 +30,14 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         { if(!_buf["respawnSeconds"].IsNumber) { throw new SerializationException(); }  RespawnSeconds = _buf["respawnSeconds"]; }
         { if(!_buf["protectionSeconds"].IsNumber) { throw new SerializationException(); }  ProtectionSeconds = _buf["protectionSeconds"]; }
         { if(!_buf["friendlyFire"].IsBoolean) { throw new SerializationException(); }  FriendlyFire = _buf["friendlyFire"]; }
+        { if(!_buf["bubbleSeconds"].IsNumber) { throw new SerializationException(); }  BubbleSeconds = _buf["bubbleSeconds"]; }
+        { if(!_buf["bubbleMoveSpeed"].IsNumber) { throw new SerializationException(); }  BubbleMoveSpeed = _buf["bubbleMoveSpeed"]; }
+        { if(!_buf["bubbleGravity"].IsNumber) { throw new SerializationException(); }  BubbleGravity = _buf["bubbleGravity"]; }
+        { if(!_buf["bubbleFallSpeed"].IsNumber) { throw new SerializationException(); }  BubbleFallSpeed = _buf["bubbleFallSpeed"]; }
+        { if(!_buf["bubbleBounceSpeed"].IsNumber) { throw new SerializationException(); }  BubbleBounceSpeed = _buf["bubbleBounceSpeed"]; }
+        { if(!_buf["bubbleInteractionRange"].IsNumber) { throw new SerializationException(); }  BubbleInteractionRange = _buf["bubbleInteractionRange"]; }
+        { if(!_buf["bubblePaintRadius"].IsNumber) { throw new SerializationException(); }  BubblePaintRadius = _buf["bubblePaintRadius"]; }
+        { if(!_buf["bubblePadding"].IsNumber) { throw new SerializationException(); }  BubblePadding = _buf["bubblePadding"]; }
     }
 
     public static RoomModeConfig DeserializeRoomModeConfig(JSONNode _buf)
@@ -77,6 +85,38 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
     /// 是否友伤
     /// </summary>
     public readonly bool FriendlyFire;
+    /// <summary>
+    /// 待救泡泡时长（秒）
+    /// </summary>
+    public readonly float BubbleSeconds;
+    /// <summary>
+    /// 泡泡水平速度（米/秒）
+    /// </summary>
+    public readonly float BubbleMoveSpeed;
+    /// <summary>
+    /// 泡泡重力（米/秒&#178;）
+    /// </summary>
+    public readonly float BubbleGravity;
+    /// <summary>
+    /// 泡泡最大下落速度（米/秒）
+    /// </summary>
+    public readonly float BubbleFallSpeed;
+    /// <summary>
+    /// 泡泡反弹速度（米/秒）
+    /// </summary>
+    public readonly float BubbleBounceSpeed;
+    /// <summary>
+    /// 距泡泡表面的交互距离（米）
+    /// </summary>
+    public readonly float BubbleInteractionRange;
+    /// <summary>
+    /// 死亡泡泡涂墨半径（米）
+    /// </summary>
+    public readonly float BubblePaintRadius;
+    /// <summary>
+    /// 泡泡包裹人物的余量（米）
+    /// </summary>
+    public readonly float BubblePadding;
    
     public const int __ID__ = 779335200;
     public override int GetTypeId() => __ID__;
@@ -98,6 +138,14 @@ public sealed partial class RoomModeConfig : Luban.BeanBase
         + "respawnSeconds:" + RespawnSeconds + ","
         + "protectionSeconds:" + ProtectionSeconds + ","
         + "friendlyFire:" + FriendlyFire + ","
+        + "bubbleSeconds:" + BubbleSeconds + ","
+        + "bubbleMoveSpeed:" + BubbleMoveSpeed + ","
+        + "bubbleGravity:" + BubbleGravity + ","
+        + "bubbleFallSpeed:" + BubbleFallSpeed + ","
+        + "bubbleBounceSpeed:" + BubbleBounceSpeed + ","
+        + "bubbleInteractionRange:" + BubbleInteractionRange + ","
+        + "bubblePaintRadius:" + BubblePaintRadius + ","
+        + "bubblePadding:" + BubblePadding + ","
         + "}";
     }
 }

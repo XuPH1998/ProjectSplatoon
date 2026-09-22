@@ -52,6 +52,14 @@
     <var name="respawnSeconds" type="float" comment="重生等待（秒）" />
     <var name="protectionSeconds" type="float" comment="重生保护（秒）" />
     <var name="friendlyFire" type="bool" comment="是否友伤" />
+    <var name="bubbleSeconds" type="float" comment="待救泡泡时长（秒）" />
+    <var name="bubbleMoveSpeed" type="float" comment="泡泡水平速度（米/秒）" />
+    <var name="bubbleGravity" type="float" comment="泡泡重力（米/秒²）" />
+    <var name="bubbleFallSpeed" type="float" comment="泡泡最大下落速度（米/秒）" />
+    <var name="bubbleBounceSpeed" type="float" comment="泡泡反弹速度（米/秒）" />
+    <var name="bubbleInteractionRange" type="float" comment="距泡泡表面的交互距离（米）" />
+    <var name="bubblePaintRadius" type="float" comment="死亡泡泡涂墨半径（米）" />
+    <var name="bubblePadding" type="float" comment="泡泡包裹人物的余量（米）" />
   </bean>
   <table name="TbRoomMode" value="RoomModeConfig" input="TbRoomMode.xlsx" mode="map" index="id" />
   <bean name="MapConfig" comment="Map 强类型配置">

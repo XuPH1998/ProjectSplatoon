@@ -127,6 +127,8 @@ namespace Splatoon.Combat
         public void Present(PlayerSnapshot state, float dt, double now)
         {
             if (Profile == null || Animator == null) return;
+            if (state.IsBubble) { SetBubblePose(state); return; }
+            if (_bubblePose) { _bubblePose = false; Animator.speed = 1; _presented = false; }
             _state = state;
             bool allowMuzzle = state.Health > 0 && !state.Swimming;
             _muzzleEffect?.Present(state.Firing, allowMuzzle, now);
@@ -229,6 +231,47 @@ namespace Splatoon.Combat
                 if (ShouldEmitSwimEffect(state)) { if (!SwimEffect.isEmitting) SwimEffect.Play(); }
                 else if (SwimEffect.isPlaying) SwimEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
+        }
+
+        bool _bubblePose;
+        public void SetBubblePose(PlayerSnapshot state)
+        {
+            if (Animator == null) return;
+            _state = state; _alive = false;
+            Animator.enabled = true;
+            if (!_bubblePose)
+            {
+                Animator.Rebind(); Animator.SetFloat(MoveX, 0); Animator.SetFloat(MoveY, 0);
+                ClearShootingLayers(); Animator.Play(Locomotion, 0, 0); Animator.Update(0);
+                _bubblePose = true;
+            }
+            Animator.speed = 0;
+            for (int i = 0; i < _renderers.Length; i++)
+                if (_renderers[i] != null && !(_renderers[i] is ParticleSystemRenderer) && _renderers[i] != TeamMarker)
+                    _renderers[i].enabled = _rendererEnabled[i];
+            if (TeamMarker != null) TeamMarker.enabled = false;
+            if (SwimEffect != null) SwimEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            _muzzleEffect?.Present(false, false, state.SimulatedAt); _leftMuzzleEffect?.Present(false, false, state.SimulatedAt);
+            _splatlingFeedback?.Present(state, GameplayConfig.GetWeapon(state.HeroId), Nozzle, null, 1);
+            _kick = 0; CameraKick = Vector2.zero;
+        }
+        public Bounds MeasureBubblePose(Transform root, PlayerSnapshot state)
+        {
+            SetBubblePose(state);
+            var bounds = new Bounds(HeroBodyShape.For(state.HeroId).Center, new Vector3(.8f, HeroBodyShape.For(state.HeroId).Height, .8f));
+            var mesh = new Mesh();
+            foreach (var renderer in _renderers)
+            {
+                if (renderer == null || renderer is ParticleSystemRenderer || renderer == TeamMarker) continue;
+                Bounds local;
+                if (renderer is SkinnedMeshRenderer skin) { skin.BakeMesh(mesh); local = mesh.bounds; }
+                else { var filter = renderer.GetComponent<MeshFilter>(); if (filter == null || filter.sharedMesh == null) continue; local = filter.sharedMesh.bounds; }
+                var matrix = root.worldToLocalMatrix * renderer.localToWorldMatrix;
+                for (int corner = 0; corner < 8; corner++)
+                    bounds.Encapsulate(matrix.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents, new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1))));
+            }
+            HeroViewBinder.Destroy(mesh);
+            return bounds;
         }
 
         public static bool ShouldEmitSwimEffect(PlayerSnapshot state)

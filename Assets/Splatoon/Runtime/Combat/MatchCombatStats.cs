@@ -26,6 +26,7 @@ namespace Splatoon.Combat
             public byte Team;
             public uint Life;
             public bool Dead;
+            public double? DownedAt;
             public PlayerCombatStats Stats;
             public readonly Dictionary<ulong, double> Contributors = new();
         }
@@ -35,7 +36,7 @@ namespace Splatoon.Combat
         public void BeginLife(ulong id, byte team, uint life)
         {
             if (!_players.TryGetValue(id, out var entry)) _players.Add(id, entry = new Entry { Stats = new PlayerCombatStats { Round = _round } });
-            entry.Team = team; entry.Life = life; entry.Dead = false; entry.Contributors.Clear();
+            entry.Team = team; entry.Life = life; entry.Dead = false; entry.DownedAt = null; entry.Contributors.Clear();
         }
         public void Remove(ulong id)
         {
@@ -49,6 +50,11 @@ namespace Splatoon.Combat
             { entry.Stats = new PlayerCombatStats { Round = round }; entry.Contributors.Clear(); }
         }
         public void Clear() { _players.Clear(); _round = 0; }
+        public void RecordDowned(ulong victim, uint life, double now)
+        {
+            if (_players.TryGetValue(victim, out var entry) && entry.Life == life && !entry.Dead && !entry.DownedAt.HasValue)
+                entry.DownedAt = now;
+        }
         public void RecordDamage(ulong victim, uint life, ulong? attacker, byte attackerTeam, float actualDamage, bool killed, double now, MatchPhase phase)
         {
             if (phase != MatchPhase.Playing || !float.IsFinite(actualDamage) || actualDamage <= 0 ||
@@ -63,11 +69,12 @@ namespace Splatoon.Combat
         {
             if (phase != MatchPhase.Playing || !_players.TryGetValue(victim, out var target) || target.Life != life || target.Dead) return;
             target.Dead = true; target.Stats.Deaths++;
+            double contributionTime = target.DownedAt ?? now;
             if (killer.HasValue && killer.Value != victim && _players.TryGetValue(killer.Value, out var source) && source.Team != target.Team)
             {
                 source.Stats.Kills++;
                 foreach (var pair in target.Contributors)
-                    if (pair.Key != killer.Value && now >= pair.Value && now - pair.Value <= AssistSeconds &&
+                    if (pair.Key != killer.Value && contributionTime >= pair.Value && contributionTime - pair.Value <= AssistSeconds &&
                         _players.TryGetValue(pair.Key, out var assistant) && assistant.Team == source.Team)
                         assistant.Stats.Assists++;
             }

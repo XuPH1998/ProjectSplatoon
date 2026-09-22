@@ -7,9 +7,23 @@ using Splatoon.Networking;
 
 namespace Splatoon.Prototype
 {
+    public enum PlayerLifeState : byte { Alive, Bubble, Dead }
+    public enum BubbleOutcome : byte { None, Rescued, Executed, Expired }
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 33;
+        public const uint ProtocolVersion = 34;
+        public PlayerLifeState LifeState;
+        public BubbleOutcome BubbleResult;
+        public byte BubbleInkTeam;
+        public double BubbleUntil, BubbleEndedAt;
+        public float BubbleRadius, BubbleCenterHeight;
+        public Vector3 BubbleEndPosition;
+        public uint BubbleEvent, ConsumedInteract;
+        public bool IsBubble => LifeState == PlayerLifeState.Bubble;
+        public bool IsAlive => LifeState == PlayerLifeState.Alive && Health > 0;
+        public bool IsDead => !IsBubble && Health <= 0;
+        public bool CanMove => IsAlive || IsBubble;
+        public Vector3 BubbleCenter => Position + Vector3.up * BubbleCenterHeight;
         public SubWeaponPhase SubPhase;
         public SubWeaponFailure SubFailure;
         public bool SubNeedsRelease;
@@ -77,6 +91,11 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref LifeState); s.SerializeValue(ref BubbleResult);
+            s.SerializeValue(ref BubbleInkTeam);
+            s.SerializeValue(ref BubbleUntil); s.SerializeValue(ref BubbleEndedAt);
+            s.SerializeValue(ref BubbleRadius); s.SerializeValue(ref BubbleCenterHeight);
+            s.SerializeValue(ref BubbleEndPosition); s.SerializeValue(ref BubbleEvent); s.SerializeValue(ref ConsumedInteract);
             s.SerializeValue(ref SubPhase); s.SerializeValue(ref SubFailure); s.SerializeValue(ref SubNeedsRelease);
             s.SerializeValue(ref SubConsumedPress); s.SerializeValue(ref SubConsumedRelease); s.SerializeValue(ref SubAction);
             s.SerializeValue(ref SubChargeSeconds); s.SerializeValue(ref SubReleaseAt); s.SerializeValue(ref SubRecoveryUntil);

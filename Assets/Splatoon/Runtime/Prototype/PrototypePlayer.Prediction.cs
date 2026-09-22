@@ -37,7 +37,7 @@ namespace Splatoon.Prototype
             int replayed = 0;
             if (lifecycle)
             { _visualOffset = Vector3.zero; _look = new Vector2(authority.Yaw, authority.Pitch); }
-            else if (initialSyncComplete && !_predictionPaused && authority.Health > 0)
+            else if (initialSyncComplete && !_predictionPaused && authority.CanMove)
             {
                 // Already-applied authoritative ink is a prediction input. A global paint watermark
                 // may be ahead because somebody else is shooting; it must not freeze this owner.
@@ -50,7 +50,7 @@ namespace Splatoon.Prototype
             }
             LastCorrectionDistance = lifecycle ? 0 : Vector3.Distance(oldPosition, _predicted.Position);
             if (LastCorrectionDistance > .01f) CorrectionCount++;
-            bool hard = lifecycle || authority.Health <= 0 || LastCorrectionDistance > .75f || movementChanged;
+            bool hard = lifecycle || authority.IsDead || LastCorrectionDistance > .75f || movementChanged;
             _visualOffset = hard ? Vector3.zero : Vector3.ClampMagnitude(_visualOffset + oldPosition - _predicted.Position, .5f);
             RecordPredictionReplay(replayed, hard, initialSyncComplete && _paintReplayPending);
         }

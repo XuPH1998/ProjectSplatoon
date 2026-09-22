@@ -24,6 +24,8 @@ namespace Splatoon.Networking
     [Serializable]
     public struct PlayerInputFrame : INetworkSerializable
     {
+        public uint InteractSequence, InteractTargetLife;
+        public ulong InteractTarget;
         // 模拟帧、输入序号和跳跃边沿序号，用于去重与房主校验。
         public uint Tick, Sequence, JumpSequence, FireSequence, Revision, HeroRevision, ReleaseSequence;
         public Vector2 Move, Look;
@@ -32,6 +34,7 @@ namespace Splatoon.Networking
         public uint SubPressSequence, SubReleaseSequence;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref InteractSequence); s.SerializeValue(ref InteractTargetLife); s.SerializeValue(ref InteractTarget);
             s.SerializeValue(ref Tick); s.SerializeValue(ref Sequence); s.SerializeValue(ref JumpSequence);
             s.SerializeValue(ref FireSequence); s.SerializeValue(ref Revision);
             s.SerializeValue(ref HeroRevision); s.SerializeValue(ref ReleaseSequence); s.SerializeValue(ref CancelFire);

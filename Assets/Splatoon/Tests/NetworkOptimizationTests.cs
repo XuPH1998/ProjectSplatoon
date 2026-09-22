@@ -209,7 +209,7 @@ namespace Splatoon.Tests
             var inputs = Inputs(32); var send = new NetworkBatch<PlayerInputFrame>(inputs, 9, 2);
             using var writer = new FastBufferWriter(4096, Allocator.Temp); writer.WriteNetworkSerializable(send);
             // Protocol 32 adds two E-edge uints and two bools: 47 + 10 bytes per input.
-            Assert.That(writer.Length, Is.EqualTo(4 + 57 * 2));
+            Assert.That(writer.Length, Is.EqualTo(4 + 73 * 2)); // F sequence, target life and target id add 16 bytes per frame.
             using var reader = new FastBufferReader(writer, Allocator.None); reader.ReadNetworkSerializable(out NetworkBatch<PlayerInputFrame> received);
             Assert.That(received.Count, Is.EqualTo(2)); Assert.That(received[0].Sequence, Is.EqualTo(10));
             received.Dispose(); send.Dispose(); Assert.That(inputs.Count, Is.EqualTo(32));
