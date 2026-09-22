@@ -352,8 +352,8 @@
       "uninterpretedForceSpawnNearestAddNumArray": []
     },
     "SplooshGirl": {
-      "source": "Tools/ValidationData/SplooshGirl/WeaponShooterShort.1130.json",
-      "sha256": "4766d778180949833438b93fd945131cd76835adfda6a11feb6f7b2b3803c315",
+      "source": "Tools/ValidationData/MainWeaponReplacement/WeaponShooterBlaze.1130.json",
+      "sha256": "287ffb3b99b4bda1d7ccabf8798a19240a9009f136d851c0e348d106c911b857",
       "fields": {
         "aimMode": {
           "value": 1,
@@ -392,40 +392,40 @@
           "evidence": "Approved project reconstruction / independent capability and schedule"
         },
         "shotGuideSeconds": {
-          "value": 0.1,
-          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+          "value": 0.13333333333333333,
+          "evidence": "WeaponParam.ShotGuideFrame"
         },
         "shooterMoveForwardRate": {
           "value": 2.0,
-          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate * 1"
+          "evidence": "spl__SpawnBulletAdditionMovePlayerParam.ZRate"
         },
         "referenceTrailBudget": {
-          "value": 1.4,
-          "evidence": "SplashSpawnParam.SpawnNum * 1"
+          "value": 1.0,
+          "evidence": "SplashSpawnParam.SpawnNum"
         },
         "shooterSplitNum": {
-          "value": 5,
-          "evidence": "SplashSpawnParam.SplitNum * 1"
+          "value": 8,
+          "evidence": "SplashSpawnParam.SplitNum"
         },
         "referenceTrailStart": {
-          "value": 0.8611723592794442,
-          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+          "value": 0.9734991887506761,
+          "evidence": "SplashSpawnParam.SpawnNearestLength"
         },
         "trailSpacing": {
-          "value": 4.493073178849274,
-          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+          "value": 9.360569122602655,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength"
         },
         "referenceFootRadius": {
           "value": 1.4467695635894664,
-          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+          "evidence": "SplashPaintParam.WidthHalfNearest"
         },
         "shooterPaintNearDistance": {
-          "value": 1.4976910596164248,
-          "evidence": "PaintParam.DistanceNear * 0.7488455298082124"
+          "value": 1.572575612597246,
+          "evidence": "PaintParam.DistanceNear"
         },
         "shooterPaintNearRadius": {
-          "value": 1.9245330116071058,
-          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+          "value": 1.7298331738569708,
+          "evidence": "PaintParam.WidthHalfNear"
         },
         "shooterSplashDepthMin": {
           "value": 1,
@@ -437,11 +437,11 @@
         },
         "shooterSplashHeightMin": {
           "value": 2.246536589424637,
-          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+          "evidence": "SplashPaintParam.DepthMaxDropHeight"
         },
         "shooterSplashHeightMax": {
           "value": 7.488455298082124,
-          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+          "evidence": "SplashPaintParam.DepthMinDropHeight"
         },
         "shooterPaintAngleMin": {
           "value": 10,
@@ -481,43 +481,43 @@
         },
         "shooterWallFirstMin": {
           "value": 0.3333333333333333,
-          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin"
         },
         "shooterWallFirstMax": {
           "value": 0.6666666666666666,
-          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax"
         },
         "shooterWallMiddle": {
           "value": 0.16666666666666666,
-          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame"
         },
         "shooterWallLastMin": {
           "value": 0.25,
-          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin"
         },
         "shooterWallLastMax": {
           "value": 0.5833333333333334,
-          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax"
         },
         "shooterWallFirstSpeed": {
           "value": 2.6958439073095644,
-          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed"
         },
         "wallDropSpeed": {
           "value": 2.6958439073095644,
-          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed"
         },
         "shooterWallShockRadius": {
           "value": 1.1681990265008113,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock"
         },
         "wallDropRadius": {
           "value": 0.48674959437533805,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall"
         },
         "wallDropGroundRadius": {
           "value": 0.44930731788492745,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround"
         }
       },
       "uninterpretedForceSpawnNearestAddNumArray": []
@@ -694,8 +694,8 @@
       "uninterpretedForceSpawnNearestAddNumArray": []
     },
     "MachineGunGirl": {
-      "source": "Tools/ValidationData/WeaponAlignment/WeaponSpinnerHyper.1130.json",
-      "sha256": "1f92f4f4266070e59c7ab3775fb90c75624018899bb3b9bced915a6a3e2630ed",
+      "source": "Tools/ValidationData/MainWeaponReplacement/WeaponSpinnerQuick.1130.json",
+      "sha256": "36d1af6547a876ed4ce0d1ecd6daa3a1f08290636c2ae95f099e79b06872a56f",
       "fields": {
         "aimMode": {
           "value": 1,
@@ -735,59 +735,59 @@
         },
         "shotGuideSeconds": {
           "value": 0.18333333333333332,
-          "evidence": "WeaponParam.ShotGuideFrame * 0.016666666666666666"
+          "evidence": "WeaponParam.ShotGuideFrame"
         },
         "shooterMoveForwardRate": {
           "value": 0,
           "evidence": "Project default: ZRate=0, scale=1"
         },
         "referenceTrailBudget": {
-          "value": 1.0,
-          "evidence": "SplashSpawnParam.SpawnNum * 1"
+          "value": 1.6,
+          "evidence": "SplashSpawnParam.SpawnNum"
         },
         "shooterSplitNum": {
-          "value": 8,
-          "evidence": "SplashSpawnParam.SplitNum * 1"
+          "value": 6,
+          "evidence": "SplashSpawnParam.SplitNum"
         },
         "referenceTrailStart": {
           "value": 0.0,
-          "evidence": "SplashSpawnParam.SpawnNearestLength * 0.7488455298082124"
+          "evidence": "SplashSpawnParam.SpawnNearestLength"
         },
         "trailSpacing": {
-          "value": 17.597869950492992,
-          "evidence": "SplashSpawnParam.SpawnBetweenLength * 0.7488455298082124"
+          "value": 7.488455298082124,
+          "evidence": "SplashSpawnParam.SpawnBetweenLength"
         },
         "referenceFootRadius": {
-          "value": 1.1574156508715732,
-          "evidence": "SplashPaintParam.WidthHalfNearest * 0.7488455298082124"
+          "value": 1.3020926072305197,
+          "evidence": "SplashPaintParam.WidthHalfNearest"
         },
         "shooterPaintNearDistance": {
-          "value": 0.0,
-          "evidence": "Project default: DistanceNear=0, scale=0.7488455298082124"
+          "value": 0.7488455298082124,
+          "evidence": "PaintParam.DistanceNear"
         },
         "shooterPaintNearRadius": {
-          "value": 1.572575612597246,
-          "evidence": "PaintParam.WidthHalfNear * 0.7488455298082124"
+          "value": 1.7073678079627241,
+          "evidence": "PaintParam.WidthHalfNear"
         },
         "paintDistanceFar": {
           "value": 18.72113824520531,
           "evidence": "PaintParam.DistanceFar * 0.7488455298082124"
         },
         "shooterSplashDepthMin": {
-          "value": 1.5,
-          "evidence": "SplashPaintParam.DepthScaleMin * 1"
+          "value": 1.4,
+          "evidence": "SplashPaintParam.DepthScaleMin"
         },
         "shooterSplashDepthMax": {
-          "value": 1.5,
-          "evidence": "SplashPaintParam.DepthScaleMax * 1"
+          "value": 1.4,
+          "evidence": "SplashPaintParam.DepthScaleMax"
         },
         "shooterSplashHeightMin": {
           "value": 2.246536589424637,
-          "evidence": "SplashPaintParam.DepthMaxDropHeight * 0.7488455298082124"
+          "evidence": "SplashPaintParam.DepthMaxDropHeight"
         },
         "shooterSplashHeightMax": {
           "value": 7.488455298082124,
-          "evidence": "SplashPaintParam.DepthMinDropHeight * 0.7488455298082124"
+          "evidence": "SplashPaintParam.DepthMinDropHeight"
         },
         "shooterPaintAngleMin": {
           "value": 10,
@@ -827,43 +827,43 @@
         },
         "shooterWallFirstMin": {
           "value": 0.25,
-          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMin"
         },
         "shooterWallFirstMax": {
           "value": 0.5,
-          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodFirstFrameMax"
         },
         "shooterWallMiddle": {
           "value": 0.08333333333333333,
-          "evidence": "WallDropMoveParam.FallPeriodSecondFrame * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodSecondFrame"
         },
         "shooterWallLastMin": {
           "value": 0.25,
-          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMin"
         },
         "shooterWallLastMax": {
           "value": 0.5,
-          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax * 0.016666666666666666"
+          "evidence": "WallDropMoveParam.FallPeriodLastFrameMax"
         },
         "shooterWallFirstSpeed": {
           "value": 2.6958439073095644,
-          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed * 44.93073178849274"
+          "evidence": "WallDropMoveParam.FallPeriodFirstTargetSpeed"
         },
         "wallDropSpeed": {
           "value": 2.6958439073095644,
-          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed * 44.93073178849274"
+          "evidence": "WallDropMoveParam.FallPeriodSecondTargetSpeed"
         },
         "shooterWallShockRadius": {
           "value": 0.9734991887506761,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusShock"
         },
         "wallDropRadius": {
           "value": 0.48674959437533805,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusFall"
         },
         "wallDropGroundRadius": {
           "value": 0.44930731788492745,
-          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround * 0.7488455298082124"
+          "evidence": "WallDropCollisionPaintParam.PaintRadiusGround"
         }
       },
       "uninterpretedForceSpawnNearestAddNumArray": []

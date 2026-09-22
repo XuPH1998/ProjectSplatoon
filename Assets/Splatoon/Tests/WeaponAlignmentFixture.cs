@@ -26,6 +26,14 @@ namespace Splatoon.Tests
                 values["moveSpeed"] = .088 * 60 * 18 / 24.037;
                 values["swimSpeed"] = .1728 * 60 * 18 / 24.037;
             }
+            if (hero == 6 || hero == 8)
+            {
+                var replacement = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/MainWeaponReplacement/Tuning.json"));
+                foreach (string key in replacement["weapons"][hero.ToString()]["fields"].Keys)
+                    values[key] = replacement["weapons"][hero.ToString()]["fields"][key]["after"];
+                foreach (string key in replacement["heroChanges"][hero.ToString()].Keys)
+                    values[key] = replacement["heroChanges"][hero.ToString()][key];
+            }
             if (referenceFrames) WeaponTimeFixture.ToReferenceFrames(values);
             // Compare the fields owned by each historical record; new fields have their
             // own validation/signature checks, including bool serialization semantics.

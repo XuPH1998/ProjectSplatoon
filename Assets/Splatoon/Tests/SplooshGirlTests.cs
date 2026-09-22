@@ -31,10 +31,10 @@ namespace Splatoon.Tests
         {
             Assert.That(GameplayConfig.GetHero(8).DisplayName,Is.EqualTo("铃芽"));
             WeaponConfigValidation.Validate(W);
-            var p=SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/SplooshGirl/WeaponShooterShort.1130.json"))["GameParameters"];
+            var p=SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/MainWeaponReplacement/WeaponShooterBlaze.1130.json"))["GameParameters"];
             Assert.That(W.Damage,Is.EqualTo(p["DamageParam"]["ValueMax"].AsFloat/10));
             Assert.That(W.ShotInk,Is.EqualTo(p["WeaponParam"]["InkConsume"].AsFloat*100).Within(1e-6));
-            Assert.That(WeaponSimulation.FireInterval(W),Is.EqualTo(5.0/60).Within(1e-8));
+            Assert.That(WeaponSimulation.FireInterval(W),Is.EqualTo(4.0/60).Within(1e-8));
             Assert.That(W.Ammo.AmmoId,Is.EqualTo(8));
             for(int id=1;id<=7;id++)Assert.That(GameplayConfig.GetWeapon(id).ShooterDetails,Is.False);
             var v=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Characters/SplooshGirl/Prefabs/SplooshGirlVisual.prefab").GetComponent<InkCharacterView>();
@@ -45,21 +45,21 @@ namespace Splatoon.Tests
         public void TankCadenceDamageAndIndependentRecovery(bool emerged,int first)
         {
             var s=Alive();var shots=new List<int>();
-            for(int tick=0;tick<800;tick++) if(Tick(ref s,tick,emerged:emerged&&tick==0))shots.Add(tick);
-            Assert.That(shots,Is.EqualTo(Enumerable.Range(0,125).Select(i=>first+i*5).ToArray()));
+            for(int tick=0;tick<900;tick++) if(Tick(ref s,tick,emerged:emerged&&tick==0))shots.Add(tick);
+            Assert.That(shots,Is.EqualTo(Enumerable.Range(0,200).Select(i=>first+i*4).ToArray()));
             Assert.That(s.Ink,Is.EqualTo(0).Within(.001));
             Assert.That(s.InkRecoverAt,Is.EqualTo((shots.Last()+15)/60.0).Within(1e-7));
             Assert.That(s.AttackRecoveryUntil,Is.EqualTo((shots.Last()+2)/60.0).Within(1e-7));
-            Assert.That(WeaponSimulation.Damage(W,0,0),Is.EqualTo(38));
-            Assert.That(WeaponSimulation.Damage(W,22.0/60),Is.EqualTo(19));
-            Assert.That(Mathf.CeilToInt(100/W.Damage),Is.EqualTo(3));
+            Assert.That(WeaponSimulation.Damage(W,0,0),Is.EqualTo(24));
+            Assert.That(WeaponSimulation.Damage(W,24.0/60),Is.EqualTo(12));
+            Assert.That(Mathf.CeilToInt(100/W.Damage),Is.EqualTo(5));
         }
         [Test] public void ReleaseResetsCycleAndDeterministicFractionalBudget()
         {
             var s=Alive();var count=new List<int>();var feet=new List<int>();
             for(int t=0;t<51;t++)if(Tick(ref s,t))
             {ShooterDetailSimulation.Schedule(s.BurstShotIndex,W,out int n,out _,out bool foot);count.Add(n);if(foot)feet.Add((int)s.BurstShotIndex);}
-            Assert.That(count.Take(5).Sum(),Is.EqualTo(7));Assert.That(count.Take(10).Sum(),Is.EqualTo(14));
+            Assert.That(count.Take(5).Sum(),Is.EqualTo(5));Assert.That(count.Take(10).Sum(),Is.EqualTo(10));
             Assert.That(feet,Is.EqualTo(new[]{5,10}));
             Tick(ref s,52,false);Tick(ref s,53,false);for(int t=54;t<=56;t++)Tick(ref s,t,true,2);
             Assert.That(s.BurstShotIndex,Is.EqualTo(1));
@@ -73,9 +73,9 @@ namespace Splatoon.Tests
             Assert.That(moving-initial,Is.EqualTo(Vector3.forward*4));
             var s=Alive();SpreadSimulation.Reset(ref s,W);
             for(int t=0;t<105;t++)Tick(ref s,t);
-            Assert.That(s.DualiesGroundBias,Is.EqualTo(.4f).Within(.00001));
+            Assert.That(s.DualiesGroundBias,Is.EqualTo(.5f).Within(.00001));
             s.Grounded=false;for(int t=105;t<111;t++)Tick(ref s,t,false);
-            Assert.That(s.CurrentSpread,Is.EqualTo(17.49f));
+            Assert.That(s.CurrentSpread,Is.EqualTo(15.54f));
             Assert.That(ReferenceSpreadSimulation.Bias(s,W),Is.EqualTo(.4f).Within(.001));
         }
         [Test] public void BodyRestoreRemoteProxyAndCeilingClearanceAgree()

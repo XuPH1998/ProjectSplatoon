@@ -37,7 +37,10 @@ namespace Splatoon.Prototype
             var look = (Vector2)typeof(PrototypePlayer).GetField("_look", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(player);
             s.Yaw = look.x; s.Pitch = look.y;
             var aim = solver.Resolve(player, s, s.NextMuzzle);
-            var expected = TpsAimSolver.ReticleViewport(Camera.main, aim.AimPoint);
+            var w = Splatoon.Config.GameplayConfig.GetWeapon(s.HeroId);
+            var point = w.AimMode == Splatoon.Config.WeaponAimMode.WeaponReference && !s.ShowsSwimBody
+                ? WeaponImpactPrediction.Guide(solver, aim, w, s, player.PlayerId).Point : aim.AimPoint;
+            var expected = TpsAimSolver.ReticleViewport(Camera.main, point);
             if (Vector2.Distance(expected, player.ReticleViewport) > .002f) badProjection++;
             if (s.ShowsSwimBody)
             {

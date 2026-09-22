@@ -1,0 +1,2390 @@
+{
+  "version": "11.3.0",
+  "scale": 0.7488455298082124,
+  "commit": "7280ff9cde8bb1c5dcef46c700c326471584d2e6",
+  "weapons": {
+    "6": {
+      "name": "斯普拉旋转枪",
+      "asset": "Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset",
+      "reference": "WeaponSpinnerQuick",
+      "url": "https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponSpinnerQuick.game__GameParameterTable.json",
+      "sha256": "36d1af6547a876ed4ce0d1ecd6daa3a1f08290636c2ae95f099e79b06872a56f",
+      "fields": {
+        "fireRate": {
+          "before": 15,
+          "after": 15.0,
+          "sourceField": "WeaponParam.RepeatFrame",
+          "originalValue": 4,
+          "conversionFactor": null,
+          "evidence": "source-explicit",
+          "reason": "60 / reference frames"
+        },
+        "damage": {
+          "before": 40,
+          "after": 32.0,
+          "sourceField": "DamageParam.ValueFullChargeMax",
+          "originalValue": 320,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageMin": {
+          "before": 16,
+          "after": 16.0,
+          "sourceField": "DamageParam.ValueMin",
+          "originalValue": 160,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageReduceStartSeconds": {
+          "before": 0.18333333333333332,
+          "after": 0.18333333333333332,
+          "sourceField": "DamageParam.ReduceStartFrame",
+          "originalValue": 11,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageReduceEndSeconds": {
+          "before": 0.31666666666666665,
+          "after": 0.31666666666666665,
+          "sourceField": "DamageParam.ReduceEndFrame",
+          "originalValue": 19,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "inkRecoverLockSeconds": {
+          "before": 0.6666666666666666,
+          "after": 0.5,
+          "sourceField": "WeaponParam.InkRecoverStop",
+          "originalValue": 30,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shotGuideSeconds": {
+          "before": 0.18333333333333332,
+          "after": 0.18333333333333332,
+          "sourceField": "WeaponParam.ShotGuideFrame",
+          "originalValue": 11,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpStart": {
+          "before": 0.4166666666666667,
+          "after": 0.4166666666666667,
+          "sourceField": "WeaponParam.Jump_DegBiasDecreaseStartFrame",
+          "originalValue": 25,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpEnd": {
+          "before": 1.1666666666666667,
+          "after": 1.1666666666666667,
+          "sourceField": "WeaponParam.Jump_DegBiasEndFrame",
+          "originalValue": 70,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shootMoveSpeed": {
+          "before": 2.6958439073095644,
+          "after": 3.8640429338103757,
+          "sourceField": "WeaponParam.MoveSpeed",
+          "originalValue": 0.086,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "spreadDegrees": {
+          "before": 3.0,
+          "after": 4.0,
+          "sourceField": "WeaponParam.Stand_DegSwerve",
+          "originalValue": 4.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "jumpSpreadDegrees": {
+          "before": 6.0,
+          "after": 8.0,
+          "sourceField": "WeaponParam.Jump_DegSwerve",
+          "originalValue": 8.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasMin": {
+          "before": 0.1,
+          "after": 0.1,
+          "sourceField": "WeaponParam.Stand_DegBiasMin",
+          "originalValue": 0.1,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasMax": {
+          "before": 0.3,
+          "after": 0.3,
+          "sourceField": "WeaponParam.Stand_DegBiasMax",
+          "originalValue": 0.3,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpBias": {
+          "before": 0.3,
+          "after": 0.3,
+          "sourceField": "WeaponParam.Jump_DegBiasMax",
+          "originalValue": 0.3,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referencePitchBias": {
+          "before": 0.4,
+          "after": 0.4,
+          "sourceField": "WeaponParam.PitchDegBias",
+          "originalValue": 0.4,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "straightSeconds": {
+          "before": 0.13333333333333333,
+          "after": 0.13333333333333333,
+          "sourceField": "MoveParam.GoStraightToBrakeStateFrame",
+          "originalValue": 8,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBrakeEndSpeed": {
+          "before": 87.16561966967592,
+          "after": 49.64845862628448,
+          "sourceField": "MoveParam.GoStraightStateEndMaxSpeed",
+          "originalValue": 1.105,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "collisionRadius": {
+          "before": 0.14976910596164247,
+          "after": 0.14976910596164247,
+          "sourceField": "CollisionParam.EndRadiusForField",
+          "originalValue": 0.2,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referencePlayerRadius": {
+          "before": 0.1684902442068478,
+          "after": 0.19469983775013522,
+          "sourceField": "CollisionParam.EndRadiusForPlayer",
+          "originalValue": 0.26,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintRadiusMin": {
+          "before": 1.4377834172317678,
+          "after": 1.617506344385739,
+          "sourceField": "PaintParam.WidthHalfFar",
+          "originalValue": 2.16,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintRadiusMax": {
+          "before": 1.572575612597246,
+          "after": 1.7073678079627241,
+          "sourceField": "PaintParam.WidthHalfMiddle",
+          "originalValue": 2.28,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterPaintNearRadius": {
+          "before": 1.572575612597246,
+          "after": 1.7073678079627241,
+          "sourceField": "PaintParam.WidthHalfNear",
+          "originalValue": 2.28,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterPaintNearDistance": {
+          "before": 0.0,
+          "after": 0.7488455298082124,
+          "sourceField": "PaintParam.DistanceNear",
+          "originalValue": 1.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDistanceMiddle": {
+          "before": 0.8237300827890337,
+          "after": 0.7488455298082124,
+          "sourceField": "PaintParam.DistanceMiddle",
+          "originalValue": 1.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthMin": {
+          "before": 1.17,
+          "after": 1.17,
+          "sourceField": "PaintParam.DepthScaleMin",
+          "originalValue": 1.17,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthMax": {
+          "before": 1.83,
+          "after": 1.83,
+          "sourceField": "PaintParam.DepthScaleMax",
+          "originalValue": 1.83,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthBreakMin": {
+          "before": 1.17,
+          "after": 1.17,
+          "sourceField": "PaintParam.DepthScaleMinBreakFree",
+          "originalValue": 1.17,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthBreakMax": {
+          "before": 1.67,
+          "after": 1.67,
+          "sourceField": "PaintParam.DepthScaleMaxBreakFree",
+          "originalValue": 1.67,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailRadiusMin": {
+          "before": 0.9645130423929776,
+          "after": 1.0850771726920998,
+          "sourceField": "SplashPaintParam.WidthHalf",
+          "originalValue": 1.449,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailRadiusMax": {
+          "before": 0.9645130423929776,
+          "after": 1.0850771726920998,
+          "sourceField": "SplashPaintParam.WidthHalf",
+          "originalValue": 1.449,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceFootRadius": {
+          "before": 1.1574156508715732,
+          "after": 1.3020926072305197,
+          "sourceField": "SplashPaintParam.WidthHalfNearest",
+          "originalValue": 1.7388,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashHeightMin": {
+          "before": 2.246536589424637,
+          "after": 2.246536589424637,
+          "sourceField": "SplashPaintParam.DepthMaxDropHeight",
+          "originalValue": 3.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashHeightMax": {
+          "before": 7.488455298082124,
+          "after": 7.488455298082124,
+          "sourceField": "SplashPaintParam.DepthMinDropHeight",
+          "originalValue": 10.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailDepthScale": {
+          "before": 1.5,
+          "after": 1.4,
+          "sourceField": "SplashPaintParam.DepthScaleMax",
+          "originalValue": 1.4,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashDepthMin": {
+          "before": 1.5,
+          "after": 1.4,
+          "sourceField": "SplashPaintParam.DepthScaleMin",
+          "originalValue": 1.4,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashDepthMax": {
+          "before": 1.5,
+          "after": 1.4,
+          "sourceField": "SplashPaintParam.DepthScaleMax",
+          "originalValue": 1.4,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceTrailBudget": {
+          "before": 1.0,
+          "after": 1.6,
+          "sourceField": "SplashSpawnParam.SpawnNum",
+          "originalValue": 1.6,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplitNum": {
+          "before": 8,
+          "after": 6,
+          "sourceField": "SplashSpawnParam.SplitNum",
+          "originalValue": 6,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceTrailStart": {
+          "before": 0.0,
+          "after": 0.0,
+          "sourceField": "SplashSpawnParam.SpawnNearestLength",
+          "originalValue": 0.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailSpacing": {
+          "before": 17.597869950492992,
+          "after": 7.488455298082124,
+          "sourceField": "SplashSpawnParam.SpawnBetweenLength",
+          "originalValue": 10.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropRadius": {
+          "before": 0.48674959437533805,
+          "after": 0.48674959437533805,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusFall",
+          "originalValue": 0.65,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropGroundRadius": {
+          "before": 0.44930731788492745,
+          "after": 0.44930731788492745,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusGround",
+          "originalValue": 0.6,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallShockRadius": {
+          "before": 0.9734991887506761,
+          "after": 0.9734991887506761,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusShock",
+          "originalValue": 1.3,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstMin": {
+          "before": 0.25,
+          "after": 0.25,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstFrameMin",
+          "originalValue": 15,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstMax": {
+          "before": 0.5,
+          "after": 0.5,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstFrameMax",
+          "originalValue": 30,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallMiddle": {
+          "before": 0.08333333333333333,
+          "after": 0.08333333333333333,
+          "sourceField": "WallDropMoveParam.FallPeriodSecondFrame",
+          "originalValue": 5,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallLastMin": {
+          "before": 0.25,
+          "after": 0.25,
+          "sourceField": "WallDropMoveParam.FallPeriodLastFrameMin",
+          "originalValue": 15,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallLastMax": {
+          "before": 0.5,
+          "after": 0.5,
+          "sourceField": "WallDropMoveParam.FallPeriodLastFrameMax",
+          "originalValue": 30,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstSpeed": {
+          "before": 2.6958439073095644,
+          "after": 2.6958439073095644,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstTargetSpeed",
+          "originalValue": 0.06,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropSpeed": {
+          "before": 2.6958439073095644,
+          "after": 2.6958439073095644,
+          "sourceField": "WallDropMoveParam.FallPeriodSecondTargetSpeed",
+          "originalValue": 0.06,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropSeconds": {
+          "before": 1.0,
+          "after": 1.0833333333333335,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Derived maximum of the imported wall phases"
+        },
+        "chargeSeconds": {
+          "before": 2.5,
+          "after": 0.45,
+          "sourceField": "WeaponParam.ChargeFrame_Second",
+          "originalValue": 27,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingFirstChargeSeconds": {
+          "before": 2,
+          "after": 0.3,
+          "sourceField": "WeaponParam.ChargeFrame_First",
+          "originalValue": 18,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingFirstShootSeconds": {
+          "before": 2.1666666666666665,
+          "after": 0.7,
+          "sourceField": "WeaponParam.MaxShootingFrame_First",
+          "originalValue": 42,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingFullShootSeconds": {
+          "before": 4.333333333333333,
+          "after": 1.4,
+          "sourceField": "WeaponParam.MaxShootingFrame_Second",
+          "originalValue": 84,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingPostSeconds": {
+          "before": 0.06666666666666667,
+          "after": 0.06666666666666667,
+          "sourceField": "WeaponParam.PostDelayFrame",
+          "originalValue": 4,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "emergeStartSeconds": {
+          "before": 0.06666666666666667,
+          "after": 0.06666666666666667,
+          "sourceField": "WeaponParam.PreDelayFrame_SquidShot",
+          "originalValue": 4,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "chargePartialMaxDamage": {
+          "before": 32,
+          "after": 32.0,
+          "sourceField": "DamageParam.ValueMax",
+          "originalValue": 320,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "chargeMinDamage": {
+          "before": 32,
+          "after": 32.0,
+          "sourceField": "DamageParam.ValueMax",
+          "originalValue": 320,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingSlowChargeMultiplier": {
+          "before": 3,
+          "after": 6,
+          "sourceField": "WeaponParam.InkEmptyChargeTimes",
+          "originalValue": 6,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": "Approved shared air/empty multiplier; conditions do not stack"
+        },
+        "splatlingChargeMoveSpeed": {
+          "before": 1.9769521986936804,
+          "after": 3.2350126887714774,
+          "sourceField": "WeaponParam.MoveSpeed_Charge",
+          "originalValue": 0.072,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingChargeJumpSpeed": {
+          "before": 2.695844,
+          "after": 4.493073178849275,
+          "sourceField": "WeaponParam.JumpGnd_Charge",
+          "originalValue": 0.1,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingPitchSpread": {
+          "before": 2.0,
+          "after": 1.2,
+          "sourceField": "WeaponParam.PitchDegSwerve",
+          "originalValue": 1.2,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingPlayerRadius": {
+          "before": 0.16849025,
+          "after": 0.19469983775013522,
+          "sourceField": "CollisionParam.EndRadiusForPlayer",
+          "originalValue": 0.26,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingFootRadius": {
+          "before": 1.1574156,
+          "after": 1.3020926072305197,
+          "sourceField": "SplashPaintParam.WidthHalfNearest",
+          "originalValue": 1.7388,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "chargeMinSpeed": {
+          "before": 47.17727,
+          "after": 47.17726837791738,
+          "sourceField": "MoveParam.SpawnSpeed",
+          "originalValue": 1.05,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingSpeedBias": {
+          "before": 0.2,
+          "after": 0.2,
+          "sourceField": "MoveParam.SpawnSpeedRandomBias",
+          "originalValue": 0.2,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "speedMin": {
+          "before": 101.54346,
+          "after": 62.90302450388984,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Existing project additive +/- random-rate interpretation, center 1.5 and amplitude 0.1"
+        },
+        "speedMax": {
+          "before": 114.12406,
+          "after": 71.88917086158838,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Existing project additive +/- random-rate interpretation, center 1.5 and amplitude 0.1"
+        },
+        "shotInk": {
+          "before": 0.530303,
+          "after": 0.6818181818181818,
+          "sourceField": "WeaponParam.InkConsume",
+          "originalValue": 0.15,
+          "conversionFactor": 4.545454545454546,
+          "evidence": "source-explicit",
+          "reason": "Full magazine ink divided by inclusive round count"
+        },
+        "chargeMinInk": {
+          "before": 0.530303,
+          "after": 0.6818181818181818,
+          "sourceField": "WeaponParam.InkConsume",
+          "originalValue": 0.15,
+          "conversionFactor": 4.545454545454546,
+          "evidence": "source-explicit",
+          "reason": "Full magazine ink divided by inclusive round count"
+        },
+        "chargeMinSpread": {
+          "before": 3,
+          "after": 4.0,
+          "sourceField": "WeaponParam.Stand_DegSwerve",
+          "originalValue": 4.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "chargeMinJumpSpread": {
+          "before": 6,
+          "after": 8.0,
+          "sourceField": "WeaponParam.Jump_DegSwerve",
+          "originalValue": 8.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "splatlingTrailCount": {
+          "before": 1,
+          "after": 2,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Legacy cap mirrors imported fractional drop budget"
+        },
+        "effectiveRange": {
+          "before": 20.21883,
+          "after": 11.182198038823486,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Derived horizontal center trajectory at damage-minimum age; UI also computes actual flat-ground range"
+        },
+        "chargeMinRange": {
+          "before": 8.237301,
+          "after": 8.377048391729417,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Same metric at minimum-charge center speed"
+        },
+        "fireMode": {
+          "before": 4,
+          "after": 4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "startSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "burstCount": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "burstRecoverySeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "projectileGravity": {
+          "before": 43.13350251695304,
+          "after": 43.13350251695304,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "lifetime": {
+          "before": 3,
+          "after": 3,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "brakeSeconds": {
+          "before": 0.06666666666666667,
+          "after": 0.06666666666666667,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "brakeSpeedMultiplier": {
+          "before": 0.1,
+          "after": 0.1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "landingSpreadRecoverSeconds": {
+          "before": 0.75,
+          "after": 0.75,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintHardness": {
+          "before": 0.55,
+          "after": 0.55,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintStrength": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "trailMaxDrop": {
+          "before": 2.4,
+          "after": 2.4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "pelletCount": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "muzzleMode": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "semiBufferSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingMinChargeSeconds": {
+          "before": 0.13333333333333333,
+          "after": 0.13333333333333333,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingSpreadBias": {
+          "before": 0.3,
+          "after": 0.3,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFootEvery": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "spreadExpandSeconds": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "spreadRecoverSeconds": {
+          "before": 0.5,
+          "after": 0.5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "baseSpreadDegrees": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "baseJumpSpreadDegrees": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceRules": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBrakeDrag": {
+          "before": 0.36,
+          "after": 0.36,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBrakeGravity": {
+          "before": 188.70907351166954,
+          "after": 188.70907351166954,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceFreeDrag": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintDropGravity": {
+          "before": 43.13350251695304,
+          "after": 43.13350251695304,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintDropLifetime": {
+          "before": 5,
+          "after": 5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceFootEvery": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintDistanceFar": {
+          "before": 18.72113824520531,
+          "after": 18.72113824520531,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceTrailRandomPhase": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "motionMode": {
+          "before": 4,
+          "after": 4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceSpreadEnabled": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBiasPerShot": {
+          "before": 0.02,
+          "after": 0.02,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBiasRecovery": {
+          "before": 0.3,
+          "after": 0.3,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "aimMode": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "angularSpread": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "inheritForwardMovement": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "detailedPaint": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterDetails": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "footSequence": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "footPhase": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterMoveForwardRate": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterPaintAngleMin": {
+          "before": 10,
+          "after": 10,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterPaintAngleMax": {
+          "before": 35,
+          "after": 35,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterFallHeightMin": {
+          "before": 1.1232682947123185,
+          "after": 1.1232682947123185,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterFallHeightMax": {
+          "before": 7.488455298082124,
+          "after": 7.488455298082124,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashSideSpeed": {
+          "before": 2.4711902483671007,
+          "after": 2.4711902483671007,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashUpSpeed": {
+          "before": 0.6739609768273911,
+          "after": 0.6739609768273911,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashForwardMin": {
+          "before": 0.44930731788492745,
+          "after": 0.44930731788492745,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashForwardMax": {
+          "before": 0.8986146357698549,
+          "after": 0.8986146357698549,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterWallGravity": {
+          "before": 21.56675125847652,
+          "after": 21.56675125847652,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": [
+        3
+      ]
+    },
+    "8": {
+      "name": "专业模型枪MG",
+      "asset": "Assets/GameResource/Weapons/SplooshGirl/SplooshGirlWeaponConfig.asset",
+      "reference": "WeaponShooterBlaze",
+      "url": "https://raw.githubusercontent.com/Leanny/splat3/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon/WeaponShooterBlaze.game__GameParameterTable.json",
+      "sha256": "287ffb3b99b4bda1d7ccabf8798a19240a9009f136d851c0e348d106c911b857",
+      "fields": {
+        "fireRate": {
+          "before": 12,
+          "after": 15.0,
+          "sourceField": "WeaponParam.RepeatFrame",
+          "originalValue": 4,
+          "conversionFactor": null,
+          "evidence": "source-explicit",
+          "reason": "60 / reference frames"
+        },
+        "damage": {
+          "before": 38,
+          "after": 24.0,
+          "sourceField": "DamageParam.ValueMax",
+          "originalValue": 240,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageMin": {
+          "before": 19,
+          "after": 12.0,
+          "sourceField": "DamageParam.ValueMin",
+          "originalValue": 120,
+          "conversionFactor": 0.1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageReduceStartSeconds": {
+          "before": 0.1,
+          "after": 0.13333333333333333,
+          "sourceField": "DamageParam.ReduceStartFrame",
+          "originalValue": 8,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "damageReduceEndSeconds": {
+          "before": 0.36666666666666664,
+          "after": 0.4,
+          "sourceField": "DamageParam.ReduceEndFrame",
+          "originalValue": 24,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "inkRecoverLockSeconds": {
+          "before": 0.25,
+          "after": 0.25,
+          "sourceField": "WeaponParam.InkRecoverStop",
+          "originalValue": 15,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shotGuideSeconds": {
+          "before": 0.1,
+          "after": 0.13333333333333333,
+          "sourceField": "WeaponParam.ShotGuideFrame",
+          "originalValue": 8,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpStart": {
+          "before": 0.4166666666666667,
+          "after": 0.4166666666666667,
+          "sourceField": "WeaponParam.Jump_DegBiasDecreaseStartFrame",
+          "originalValue": 25,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpEnd": {
+          "before": 1.1666666666666667,
+          "after": 1.1666666666666667,
+          "sourceField": "WeaponParam.Jump_DegBiasEndFrame",
+          "originalValue": 70,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shootMoveSpeed": {
+          "before": 3.5944583,
+          "after": 3.2350126887714774,
+          "sourceField": "WeaponParam.MoveSpeed",
+          "originalValue": 0.072,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "spreadDegrees": {
+          "before": 11.66,
+          "after": 12.63,
+          "sourceField": "WeaponParam.Stand_DegSwerve",
+          "originalValue": 12.63,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "jumpSpreadDegrees": {
+          "before": 17.49,
+          "after": 15.54,
+          "sourceField": "WeaponParam.Jump_DegSwerve",
+          "originalValue": 15.54,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasMin": {
+          "before": 0.04,
+          "after": 0.06,
+          "sourceField": "WeaponParam.Stand_DegBiasMin",
+          "originalValue": 0.06,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasMax": {
+          "before": 0.4,
+          "after": 0.5,
+          "sourceField": "WeaponParam.Stand_DegBiasMax",
+          "originalValue": 0.5,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasPerShot": {
+          "before": 0.02,
+          "after": 0.03,
+          "sourceField": "WeaponParam.Stand_DegBiasKf",
+          "originalValue": 0.03,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceJumpBias": {
+          "before": 0.4,
+          "after": 0.4,
+          "sourceField": "WeaponParam.Jump_DegBiasMax",
+          "originalValue": 0.4,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBiasRecovery": {
+          "before": 0.59999996,
+          "after": 0.6,
+          "sourceField": "WeaponParam.Stand_DegBiasDecrease",
+          "originalValue": 0.01,
+          "conversionFactor": 60,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "straightSeconds": {
+          "before": 0.03333333333333333,
+          "after": 0.05,
+          "sourceField": "MoveParam.GoStraightToBrakeStateFrame",
+          "originalValue": 3,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceBrakeEndSpeed": {
+          "before": 82.44789,
+          "after": 87.6733369388859,
+          "sourceField": "MoveParam.GoStraightStateEndMaxSpeed",
+          "originalValue": 1.9513,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "projectileGravity": {
+          "before": 43.133503,
+          "after": 43.13350251695304,
+          "sourceField": "MoveParam.FreeGravity",
+          "originalValue": 0.016,
+          "conversionFactor": 2695.8439073095647,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "collisionRadius": {
+          "before": 0.14976911,
+          "after": 0.14976910596164247,
+          "sourceField": "CollisionParam.EndRadiusForField",
+          "originalValue": 0.2,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referencePlayerRadius": {
+          "before": 0.25086325,
+          "after": 0.22465365894246372,
+          "sourceField": "CollisionParam.EndRadiusForPlayer",
+          "originalValue": 0.3,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterMoveForwardRate": {
+          "before": 2.0,
+          "after": 2.0,
+          "sourceField": "spl__SpawnBulletAdditionMovePlayerParam.ZRate",
+          "originalValue": 2.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintRadiusMin": {
+          "before": 1.3628988,
+          "after": 1.5358821816366437,
+          "sourceField": "PaintParam.WidthHalfFar",
+          "originalValue": 2.051,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintRadiusMax": {
+          "before": 1.7073678,
+          "after": 1.6062736614386155,
+          "sourceField": "PaintParam.WidthHalfMiddle",
+          "originalValue": 2.145,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterPaintNearRadius": {
+          "before": 1.9245330116071058,
+          "after": 1.7298331738569708,
+          "sourceField": "PaintParam.WidthHalfNear",
+          "originalValue": 2.31,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterPaintNearDistance": {
+          "before": 1.4976910596164248,
+          "after": 1.572575612597246,
+          "sourceField": "PaintParam.DistanceNear",
+          "originalValue": 2.1,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDistanceMiddle": {
+          "before": 2.8081708,
+          "after": 3.145151225194492,
+          "sourceField": "PaintParam.DistanceMiddle",
+          "originalValue": 4.2,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDistanceFar": {
+          "before": 14.976911,
+          "after": 11.232682947123186,
+          "sourceField": "PaintParam.DistanceFar",
+          "originalValue": 15.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthMin": {
+          "before": 1.31,
+          "after": 1.25,
+          "sourceField": "PaintParam.DepthScaleMin",
+          "originalValue": 1.25,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthMax": {
+          "before": 2.62,
+          "after": 2.5,
+          "sourceField": "PaintParam.DepthScaleMax",
+          "originalValue": 2.5,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthBreakMin": {
+          "before": 1.12,
+          "after": 1.07,
+          "sourceField": "PaintParam.DepthScaleMinBreakFree",
+          "originalValue": 1.07,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "paintDepthBreakMax": {
+          "before": 2.62,
+          "after": 2.5,
+          "sourceField": "PaintParam.DepthScaleMaxBreakFree",
+          "originalValue": 2.5,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailRadiusMin": {
+          "before": 1.0334069,
+          "after": 1.1382452053084828,
+          "sourceField": "SplashPaintParam.WidthHalf",
+          "originalValue": 1.52,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailRadiusMax": {
+          "before": 1.0334069,
+          "after": 1.1382452053084828,
+          "sourceField": "SplashPaintParam.WidthHalf",
+          "originalValue": 1.52,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceFootRadius": {
+          "before": 1.4467695635894664,
+          "after": 1.4467695635894664,
+          "sourceField": "SplashPaintParam.WidthHalfNearest",
+          "originalValue": 1.932,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashHeightMin": {
+          "before": 2.246536589424637,
+          "after": 2.246536589424637,
+          "sourceField": "SplashPaintParam.DepthMaxDropHeight",
+          "originalValue": 3.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplashHeightMax": {
+          "before": 7.488455298082124,
+          "after": 7.488455298082124,
+          "sourceField": "SplashPaintParam.DepthMinDropHeight",
+          "originalValue": 10.0,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceTrailBudget": {
+          "before": 1.4,
+          "after": 1.0,
+          "sourceField": "SplashSpawnParam.SpawnNum",
+          "originalValue": 1.0,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterSplitNum": {
+          "before": 5,
+          "after": 8,
+          "sourceField": "SplashSpawnParam.SplitNum",
+          "originalValue": 8,
+          "conversionFactor": 1,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "referenceTrailStart": {
+          "before": 0.8611723592794442,
+          "after": 0.9734991887506761,
+          "sourceField": "SplashSpawnParam.SpawnNearestLength",
+          "originalValue": 1.3,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "trailSpacing": {
+          "before": 4.493073178849274,
+          "after": 9.360569122602655,
+          "sourceField": "SplashSpawnParam.SpawnBetweenLength",
+          "originalValue": 12.5,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropRadius": {
+          "before": 0.48674959437533805,
+          "after": 0.48674959437533805,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusFall",
+          "originalValue": 0.65,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropGroundRadius": {
+          "before": 0.44930731788492745,
+          "after": 0.44930731788492745,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusGround",
+          "originalValue": 0.6,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallShockRadius": {
+          "before": 1.1681990265008113,
+          "after": 1.1681990265008113,
+          "sourceField": "WallDropCollisionPaintParam.PaintRadiusShock",
+          "originalValue": 1.56,
+          "conversionFactor": 0.7488455298082124,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstMin": {
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstFrameMin",
+          "originalValue": 20,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstMax": {
+          "before": 0.6666666666666666,
+          "after": 0.6666666666666666,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstFrameMax",
+          "originalValue": 40,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallMiddle": {
+          "before": 0.16666666666666666,
+          "after": 0.16666666666666666,
+          "sourceField": "WallDropMoveParam.FallPeriodSecondFrame",
+          "originalValue": 10,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallLastMin": {
+          "before": 0.25,
+          "after": 0.25,
+          "sourceField": "WallDropMoveParam.FallPeriodLastFrameMin",
+          "originalValue": 15,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallLastMax": {
+          "before": 0.5833333333333334,
+          "after": 0.5833333333333334,
+          "sourceField": "WallDropMoveParam.FallPeriodLastFrameMax",
+          "originalValue": 35,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shooterWallFirstSpeed": {
+          "before": 2.6958439073095644,
+          "after": 2.6958439073095644,
+          "sourceField": "WallDropMoveParam.FallPeriodFirstTargetSpeed",
+          "originalValue": 0.06,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropSpeed": {
+          "before": 2.6958439073095644,
+          "after": 2.6958439073095644,
+          "sourceField": "WallDropMoveParam.FallPeriodSecondTargetSpeed",
+          "originalValue": 0.06,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "wallDropSeconds": {
+          "before": 1.4166666666666665,
+          "after": 1.4166666666666665,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Derived maximum of the imported wall phases"
+        },
+        "shooterPostSeconds": {
+          "before": 0.03333333333333333,
+          "after": 0.03333333333333333,
+          "sourceField": "WeaponParam.PostDelayFrame",
+          "originalValue": 2,
+          "conversionFactor": 0.016666666666666666,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "shotInk": {
+          "before": 0.8,
+          "after": 0.5,
+          "sourceField": "WeaponParam.InkConsume",
+          "originalValue": 0.005,
+          "conversionFactor": 100,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "speedMin": {
+          "before": 92.557304,
+          "after": 101.81303823272455,
+          "sourceField": "MoveParam.SpawnSpeed",
+          "originalValue": 2.266,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "speedMax": {
+          "before": 92.557304,
+          "after": 101.81303823272455,
+          "sourceField": "MoveParam.SpawnSpeed",
+          "originalValue": 2.266,
+          "conversionFactor": 44.93073178849274,
+          "evidence": "source-explicit",
+          "reason": null
+        },
+        "effectiveRange": {
+          "before": 5.1182933,
+          "after": 10.744317021580851,
+          "sourceField": null,
+          "originalValue": null,
+          "conversionFactor": null,
+          "evidence": "project-adaptation",
+          "reason": "Derived horizontal center trajectory at damage-minimum age; UI also computes actual flat-ground range"
+        },
+        "motionMode": {
+          "before": 4,
+          "after": 4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleVolleySeconds": {
+          "before": 0.55,
+          "after": 0.55,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleIntervalSeconds": {
+          "before": 0.05,
+          "after": 0.05,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleGroundBounces": {
+          "before": 3,
+          "after": 3,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleMaxBounces": {
+          "before": 6,
+          "after": 6,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleNormalRetention": {
+          "before": 0.72,
+          "after": 0.72,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleTangentRetention": {
+          "before": 0.9,
+          "after": 0.9,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleWallRetention": {
+          "before": 0.9,
+          "after": 0.9,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "fireMode": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "startSeconds": {
+          "before": 0.03333333333333333,
+          "after": 0.03333333333333333,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "emergeStartSeconds": {
+          "before": 0.13333333333333333,
+          "after": 0.13333333333333333,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "burstCount": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "burstRecoverySeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "lifetime": {
+          "before": 10,
+          "after": 10,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "brakeSeconds": {
+          "before": 0.06666666666666667,
+          "after": 0.06666666666666667,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "brakeSpeedMultiplier": {
+          "before": 0.66,
+          "after": 0.66,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "landingSpreadRecoverSeconds": {
+          "before": 0.2,
+          "after": 0.2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintHardness": {
+          "before": 0.55,
+          "after": 0.55,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintStrength": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "trailMaxDrop": {
+          "before": 2.4,
+          "after": 2.4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinDamage": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargePartialMaxDamage": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinInk": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinRange": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinSpread": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "chargeMinJumpSpread": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "pelletCount": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "muzzleMode": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "semiBufferSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingMinChargeSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFirstChargeSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFirstShootSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFullShootSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingSlowChargeMultiplier": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingChargeMoveSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingChargeJumpSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingPostSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingPitchSpread": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingSpreadBias": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingSpeedBias": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFootEvery": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingTrailCount": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingFootRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "splatlingPlayerRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "spreadExpandSeconds": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "spreadRecoverSeconds": {
+          "before": 0.5,
+          "after": 0.5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "baseSpreadDegrees": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "baseJumpSpreadDegrees": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterRepeatSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterPostSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterPlayerRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterBrakeEndSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterBrakeDrag": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterBrakeGravity": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "blasterTrailCount": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesBrakeEndSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesBrakeDrag": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesBrakeGravity": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesPlayerRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesSpreadMinBias": {
+          "before": 0.03,
+          "after": 0.03,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesSpreadMaxBias": {
+          "before": 0.25,
+          "after": 0.25,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesSpreadPerShot": {
+          "before": 0.03,
+          "after": 0.03,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesSpreadRecoverPerSecond": {
+          "before": 0.3,
+          "after": 0.3,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesJumpBias": {
+          "before": 0.4,
+          "after": 0.4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesJumpRecoverStartSeconds": {
+          "before": 0.4166666666666667,
+          "after": 0.4166666666666667,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesJumpRecoverEndSeconds": {
+          "before": 1.1666666666666667,
+          "after": 1.1666666666666667,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesTrailStartDistance": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesTrailCount": {
+          "before": 2,
+          "after": 2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesFootEvery": {
+          "before": 5,
+          "after": 5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "dualiesFootRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceRules": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBrakeDrag": {
+          "before": 0.36,
+          "after": 0.36,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceBrakeGravity": {
+          "before": 188.70908,
+          "after": 188.70908,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceFreeDrag": {
+          "before": 0.02,
+          "after": 0.02,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceSpreadEnabled": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referencePitchBias": {
+          "before": 0.4,
+          "after": 0.4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceTrailRandomPhase": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceFootEvery": {
+          "before": 5,
+          "after": 5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintBreakHeight": {
+          "before": 2.2465365,
+          "after": 2.2465365,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "trailDepthScale": {
+          "before": 1.2,
+          "after": 1.2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintDropGravity": {
+          "before": 43.133503,
+          "after": 43.133503,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "paintDropLifetime": {
+          "before": 5,
+          "after": 5,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "collisionExplosionPaintRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleAirSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterAirSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleSpeedDecrement": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleUpwardRate": {
+          "before": 0.2,
+          "after": 0.2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleInitialRadiusRate": {
+          "before": 0.1,
+          "after": 0.1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleFieldGrowSeconds": {
+          "before": 0.06666666666666667,
+          "after": 0.06666666666666667,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubblePlayerGrowSeconds": {
+          "before": 0.08333333333333333,
+          "after": 0.08333333333333333,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterFieldRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterPlayerRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleRadiusDecrement": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleBounceRadiusRate": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleBouncePaintRate": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleFirstBouncePaintRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterBouncePaintRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleBouncePaintDecrement": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "bubbleLaterImpactRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterDetails": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterPaintAngleMin": {
+          "before": 10,
+          "after": 10,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterPaintAngleMax": {
+          "before": 35,
+          "after": 35,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterFallHeightMin": {
+          "before": 1.1232682947123185,
+          "after": 1.1232682947123185,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterFallHeightMax": {
+          "before": 7.488455298082124,
+          "after": 7.488455298082124,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashDepthMin": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashDepthMax": {
+          "before": 1.2,
+          "after": 1.2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashSideSpeed": {
+          "before": 2.4711902483671007,
+          "after": 2.4711902483671007,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashUpSpeed": {
+          "before": 0.6739609768273911,
+          "after": 0.6739609768273911,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashForwardMin": {
+          "before": 0.44930731788492745,
+          "after": 0.44930731788492745,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterSplashForwardMax": {
+          "before": 0.8986146357698549,
+          "after": 0.8986146357698549,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "shooterWallGravity": {
+          "before": 21.56675125847652,
+          "after": 21.56675125847652,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherAirSpeed": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherUpwardRate": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherMoveSideRate": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherMoveForwardRate": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherMoveVerticalRate": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherFieldInitialRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherPlayerInitialRadius": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherFieldGrowSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherPlayerGrowSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherPostSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherMoveLimitSeconds": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherPaintNearDistance": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherPaintFarDistance": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherBlastOffset": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherTrailPhaseMax": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "explosherFootDepth": {
+          "before": 0,
+          "after": 0,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "referenceFootDepth": {
+          "before": 1.2,
+          "after": 1.2,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "aimMode": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "angularSpread": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "inheritForwardMovement": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "detailedPaint": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "footSequence": {
+          "before": 1,
+          "after": 1,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        },
+        "footPhase": {
+          "before": 4,
+          "after": 4,
+          "evidence": "retained-project-value",
+          "reason": "No approved replacement mapping; preserve existing behavior"
+        }
+      },
+      "uninterpretedForceSpawnNearestAddNumArray": [
+        4
+      ]
+    }
+  },
+  "heroChanges": {
+    "6": {
+      "weaponTypeName": "斯普拉旋转枪",
+      "moveSpeed": 4.3133502516953035,
+      "swimSpeed": 8.626700503390607
+    },
+    "8": {
+      "weaponTypeName": "专业模型枪MG"
+    }
+  }
+}

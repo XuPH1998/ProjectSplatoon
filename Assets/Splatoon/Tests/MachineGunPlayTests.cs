@@ -70,10 +70,16 @@ namespace Splatoon.Tests
             yield return app.Connect(true,"127.0.0.1",port).ToCoroutine();
             yield return Wait(()=>PrototypePlayer.Local!=null,"Host spawn");
             var host=PrototypePlayer.Local;var match=PrototypeMatch.Current;
+            var mismatched=(byte[])typeof(PrototypeApp).GetField("_signature",Flags).GetValue(app);
+            mismatched=(byte[])mismatched.Clone();mismatched[0]^=1;
+            var rejected=new Unity.Netcode.NetworkManager.ConnectionApprovalResponse();
+            typeof(PrototypeApp).GetMethod("Approve",Flags).Invoke(app,new object[]{
+                new Unity.Netcode.NetworkManager.ConnectionApprovalRequest{ClientNetworkId=99,Payload=PlayerConnectionPayload.Encode(mismatched,"OldWeaponConfig")},rejected});
+            Assert.That(rejected.Approved,Is.False);Assert.That(rejected.Reason,Does.Contain("游戏内容不一致"));
             host.RequestHeroChange(6,HeroSelectionOrigin.Warmup);
             yield return Wait(()=>!host.HeroChangePending&&host.Snapshot.Value.HeroId==6,"Select ID 6 through real request");
             yield return null;
-            Assert.That(app.Heroes.All.Count(),Is.EqualTo(7));Assert.That(app.Heroes.AssetCount,Is.EqualTo(14));
+            Assert.That(app.Heroes.All.Count(),Is.EqualTo(LubanConfigService.Current.Tables.TbHero.DataList.Count));Assert.That(app.Heroes.AssetCount,Is.EqualTo(LubanConfigService.Current.Tables.TbHero.DataList.Count*2));
             Assert.That(host.CharacterView.Profile.Splatling,Is.True);Assert.That(host.SwimBody.Profile,Is.Not.Null);
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var players=new List<PrototypePlayer>{host};
@@ -91,13 +97,13 @@ namespace Splatoon.Tests
             }
             match.Projectiles.Clear();var timings=new List<double>();int peak=0;uint sequence=100;
             var emitted=new Dictionary<uint,InkShot>();
-            for(int tick=0;tick<=415;tick++)
+            for(int tick=0;tick<=116;tick++)
             {
                 var watch=System.Diagnostics.Stopwatch.StartNew();double now=start+tick/60.0;
                 foreach(var p in players)
                 {
                     var s=p.Snapshot.Value;
-                    Input(p,new PlayerInputFrame{Sequence=++sequence,Revision=s.Revision,HeroRevision=s.HeroRevision,FireSequence=1,Fire=tick<150,Look=new Vector2(s.Yaw,0)});
+                    Input(p,new PlayerInputFrame{Sequence=++sequence,Revision=s.Revision,HeroRevision=s.HeroRevision,FireSequence=1,Fire=tick<27,Look=new Vector2(s.Yaw,0)});
                     p.Simulate(1f/60,now,MatchPhase.Practice);Present(p,now);
                 }
                 peak=Math.Max(peak,match.Projectiles.ActiveCount);match.Projectiles.Simulate(now);
@@ -105,12 +111,12 @@ namespace Splatoon.Tests
                 timings.Add(watch.Elapsed.TotalMilliseconds);
                 var state=host.Snapshot.Value;
                 rows.AppendLine($"{tick},{(state.SplatlingChargeSeconds * 60):R},{state.Ink:R},{state.SplatlingReservedInk:R},{state.SplatlingRemaining},{state.ShotSequence},{state.WeaponPhase}");
-                if(tick==120||tick==160||tick==400||tick==413)Capture(camera,host,"phase-"+tick);
+                if(tick==18||tick==32||tick==108||tick==114)Capture(camera,host,"phase-"+tick);
                 if(tick%30==0)yield return null;
             }
             File.WriteAllText(Output+"/authority-timeline.csv",rows.ToString());
-            Assert.That(emitted.Count,Is.EqualTo(264),"Four authoritative magazines, 66 rounds each");
-            foreach(var p in players){Assert.That(p.Snapshot.Value.ShotSequence,Is.EqualTo(66));Assert.That(p.Snapshot.Value.Ink,Is.EqualTo(65).Within(.002));Assert.That(p.Snapshot.Value.SplatlingReservedInk,Is.Zero);}
+            Assert.That(emitted.Count,Is.EqualTo(88),"Four authoritative magazines, 22 rounds each");
+            foreach(var p in players){Assert.That(p.Snapshot.Value.ShotSequence,Is.EqualTo(22));Assert.That(p.Snapshot.Value.Ink,Is.EqualTo(85).Within(.002));Assert.That(p.Snapshot.Value.SplatlingReservedInk,Is.Zero);}
             Assert.That(emitted.Values.All(s=>s.Charge==1),Is.True);
             foreach(float pitch in new[]{-65f,-45f,0f,35f,75f})
             {
@@ -136,7 +142,7 @@ namespace Splatoon.Tests
             Assert.That(host.Snapshot.Value.SplatlingRemaining,Is.Zero);Assert.That(host.CharacterView.Animator.enabled,Is.True);
             Assert.That(host.CharacterView.Weapon.parent,Is.SameAs(host.CharacterView.WeaponSocket));Capture(camera,host,"respawn");
             timings.Sort();
-            File.WriteAllText(Output+"/results.txt",$"PASS: GPU URP host boot, sixth hero selection/preload, 3 bots inherit ID6, four magazines = 264 unique rounds, total 35 ink each, full damage identity, five aim angles (-65 to 75) and left grip, swim cancel, swim death, respawn.\nPeak active projectiles={peak}\nSynchronous four-player simulation P95 ms={timings[(int)(timings.Count*.95)]:F3} (not render frame time)\nGPU={SystemInfo.graphicsDeviceName}\nResolution=960x960\n");
+            File.WriteAllText(Output+"/results.txt",$"PASS: GPU URP host boot, sixth hero selection/preload, 3 bots inherit ID6, four magazines = 88 unique rounds, total 15 ink each, full damage identity, five aim angles (-65 to 75) and left grip, swim cancel, swim death, respawn.\nPeak active projectiles={peak}\nSynchronous four-player simulation P95 ms={timings[(int)(timings.Count*.95)]:F3} (not render frame time)\nGPU={SystemInfo.graphicsDeviceName}\nResolution=960x960\n");
             yield return CompareFourModels(app, camera, players);
             UnityEngine.Object.Destroy(camera.gameObject);
             yield return app.Leave().ToCoroutine();

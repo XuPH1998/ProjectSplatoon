@@ -1,0 +1,305 @@
+{
+  "date": "2026-09-21",
+  "unity": "6000.3.9f1",
+  "build": "PASS 2026-09-21T13:04:31.6849020Z",
+  "static": {
+    "passed": true,
+    "workbookChanges": [
+      {
+        "sheet": "Hero",
+        "cell": "J9",
+        "before": 3.953904397387361,
+        "after": 4.313350251695303
+      },
+      {
+        "sheet": "Hero",
+        "cell": "K9",
+        "before": 7.764030453051546,
+        "after": 8.626700503390605
+      },
+      {
+        "sheet": "Hero",
+        "cell": "AG9",
+        "before": "蓄力旋转机枪",
+        "after": "斯普拉旋转枪"
+      },
+      {
+        "sheet": "Hero",
+        "cell": "AG11",
+        "before": "广域标记枪",
+        "after": "专业模型枪MG"
+      }
+    ],
+    "generatedChanges": [
+      {
+        "hero": 6,
+        "field": "weaponTypeName",
+        "before": "蓄力旋转机枪",
+        "after": "斯普拉旋转枪"
+      },
+      {
+        "hero": 6,
+        "field": "moveSpeed",
+        "before": 3.9539044,
+        "after": 4.31335
+      },
+      {
+        "hero": 6,
+        "field": "swimSpeed",
+        "before": 7.7640305,
+        "after": 8.6267
+      },
+      {
+        "hero": 8,
+        "field": "weaponTypeName",
+        "before": "广域标记枪",
+        "after": "专业模型枪MG"
+      }
+    ],
+    "checkedAssetCount": 815,
+    "changedAssets": [
+      "Assets/GameResource/Weapons/MachineGunGirl/MachineGunGirlWeaponConfig.asset",
+      "Assets/GameResource/Weapons/SplooshGirl/SplooshGirlWeaponConfig.asset"
+    ],
+    "otherWorkbookPartsAndStylesPreserved": true
+  },
+  "edit": {
+    "report": "Reports/AimBallistics/main-weapon-replacement-edit-v2.xml",
+    "passed": "219",
+    "failed": "12",
+    "skipped": "4",
+    "duration": "42.4588531",
+    "failures": [
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(1)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(2)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(3)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(4)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(5)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(6)",
+      "Splatoon.Tests.SplooshGirlTests.ExistingHeroesKeepFrozenPaintOwnership(7)",
+      "Splatoon.Tests.WeaponAlignmentTests.ShotgunPreservesFrozenPhysicsAndPaintBaseline",
+      "Splatoon.Tests.WeaponSecondsTests.EveryInvalidSecondFieldKeepsLastValidConfigAndReportsChinese(-1.0d)",
+      "Splatoon.Tests.WeaponSecondsTests.EveryInvalidSecondFieldKeepsLastValidConfigAndReportsChinese(double.NaN)",
+      "Splatoon.Tests.WeaponSecondsTests.EveryInvalidSecondFieldKeepsLastValidConfigAndReportsChinese(double.PositiveInfinity)",
+      "Splatoon.Tests.WeaponSecondsTests.EveryInvalidSecondFieldKeepsLastValidConfigAndReportsChinese(double.NegativeInfinity)"
+    ]
+  },
+  "play": {
+    "report": "Reports/AimBallistics/main-weapon-replacement-play.xml",
+    "passed": "2",
+    "failed": "0",
+    "skipped": "0",
+    "duration": "16.7026513",
+    "failures": []
+  },
+  "focused": {
+    "report": "Reports/AimBallistics/main-weapon-replacement-harness.xml",
+    "passed": "24",
+    "failed": "0",
+    "skipped": "0",
+    "duration": "4.4214192",
+    "failures": []
+  },
+  "reimport": {
+    "report": "Reports/AimBallistics/main-weapon-replacement-reimport-v3.xml",
+    "passed": "7",
+    "failed": "0",
+    "skipped": "0",
+    "duration": "0.4162209",
+    "failures": []
+  },
+  "ui": {
+    "report": "Reports/AimBallistics/main-weapon-replacement-ui.xml",
+    "passed": "0",
+    "failed": "1",
+    "skipped": "0",
+    "duration": "17.3890303",
+    "failures": [
+      "Splatoon.Tests.HeroSelectionUiPlayTests.PortraitPickerAtAllThreeResolutions"
+    ]
+  },
+  "baseline": {
+    "reproducedFailures": 12,
+    "identicalMessages": 11,
+    "hero6OldConfigStillFails": true,
+    "report": "Reports/MainWeaponReplacement/baseline-comparison.json"
+  },
+  "uiScope": "Both replaced weapon cards visually verified at 1280x720; full all-hero/three-resolution automation fails at hero 9 because the old harness does not scroll.",
+  "signatureRejection": "Production Host approval callback rejects mismatched signature in Play Mode; no old-version binary handshake run.",
+  "network": {
+    "mini": {
+      "passed": true,
+      "environment": "Two independent Windows processes on one PC; not physical two-machine or target-device acceptance.",
+      "player": "D:\\XPHUNITY\\ProjectSplatoon\\Temp\\CameraReticle\\Player\\InkLan.exe",
+      "host": {
+        "finalPaintSequence": "627",
+        "finalPaintHash": "1930832540",
+        "role": "host",
+        "paperObserved": "True",
+        "maxPlayers": "2",
+        "passed": "True",
+        "smallRemoteBody": "True",
+        "error": "",
+        "targetHero": "6",
+        "receivedDamageDuringFight": "True",
+        "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+        "confirmedEnemyProjectileHit": "True",
+        "runtimeErrors": "",
+        "contentSignature": "5c54314d8e224b50b08c061893757ad40d9284bad84e862f56956f60bed258dc",
+        "switch8to1to8": "True",
+        "roundReset": "True",
+        "respawnRetained": "True",
+        "shots8": "64",
+        "initialSyncAndCapture": "True",
+        "resyncRequested": "False",
+        "appliedSnapshots": "0"
+      },
+      "matchingCombatSnapshotsByOwner": {
+        "1": 269,
+        "0": 269
+      },
+      "client": {
+        "finalPaintSequence": "627",
+        "finalPaintHash": "1930832540",
+        "role": "client",
+        "paperObserved": "True",
+        "maxPlayers": "2",
+        "passed": "True",
+        "smallRemoteBody": "True",
+        "error": "",
+        "targetHero": "6",
+        "receivedDamageDuringFight": "True",
+        "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+        "confirmedEnemyProjectileHit": "True",
+        "runtimeErrors": "",
+        "contentSignature": "5c54314d8e224b50b08c061893757ad40d9284bad84e862f56956f60bed258dc",
+        "switch8to1to8": "True",
+        "roundReset": "True",
+        "respawnRetained": "True",
+        "shots8": "57",
+        "initialSyncAndCapture": "True",
+        "resyncRequested": "True",
+        "appliedSnapshots": "2"
+      },
+      "camera": {
+        "host": {
+          "passed": "True",
+          "sampledFrames": "10307",
+          "graphicsDevice": "Direct3D11",
+          "badFov": "0",
+          "badProjection": "0",
+          "badSwim": "0",
+          "swimObserved": "True",
+          "targetWithoutFire": "True",
+          "actualHit": "True",
+          "actualKill": "True",
+          "muzzleBlocked": "True",
+          "obstructionRecovered": "True"
+        },
+        "client": {
+          "passed": "True",
+          "sampledFrames": "8708",
+          "graphicsDevice": "Direct3D11",
+          "badFov": "0",
+          "badProjection": "0",
+          "badSwim": "0",
+          "swimObserved": "True",
+          "targetWithoutFire": "True",
+          "actualHit": "True",
+          "actualKill": "True",
+          "muzzleBlocked": "True",
+          "obstructionRecovered": "True"
+        }
+      }
+    },
+    "mg": {
+      "player": "D:\\XPHUNITY\\ProjectSplatoon\\Temp\\CameraReticle\\Player\\InkLan.exe",
+      "matchingCombatSnapshotsByOwner": {
+        "1": 268,
+        "0": 268
+      },
+      "passed": true,
+      "client": {
+        "finalPaintHash": "3684422428",
+        "appliedSnapshots": "2",
+        "runtimeErrors": "",
+        "contentSignature": "5c54314d8e224b50b08c061893757ad40d9284bad84e862f56956f60bed258dc",
+        "resyncRequested": "True",
+        "shots8": "222",
+        "confirmedEnemyProjectileHit": "True",
+        "smallRemoteBody": "True",
+        "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+        "targetHero": "8",
+        "role": "client",
+        "receivedDamageDuringFight": "True",
+        "respawnRetained": "True",
+        "switch8to1to8": "True",
+        "initialSyncAndCapture": "True",
+        "roundReset": "True",
+        "paperObserved": "True",
+        "finalPaintSequence": "2937",
+        "maxPlayers": "2",
+        "passed": "True",
+        "error": ""
+      },
+      "host": {
+        "finalPaintHash": "3684422428",
+        "appliedSnapshots": "0",
+        "runtimeErrors": "",
+        "contentSignature": "5c54314d8e224b50b08c061893757ad40d9284bad84e862f56956f60bed258dc",
+        "resyncRequested": "False",
+        "shots8": "353",
+        "confirmedEnemyProjectileHit": "True",
+        "smallRemoteBody": "True",
+        "Environment": "two independent processes on one PC; not physical two-machine/device acceptance",
+        "targetHero": "8",
+        "role": "host",
+        "receivedDamageDuringFight": "True",
+        "respawnRetained": "True",
+        "switch8to1to8": "True",
+        "initialSyncAndCapture": "True",
+        "roundReset": "True",
+        "paperObserved": "True",
+        "finalPaintSequence": "2937",
+        "maxPlayers": "2",
+        "passed": "True",
+        "error": ""
+      },
+      "environment": "Two independent Windows processes on one PC; not physical two-machine or target-device acceptance.",
+      "camera": {
+        "host": {
+          "passed": "True",
+          "sampledFrames": "10289",
+          "graphicsDevice": "Direct3D11",
+          "badFov": "0",
+          "badProjection": "0",
+          "badSwim": "0",
+          "swimObserved": "True",
+          "targetWithoutFire": "True",
+          "actualHit": "True",
+          "actualKill": "True",
+          "muzzleBlocked": "True",
+          "obstructionRecovered": "True"
+        },
+        "client": {
+          "passed": "True",
+          "sampledFrames": "8628",
+          "graphicsDevice": "Direct3D11",
+          "badFov": "0",
+          "badProjection": "0",
+          "badSwim": "0",
+          "swimObserved": "True",
+          "targetWithoutFire": "True",
+          "actualHit": "True",
+          "actualKill": "True",
+          "muzzleBlocked": "True",
+          "obstructionRecovered": "True"
+        }
+      }
+    }
+  },
+  "limits": [
+    "No original-game frame-by-frame replication acceptance",
+    "No physical LAN or target-device acceptance"
+  ]
+}

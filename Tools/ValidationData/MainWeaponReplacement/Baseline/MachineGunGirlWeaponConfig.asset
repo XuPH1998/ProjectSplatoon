@@ -16,63 +16,63 @@ MonoBehaviour:
   ammoConfig: {fileID: 11400000, guid: 48d1adeafd3444198a2c13b3b395a791, type: 2}
   fireMode: 4
   fireRate: 15
-  shotInk: 0.6818181818181818
+  shotInk: 0.530303
   startSeconds: 0
   emergeStartSeconds: 0.06666666666666667
-  inkRecoverLockSeconds: 0.5
-  shootMoveSpeed: 3.8640429338103757
+  inkRecoverLockSeconds: 0.6666666666666666
+  shootMoveSpeed: 2.6958439073095644
   burstCount: 1
   burstRecoverySeconds: 0
-  speedMin: 62.90302450388984
-  speedMax: 71.88917086158838
+  speedMin: 101.54346
+  speedMax: 114.12406
   projectileGravity: 43.13350251695304
   lifetime: 3
   collisionRadius: 0.14976910596164247
-  spreadDegrees: 4
+  spreadDegrees: 3.0
   straightSeconds: 0.13333333333333333
   brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.1
-  jumpSpreadDegrees: 8
+  jumpSpreadDegrees: 6.0
   landingSpreadRecoverSeconds: 0.75
-  effectiveRange: 11.182198038823486
-  damage: 32
+  effectiveRange: 20.21883
+  damage: 40
   damageMin: 16
   damageReduceStartSeconds: 0.18333333333333332
   damageReduceEndSeconds: 0.31666666666666665
-  paintRadiusMin: 1.617506344385739
-  paintRadiusMax: 1.7073678079627241
+  paintRadiusMin: 1.4377834172317678
+  paintRadiusMax: 1.572575612597246
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 7.488455298082124
-  trailRadiusMin: 1.0850771726920998
-  trailRadiusMax: 1.0850771726920998
+  trailSpacing: 17.597869950492992
+  trailRadiusMin: 0.9645130423929776
+  trailRadiusMax: 0.9645130423929776
   trailMaxDrop: 2.4
-  chargeSeconds: 0.45
+  chargeSeconds: 2.5
   chargeMinDamage: 32
   chargePartialMaxDamage: 32
-  chargeMinInk: 0.6818181818181818
-  chargeMinRange: 8.377048391729417
-  chargeMinSpeed: 47.17726837791738
-  chargeMinSpread: 4
-  chargeMinJumpSpread: 8
+  chargeMinInk: 0.530303
+  chargeMinRange: 8.237301
+  chargeMinSpeed: 47.17727
+  chargeMinSpread: 3
+  chargeMinJumpSpread: 6
   pelletCount: 1
   muzzleMode: 0
   semiBufferSeconds: 0
   splatlingMinChargeSeconds: 0.13333333333333333
-  splatlingFirstChargeSeconds: 0.3
-  splatlingFirstShootSeconds: 0.7
-  splatlingFullShootSeconds: 1.4
-  splatlingSlowChargeMultiplier: 6
-  splatlingChargeMoveSpeed: 3.2350126887714774
-  splatlingChargeJumpSpeed: 4.493073178849275
+  splatlingFirstChargeSeconds: 2
+  splatlingFirstShootSeconds: 2.1666666666666665
+  splatlingFullShootSeconds: 4.333333333333333
+  splatlingSlowChargeMultiplier: 3
+  splatlingChargeMoveSpeed: 1.9769521986936804
+  splatlingChargeJumpSpeed: 2.695844
   splatlingPostSeconds: 0.06666666666666667
-  splatlingPitchSpread: 1.2
+  splatlingPitchSpread: 2.0
   splatlingSpreadBias: 0.3
   splatlingSpeedBias: 0.2
   splatlingFootEvery: 1
-  splatlingTrailCount: 2
-  splatlingFootRadius: 1.3020926072305197
-  splatlingPlayerRadius: 0.19469983775013522
+  splatlingTrailCount: 1
+  splatlingFootRadius: 1.1574156
+  splatlingPlayerRadius: 0.16849025
   spreadExpandSeconds: 1
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0
@@ -84,23 +84,23 @@ MonoBehaviour:
   paintDropGravity: 43.13350251695304
   paintDropLifetime: 5
   referenceFootEvery: 1
-  referenceBrakeEndSpeed: 49.64845862628448
-  referencePlayerRadius: 0.19469983775013522
+  referenceBrakeEndSpeed: 87.16561966967592
+  referencePlayerRadius: 0.1684902442068478
   paintDepthMin: 1.17
   paintDepthMax: 1.83
   paintDepthBreakMin: 1.17
   paintDepthBreakMax: 1.67
-  paintDistanceMiddle: 0.7488455298082124
+  paintDistanceMiddle: 0.8237300827890337
   paintDistanceFar: 18.72113824520531
-  referenceTrailBudget: 1.6
-  referenceTrailStart: 0
+  referenceTrailBudget: 1.0
+  referenceTrailStart: 0.0
   referenceTrailRandomPhase: 0
-  referenceFootRadius: 1.3020926072305197
-  trailDepthScale: 1.4
+  referenceFootRadius: 1.1574156508715732
+  trailDepthScale: 1.5
   wallDropRadius: 0.48674959437533805
   wallDropGroundRadius: 0.44930731788492745
   wallDropSpeed: 2.6958439073095644
-  wallDropSeconds: 1.0833333333333335
+  wallDropSeconds: 1.0
   motionMode: 4
   referenceSpreadEnabled: 1
   referenceBiasMin: 0.1
@@ -120,11 +120,11 @@ MonoBehaviour:
   footPhase: 0
   shotGuideSeconds: 0.18333333333333332
   shooterMoveForwardRate: 0
-  shooterSplitNum: 6
-  shooterPaintNearDistance: 0.7488455298082124
-  shooterPaintNearRadius: 1.7073678079627241
-  shooterSplashDepthMin: 1.4
-  shooterSplashDepthMax: 1.4
+  shooterSplitNum: 8
+  shooterPaintNearDistance: 0.0
+  shooterPaintNearRadius: 1.572575612597246
+  shooterSplashDepthMin: 1.5
+  shooterSplashDepthMax: 1.5
   shooterSplashHeightMin: 2.246536589424637
   shooterSplashHeightMax: 7.488455298082124
   shooterPaintAngleMin: 10

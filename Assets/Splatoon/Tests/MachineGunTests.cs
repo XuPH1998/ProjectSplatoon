@@ -30,8 +30,8 @@ namespace Splatoon.Tests
             for(int t=0;t<=end;t++) if(Step(ref s,t,t<release)) shots.Add(t);
             return shots;
         }
-        [TestCase(0,1,8)] [TestCase(7,1,8)] [TestCase(8,1,8)] [TestCase(119,33,119)]
-        [TestCase(120,33,120)] [TestCase(121,34,121)] [TestCase(149,64,149)] [TestCase(150,66,150)]
+        [TestCase(0,1,8)] [TestCase(7,1,8)] [TestCase(8,1,8)] [TestCase(17,10,17)]
+        [TestCase(18,11,18)] [TestCase(19,12,19)] [TestCase(26,20,26)] [TestCase(27,22,27)]
         public void ChargeBoundariesAndInclusiveLastRound(int release,int rounds,int first)
         {
             var s=Player();var shots=Magazine(ref s,release);
@@ -44,27 +44,27 @@ namespace Splatoon.Tests
         {
             var s=Player();
             for(int t=0;t<=300;t++) { Assert.That(Step(ref s,t,true),Is.False); ResourceSimulation.Step(ref s,Hero,false,false,1f/60,t/60.0); }
-            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(150));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
-            Assert.That(s.Ink,Is.EqualTo(65).Within(.0003));Assert.That(s.SplatlingReservedInk,Is.EqualTo(35).Within(.0003));
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(27));Assert.That(s.SplatlingLoaded,Is.EqualTo(22));
+            Assert.That(s.Ink,Is.EqualTo(85).Within(.0003));Assert.That(s.SplatlingReservedInk,Is.EqualTo(15).Within(.0003));
             Assert.That(Step(ref s,301,false),Is.True);Assert.That(s.LastShotCharge,Is.EqualTo(1));
         }
         [Test] public void FullDamageIdentitySurvivesTheWholeMagazine()
         {
             var s=Player();
-            for(int t=0;t<450;t++) if(Step(ref s,t,t<150))
-            { Assert.That(s.LastShotCharge,Is.EqualTo(1)); Assert.That(WeaponSimulation.Damage(W,0,s.LastShotCharge),Is.EqualTo(40)); }
-            Assert.That(WeaponSimulation.Damage(W,0,149f/150),Is.EqualTo(32));
-            Assert.That(WeaponSimulation.Damage(W,11/60.0,1),Is.EqualTo(40));
-            Assert.That(WeaponSimulation.Damage(W,15/60.0,1),Is.EqualTo(28).Within(.0001));
+            for(int t=0;t<450;t++) if(Step(ref s,t,t<27))
+            { Assert.That(s.LastShotCharge,Is.EqualTo(1)); Assert.That(WeaponSimulation.Damage(W,0,s.LastShotCharge),Is.EqualTo(32)); }
+            Assert.That(WeaponSimulation.Damage(W,0,26f/27),Is.EqualTo(32));
+            Assert.That(WeaponSimulation.Damage(W,11/60.0,1),Is.EqualTo(32));
+            Assert.That(WeaponSimulation.Damage(W,15/60.0,1),Is.EqualTo(24).Within(.0001));
             Assert.That(WeaponSimulation.Damage(W,19/60.0,1),Is.EqualTo(16));
-            Assert.That(Mathf.CeilToInt(100/WeaponSimulation.Damage(W,0,1)),Is.EqualTo(3));
+            Assert.That(Mathf.CeilToInt(100/WeaponSimulation.Damage(W,0,1)),Is.EqualTo(4));
             Assert.That(Mathf.CeilToInt(100/WeaponSimulation.Damage(W,0,.5f)),Is.EqualTo(4));
         }
-        [TestCase(60)] [TestCase(120)] [TestCase(150)] [TestCase(194)]
+        [TestCase(6)] [TestCase(18)] [TestCase(27)] [TestCase(44)]
         public void CancelRefundsOnlyUnspentReservationOnce(int at)
         {
             var s=Player();int shots=0;
-            for(int t=0;t<=at;t++) if(Step(ref s,t,t<150)) shots++;
+            for(int t=0;t<=at;t++) if(Step(ref s,t,t<27)) shots++;
             WeaponSimulation.Cancel(ref s,default,true);WeaponSimulation.Cancel(ref s,default,true);
             Assert.That(s.Ink,Is.EqualTo(100-shots*W.ShotInk).Within(.0003));
             Assert.That(s.SplatlingReservedInk,Is.Zero);Assert.That(s.SplatlingRemaining,Is.Zero);Assert.That(s.SplatlingEndedAt,Is.Zero);
@@ -73,26 +73,26 @@ namespace Splatoon.Tests
             Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Charging));
         }
         [TestCase(false,100)] [TestCase(true,0)] [TestCase(false,0)]
-        public void AirOrEmptyChargeIsThreeTimesSlowerWithoutStacking(bool ground,int ink)
+        public void AirOrEmptyChargeIsSixTimesSlowerWithoutStacking(bool ground,int ink)
         {
             var s=Player(ink,ground);
-            for(int t=0;t<=450;t++) Assert.That(Step(ref s,t,true),Is.False);
-            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(150).Within(.001));Assert.That(s.SplatlingLoaded,Is.EqualTo(66));
+            for(int t=0;t<=162;t++) Assert.That(Step(ref s,t,true),Is.False);
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.EqualTo(27).Within(.001));Assert.That(s.SplatlingLoaded,Is.EqualTo(22));
             Assert.That(s.Ink,Is.GreaterThanOrEqualTo(0));Assert.That(s.Ink+s.SplatlingReservedInk,Is.LessThanOrEqualTo(100.001));
-            Step(ref s,451,false);
-            Assert.That(s.LastShotCharge,Is.EqualTo(1),"450 slow ticks must preserve full-charge damage");
+            Step(ref s,163,false);
+            Assert.That(s.LastShotCharge,Is.EqualTo(1),"162 slow ticks must preserve full-charge damage");
         }
         [Test] public void LowInkFillingAndCancellationCannotRefundTwice()
         {
             var s=Player(.2f);float priorTotal=.2f;
-            for(int t=0;t<=300;t++)
+            for(int t=0;t<=60;t++)
             {
                 Step(ref s,t,true);
                 Assert.That(s.Ink,Is.GreaterThanOrEqualTo(0));
                 Assert.That(s.Ink+s.SplatlingReservedInk,Is.GreaterThanOrEqualTo(priorTotal-.0001));
                 priorTotal=s.Ink+s.SplatlingReservedInk;
             }
-            Assert.That((s.SplatlingChargeSeconds * 60),Is.LessThan(150));
+            Assert.That((s.SplatlingChargeSeconds * 60),Is.LessThan(27));
             WeaponSimulation.Cancel(ref s,default);Assert.That(s.Ink,Is.EqualTo(priorTotal).Within(.0001));
             WeaponSimulation.Cancel(ref s,default);Assert.That(s.Ink,Is.EqualTo(priorTotal).Within(.0001));
         }
@@ -101,11 +101,11 @@ namespace Splatoon.Tests
             foreach(bool held in new[]{false,true})
             {
                 var s=Player();
-                for(int t=0;t<=410;t++) Step(ref s,t,t<150 || (held ? t>170 : t==180),t>=180?2u:1u);
+                for(int t=0;t<=111;t++) Step(ref s,t,t<27 || (held ? t>40 : t==50),t>=50?2u:1u);
                 Assert.That(s.SplatlingRemaining,Is.Zero);Assert.That(s.WeaponPhase,Is.EqualTo(WeaponPhase.Ending));
-                for(int t=411;t<=414;t++) Step(ref s,t,held,2);
+                for(int t=112;t<=115;t++) Step(ref s,t,held,2);
                 Assert.That(s.WeaponPhase,Is.EqualTo(held?WeaponPhase.Charging:WeaponPhase.Idle));
-                Assert.That(s.ShotSequence,Is.EqualTo(66));
+                Assert.That(s.ShotSequence,Is.EqualTo(22));
             }
         }
         [Test] public void RecoveryDoesNotSlowWalkingAndFreshTapAtItsBoundaryIsAccepted()
@@ -123,10 +123,10 @@ namespace Splatoon.Tests
         {
             for(int reason=0;reason<4;reason++)
             {
-                var s=Player();for(int t=0;t<80;t++)Step(ref s,t,true);
-                if(reason==0)Step(ref s,80,true,1,false,false);
-                if(reason==1)Step(ref s,80,true,1,true);
-                if(reason==2){s.Health=0;Step(ref s,80,false);}
+                var s=Player();for(int t=0;t<18;t++)Step(ref s,t,true);
+                if(reason==0)Step(ref s,18,true,1,false,false);
+                if(reason==1)Step(ref s,18,true,1,true);
+                if(reason==2){s.Health=0;Step(ref s,18,false);}
                 if(reason==3)HeroSelectionRules.Apply(ref s,1,false,default);
                 Assert.That((s.SplatlingChargeSeconds * 60),Is.Zero);Assert.That(s.SplatlingReservedInk,Is.Zero);
                 Assert.That(s.Ink,Is.EqualTo(100).Within(.0003));Assert.That(s.Firing,Is.False);
@@ -134,19 +134,19 @@ namespace Splatoon.Tests
         }
         [Test] public void SnapshotReplayKeepsMagazineAndStableUniqueRoundIdentities()
         {
-            var s=Player();for(int t=0;t<=180;t++)Step(ref s,t,t<150);
+            var s=Player();for(int t=0;t<=50;t++)Step(ref s,t,t<27);
             using var writer=new FastBufferWriter(2048,Allocator.Temp);writer.WriteNetworkSerializable(s);
             using var reader=new FastBufferReader(writer,Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot copy);
             Assert.That(copy.SplatlingReservedInk,Is.EqualTo(s.SplatlingReservedInk));Assert.That(copy.SplatlingReleasedAt,Is.EqualTo(s.SplatlingReleasedAt));
             var ids=new HashSet<ulong>();
-            for(int t=181;t<450;t++)
+            for(int t=51;t<150;t++)
             {
                 bool shot=Step(ref s,t,false);Assert.That(Step(ref copy,t,false),Is.EqualTo(shot));
                 Assert.That(copy.SplatlingRemaining,Is.EqualTo(s.SplatlingRemaining));Assert.That(copy.Ink,Is.EqualTo(s.Ink));
                 Assert.That(copy.ShotActionId,Is.EqualTo(s.ShotActionId));
                 if(shot)Assert.That(ids.Add(s.ShotActionId),Is.True);
             }
-            Assert.That(copy.ShotSequence,Is.EqualTo(66));
+            Assert.That(copy.ShotSequence,Is.EqualTo(22));
         }
         [Test] public void SplatlingVelocityIsSeededAndRespectsIndependentSpreadAndChargeRange()
         {
@@ -161,8 +161,8 @@ namespace Splatoon.Tests
                 Assert.That(v.magnitude,Is.InRange(W.SpeedMin-.001f,W.SpeedMax+.001f));
             }
             Assert.That(horizontal.Average(),Is.LessThan(1.5));Assert.That(vertical.Average(),Is.LessThan(1));
-            Assert.That(WeaponSimulation.Range(W,120f/150),Is.EqualTo(WeaponSimulation.Range(W,1)));
-            Assert.That(WeaponSimulation.Range(W,8f/150),Is.LessThan(WeaponSimulation.Range(W,1)));
+            Assert.That(WeaponSimulation.Range(W,18f/27),Is.EqualTo(WeaponSimulation.Range(W,1)));
+            Assert.That(WeaponSimulation.Range(W,8f/27),Is.LessThan(WeaponSimulation.Range(W,1)));
         }
         [Test] public void FormalAssetsHaveElevenClipsPelvisAvatarAndSdfFaces()
         {
@@ -182,10 +182,10 @@ namespace Splatoon.Tests
         {
             const string output="Reports/CombatGirls/MachineGunGirl/Ballistics";Directory.CreateDirectory(output);
             WeaponReferenceMeasurements.Capture(6,1,"flat",60,1,output);
-            foreach(float charge in new[]{8f/150,120f/150,1f})
+            foreach(float charge in new[]{8f/27,18f/27,1f})
             {
                 var results=new List<WeaponReferenceMeasurements.Result>();
-                int rounds=SplatlingSimulation.Rounds(W,charge*150);
+                int rounds=SplatlingSimulation.Rounds(W,charge*W.ChargeSeconds);
                 foreach(int hz in new[]{30,60,144})
                 {
                     var r=WeaponReferenceMeasurements.Capture(6,charge,"continuous",hz,rounds,output);results.Add(r);
@@ -195,10 +195,10 @@ namespace Splatoon.Tests
                 Assert.That(results.Select(r=>r.gridHash).Distinct().Count(),Is.EqualTo(1),"Host tick subdivisions cannot change seeded paint");
             }
         }
-        [Test] public void HeavyMovementAndChargeJumpUseActualMotorLimits()
+        [Test] public void MiniMovementAndChargeJumpUseActualMotorLimits()
         {
-            var floor=new GameObject("Hydra motor floor");floor.transform.position=new Vector3(2000,-.5f,2000);floor.AddComponent<BoxCollider>().size=new Vector3(100,1,100);
-            var go=new GameObject("Hydra motor");go.layer=8;var cc=go.AddComponent<CharacterController>();cc.height=1.8f;cc.radius=.35f;cc.center=Vector3.up*.9f;
+            var floor=new GameObject("Mini motor floor");floor.transform.position=new Vector3(2000,-.5f,2000);floor.AddComponent<BoxCollider>().size=new Vector3(100,1,100);
+            var go=new GameObject("Mini motor");go.layer=8;var cc=go.AddComponent<CharacterController>();cc.height=1.8f;cc.radius=.35f;cc.center=Vector3.up*.9f;
             try
             {
                 foreach(var phase in new[]{WeaponPhase.Idle,WeaponPhase.Charging,WeaponPhase.Firing})

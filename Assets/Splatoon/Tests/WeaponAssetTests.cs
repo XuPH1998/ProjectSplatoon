@@ -74,10 +74,10 @@ namespace Splatoon.Tests
             var w = WeaponAlignmentFixture.LegacySpread(6); var s = Alive();
             s.SpreadInitialized = true; s.SpreadProgress = .5f;
             s.Grounded = false; SpreadSimulation.Refresh(ref s, w);
-            Assert.That(s.CurrentSpread, Is.EqualTo(3)); Assert.That(s.CurrentVerticalSpread, Is.EqualTo(3));
+            Assert.That(s.CurrentSpread, Is.EqualTo(w.JumpSpreadDegrees*.5f)); Assert.That(s.CurrentVerticalSpread, Is.EqualTo(w.JumpSpreadDegrees*.5f));
             s.Grounded = true; SpreadSimulation.Before(ref s, w, .125);
             Assert.That(s.SpreadProgress, Is.EqualTo(.25f));
-            Assert.That(s.CurrentSpread, Is.EqualTo(.75f)); Assert.That(s.CurrentVerticalSpread, Is.EqualTo(.5f));
+            Assert.That(s.CurrentSpread, Is.EqualTo(w.SpreadDegrees*.25f)); Assert.That(s.CurrentVerticalSpread, Is.EqualTo(w.SplatlingPitchSpread*.25f));
             SpreadSimulation.Before(ref s, w, .25);
             Assert.That(s.CurrentSpread, Is.Zero); Assert.That(s.CurrentVerticalSpread, Is.Zero);
         }
@@ -115,14 +115,14 @@ namespace Splatoon.Tests
         [Test] public void LegacySplatlingReleaseGrowsThroughLastRoundAndEndingImmediatelyRecovers()
         {
             var w = WeaponAlignmentFixture.LegacySpread(6); var s = Alive();
-            for (int t = 0; t < 120; t++) { Assert.That(Tick(ref s, w, t, true), Is.False); Assert.That(s.SpreadProgress, Is.Zero); }
-            Assert.That(Tick(ref s, w, 120, false), Is.True); Assert.That(s.LastShotSpread, Is.Zero); Assert.That(s.LastShotVerticalSpread, Is.Zero);
-            for (int t = 121; t <= 248; t++) Tick(ref s, w, t, false);
-            Assert.That(s.ShotSequence, Is.EqualTo(33)); Assert.That(s.LastShotSpread, Is.EqualTo(3)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(2));
+            for (int t = 0; t < 27; t++) { Assert.That(Tick(ref s, w, t, true), Is.False); Assert.That(s.SpreadProgress, Is.Zero); }
+            Assert.That(Tick(ref s, w, 27, false), Is.True); Assert.That(s.LastShotSpread, Is.Zero); Assert.That(s.LastShotVerticalSpread, Is.Zero);
+            for (int t = 28; t <= 111; t++) Tick(ref s, w, t, false);
+            Assert.That(s.ShotSequence, Is.EqualTo(22)); Assert.That(s.LastShotSpread, Is.EqualTo(w.SpreadDegrees)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(w.SplatlingPitchSpread));
             Assert.That(s.SpreadFiring, Is.False); Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Ending));
-            Tick(ref s, w, 249, false);
+            Tick(ref s, w, 112, false);
             Assert.That(s.SpreadProgress, Is.EqualTo(1 - 1 / 30f).Within(.00001));
-            for (int t = 250; t <= 260; t++) Tick(ref s, w, t, t >= 252, 2);
+            for (int t = 113; t <= 123; t++) Tick(ref s, w, t, t >= 115, 2);
             Assert.That(s.WeaponPhase, Is.EqualTo(WeaponPhase.Charging));
             Assert.That(s.SpreadProgress, Is.EqualTo(.6f).Within(.00002), "Charging keeps residual recovery, never resets it");
         }
@@ -142,7 +142,7 @@ namespace Splatoon.Tests
         {
             var w = Changed(6, a => { WeaponAlignmentFixture.DisableReconstruction(a); a.referenceRules = false; a.referenceSpreadEnabled = false; a.motionMode = ProjectileMotionMode.Ballistic; a.spreadExpandSeconds = 0; a.spreadRecoverSeconds = 0; }); var s = Alive();
             for (int t = 0; t <= 8; t++) Tick(ref s, w, t, false);
-            Assert.That(s.ShotSequence, Is.EqualTo(1)); Assert.That(s.LastShotSpread, Is.EqualTo(3)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(2));
+            Assert.That(s.ShotSequence, Is.EqualTo(1)); Assert.That(s.LastShotSpread, Is.EqualTo(w.SpreadDegrees)); Assert.That(s.LastShotVerticalSpread, Is.EqualTo(w.SplatlingPitchSpread));
             Assert.That(s.CurrentSpread, Is.Zero); Assert.That(s.CurrentVerticalSpread, Is.Zero);
         }
         [Test] public void ZeroHorizontalNeverInfersVerticalOrAirState()

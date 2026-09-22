@@ -23,7 +23,8 @@ namespace Splatoon.Config
             {
                 Require(w.ReferenceRules && w.PelletCount == 1 && w.FootPhase >= 0 && w.FootPhase < w.ReferenceFootEvery, "详细涂墨需要单颗参考弹道和有效脚下墨相位");
                 Require(w.ShooterSplitNum > 0 && w.ShooterSplitNum <= 64 && w.ShooterPaintNearRadius >= 0 &&
-                    (w.FireMode == WeaponFireMode.Blaster || w.PaintDistanceMiddle > w.ShooterPaintNearDistance) && w.PaintDistanceFar > w.PaintDistanceMiddle &&
+                    (w.FireMode == WeaponFireMode.Blaster || w.PaintDistanceMiddle > w.ShooterPaintNearDistance ||
+                     w.PaintDistanceMiddle == w.ShooterPaintNearDistance && w.ShooterPaintNearRadius == w.PaintRadiusMax) && w.PaintDistanceFar > w.PaintDistanceMiddle &&
                     w.ShooterPaintAngleMax > w.ShooterPaintAngleMin && w.ShooterPaintAngleMax <= 90 &&
                     w.ShooterFallHeightMax > w.ShooterFallHeightMin && w.ShooterSplashHeightMax > w.ShooterSplashHeightMin &&
                     w.ShooterSplashDepthMin > 0 && w.ShooterSplashDepthMax >= w.ShooterSplashDepthMin &&
@@ -103,14 +104,15 @@ namespace Splatoon.Config
             {
                 Require(w.ReferenceBrakeEndSpeed > 0 && w.ReferenceBrakeDrag >= 0 && w.ReferenceBrakeDrag < 1 && w.ReferenceFreeDrag >= 0 && w.ReferenceFreeDrag < 1 && w.ReferenceBrakeGravity >= 0 && w.ReferencePlayerRadius >= w.CollisionRadius, "参考弹道或碰撞无效");
                 Require(w.ReferenceTrailBudget >= 0 && w.ReferenceTrailBudget <= 64 && w.ReferenceFootEvery > 0 && w.ReferenceFootRadius >= 0 && w.PaintDepthMin > 0 && w.PaintDepthMax >= w.PaintDepthMin && w.PaintDepthBreakMin > 0 && w.PaintDepthBreakMax >= w.PaintDepthBreakMin && w.PaintDistanceFar > w.PaintDistanceMiddle && w.TrailDepthScale > 0 && w.PaintDropGravity > 0 && w.PaintDropLifetime > 0 && w.PaintDropLifetime <= 10, "参考涂墨配置无效");
-                if (w.ReferenceSpreadEnabled) Require(w.ReferenceBiasMin >= 0 && w.ReferenceBiasMax >= w.ReferenceBiasMin && w.ReferenceBiasMax < 1 && w.ReferenceJumpBias >= w.ReferenceBiasMax && w.ReferenceJumpBias < 1 && w.ReferenceJumpEnd > w.ReferenceJumpStart && w.ReferencePitchBias >= 0 && w.ReferencePitchBias < 1 && w.ReferenceBiasPerShot >= 0 && w.ReferenceBiasRecovery >= 0, "参考散布配置无效");
+                // Air and ground bias are independent authored distributions (Aerospray: .4 / .5).
+                if (w.ReferenceSpreadEnabled) Require(w.ReferenceBiasMin >= 0 && w.ReferenceBiasMax >= w.ReferenceBiasMin && w.ReferenceBiasMax < 1 && w.ReferenceJumpBias >= 0 && w.ReferenceJumpBias < 1 && w.ReferenceJumpEnd > w.ReferenceJumpStart && w.ReferencePitchBias >= 0 && w.ReferencePitchBias < 1 && w.ReferenceBiasPerShot >= 0 && w.ReferenceBiasRecovery >= 0, "参考散布配置无效");
                 if (w.MotionMode == ProjectileMotionMode.BouncingBubble) Require(w.BubbleAirSpeed > 0 && w.BubbleLaterSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterAirSpeed > 2*w.BubbleSpeedDecrement && w.BubbleLaterFieldRadius > 2*w.BubbleRadiusDecrement && w.BubbleLaterPlayerRadius >= w.BubbleLaterFieldRadius && w.BubbleInitialRadiusRate > 0 && w.BubbleInitialRadiusRate <= 1 && w.BubbleFieldGrowSeconds > 0 && w.BubblePlayerGrowSeconds > 0 && w.BubbleBounceRadiusRate > 0 && w.BubbleBounceRadiusRate <= 1 && w.BubbleBouncePaintRate > 0 && w.BubbleBouncePaintRate <= 1, "参考泡泡参数无效");
             }
                 Require(w.ShootMoveSpeed > 0 && w.BurstCount > 0, "射击移动速度与每组发数必须大于零");
                 if (w.FireMode == WeaponFireMode.Splatling) Require(w.SplatlingMinChargeSeconds > 0 && w.SplatlingFirstChargeSeconds > w.SplatlingMinChargeSeconds && w.ChargeSeconds > w.SplatlingFirstChargeSeconds &&
                     w.SplatlingFullShootSeconds > w.SplatlingFirstShootSeconds && w.SplatlingSlowChargeMultiplier >= 1 && w.SplatlingChargeMoveSpeed > 0 && w.SplatlingChargeJumpSpeed > 0 &&
                     w.SplatlingPostSeconds > 0 && w.SplatlingFootEvery > 0 && w.SplatlingTrailCount > 0 && w.SplatlingFootRadius > 0 && w.SplatlingPlayerRadius >= w.CollisionRadius &&
-                    w.ChargePartialMaxDamage > 0 && w.ChargePartialMaxDamage < w.Damage && w.SplatlingSpeedBias > 0 && w.SplatlingSpeedBias < 1 &&
+                    w.ChargePartialMaxDamage > 0 && w.ChargePartialMaxDamage <= w.Damage && w.SplatlingSpeedBias > 0 && w.SplatlingSpeedBias < 1 &&
                     w.SplatlingSpreadBias > 0 && w.SplatlingSpreadBias < 1 && w.ChargeMinSpeed > 0 && w.ChargeMinRange > 0, "旋转枪分段蓄力或弹道配置无效");
                 Require(w.PelletCount >= 1 && w.PelletCount <= 8 && w.SemiBufferSeconds * w.FireRate <= 1 + .00001 / 60, "弹丸数量须为1至8，点击缓存时长不得超过一次射击间隔");
                 Require((w.FireMode == WeaponFireMode.SemiAutomatic || w.FireMode == WeaponFireMode.Explosher) || (w.PelletCount == 1 && w.SemiBufferSeconds == 0 && (w.MuzzleMode == WeaponMuzzleMode.Single || w.FireMode == WeaponFireMode.Automatic)), "齐射和点击缓存仅用于半自动；交替枪口支持半自动或全自动");

@@ -160,7 +160,7 @@ namespace Splatoon.Tests
                 Assert.That(b.SplatlingRemaining, Is.EqualTo(a.SplatlingRemaining));
                 Assert.That(b.Ink, Is.EqualTo(a.Ink));
             }
-            Assert.That(a.ShotSequence, Is.EqualTo(66));
+            Assert.That(a.ShotSequence, Is.EqualTo(22));
         }
 
         [Test] public void NewBallisticTimesAffectNewShotsAndDoNotRestartTheMagazine()

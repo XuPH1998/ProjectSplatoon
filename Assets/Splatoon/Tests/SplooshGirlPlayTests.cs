@@ -98,8 +98,9 @@ namespace Splatoon.Tests
                 {
                     float before = bot.Snapshot.Value.Health;
                     Fire(origin + Vector3.up * height, Vector3.forward);
-                    Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(Mathf.Max(0,before-38)), "new upper body, torso and legs remain hittable");
+                    Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(Mathf.Max(0,before-w.Damage)), "new upper body, torso and legs remain hittable");
                 }
+                for (int extra=0; extra<5 && bot.Snapshot.Value.Health>0; extra++) Fire(origin + Vector3.up * .8f, Vector3.forward);
                 Assert.That(bot.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Dead));
                 bot.SwimBody.ApplyCollision(bot.Snapshot.Value);
                 Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
@@ -110,8 +111,8 @@ namespace Splatoon.Tests
                 Assert.That(bot.SwimBody.FlatHitActive, Is.True);
                 var rect = bot.SwimBody.HitRects.OrderByDescending(r => r.width * r.height).First();
                 var point = bot.SwimBody.HitVolume.transform.TransformPoint(new Vector3(rect.center.x, rect.center.y, 0));
-                Fire(point + Vector3.up, Vector3.down); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(62));
-                Fire(point + Vector3.up, Vector3.down); Fire(point + Vector3.up, Vector3.down);
+                Fire(point + Vector3.up, Vector3.down); Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(100-w.Damage));
+                for (int extra=0; extra<5 && bot.Snapshot.Value.Health>0; extra++) Fire(point + Vector3.up, Vector3.down);
                 Assert.That(bot.Snapshot.Value.Health, Is.Zero, "paper silhouette can receive a lethal hit");
                 bot.SwimBody.ApplyCollision(bot.Snapshot.Value); Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
                 bot.Respawn(); Assert.That(bot.GetComponent<CharacterController>().height, Is.EqualTo(1.5f));
@@ -139,7 +140,7 @@ namespace Splatoon.Tests
                 SplooshSummerPlayEvidence.CaptureTransitions(host);
                 Place(bot, original + Vector3.forward * 2, 2);
                 SplooshSummerPlayEvidence.CaptureHitVolumes(bot);
-                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; configured portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; new capsule receives 38/38/38; standing and paper death disable hit proxies; respawn restores 1.5m body; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload; rendered transitions and collision evidence.\n");
+                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; configured portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; new capsule receives configured MG damage at upper body/torso/legs; standing and paper death disable hit proxies; respawn restores 1.5m body; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload; rendered transitions and collision evidence.\n");
             }
             finally { Object.Destroy(roof); }
             yield return app.Leave().ToCoroutine();

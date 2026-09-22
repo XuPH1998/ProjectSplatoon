@@ -39,7 +39,7 @@ namespace Splatoon.Tests
             Position = Origin, Revision = 1, ShotSequence = 1, BurstShotIndex = 1, FireBurstSequence = 7, LastShotCharge = 1 };
         static WeaponConfigAsset Asset(int hero) => AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(hero).WeaponConfigPath);
 
-        [TestCase(1, 8, 2)] [TestCase(4, 4, 2)] [TestCase(8, 6, 2)]
+        [TestCase(1, 8, 2)] [TestCase(4, 4, 2)] [TestCase(8, 8, 2)]
         [TestCase(2, 7, 2)] [TestCase(6, 11, 0)] [TestCase(5, 15, 2)]
         public void SixProfilesHaveIndependentValidatedCapabilities(int hero, int frames, float inherit)
         {

@@ -12,7 +12,7 @@ OUT = ROOT / 'Reports/PaintParity1130'
 COMMIT = '7280ff9cde8bb1c5dcef46c700c326471584d2e6'
 S = 18 / 24.037
 NAMES = ['RifleGirl', 'DualPistolGirl', 'ShotgunGirl', 'PistolGirl', 'RocketLauncherGirl', 'MachineGunGirl', 'BubbleGirl']
-REFS = ['WeaponShooterNormal', 'WeaponManeuverGallon', 'WeaponSlosherWashtub', 'WeaponShooterPrecision', 'WeaponBlasterLight', 'WeaponSpinnerHyper', 'WeaponSlosherBathtub']
+REFS = ['WeaponShooterNormal', 'WeaponManeuverGallon', 'WeaponSlosherWashtub', 'WeaponShooterPrecision', 'WeaponBlasterLight', 'WeaponSpinnerQuick', 'WeaponSlosherBathtub']
 MECHANISM_GAPS = [
     ['SplitNum=8 phase/reset and SpawnNum=1.5 allocation', 'ForceSpawnNearestAddNumArray first-three-shot behavior', 'Impact near/middle/far interpolation and drop-height depth'],
     ['Normal-fire allocation and per-hand foot schedule', 'Alternating muzzle overlap; rolling parameters excluded'],
@@ -51,7 +51,7 @@ def values(path):
     return dict(re.findall(r'^  (\w+): ([^\n]+)', path.read_text(encoding='utf-8-sig'), re.M))
 
 def source(i):
-    folder = 'Explosher' if i == 2 else 'WeaponAlignment'
+    folder = 'Explosher' if i == 2 else 'MainWeaponReplacement' if i == 5 else 'WeaponAlignment'
     return ROOT / f'Tools/ValidationData/{folder}/{REFS[i]}.1130.json'
 
 def url(i):
@@ -78,8 +78,9 @@ def corrections():
 def verify_cached_sources():
     existing=json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Tuning.json').read_text(encoding='utf-8'))['sources']
     explosher=json.loads((ROOT/'Tools/ValidationData/Explosher/Source.json').read_text(encoding='utf-8'))
+    mini=json.loads((ROOT/'Tools/ValidationData/MainWeaponReplacement/Tuning.json').read_text(encoding='utf-8'))['weapons']['6']
     for i in range(7):
-        expected=explosher if i==2 else existing[str(i+1)]
+        expected=explosher if i==2 else mini if i==5 else existing[str(i+1)]
         if hashlib.sha256(source(i).read_bytes()).hexdigest()!=expected['sha256']:
             raise ValueError('Cached source hash mismatch: '+REFS[i])
 
@@ -96,6 +97,8 @@ def audit(online=False):
         with ThreadPoolExecutor(max_workers=4) as pool: remote=dict(pool.map(fetch,range(7)))
         write_json(OUT/'sources-online.json',remote)
     ledger=json.loads((ROOT/'Tools/ValidationData/WeaponAlignment/Tuning.json').read_text(encoding='utf-8'))['fields']
+    mini=json.loads((ROOT/'Tools/ValidationData/MainWeaponReplacement/Tuning.json').read_text(encoding='utf-8'))['weapons']['6']
+    ledger=[row for row in ledger if row['hero'] != 6] + [dict(hero=6,field=key,**entry) for key,entry in mini['fields'].items()]
     result=[]
     for i,name in enumerate(NAMES):
         asset=ROOT/f'Assets/GameResource/Weapons/{name}/{name}WeaponConfig.asset'

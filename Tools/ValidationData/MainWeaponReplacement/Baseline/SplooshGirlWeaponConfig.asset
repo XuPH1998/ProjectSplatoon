@@ -23,37 +23,37 @@ MonoBehaviour:
   weaponPrefabAddress: Weapon/SplooshGun
   ammoConfig: {fileID: 11400000, guid: 5c392e846c0732b4388a701a93d50c50, type: 2}
   fireMode: 0
-  fireRate: 15
-  shotInk: 0.5
+  fireRate: 12
+  shotInk: 0.8
   startSeconds: 0.03333333333333333
   emergeStartSeconds: 0.13333333333333333
   inkRecoverLockSeconds: 0.25
-  shootMoveSpeed: 3.2350126887714774
+  shootMoveSpeed: 3.5944583
   burstCount: 1
   burstRecoverySeconds: 0
-  speedMin: 101.81303823272455
-  speedMax: 101.81303823272455
-  projectileGravity: 43.13350251695304
+  speedMin: 92.557304
+  speedMax: 92.557304
+  projectileGravity: 43.133503
   lifetime: 10
-  collisionRadius: 0.14976910596164247
-  spreadDegrees: 12.63
-  straightSeconds: 0.05
+  collisionRadius: 0.14976911
+  spreadDegrees: 11.66
+  straightSeconds: 0.03333333333333333
   brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.66
-  jumpSpreadDegrees: 15.54
+  jumpSpreadDegrees: 17.49
   landingSpreadRecoverSeconds: 0.2
-  effectiveRange: 10.744317021580851
-  damage: 24
-  damageMin: 12
-  damageReduceStartSeconds: 0.13333333333333333
-  damageReduceEndSeconds: 0.4
-  paintRadiusMin: 1.5358821816366437
-  paintRadiusMax: 1.6062736614386155
+  effectiveRange: 5.1182933
+  damage: 38
+  damageMin: 19
+  damageReduceStartSeconds: 0.1
+  damageReduceEndSeconds: 0.36666666666666664
+  paintRadiusMin: 1.3628988
+  paintRadiusMax: 1.7073678
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 9.360569122602655
-  trailRadiusMin: 1.1382452053084828
-  trailRadiusMax: 1.1382452053084828
+  trailSpacing: 4.493073178849274
+  trailRadiusMin: 1.0334069
+  trailRadiusMax: 1.0334069
   trailMaxDrop: 2.4
   chargeSeconds: 0
   chargeMinDamage: 0
@@ -108,31 +108,31 @@ MonoBehaviour:
   dualiesFootEvery: 5
   dualiesFootRadius: 0
   referenceRules: 1
-  referenceBrakeEndSpeed: 87.6733369388859
+  referenceBrakeEndSpeed: 82.44789
   referenceBrakeDrag: 0.36
   referenceBrakeGravity: 188.70908
   referenceFreeDrag: 0.02
-  referencePlayerRadius: 0.22465365894246372
+  referencePlayerRadius: 0.25086325
   referenceSpreadEnabled: 1
-  referenceBiasMin: 0.06
-  referenceBiasMax: 0.5
-  referenceBiasPerShot: 0.03
-  referenceBiasRecovery: 0.6
+  referenceBiasMin: 0.04
+  referenceBiasMax: 0.4
+  referenceBiasPerShot: 0.02
+  referenceBiasRecovery: 0.59999996
   referenceJumpBias: 0.4
   referenceJumpStart: 0.4166666666666667
   referenceJumpEnd: 1.1666666666666667
   referencePitchBias: 0.4
-  referenceTrailBudget: 1
-  referenceTrailStart: 0.9734991887506761
+  referenceTrailBudget: 1.4
+  referenceTrailStart: 0.8611723592794442
   referenceTrailRandomPhase: 0
   referenceFootEvery: 5
   referenceFootRadius: 1.4467695635894664
-  paintDepthMin: 1.25
-  paintDepthMax: 2.5
-  paintDepthBreakMin: 1.07
-  paintDepthBreakMax: 2.5
-  paintDistanceMiddle: 3.145151225194492
-  paintDistanceFar: 11.232682947123186
+  paintDepthMin: 1.31
+  paintDepthMax: 2.62
+  paintDepthBreakMin: 1.12
+  paintDepthBreakMax: 2.62
+  paintDistanceMiddle: 2.8081708
+  paintDistanceFar: 14.976911
   paintBreakHeight: 2.2465365
   trailDepthScale: 1.2
   paintDropGravity: 43.133503
@@ -161,14 +161,14 @@ MonoBehaviour:
   bubbleLaterImpactRadius: 0
   shooterDetails: 0
   shooterPostSeconds: 0.03333333333333333
-  shooterMoveForwardRate: 2
-  shooterPaintNearDistance: 1.572575612597246
-  shooterPaintNearRadius: 1.7298331738569708
+  shooterMoveForwardRate: 2.0
+  shooterPaintNearDistance: 1.4976910596164248
+  shooterPaintNearRadius: 1.9245330116071058
   shooterPaintAngleMin: 10
   shooterPaintAngleMax: 35
   shooterFallHeightMin: 1.1232682947123185
   shooterFallHeightMax: 7.488455298082124
-  shooterSplitNum: 8
+  shooterSplitNum: 5
   shooterSplashDepthMin: 1
   shooterSplashDepthMax: 1.2
   shooterSplashHeightMin: 2.246536589424637
@@ -208,4 +208,4 @@ MonoBehaviour:
   detailedPaint: 1
   footSequence: 1
   footPhase: 4
-  shotGuideSeconds: 0.13333333333333333
+  shotGuideSeconds: 0.1

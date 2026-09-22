@@ -27,17 +27,17 @@ namespace Splatoon.Tests
                 var w=GameplayConfig.GetWeapon(i); WeaponConfigValidation.Validate(w);
                 Assert.That(w.ReferenceRules, Is.True);
                 var hero=GameplayConfig.GetHero(i);
-                Assert.That(hero.MoveSpeed,Is.EqualTo((i==4?.104:i==6||i==3?.088:.096)*60*scale).Within(.00001));
-                Assert.That(hero.SwimSpeed,Is.EqualTo((i==4?.2016:i==6||i==3?.1728:.192)*60*scale).Within(.00001));
+                Assert.That(hero.MoveSpeed,Is.EqualTo((i==4?.104:i==3?.088:.096)*60*scale).Within(.00001));
+                Assert.That(hero.SwimSpeed,Is.EqualTo((i==4?.2016:i==3?.1728:.192)*60*scale).Within(.00001));
             }
             Assert.That(GameplayConfig.GetWeapon(1).FireRate,Is.EqualTo(10));
             Assert.That(GameplayConfig.GetWeapon(1).ShotInk,Is.EqualTo(.92f));
             Assert.That(GameplayConfig.GetWeapon(4).DamageReduceStartSeconds,Is.EqualTo(4.0/60).Within(1e-8));
             var spinner=GameplayConfig.GetWeapon(6);
-            Assert.That(spinner.SplatlingFirstChargeSeconds,Is.EqualTo(2));
-            Assert.That(SplatlingSimulation.Rounds(spinner,2),Is.EqualTo(33));
-            Assert.That(SplatlingSimulation.Rounds(spinner,2.5),Is.EqualTo(66));
-            Assert.That(spinner.ShotInk*66,Is.EqualTo(35).Within(.0001));
+            Assert.That(spinner.SplatlingFirstChargeSeconds,Is.EqualTo(.3));
+            Assert.That(SplatlingSimulation.Rounds(spinner,.3),Is.EqualTo(11));
+            Assert.That(SplatlingSimulation.Rounds(spinner,.45),Is.EqualTo(22));
+            Assert.That(spinner.ShotInk*22,Is.EqualTo(15).Within(.0001));
             Assert.That(GameplayConfig.GetWeapon(5).CollisionExplosionPaintRadius,Is.EqualTo(2.3*scale).Within(.00001));
             Assert.That(GameplayConfig.GetWeapon(7).Damage,Is.EqualTo(32));
         }

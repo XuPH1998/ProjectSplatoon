@@ -9,9 +9,9 @@ S = 18 / 24.037
 WEAPONS = {
     'RifleGirl': ('WeaponAlignment/WeaponShooterNormal.1130.json', 1, 0, 0),
     'PistolGirl': ('WeaponAlignment/WeaponShooterPrecision.1130.json', 1, 0, 0),
-    'SplooshGirl': ('SplooshGirl/WeaponShooterShort.1130.json', 5, 1, 4),
+    'SplooshGirl': ('MainWeaponReplacement/WeaponShooterBlaze.1130.json', 5, 1, 4),
     'DualPistolGirl': ('WeaponAlignment/WeaponManeuverGallon.1130.json', 5, 0, 0),
-    'MachineGunGirl': ('WeaponAlignment/WeaponSpinnerHyper.1130.json', 1, 0, 0),
+    'MachineGunGirl': ('MainWeaponReplacement/WeaponSpinnerQuick.1130.json', 1, 0, 0),
     'RocketLauncherGirl': ('WeaponAlignment/WeaponBlasterLight.1130.json', 1, 0, 0),
 }
 
