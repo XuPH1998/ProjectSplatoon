@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -142,7 +142,7 @@ namespace Splatoon.Tests
         }
         [TestCase(MatchPhase.Practice,HeroSelectionOrigin.Warmup,false,true)]
         [TestCase(MatchPhase.Playing,HeroSelectionOrigin.Warmup,true,false)]
-        [TestCase(MatchPhase.Playing,HeroSelectionOrigin.Debug,true,true)]
+        [TestCase(MatchPhase.Playing,HeroSelectionOrigin.Debug,true,false)]
         [TestCase(MatchPhase.Playing,HeroSelectionOrigin.Debug,false,false)]
         [TestCase(MatchPhase.Finished,HeroSelectionOrigin.Debug,true,false)]
         public void ServerChecksPhaseAndBuildNotJustButtonVisibility(MatchPhase phase,HeroSelectionOrigin origin,bool dev,bool allowed)

@@ -15,23 +15,25 @@ namespace Splatoon.Combat
         public static string Validate(PlayerSnapshot s, int heroId, HeroSelectionOrigin origin,
             uint expectedRound, uint round, uint lifecycle, MatchPhase phase, bool development, bool inOwnSpawnArea = false)
         {
-            if (LubanConfigService.Current.Tables.TbHero.GetOrDefault(heroId) == null) return "è‹±é›„ä¸å­˜åœ¨";
-            if (s.Revision != lifecycle || expectedRound != round) return "è§’è‰²æˆ–å›åˆå·²å˜åŒ–ï¼Œè¯·é‡æ–°é€‰æ‹©";
+            if (LubanConfigService.Current.Tables.TbHero.GetOrDefault(heroId) == null) return "Ó¢ĞÛ²»´æÔÚ";
+            if (s.Revision != lifecycle || expectedRound != round) return "½ÇÉ«»ò»ØºÏÒÑ±ä»¯£¬ÇëÖØĞÂÑ¡Ôñ";
             return Availability(s, origin, phase, development, inOwnSpawnArea);
         }
         public static string Availability(PlayerSnapshot s, HeroSelectionOrigin origin, MatchPhase phase,
             bool development, bool inOwnSpawnArea = false)
         {
-            if (s.Health <= 0) return "é‡ç”Ÿåæ‰èƒ½åˆ‡æ¢è‹±é›„";
-            if (origin != HeroSelectionOrigin.Warmup && origin != HeroSelectionOrigin.Debug && origin != HeroSelectionOrigin.SpawnArea) return "åˆ‡æ¢è‹±é›„å…¥å£æ— æ•ˆ";
-            if (origin == HeroSelectionOrigin.Debug && !development) return "å½“å‰ç¯å¢ƒä¸æ”¯æŒè°ƒè¯•åˆ‡æ¢è‹±é›„";
-            if (phase == MatchPhase.Finished) return "ç»“ç®—é˜¶æ®µä¸èƒ½åˆ‡æ¢è‹±é›„";
+            if (!s.IsAlive) return "ÖØÉúºó²ÅÄÜÇĞ»»Ó¢ĞÛ";
+            if(SpecialWeaponSimulation.Active(s))return "´óÕĞÊ¹ÓÃÆÚ¼ä²»ÄÜ»»×°";
+            if (origin != HeroSelectionOrigin.Warmup && origin != HeroSelectionOrigin.Debug && origin != HeroSelectionOrigin.SpawnArea) return "ÇĞ»»Ó¢ĞÛÈë¿ÚÎŞĞ§";
+            if (origin == HeroSelectionOrigin.Debug && !development) return "µ±Ç°»·¾³²»Ö§³Öµ÷ÊÔÇĞ»»Ó¢ĞÛ";
+            if (phase == MatchPhase.Finished) return "½áËã½×¶Î²»ÄÜÇĞ»»Ó¢ĞÛ";
+            if (phase == MatchPhase.Playing && !inOwnSpawnArea) return "Çë»Øµ½±¾·½³öÉúÇø»»×°";
             if (origin == HeroSelectionOrigin.SpawnArea)
             {
-                if (phase != MatchPhase.Playing) return "å‡ºç”ŸåŒºåˆ‡æ¢ä»…åœ¨æ¯”èµ›ä¸­å¼€æ”¾";
-                return inOwnSpawnArea ? null : "è¯·å›åˆ°æœ¬æ–¹å‡ºç”ŸåŒºåˆ‡æ¢è‹±é›„";
+                if (phase != MatchPhase.Playing) return "³öÉúÇøÇĞ»»½öÔÚ±ÈÈüÖĞ¿ª·Å";
+                return inOwnSpawnArea ? null : "Çë»Øµ½±¾·½³öÉúÇøÇĞ»»Ó¢ĞÛ";
             }
-            if (phase != MatchPhase.Practice && !(phase == MatchPhase.Playing && origin == HeroSelectionOrigin.Debug && development)) return "æ™®é€šé€‰è‹±é›„ä»…åœ¨çƒ­èº«é˜¶æ®µå¼€æ”¾";
+            if (phase != MatchPhase.Practice && !(phase == MatchPhase.Playing && origin == HeroSelectionOrigin.Debug && development)) return "ÆÕÍ¨Ñ¡Ó¢ĞÛ½öÔÚÈÈÉí½×¶Î¿ª·Å";
             return null;
         }
         public static bool Apply(ref PlayerSnapshot s, int heroId, bool refillInk, PlayerInputFrame input)

@@ -7,6 +7,71 @@ namespace Splatoon.Combat
 {
     public static class InkExplosionRules
     {
+        // Closed, vertical cylinder against the actual human capsule or paper silhouette.
+        // Clipping paper faces to the height slab avoids both feet-only misses and
+        // false positives in the empty corners of an animated silhouette's AABB.
+        static readonly int[] BoxFaces={0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,1,5,6,1,6,2,2,6,7,2,7,3,3,7,4,3,4,0};
+        public static bool IntersectsCylinder(PrototypePlayer player,Vector3 origin,float radius,float below,float above)
+        {
+            if(radius<=0)return false;
+            var body=player.SwimBody;
+            if(body!=null&&body.FlatHitActive)
+            {
+                var rects=body.HitRects;if(rects==null)return false;
+                System.Span<Vector3> corners=stackalloc Vector3[8];
+                System.Span<Vector3> a=stackalloc Vector3[8];System.Span<Vector3> b=stackalloc Vector3[8];
+                float half=body.Profile.Thickness*.5f;
+                foreach(var rect in rects)
+                {
+                    for(int side=0;side<2;side++)for(int i=0;i<4;i++)
+                        corners[side*4+i]=body.HitVolume.transform.TransformPoint(new Vector3(i==0||i==3?rect.xMin:rect.xMax,i<2?rect.yMin:rect.yMax,side==0?-half:half))-origin;
+                    for(int i=0;i<BoxFaces.Length;i+=3)
+                    {
+                        a[0]=corners[BoxFaces[i]];a[1]=corners[BoxFaces[i+1]];a[2]=corners[BoxFaces[i+2]];
+                        int count=ClipHeight(a,3,b,-below,true);count=ClipHeight(b,count,a,above,false);
+                        if(ProjectedWithin(a,count,radius))return true;
+                    }
+                    // The cylinder can lie entirely inside one closed silhouette cell.
+                    var local=body.HitVolume.transform.InverseTransformPoint(origin);
+                    if(local.x>=rect.xMin&&local.x<=rect.xMax&&local.y>=rect.yMin&&local.y<=rect.yMax&&Mathf.Abs(local.z)<=half)return true;
+                }
+                return false;
+            }
+            Collider collider=body!=null&&body.UsesHitProxy?body.CapsuleHitVolume:player.GetComponent<CharacterController>();
+            if(collider==null||!collider.enabled)return false;
+            Vector3 center;float height,bodyRadius;
+            if(collider is CharacterController cc){center=cc.transform.TransformPoint(cc.center);height=cc.height;bodyRadius=cc.radius;}
+            else if(collider is CapsuleCollider capsule){center=capsule.transform.TransformPoint(capsule.center);height=capsule.height;bodyRadius=capsule.radius;}
+            else return false;
+            // Player hit capsules are upright and unit scale, as configured by HeroBodyShape.
+            float segment=Mathf.Max(0,height*.5f-bodyRadius);Vector3 delta=center-origin;
+            float horizontal=Mathf.Max(0,new Vector2(delta.x,delta.z).magnitude-radius);
+            float vertical=Mathf.Max(0,Mathf.Max(delta.y-segment-above,-below-(delta.y+segment)));
+            return horizontal*horizontal+vertical*vertical<=bodyRadius*bodyRadius;
+        }
+        static int ClipHeight(System.Span<Vector3> input,int count,System.Span<Vector3> output,float plane,bool lower)
+        {
+            int n=0;if(count==0)return 0;Vector3 previous=input[count-1];bool previousIn=lower?previous.y>=plane:previous.y<=plane;
+            for(int i=0;i<count;i++)
+            {
+                Vector3 current=input[i];bool currentIn=lower?current.y>=plane:current.y<=plane;
+                if(currentIn!=previousIn)output[n++]=Vector3.LerpUnclamped(previous,current,(plane-previous.y)/(current.y-previous.y));
+                if(currentIn)output[n++]=current;previous=current;previousIn=currentIn;
+            }
+            return n;
+        }
+        static bool ProjectedWithin(System.Span<Vector3> polygon,int count,float radius)
+        {
+            if(count==0)return false;bool positive=false,negative=false;float area=0;
+            for(int i=0;i<count;i++)
+            {
+                var p=polygon[i];var q=polygon[(i+1)%count];var a=new Vector2(p.x,p.z);var b=new Vector2(q.x,q.z);var edge=b-a;
+                float t=edge.sqrMagnitude>0?Mathf.Clamp01(-Vector2.Dot(a,edge)/edge.sqrMagnitude):0;
+                if((a+edge*t).sqrMagnitude<=radius*radius)return true;
+                float cross=a.x*b.y-a.y*b.x;area+=cross;positive|=cross>0;negative|=cross<0;
+            }
+            return Mathf.Abs(area)>1e-8f&&!(positive&&negative);
+        }
         public static float Radius(AmmoRuntimeConfig ammo, bool collision)
             => ammo.ExplosionRadius * (collision ? ammo.CollisionExplosionRadiusRate : 1);
         public static float Damage(AmmoRuntimeConfig ammo, bool collision, float distance)
@@ -35,7 +100,7 @@ namespace Splatoon.Combat
         readonly System.Collections.Generic.List<(int surface, Vector3 point)> _explosionPaintSites = new();
         readonly System.Collections.Generic.List<(int surface, Vector3 normal, float plane)> _explosherPaintPlanes = new();
 
-        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null, Vector3? visibilityOrigin = null, uint? directObject = null)
+        void ResolveExplosion(InkShot shot, Vector3 position, Vector3 normal, bool collision = false, ulong? directVictim = null, double? at = null, Vector3? visibilityOrigin = null, uint? directObject = null, uint? directSpecialObject = null)
         {
             var ammo = shot.Configuration?.Ammo;
             if (ammo == null || !ammo.HasExplosion || !_exploded.Add((shot.Round, shot.Id))) return;
@@ -44,6 +109,7 @@ namespace Splatoon.Combat
             bool floating = WeaponSimulation.IsFloatingBubble(shot.Configuration);
             Vector3 origin = visibilityOrigin ?? (floating ? position : position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero));
             var match = PrototypeMatch.Current;
+            match?.SpecialWeapons.DamageFromMainExplosion(shot,origin,collision,directSpecialObject);
             match?.SubWeapons.DamageObjectsFromMainExplosion(shot, origin, collision, directObject);
             if (match != null)
             {

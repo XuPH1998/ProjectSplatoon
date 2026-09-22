@@ -28,7 +28,7 @@ namespace Splatoon.Prototype
         {
             if (HeroSelectionUnavailableReason(origin) != null) return;
             var player = PrototypePlayer.Local;
-            _heroOrigin = origin; _previewHeroId = player.Snapshot.Value.HeroId;
+            _heroOrigin = origin; _previewHeroId = player.Snapshot.Value.HeroId; var loadout=PlayerLoadout.From(player.Snapshot.Value); _previewSubId=loadout.SubWeaponId; _previewSpecialId=loadout.SpecialWeaponId;
             _overlay = GameplayOverlay.Heroes; CaptureMouse(false);
         }
         public void CloseOverlay()

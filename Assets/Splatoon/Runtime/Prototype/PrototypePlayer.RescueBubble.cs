@@ -69,6 +69,7 @@ namespace Splatoon.Prototype
         }
         void EnterBubble(ref PlayerSnapshot s, byte team, ulong? attacker, Vector3 incoming, double now)
         {
+            SpecialWeaponSimulation.Interrupt(ref s);
             _downedBy = attacker; _downedTeam = team;
             s.BubbleInkTeam = team;
             s.LifeState = PlayerLifeState.Bubble; s.BubbleUntil = now + GameplayConfig.Mode.BubbleSeconds;
@@ -126,6 +127,7 @@ namespace Splatoon.Prototype
             }
             else
             {
+                SpecialWeaponSimulation.Die(ref s);
                 s.LifeState = PlayerLifeState.Dead; s.Movement = MovementMode.Dead;
                 s.DiedAt = now; s.RespawnsAt = now + GameplayConfig.Mode.RespawnSeconds;
                 match.CombatStats.RecordDeath(PlayerId, s.Revision, _downedBy, now, match.State.Value.Phase);

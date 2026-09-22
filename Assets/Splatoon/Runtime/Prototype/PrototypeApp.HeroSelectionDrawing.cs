@@ -24,7 +24,7 @@ namespace Splatoon.Prototype
     public sealed partial class PrototypeApp
     {
         readonly HeroSelectionStatsCache _heroStats = new();
-        Vector2 _heroCardScroll;
+        Vector2 _heroCardScroll; int _previewSubId=1,_previewSpecialId=1;
         GUIStyle _heroHeading, _heroName, _heroCaption, _heroValue, _heroNote, _heroBadge, _heroAction;
         static readonly Color HeroAccent = new(.36f, .87f, .89f);
         static readonly Color HeroMuted = new(.62f, .69f, .79f);
@@ -59,7 +59,7 @@ namespace Splatoon.Prototype
                 GUI.matrix = HeroSelectionLayout.Matrix(Screen.width, Screen.height);
                 Panel(HeroSelectionLayout.Window, new Color(.055f, .075f, .115f, .99f));
                 Panel(new Rect(88, 120, 1104, 1), new Color(.19f, .24f, .31f));
-                GUI.Label(new Rect(88, 60, 560, 42), "选择英雄", _heroHeading);
+                GUI.Label(new Rect(88, 60, 560, 42), "选择配装", _heroHeading);
                 GUI.Label(new Rect(274, 67, 670, 32), _heroOrigin == HeroSelectionOrigin.Debug ? "调试切换 · 点击卡片查看主武器" :
                     _heroOrigin == HeroSelectionOrigin.SpawnArea ? "出生区换装 · 选择你的出战搭档" : "热身准备 · 选择你的出战搭档", _heroCaption);
                 if (GUI.Button(HeroSelectionLayout.Close, "×", _button)) { _fireInputBlocked = true; CloseOverlay(); }
@@ -85,7 +85,7 @@ namespace Splatoon.Prototype
                         GUI.Label(new Rect(textX, rect.y + 72, 76, 23), "当前使用", _heroBadge);
                     }
                     else if (selected) GUI.Label(new Rect(textX, rect.y + 72, 76, 23), "已选中", _heroBadge);
-                    if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) { _previewHeroId = hero.Id; _fireInputBlocked = true; }
+                    if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) { _previewHeroId = hero.Id; var saved=PlayerLoadout.Remembered(hero.Id); _previewSubId=saved.SubWeaponId; _previewSpecialId=saved.SpecialWeaponId; _fireInputBlocked = true; }
                     index++;
                 }
                 GUI.EndScrollView();
@@ -97,24 +97,25 @@ namespace Splatoon.Prototype
                     global.AimCorrectionDistance, global.AimFarCorrectionDistance);
                 for (int i = 0; i < stats.Length; i++)
                 {
-                    float y = 190 + i * 97;
-                    Panel(new Rect(738, y, 454, 88), new Color(.09f, .12f, .18f));
-                    Panel(new Rect(738, y, 3, 88), i == 3 ? HeroAccent : new Color(.23f, .3f, .39f));
+                    float y = 185 + i * 48;
+                    Panel(new Rect(738, y, 454, 44), new Color(.09f, .12f, .18f));
+                    Panel(new Rect(738, y, 3, 44), i == 3 ? HeroAccent : new Color(.23f, .3f, .39f));
                     GUI.Label(new Rect(756, y + 8, 104, 27), stats[i].Label, _heroCaption);
                     GUI.Label(new Rect(870, y + 7, 308, 36), stats[i].Value, _heroValue);
-                    GUI.Label(new Rect(756, y + 50, 422, 25), stats[i].Note, _heroNote);
+
                 }
+                DrawLoadoutChoices();
                 Panel(new Rect(88, 602, 1104, 1), new Color(.19f, .24f, .31f));
                 string unavailable = HeroSelectionUnavailableReason(_heroOrigin);
                 string status = unavailable ?? (player.HeroChangePending || !string.IsNullOrEmpty(player.HeroChangeMessage)
                     ? player.HeroChangeMessage : match.State.Value.Phase == MatchPhase.Practice ? "热身切换补满墨量 · H / Esc 关闭后试射" :
                     _heroOrigin == HeroSelectionOrigin.SpawnArea ? "保留生命与墨量 · H / Esc 返回比赛" : "对局切换保留墨量 · Esc 返回调试菜单");
                 GUI.Label(new Rect(88, 618, 838, 38), status, _heroCaption);
-                bool canSelect = unavailable == null && !player.HeroChangePending && !player.TeamChangePending && chosen.Id != currentId;
+                bool canSelect = unavailable == null && !player.HeroChangePending && !player.TeamChangePending && !PlayerLoadout.From(player.Snapshot.Value).Matches(new PlayerLoadout(chosen.Id,_previewSubId,_previewSpecialId));
                 Panel(HeroSelectionLayout.Confirm, canSelect ? HeroAccent : new Color(.24f, .32f, .39f));
                 GUI.enabled = canSelect;
-                string action = player.HeroChangePending ? "切换中…" : chosen.Id == currentId ? "当前英雄" : "选择英雄";
-                if (GUI.Button(HeroSelectionLayout.Confirm, action, _heroAction)) { _fireInputBlocked = true; player.RequestHeroChange(chosen.Id, _heroOrigin); }
+                string action = player.HeroChangePending ? "切换中…" : canSelect ? "确认配装" : "当前配装";
+                if (GUI.Button(HeroSelectionLayout.Confirm, action, _heroAction)) { _fireInputBlocked = true; player.RequestLoadoutChange(new PlayerLoadout(chosen.Id,_previewSubId,_previewSpecialId), _heroOrigin); }
             }
             finally { GUI.enabled = enabled; GUI.color = color; GUI.matrix = matrix; }
         }

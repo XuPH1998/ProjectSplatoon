@@ -73,6 +73,7 @@ namespace Splatoon.Tests
             sender.Prepare(history, 1296);
             receiver.Add(sender.GetPart(0), 7, 1, .3, out _, out _); receiver.Clear();
             Assert.That(receiver.Add(sender.GetPart(1), 7, 1, .3, out _, out _), Is.False);
+            for(int part=2;part<sender.PartCount;part++)Assert.That(receiver.Add(sender.GetPart(part),7,1,.3,out _,out _),Is.False);
             Assert.That(receiver.Add(sender.GetPart(0), 7, 1, .3, out _, out int count), Is.True);
             Assert.That(count, Is.EqualTo(32));
         }
@@ -208,8 +209,8 @@ namespace Splatoon.Tests
         {
             var inputs = Inputs(32); var send = new NetworkBatch<PlayerInputFrame>(inputs, 9, 2);
             using var writer = new FastBufferWriter(4096, Allocator.Temp); writer.WriteNetworkSerializable(send);
-            // Protocol 32 adds two E-edge uints and two bools: 47 + 10 bytes per input.
-            Assert.That(writer.Length, Is.EqualTo(4 + 73 * 2)); // F sequence, target life and target id add 16 bytes per frame.
+            // Protocol 35 adds the Q-edge uint to the previous 73-byte input.
+            Assert.That(writer.Length, Is.EqualTo(4 + 77 * 2)); // F sequence, target life and target id add 16 bytes per frame.
             using var reader = new FastBufferReader(writer, Allocator.None); reader.ReadNetworkSerializable(out NetworkBatch<PlayerInputFrame> received);
             Assert.That(received.Count, Is.EqualTo(2)); Assert.That(received[0].Sequence, Is.EqualTo(10));
             received.Dispose(); send.Dispose(); Assert.That(inputs.Count, Is.EqualTo(32));

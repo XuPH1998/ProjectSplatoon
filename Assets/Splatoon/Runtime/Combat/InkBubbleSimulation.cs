@@ -108,7 +108,7 @@ namespace Splatoon.Combat
                         a.Bubble.Travelled += Mathf.Min(distance, hit.Distance);
                         a.BubbleTrailDistance += Mathf.Min(distance, hit.Distance);
                         velocity = a.Bubble.VelocityAt(time, a.Shot);
-                        if (hit.Collider.GetComponentInParent<PrototypePlayer>() != null || hit.Collider.GetComponent<SubWeaponTarget>() != null)
+                        if (hit.Collider.GetComponentInParent<PrototypePlayer>() != null || hit.Collider.GetComponent<SubWeaponTarget>() != null || hit.Collider.GetComponent<SpecialWeaponTarget>() != null)
                         { Resolve(a.Shot, hit.Collider, hit.Point, hit.Normal, time - a.Shot.Born, ref a.PaintOrdinal, velocity); return true; }
                         var reflected = ReflectBubble(velocity, hit.Normal, w, out bool ground);
                         bool terminal = a.Bubble.Sequence >= w.BubbleMaxBounces || ground && a.Bubble.GroundBounces >= w.BubbleGroundBounces ||

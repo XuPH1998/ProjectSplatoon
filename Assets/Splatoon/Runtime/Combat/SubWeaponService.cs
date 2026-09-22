@@ -14,7 +14,7 @@ namespace Splatoon.Combat
     {
         public uint Id, Round, Life, HeroRevision, ConfigRevision, Action, ParentId, Version;
         public ulong Owner;
-        public int Hero;
+        public int Hero, SubWeaponId;
         public byte Team;
         public SubWeaponType Type;
         public SubEntityPhase Phase;
@@ -25,7 +25,7 @@ namespace Splatoon.Combat
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Id); s.SerializeValue(ref Round); s.SerializeValue(ref Life); s.SerializeValue(ref HeroRevision);
-            s.SerializeValue(ref ConfigRevision); s.SerializeValue(ref Action); s.SerializeValue(ref Owner); s.SerializeValue(ref Hero);
+            s.SerializeValue(ref ConfigRevision); s.SerializeValue(ref Action); s.SerializeValue(ref Owner); s.SerializeValue(ref Hero); s.SerializeValue(ref SubWeaponId);
             s.SerializeValue(ref Team); s.SerializeValue(ref Type); s.SerializeValue(ref Phase);
             s.SerializeValue(ref Position); s.SerializeValue(ref Velocity); s.SerializeValue(ref Normal); s.SerializeValue(ref End);
             s.SerializeValue(ref Charge); s.SerializeValue(ref Health); s.SerializeValue(ref Yaw); s.SerializeValue(ref Explosions);
@@ -53,10 +53,10 @@ namespace Splatoon.Combat
         public Vector3 Position;
         public float Radius;
         public byte Team;
-        public int Hero;
+        public int Hero, SubWeaponId;
         public uint ConfigRevision;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
-        { s.SerializeValue(ref EntityId); s.SerializeValue(ref Action); s.SerializeValue(ref Kind); s.SerializeValue(ref Normal); s.SerializeValue(ref At); s.SerializeValue(ref Sequence); s.SerializeValue(ref Round); s.SerializeValue(ref Position); s.SerializeValue(ref Radius); s.SerializeValue(ref Team); s.SerializeValue(ref Hero); s.SerializeValue(ref ConfigRevision); }
+        { s.SerializeValue(ref EntityId); s.SerializeValue(ref Action); s.SerializeValue(ref Kind); s.SerializeValue(ref Normal); s.SerializeValue(ref At); s.SerializeValue(ref Sequence); s.SerializeValue(ref Round); s.SerializeValue(ref Position); s.SerializeValue(ref Radius); s.SerializeValue(ref Team); s.SerializeValue(ref Hero); s.SerializeValue(ref SubWeaponId); s.SerializeValue(ref ConfigRevision); }
     }
 
     /// <summary>Host owns all entities, damage, paint and status. Presentation never advances gameplay.</summary>
@@ -140,10 +140,10 @@ namespace Splatoon.Combat
             return result;
         }
         public Entity Spawn(PrototypePlayer player, PlayerSnapshot s, float charge, double now, uint round)
-            => Spawn(player, s, charge, now, round, SolveLaunch(player, s, GameplayConfig.GetSubWeapon(s.HeroId), charge));
+            => Spawn(player, s, charge, now, round, SolveLaunch(player, s, PlayerLoadout.SubWeapon(s), charge));
         public Entity Spawn(PrototypePlayer player, PlayerSnapshot s, float charge, double now, uint round, SubLaunchSolution launch)
         {
-            var c = GameplayConfig.GetSubWeapon(s.HeroId);
+            var c = PlayerLoadout.SubWeapon(s);
             if (!launch.Valid || CanUse(player.PlayerId, s, c) != SubWeaponFailure.None) return null;
             _now = now;
             if (IsPersistent(c.Type))
@@ -154,8 +154,8 @@ namespace Splatoon.Combat
                     if (oldest == null) break;
                     if (c.Type == SubWeaponType.InkMine) Explode(oldest, now); else Remove(oldest);
                 }
-            var state = new SubEntityState { Id = ++_id, Round = round, Life = s.Revision, HeroRevision = s.HeroRevision, ConfigRevision = SubWeaponConfigService.Current.Revision(s.HeroId),
-                Owner = player.PlayerId, Hero = s.HeroId, Action = s.SubAction, Team = s.Team, Charge = charge, Health = c.Durability.health, Yaw = s.Yaw };
+            var state = new SubEntityState { Id = ++_id, Round = round, Life = s.Revision, HeroRevision = s.HeroRevision, ConfigRevision = SubWeaponConfigService.Current.RevisionById(SubWeaponConfigService.Current.Resolve(s.HeroId,s.SubWeaponId)),
+                Owner = player.PlayerId, Hero = s.HeroId, SubWeaponId = SubWeaponConfigService.Current.Resolve(s.HeroId,s.SubWeaponId), Action = s.SubAction, Team = s.Team, Charge = charge, Health = c.Durability.health, Yaw = s.Yaw };
             var entity = SubWeaponMotion.Create(launch, c, state, now); _entities.Add(entity);
             if (c.Type == SubWeaponType.Torpedo) CreateTarget(entity);
             Publish(entity, SubLifecycleKind.Spawn);
@@ -171,6 +171,7 @@ namespace Splatoon.Combat
             {
                 var e = _entities[i]; if (e.Removed) continue;
                 if (CleanupOwner(e, players)) { Remove(e); continue; }
+                if(CancelInTornado(e,e.State.Position,now))continue;
                 if (e.Attached)
                 {
                     if (e.Attachment == null) { Remove(e); continue; }
@@ -214,6 +215,12 @@ namespace Splatoon.Combat
             if (e.Removed) return;
             var c = e.Config;
             var incomingVelocity=e.State.Velocity;
+            var previewVelocity=e.State.Velocity;
+            Vector3 previewDelta=FlightStep(ref previewVelocity,c.Flight,dt,
+                c.Type==SubWeaponType.CurlingBomb&&e.State.Phase==SubEntityPhase.Grounded||e.State.Phase==SubEntityPhase.Seeking);
+            if(FlightCollision(_aim,e.State.Position,previewDelta,Mathf.Max(.03f,c.Flight.radius),e.State.Owner,e.State.Team,out var obstruction))
+                previewDelta=previewDelta.normalized*Mathf.Min(previewDelta.magnitude,obstruction.Distance);
+            if(CancelInTornado(e,e.State.Position+previewDelta,now))return;
             var contact = SubWeaponMotion.Advance(e, _aim, now, dt, out var h);
             if (contact != SubMotionContact.None)
             {
@@ -229,6 +236,7 @@ namespace Splatoon.Combat
                 if (contact == SubMotionContact.Bounce && c.Type == SubWeaponType.CurlingBomb)
                 {
                     if (player != null) Contact(e, player, now, c.Curling.contactDamage, c.Curling.contactInterval);
+                    h.Collider.GetComponent<SpecialWeaponTarget>()?.Damage(e.State.Team,c.Curling.contactDamage);
                     if (objectHit != null) DamageObject(objectHit.Id, e.State.Team, c.Curling.contactDamage * SubWeaponObjectDamage.SubMultiplier(c.Type, objectHit.Type, contact:true));
                 }
                 // Floor contacts repeat while sliding. Send the phase or direction discontinuity once.
@@ -317,6 +325,7 @@ namespace Splatoon.Combat
                 var player = h.Collider.GetComponentInParent<PrototypePlayer>();
                 if (player != null) { DamagePlayer(e, player, e.Config.Angle.damage); Mark(player, e.State.Team, now + e.Config.Mark.duration); Remove(e); break; }
                 var target = h.Collider.GetComponent<SubWeaponTarget>();
+                var sonar=h.Collider.GetComponent<SpecialWeaponTarget>();if(sonar!=null){sonar.Damage(e.State.Team,e.Config.Angle.damage);Remove(e);break;}
                 if (target != null) { DamageObject(target.Id, e.State.Team, e.Config.Angle.damage); Remove(e); break; }
                 PaintRay(e, h.Point + h.Normal * .03f, -h.Normal, .1f, e.Config.Paint.radius);
                 SubWeaponMotion.ReflectLine(e, h);
@@ -381,6 +390,7 @@ namespace Splatoon.Combat
             if(FlightCollision(_aim,e.State.Position,delta,.06f,e.State.Owner,e.State.Team,out var h))
             {
                 var victim=h.Collider.GetComponentInParent<PrototypePlayer>();if(victim!=null)DamagePlayer(e,victim,e.Config.Sprinkler.damage);
+                h.Collider.GetComponent<SpecialWeaponTarget>()?.Damage(e.State.Team,e.Config.Sprinkler.damage);
                 var target=h.Collider.GetComponent<SubWeaponTarget>();if(target!=null)DamageObject(target.Id,e.State.Team,e.Config.Sprinkler.damage*SubWeaponObjectDamage.SubMultiplier(e.Config.Type,target.Type));
                 PaintRay(e,h.Point+h.Normal*.03f,-h.Normal,.1f,e.Config.Sprinkler.paintRadius);Remove(e);
             }
@@ -429,6 +439,13 @@ namespace Splatoon.Combat
                 float damage = directHit?c.Blast.directDamage:droplet ? distance <= radius ? c.Torpedo.dropletDamage : 0 : c.Damage(distance, e.State.Charge, e.State.Explosions);
                 if (damage > 0 && (directHit||Visible(e, point, target.State.Id))) DamageObject(target.State.Id, e.State.Team, damage*SubWeaponObjectDamage.SubMultiplier(c.Type,target.State.Type,droplet));
             }
+            if(match!=null)foreach(var target in match.SpecialWeapons.Entities)
+            {
+                if(target.Removed||target.Target==null||target.State.Team==e.State.Team)continue;
+                Vector3 point=target.Target.HitCollider.ClosestPoint(e.State.Position);float distance=Vector3.Distance(point,e.State.Position);
+                float damage=droplet?(distance<=radius?c.Torpedo.dropletDamage:0):c.Damage(distance,e.State.Charge,e.State.Explosions);
+                if(damage>0&&SpecialWeaponService.Visible(e.State.Position,point))match.SpecialWeapons.DamageObject(target.State.Id,e.State.Team,damage*(droplet?1:SpecialObjectDamage.FromSub(c.Type)));
+            }
             float paintRadius = droplet ? c.Torpedo.dropletPaintRadius : c.Type == SubWeaponType.CurlingBomb ? Mathf.Lerp(c.Paint.radius, c.Curling.paintRadius, e.State.Charge) : c.Paint.radius;
             PaintExplosion(e, paintRadius); Effect(e, radius);
             if (SubWeaponMotion.NextFizzyBurst(e, now)) { Publish(e, SubLifecycleKind.Phase); return; }
@@ -446,7 +463,7 @@ namespace Splatoon.Combat
             }
             Remove(e);
         }
-        void Effect(Entity e, float radius, SubEffectKind kind = SubEffectKind.Explosion) => Effects.Add(new SubEffectEvent { Sequence = ++_effect, Round = e.State.Round, EntityId = e.State.Id, Action = e.State.Action, Kind = kind, At = _now, Normal = e.State.Normal, Position = e.State.Position, Radius = radius, Team = e.State.Team, Hero = e.State.Hero, ConfigRevision = e.State.ConfigRevision });
+        void Effect(Entity e, float radius, SubEffectKind kind = SubEffectKind.Explosion) => Effects.Add(new SubEffectEvent { Sequence = ++_effect, Round = e.State.Round, EntityId = e.State.Id, Action = e.State.Action, Kind = kind, At = _now, Normal = e.State.Normal, Position = e.State.Position, Radius = radius, Team = e.State.Team, Hero = e.State.Hero, SubWeaponId = e.State.SubWeaponId, ConfigRevision = e.State.ConfigRevision });
         static bool Enemy(Entity e, PrototypePlayer p) => p != null && p.IsSpawned && p.Snapshot.Value.Health > 0 && p.Snapshot.Value.Team != e.State.Team;
         bool Visible(Entity e, Vector3 target, uint targetId = 0)
         {
@@ -524,12 +541,19 @@ namespace Splatoon.Combat
                 }
             }
             PrototypeMatch.Current?.Paint(surface, point, hit.Normal, radius, e.State.Team, e.Config.Paint.hardness, e.Config.Paint.strength,
-                e.State.Id * 2654435761u + (uint)e.State.Explosions,clipEnabled:unique,clip0:clip0,clip1:clip1);
+                e.State.Id * 2654435761u + (uint)e.State.Explosions,clipEnabled:unique,clip0:clip0,clip1:clip1,credit:new PaintCredit(e.State.Owner,e.State.Team,e.State.Round,e.State.HeroRevision,PaintAttackKind.Sub));
         }
         void CreateTarget(Entity e)
         {
             var go = new GameObject("SubTarget_" + e.State.Id); e.HitTarget = go.AddComponent<SubWeaponTarget>();
             e.HitTarget.Initialize(this, e.State, e.Config);
+        }
+        bool CancelInTornado(Entity e,Vector3 end,double now)
+        {
+            if(e.State.Type>SubWeaponType.Torpedo||e.State.Phase==SubEntityPhase.Spray||e.State.Phase==SubEntityPhase.Line)return false;
+            if(PrototypeMatch.Current?.SpecialWeapons.AbsorbsBomb(e.State.Position,end,e.Config.Flight.radius,e.State.Team,now)!=true)return false;
+            // No explosion, damage, paint, secondary droplets or explosion presentation.
+            Remove(e);return true;
         }
         void Remove(Entity e)
         { if (e.Removed) return; e.Removed = true; Publish(e, SubLifecycleKind.Remove); if (e.HitTarget != null) { e.HitTarget.gameObject.SetActive(false); UnityEngine.Object.Destroy(e.HitTarget.gameObject); e.HitTarget = null; } }

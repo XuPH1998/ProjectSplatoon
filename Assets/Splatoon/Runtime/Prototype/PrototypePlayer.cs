@@ -11,7 +11,19 @@ namespace Splatoon.Prototype
     public enum BubbleOutcome : byte { None, Rescued, Executed, Expired }
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 34;
+        public const uint ProtocolVersion = 36;
+        public Vector3 SpecialImpulseVelocity;
+        public float SpecialImpulseRetention, SpecialImpulseRemaining;
+        public int SubWeaponId, SpecialWeaponId;
+        public double SpecialPoints, SpecialStartedAt, SpecialUntil, SpecialReadyAt, SpecialChargeLockedUntil, SpecialShotAt, SpecialAttackAt, SpecialBurstAt;
+        public SpecialPhase SpecialPhase;
+        public SpecialFailure SpecialFailure;
+        public uint SpecialConsumed, SpecialConsumedFire, SpecialConsumedRelease, SpecialAction, SpecialAttack;
+        public int SpecialRemaining, SpecialRideStage;
+        public bool SpecialNeedsRelease, SpecialAiming;
+        public Vector3 SpecialDirection;
+        public float SpecialRideSpeed;
+        public double RainRecoveryUntil;
         public PlayerLifeState LifeState;
         public BubbleOutcome BubbleResult;
         public byte BubbleInkTeam;
@@ -91,6 +103,13 @@ namespace Splatoon.Prototype
         public WeaponPhase WeaponPhase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
+            s.SerializeValue(ref SpecialImpulseVelocity);s.SerializeValue(ref SpecialImpulseRetention);s.SerializeValue(ref SpecialImpulseRemaining);
+            s.SerializeValue(ref SubWeaponId); s.SerializeValue(ref SpecialWeaponId); s.SerializeValue(ref SpecialPoints);
+            s.SerializeValue(ref SpecialStartedAt); s.SerializeValue(ref SpecialUntil); s.SerializeValue(ref SpecialReadyAt); s.SerializeValue(ref SpecialChargeLockedUntil);
+            s.SerializeValue(ref SpecialShotAt); s.SerializeValue(ref SpecialAttackAt); s.SerializeValue(ref SpecialBurstAt);
+            s.SerializeValue(ref SpecialPhase); s.SerializeValue(ref SpecialFailure); s.SerializeValue(ref SpecialConsumed); s.SerializeValue(ref SpecialConsumedFire); s.SerializeValue(ref SpecialConsumedRelease);
+            s.SerializeValue(ref SpecialAction); s.SerializeValue(ref SpecialAttack); s.SerializeValue(ref SpecialRemaining); s.SerializeValue(ref SpecialRideStage);
+            s.SerializeValue(ref SpecialNeedsRelease); s.SerializeValue(ref SpecialAiming); s.SerializeValue(ref SpecialDirection); s.SerializeValue(ref SpecialRideSpeed); s.SerializeValue(ref RainRecoveryUntil);
             s.SerializeValue(ref LifeState); s.SerializeValue(ref BubbleResult);
             s.SerializeValue(ref BubbleInkTeam);
             s.SerializeValue(ref BubbleUntil); s.SerializeValue(ref BubbleEndedAt);

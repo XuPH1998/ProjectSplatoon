@@ -78,8 +78,8 @@ namespace Splatoon.Tests
         {
             var s=Alive();s.Health=30;s.LastDamageAt=2;
             ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,2.99);Assert.That(s.Health,Is.EqualTo(30));
-            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.5f));
-            s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.FriendlyInkContact=true;s.Movement=MovementMode.GroundInk;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.5f));
+            ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3);Assert.That(s.Health,Is.EqualTo(30.21f).Within(.0001));
+            s.Swimming=true;s.SwimSource=SwimSurface.Friendly;s.FriendlyInkContact=true;s.Movement=MovementMode.GroundInk;ResourceSimulation.Step(ref s,GameplayConfig.DefaultHero,false,false,1f/60,3.02);Assert.That(s.Health,Is.EqualTo(31.96f).Within(.0001));
         }
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void RenderRatesDoNotChangeFixedSimulationResults(int rate)
@@ -224,7 +224,9 @@ namespace Splatoon.Tests
             var expected=(PlayerSnapshot)boxed;
             using var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp);writer.WriteNetworkSerializable(expected);
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
-            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));Assert.That(writer.Length,Is.EqualTo(533)); // Includes the existing attack movement deadline.
+            Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(36));
+            Assert.That(writer.Length,Is.EqualTo(827)); // Protocol 36: also includes synchronized special impulse state.
         }
         [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {

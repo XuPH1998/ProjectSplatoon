@@ -75,6 +75,7 @@ namespace Splatoon.Prototype
                 await LubanConfigService.Current.InitializeAsync(_operation.Token);
                 await WeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 await SubWeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
+                await SpecialWeaponConfigService.Current.InitializeAsync(_operation.Token);
                 GameplayConfig.Validate();
                 Time.fixedDeltaTime = 1f / GameplayConfig.Global.SimulationRate;
                 _port = GameplayConfig.Global.DefaultPort.ToString();
@@ -143,6 +144,7 @@ namespace Splatoon.Prototype
                 await WaitForPrefab(_playerPrefab, _operation.Token); await WaitForPrefab(_matchPrefab, _operation.Token);
                 await WeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token, IsWeaponDebugRoom);
                 await SubWeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token, IsWeaponDebugRoom);
+                await SpecialWeaponConfigService.Current.InitializeAsync(_operation.Token, IsWeaponDebugRoom);
                 await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
                 _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
@@ -202,7 +204,7 @@ namespace Splatoon.Prototype
             if (Session != null) await Session.ShutdownAsync();
             _admitted.Clear(); _admittedNames.Clear(); _nameCamera = null;
             ReleasePrefab(ref _playerPrefab); ReleasePrefab(ref _matchPrefab);
-            Heroes.Clear(); _heroStats.Clear(); WeaponConfigService.Current.Clear(); SubWeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
+            Heroes.Clear(); _heroStats.Clear(); WeaponConfigService.Current.Clear(); SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear(); IsWeaponDebugRoom = false;
 #if UNITY_EDITOR
             ClearDebugWeaponChanges();
 #endif
@@ -303,7 +305,7 @@ namespace Splatoon.Prototype
             Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
             if (weapon.FireMode != WeaponFireMode.Splatling || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
                 GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(weapon) ? (weapon.FireMode == WeaponFireMode.Splatling ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(380,625,540,82),(weapon.FireMode == WeaponFireMode.Splatling ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择英雄 · 调试房保持热身" : "回车开始（房主）"),_small);
+            GUI.Label(new Rect(380,625,540,82),(weapon.FireMode == WeaponFireMode.Splatling ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择配装 · 调试房保持热身" : "回车开始（房主）"),_small);
             if (_captured && player.Health>0)
             {
                 if (weapon.FireMode == WeaponFireMode.Charge)
@@ -326,12 +328,12 @@ namespace Splatoon.Prototype
 #endif
             DrawSubWeaponHud(PrototypePlayer.Local, player);
             if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58), IsWeaponDebugRoom
-                ? "单机武器调试 · 无限热身\nH 选择英雄 · Esc 添加 / 移除 BOT 或定位武器资产"
-                : "H 选择英雄 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
+                ? "单机武器调试 · 无限热身\nH 选择配装 · Esc 添加 / 移除 BOT 或定位武器资产"
+                : "H 选择配装 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
             DrawBubbleHud(PrototypePlayer.Local, player);
             if(player.IsDead) GUI.Label(new Rect(475,275,460,64),$"已被击杀！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
             if (state.Phase == MatchPhase.Playing && _overlay == GameplayOverlay.Game && HeroSelectionUnavailableReason(HeroSelectionOrigin.SpawnArea) == null)
-                GUI.Label(new Rect(390,129,580,38), "出生区 · H 更换英雄", _small);
+                GUI.Label(new Rect(390,129,580,38), "出生区 · H 更换配装", _small);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
                 bool practice = state.Phase == MatchPhase.Practice;

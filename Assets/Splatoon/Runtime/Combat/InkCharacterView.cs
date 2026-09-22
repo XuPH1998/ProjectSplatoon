@@ -143,7 +143,7 @@ namespace Splatoon.Combat
             bool restored = visible && !Animator.enabled;
             for (int i = 0; i < _renderers.Length; i++)
                 if (_renderers[i] != null && !(_renderers[i] is ParticleSystemRenderer) && _renderers[i] != TeamMarker)
-                    _renderers[i].enabled = visible && _rendererEnabled[i];
+                    _renderers[i].enabled = visible && _rendererEnabled[i] && !(SpecialWeaponSimulation.Active(state) && ((Weapon!=null&&_renderers[i].transform.IsChildOf(Weapon))||(LeftWeapon!=null&&_renderers[i].transform.IsChildOf(LeftWeapon))));
             Animator.enabled = visible;
             if (reset)
             {

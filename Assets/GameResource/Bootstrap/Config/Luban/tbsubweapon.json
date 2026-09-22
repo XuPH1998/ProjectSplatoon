@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "name": "SplatBomb",
+    "displayName": "斯普拉炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/SplatBomb/SplatBomb.asset"
+  },
+  {
+    "id": 2,
+    "name": "SuctionBomb",
+    "displayName": "吸盘炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/SuctionBomb/SuctionBomb.asset"
+  },
+  {
+    "id": 3,
+    "name": "BurstBomb",
+    "displayName": "快速炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/BurstBomb/BurstBomb.asset"
+  },
+  {
+    "id": 4,
+    "name": "CurlingBomb",
+    "displayName": "冰壶炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/CurlingBomb/CurlingBomb.asset"
+  },
+  {
+    "id": 5,
+    "name": "Autobomb",
+    "displayName": "机器人炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/Autobomb/Autobomb.asset"
+  },
+  {
+    "id": 6,
+    "name": "FizzyBomb",
+    "displayName": "碳酸炸弹",
+    "configPath": "Assets/GameResource/SubWeapons/FizzyBomb/FizzyBomb.asset"
+  },
+  {
+    "id": 7,
+    "name": "Torpedo",
+    "displayName": "鱼雷",
+    "configPath": "Assets/GameResource/SubWeapons/Torpedo/Torpedo.asset"
+  },
+  {
+    "id": 8,
+    "name": "InkMine",
+    "displayName": "墨汁陷阱",
+    "configPath": "Assets/GameResource/SubWeapons/InkMine/InkMine.asset"
+  },
+  {
+    "id": 9,
+    "name": "PointSensor",
+    "displayName": "定点侦测器",
+    "configPath": "Assets/GameResource/SubWeapons/PointSensor/PointSensor.asset"
+  },
+  {
+    "id": 10,
+    "name": "ToxicMist",
+    "displayName": "毒雾",
+    "configPath": "Assets/GameResource/SubWeapons/ToxicMist/ToxicMist.asset"
+  },
+  {
+    "id": 11,
+    "name": "AngleShooter",
+    "displayName": "标线器",
+    "configPath": "Assets/GameResource/SubWeapons/AngleShooter/AngleShooter.asset"
+  },
+  {
+    "id": 12,
+    "name": "Sprinkler",
+    "displayName": "洒墨器",
+    "configPath": "Assets/GameResource/SubWeapons/Sprinkler/Sprinkler.asset"
+  },
+  {
+    "id": 13,
+    "name": "SplashWall",
+    "displayName": "斯普拉防护墙",
+    "configPath": "Assets/GameResource/SubWeapons/SplashWall/SplashWall.asset"
+  }
+]

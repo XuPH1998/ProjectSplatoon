@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc09b1a6efea1f499efc6e8fa1f97e8, type: 3}
+  m_Name: TripleInkstrike
+  m_EditorClassIdentifier: Splatoon.Config::Splatoon.Config.SpecialWeaponConfigAsset
+  type: 2
+  displayName: "\u4E09\u91CD\u9F99\u5377\u98CE"
+  parameters:
+    duration: 6
+    startup: 0.33333334
+    shotDelay: 0.23333333
+    repeat: 0.31666666
+    recovery: 0.31666666
+    chargeLock: 0
+    mineThrowExtraDelay: 0
+    shots: 3
+    moveSpeed: 4.493073
+    firingMoveSpeed: 0
+    equipDelay: 0
+    throwSpeed: 89.861465
+    throwLift: 12.400882
+    throwGravity: 43.133503
+    throwDrag: 3.6270552
+    throwRadius: 0.11232683
+    directDamage: 0
+    innerDamage: 0
+    outerDamage: 0
+    innerRadius: 5.7661104
+    outerRadius: 0
+    paintRadius: 5.2419186
+    projectileSpeed: 0
+    straightSeconds: 0
+    brakeSeconds: 0
+    brakeMaxSpeed: 0
+    lobeDelay: 0
+    brakeDrag: 0
+    brakeGravity: 0
+    freeDrag: 0
+    freeGravity: 0
+    fieldRadiusStart: 0
+    fieldRadiusEnd: 0
+    fieldRadiusTime: 0
+    playerRadiusStart: 0
+    playerRadiusEnd: 0
+    playerRadiusTime: 0
+    orbitalRadius: 0
+    orbitalTime: 0
+    effectDelay: 1.3666667
+    effectDuration: 0.85
+    expandSeconds: 0.8333333
+    damagePerSecond: 450
+    damageHeight: 14.976911
+    damageHeightDown: 7.4884553
+    paintInterval: 0.033333335
+    health: 0
+    waveFirst: 0
+    waveInterval: 0
+    waveLifetime: 0
+    waveRadius: 0
+    waveHeightUp: 0
+    waveHeightDown: 0
+    markSeconds: 0
+    cloudSpeed: 0
+    cloudHeight: 0
+    rainDrops: 0
+    rainGravity: 0
+    rainDrag: 0
+    rainFieldRadius: 0
+    rideStartup: 0
+    rideDuration: 0
+    rideBrakeAllowed: 0
+    rideSpeed: 0
+    rideAirSpeed: 0
+    rideAcceleration: 0
+    rideBrake: 0
+    rideBurstDelay: 0
+    rideInvincibleStart: 0
+    rideInvincibleAfter: 0
+    rideRecovery: 0
+    ridePlayerRadius: 0
+    rideDetectRadius: 0
+    rideDetectOffsetY: 0
+    rideDetectOffsetZ: 0
+    rideGravityMultiplier: 0
+    rideRutRadius: 0
+    reefSplashCount: 0
+    reefSplashOffsetY: 0
+    reefSplashPitchMax: 0
+    reefSplashSpeedMin: 0
+    reefSplashSpeedMax: 0
+    reefSplashPaintRadius: 0
+    reefSplashGravity: 0
+    knockbackAcceleration: 69.89199983358989
+    knockbackRetention: 0.8
+    knockbackDistance: 5.990764238465699
+    contactKnockbackAcceleration: 0
+    recoilSpeed: 0
+    recoilAirRetention: 0
+    recoilBackInputRate: 0
+  heldPrefab: {fileID: 3189085514232235415, guid: 4cbc8544d3477cb4892be68a3e5a1702, type: 3}
+  entityPrefab: {fileID: 3189085514232235415, guid: 4cbc8544d3477cb4892be68a3e5a1702, type: 3}
+  effectMaterial: {fileID: 2100000, guid: 4631518da8810c74b82cced86ad86dfb, type: 2}
+  icon: {fileID: 21300000, guid: 4934e5a49f49d6c4cb5ae8ef4647ddf9, type: 3}
+  useAudio: {fileID: 8300000, guid: f2c238e7e648b4b4db21d2d1539ad511, type: 3}
+  effectAudio: {fileID: 8300000, guid: 2fbc8e43a5423e44eb07dd848437e608, type: 3}

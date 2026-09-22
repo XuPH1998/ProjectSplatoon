@@ -59,6 +59,7 @@ namespace Splatoon.Combat
         {
             TpsAimSolver.UnembedFloatingContact(ref contact, shot.Configuration.CollisionRadius);
             var victim = contact.Collider.GetComponentInParent<PrototypePlayer>();
+            contact.Collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(shot.Configuration,age));
             var subTarget = contact.Collider.GetComponent<SubWeaponTarget>();
             if (subTarget != null) subTarget.Hit(shot, WeaponSimulation.Damage(shot.Configuration, age));
             float actual = 0;

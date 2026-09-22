@@ -506,7 +506,7 @@ namespace Splatoon.Combat
                 Position = point, Normal = normal, Radius = radius, Hardness = w.PaintHardness, Strength = w.PaintStrength, ShapeSeed = shapeSeed, Direction = paintDirection ?? Vector3.zero, DepthScale = depthScale, ClipEnabled = clip.ClipEnabled, Clip0 = clip.Clip0, Clip1 = clip.Clip1 });
 #endif
             if (PrototypeMatch.Current != null)
-                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed, paintDirection, depthScale, clip.ClipEnabled, clip.Clip0, clip.Clip1);
+                PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed, paintDirection, depthScale, clip.ClipEnabled, clip.Clip0, clip.Clip1, new PaintCredit(shot.Shooter,shot.Team,shot.Round,shot.HeroRevision,PaintAttackKind.Main));
         }
         private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity = null)
         {
@@ -515,6 +515,7 @@ namespace Splatoon.Combat
 #endif
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
+            collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(w,age,shot.Charge));
             var subTarget = collider.GetComponent<SubWeaponTarget>();
             if (subTarget != null) subTarget.Hit(shot, WeaponSimulation.Damage(w, age, shot.Charge));
             float actualDamage = 0; bool killed = false;
@@ -535,7 +536,7 @@ namespace Splatoon.Combat
                     else ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
-            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age, directObject:subTarget!=null?subTarget.Id:(uint?)null);
+            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age, directObject:subTarget!=null?subTarget.Id:(uint?)null,directSpecialObject:collider.GetComponent<SpecialWeaponTarget>()?.Id);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true, Time = shot.Born + age,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });

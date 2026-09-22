@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Trizooka",
+    "displayName": "终极发射",
+    "configPath": "Assets/GameResource/SpecialWeapons/Trizooka/Trizooka.asset",
+    "requiredPoints": 200
+  },
+  {
+    "id": 2,
+    "name": "TripleInkstrike",
+    "displayName": "三重龙卷风",
+    "configPath": "Assets/GameResource/SpecialWeapons/TripleInkstrike/TripleInkstrike.asset",
+    "requiredPoints": 200
+  },
+  {
+    "id": 3,
+    "name": "WaveBreaker",
+    "displayName": "弹跳声呐",
+    "configPath": "Assets/GameResource/SpecialWeapons/WaveBreaker/WaveBreaker.asset",
+    "requiredPoints": 200
+  },
+  {
+    "id": 4,
+    "name": "InkStorm",
+    "displayName": "墨雨",
+    "configPath": "Assets/GameResource/SpecialWeapons/InkStorm/InkStorm.asset",
+    "requiredPoints": 200
+  },
+  {
+    "id": 5,
+    "name": "Reefslider",
+    "displayName": "鲨鱼坐骑",
+    "configPath": "Assets/GameResource/SpecialWeapons/Reefslider/Reefslider.asset",
+    "requiredPoints": 200
+  }
+]

@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,7 +29,10 @@ namespace Splatoon.Tests
         static void OverlayUpdate(PrototypeApp app) => typeof(PrototypeApp).GetMethod("UpdateOverlayInput", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(app, null);
         static void Press(PrototypeApp app, Keyboard keyboard, Key key)
         {
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); InputSystem.Update(); OverlayUpdate(app);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); InputSystem.Update();
+            Debug.Log($"[H-INPUT] before key={key} expectedDevice={keyboard.deviceId} currentDevice={Keyboard.current?.deviceId} enabled={keyboard.enabled} held={keyboard[key].isPressed} edge={keyboard[key].wasPressedThisFrame} escape={Keyboard.current?.escapeKey.wasPressedThisFrame} focus={Application.isFocused} overlay={app.Overlay} busy={app.Busy} availability={app.HeroSelectionUnavailableReason(HeroSelectionOrigin.SpawnArea)}");
+            OverlayUpdate(app);
+            Debug.Log($"[H-INPUT] after key={key} overlay={app.Overlay} focus={Application.isFocused}");
             InputSystem.QueueStateEvent(keyboard, new KeyboardState()); InputSystem.Update();
         }
         [UnityTest] public IEnumerator HostEnforcesSpawnAreaAndKeepsHeroStateThroughInputsAndRespawn()
@@ -49,7 +53,14 @@ namespace Splatoon.Tests
             finally { HeroUiSmoke.RequestedWidth = 1280; HeroUiSmoke.RequestedHeight = 720; }
             yield return new ExitPlayMode();
         }
-        static IEnumerator Scenario()
+        [UnityTest] public IEnumerator HostEnforcesSpawnAreaAfterEditorFocusChanges()
+        {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity", OpenSceneMode.Single);
+            yield return new EnterPlayMode();
+            yield return Scenario(true);
+            yield return new ExitPlayMode();
+        }
+        static IEnumerator Scenario(bool moveEditorFocus=false)
         {
             yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Addressables ready");
             var app = PrototypeApp.Current;
@@ -58,9 +69,24 @@ namespace Splatoon.Tests
             yield return app.Connect(true, "127.0.0.1", port).ToCoroutine();
             Assert.That(app.InRoom, Is.True, app.Error);
             var player = PrototypePlayer.Local; var match = PrototypeMatch.Current;
-            var keyboard = InputSystem.AddDevice<Keyboard>(); var mouse = InputSystem.AddDevice<Mouse>();
+            var originalWindow=EditorWindow.focusedWindow;
+            var originalInputSettings=InputSystem.settings;
+            var testInputSettings=UnityEngine.Object.Instantiate(originalInputSettings);
+            // Synthetic game input must not be routed to editor updates when another
+            // editor panel has focus. Clone settings so the project asset is untouched.
+            testInputSettings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
+            testInputSettings.editorInputBehaviorInPlayMode=InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            InputSystem.settings=testInputSettings;
+            Keyboard keyboard=null;Mouse mouse=null;
             try
             {
+                if(moveEditorFocus)
+                {
+                    Assert.That(SceneView.lastActiveSceneView,Is.Not.Null,"A Scene View is needed for the editor focus fixture");
+                    SceneView.lastActiveSceneView.Focus();
+                    yield return null;yield return null;
+                }
+                keyboard=InputSystem.AddDevice<Keyboard>();mouse=InputSystem.AddDevice<Mouse>();
                 var phase = match.State.Value; phase.Phase = MatchPhase.Playing; phase.Round++; phase.EndsAt = app.Manager.ServerTime.Time + 300;
                 match.State.Value = phase; player.Respawn();
                 OverlayUpdate(app);
@@ -131,10 +157,16 @@ namespace Splatoon.Tests
                 yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == 3, "Blue spawn switch applied");
                 Press(app, keyboard, Key.Escape);
                 state = player.Snapshot.Value; state.Position = new Vector3(10, .05f, 20); player.Snapshot.Value = state;
-                app.OpenHeroSelection(HeroSelectionOrigin.Debug); Assert.That(app.Overlay, Is.EqualTo(GameplayOverlay.Heroes));
+                app.OpenHeroSelection(HeroSelectionOrigin.Debug); Assert.That(app.Overlay, Is.EqualTo(GameplayOverlay.Game),"Debug entry cannot bypass match spawn restriction");
+                player.Respawn();app.OpenHeroSelection(HeroSelectionOrigin.Debug);Assert.That(app.Overlay,Is.EqualTo(GameplayOverlay.Heroes));
                 app.CloseOverlay(); Assert.That(app.Overlay, Is.EqualTo(GameplayOverlay.Debug));
             }
-            finally { InputSystem.RemoveDevice(keyboard); InputSystem.RemoveDevice(mouse); }
+            finally
+            {
+                if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(mouse!=null)InputSystem.RemoveDevice(mouse);
+                InputSystem.settings=originalInputSettings;UnityEngine.Object.Destroy(testInputSettings);
+                if(moveEditorFocus&&originalWindow!=null)originalWindow.Focus();
+            }
             yield return app.Leave().ToCoroutine();
         }
     }

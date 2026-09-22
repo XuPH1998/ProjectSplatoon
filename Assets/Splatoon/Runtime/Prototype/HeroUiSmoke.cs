@@ -120,7 +120,13 @@ namespace Splatoon.Prototype
             var pixel = HeroSelectionLayout.Matrix(Screen.width, Screen.height).MultiplyPoint3x4(point);
             await Click(pixel.x * 1280 / Screen.width, pixel.y * 720 / Screen.height);
         }
-        UniTask ClickHero(int index) => ClickHeroPoint(HeroSelectionLayout.Portrait(index).center);
+        async UniTask ClickHero(int index)
+        {
+            var viewport=HeroSelectionLayout.CardViewport;var point=HeroSelectionLayout.Portrait(index).center;
+            float scroll=Mathf.Clamp(point.y-viewport.center.y,0,HeroSelectionLayout.ContentHeight(PrototypeApp.Current.Heroes.PortraitCount)-viewport.height);
+            typeof(PrototypeApp).GetField("_heroCardScroll",Flags).SetValue(PrototypeApp.Current,new Vector2(0,scroll));
+            await UniTask.Yield();await ClickHeroPoint(point-Vector2.up*scroll);
+        }
         UniTask ConfirmHero() => ClickHeroPoint(HeroSelectionLayout.Confirm.center);
         async UniTask Capture(string name)
         {

@@ -63,7 +63,7 @@ namespace Splatoon.Tests
             SubWeaponService.Entity Spawn(SubWeaponType type,Vector3 point,float charge=0)
             {
                 var asset=AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path(type));SubWeaponConfigService.Current.Set(host.Snapshot.Value.HeroId,asset);
-                var s=host.Snapshot.Value;s.SubAction++;host.Snapshot.Value=s;
+                var s=host.Snapshot.Value;s.SubWeaponId=(int)type+1;s.SubAction++;host.Snapshot.Value=s;
                 var e=match.SubWeapons.Spawn(host,s,charge,now,match.State.Value.Round);Assert.That(e,Is.Not.Null,type.ToString());
                 if(type!=SubWeaponType.InkMine){e.State.Position=point;e.State.Velocity=Vector3.down*6;e.HitTarget?.UpdateState(e.State,e.Config,now);}return e;
             }

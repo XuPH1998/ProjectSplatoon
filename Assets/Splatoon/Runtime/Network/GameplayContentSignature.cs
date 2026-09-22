@@ -12,7 +12,7 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 11; // Paired coverage/visual checkpoint and deterministic stamp detail.
-        public const int WeaponSimulationVersion = 19; // Weapon reference aiming, independent launch streams and phased paint.
+        public const int WeaponSimulationVersion = 32; // Shared collision-resolved knockback/recoil carried in player snapshots.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
@@ -21,6 +21,8 @@ namespace Splatoon.Networking
             w.Write(InkAppearanceProfile.AccumulationVersion); w.Write(InkAppearanceProfile.ContentHash);
             foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.OrderBy(h => h.Id))
             { w.Write(hero.Id); w.Write(Splatoon.Config.GameplayConfig.GetSubWeapon(hero.Id).ContentHash); }
+            foreach(var id in Splatoon.Config.SubWeaponConfigService.Current.Ids.OrderBy(x=>x)){w.Write(id);w.Write(Splatoon.Config.SubWeaponConfigService.Current.GetById(id).ContentHash);}
+            foreach(var id in Splatoon.Config.SpecialWeaponConfigService.Current.Ids.OrderBy(x=>x)){w.Write(id);w.Write(Splatoon.Config.SpecialWeaponConfigService.Current.Get(id).ContentHash);}
             var p = player.Presentation; var c = player.GetComponent<CharacterController>();
             Write(w, p.AimPivot); Write(w, p.MuzzlePosition); Write(w, player.SimulationAimPivot); Write(w, player.SimulationMuzzle.localPosition);
             Write(w, p.CameraPivot); Write(w, p.CameraOffset); w.Write(p.CameraCollisionRadius); w.Write(p.CameraCollisionPadding);

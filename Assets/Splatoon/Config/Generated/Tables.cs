@@ -18,6 +18,9 @@ public partial class Tables
     public TbRoomMode TbRoomMode {get; }
     public TbMap TbMap {get; }
     public TbGlobal TbGlobal {get; }
+    public TbSubWeapon TbSubWeapon {get; }
+    public TbSpecialWeapon TbSpecialWeapon {get; }
+    public TbLoadoutCost TbLoadoutCost {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -25,6 +28,9 @@ public partial class Tables
         TbRoomMode = new TbRoomMode(loader("tbroommode"));
         TbMap = new TbMap(loader("tbmap"));
         TbGlobal = new TbGlobal(loader("tbglobal"));
+        TbSubWeapon = new TbSubWeapon(loader("tbsubweapon"));
+        TbSpecialWeapon = new TbSpecialWeapon(loader("tbspecialweapon"));
+        TbLoadoutCost = new TbLoadoutCost(loader("tbloadoutcost"));
         ResolveRef();
     }
     
@@ -34,6 +40,9 @@ public partial class Tables
         TbRoomMode.ResolveRef(this);
         TbMap.ResolveRef(this);
         TbGlobal.ResolveRef(this);
+        TbSubWeapon.ResolveRef(this);
+        TbSpecialWeapon.ResolveRef(this);
+        TbLoadoutCost.ResolveRef(this);
     }
 }
 

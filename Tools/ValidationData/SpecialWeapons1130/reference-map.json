@@ -1,0 +1,749 @@
+[
+  {
+    "id": 1,
+    "field": "directDamage",
+    "file": "WeaponSpUltraShot.json",
+    "path": "DamageParam/DirectHitDamage",
+    "raw": 2200,
+    "conversion": "damage/10",
+    "expected": 220.0
+  },
+  {
+    "id": 1,
+    "field": "innerDamage",
+    "file": "WeaponSpUltraShot.json",
+    "path": "BlastParam/DistanceDamage/0/Damage",
+    "raw": 530,
+    "conversion": "damage/10",
+    "expected": 53.0
+  },
+  {
+    "id": 1,
+    "field": "outerDamage",
+    "file": "WeaponSpUltraShot.json",
+    "path": "BlastParam/DistanceDamage/1/Damage",
+    "raw": 350,
+    "conversion": "damage/10",
+    "expected": 35.0
+  },
+  {
+    "id": 1,
+    "field": "innerRadius",
+    "file": "WeaponSpUltraShot.json",
+    "path": "BlastParam/DistanceDamage/0/Distance",
+    "raw": 2.5,
+    "conversion": "distance*S",
+    "expected": 1.872113824520531
+  },
+  {
+    "id": 1,
+    "field": "outerRadius",
+    "file": "WeaponSpUltraShot.json",
+    "path": "BlastParam/DistanceDamage/1/Distance",
+    "raw": 4.0,
+    "conversion": "distance*S",
+    "expected": 2.9953821192328496
+  },
+  {
+    "id": 1,
+    "field": "paintRadius",
+    "file": "WeaponSpUltraShot.json",
+    "path": "BlastParam/PaintRadius",
+    "raw": 3.2,
+    "conversion": "distance*S",
+    "expected": 2.3963056953862796
+  },
+  {
+    "id": 1,
+    "field": "duration",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/SpecialDurationFrame/Low",
+    "raw": 330.0,
+    "conversion": "frames/60",
+    "expected": 5.5
+  },
+  {
+    "id": 1,
+    "field": "startup",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/StartDelayFrame",
+    "raw": 5,
+    "conversion": "frames/60",
+    "expected": 0.08333333333333333
+  },
+  {
+    "id": 1,
+    "field": "shotDelay",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/ShotDelayFrame",
+    "raw": 15,
+    "conversion": "frames/60",
+    "expected": 0.25
+  },
+  {
+    "id": 1,
+    "field": "repeat",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/RepeatFrame",
+    "raw": 55,
+    "conversion": "frames/60",
+    "expected": 0.9166666666666666
+  },
+  {
+    "id": 1,
+    "field": "moveSpeed",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/MoveSpeed",
+    "raw": 0.07,
+    "conversion": "speed*60*S",
+    "expected": 3.145151225194492
+  },
+  {
+    "id": 1,
+    "field": "projectileSpeed",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/SpawnSpeed",
+    "raw": 1.125,
+    "conversion": "speed*60*S",
+    "expected": 50.54707326205433
+  },
+  {
+    "id": 1,
+    "field": "straightSeconds",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/GoStraightToBrakeStateFrame",
+    "raw": 16,
+    "conversion": "frames/60",
+    "expected": 0.26666666666666666
+  },
+  {
+    "id": 1,
+    "field": "brakeSeconds",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/BrakeToFreeStateFrame",
+    "raw": 10,
+    "conversion": "frames/60",
+    "expected": 0.16666666666666666
+  },
+  {
+    "id": 1,
+    "field": "brakeDrag",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/BrakeAirResist",
+    "raw": 0.09,
+    "conversion": "identity",
+    "expected": 0.09
+  },
+  {
+    "id": 1,
+    "field": "freeDrag",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/FreeAirResist",
+    "raw": 0.01985,
+    "conversion": "identity",
+    "expected": 0.01985
+  },
+  {
+    "id": 1,
+    "field": "brakeGravity",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/BrakeGravity",
+    "raw": 0.09,
+    "conversion": "accel*3600*S",
+    "expected": 242.6259516578608
+  },
+  {
+    "id": 1,
+    "field": "freeGravity",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/FreeGravity",
+    "raw": 0.0190565,
+    "conversion": "accel*3600*S",
+    "expected": 51.37334941964472
+  },
+  {
+    "id": 1,
+    "field": "orbitalRadius",
+    "file": "WeaponSpUltraShot.json",
+    "path": "UltraShotMoveParam/OrbitalRadiusEnd",
+    "raw": 1.0,
+    "conversion": "distance*S",
+    "expected": 0.7488455298082124
+  },
+  {
+    "id": 1,
+    "field": "orbitalTime",
+    "file": "WeaponSpUltraShot.json",
+    "path": "UltraShotMoveParam/OrbitalRadiusTransitionFrame",
+    "raw": 10,
+    "conversion": "frames/60",
+    "expected": 0.16666666666666666
+  },
+  {
+    "id": 1,
+    "field": "fieldRadiusStart",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/InitRadiusForField",
+    "raw": 0.01,
+    "conversion": "distance*S",
+    "expected": 0.007488455298082124
+  },
+  {
+    "id": 1,
+    "field": "fieldRadiusEnd",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/EndRadiusForField",
+    "raw": 0.3,
+    "conversion": "distance*S",
+    "expected": 0.22465365894246372
+  },
+  {
+    "id": 1,
+    "field": "fieldRadiusTime",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/ChangeFrameForField",
+    "raw": 20,
+    "conversion": "frames/60",
+    "expected": 0.3333333333333333
+  },
+  {
+    "id": 1,
+    "field": "playerRadiusStart",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/InitRadiusForPlayer",
+    "raw": 0.01,
+    "conversion": "distance*S",
+    "expected": 0.007488455298082124
+  },
+  {
+    "id": 1,
+    "field": "playerRadiusEnd",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/EndRadiusForPlayer",
+    "raw": 0.75,
+    "conversion": "distance*S",
+    "expected": 0.5616341473561592
+  },
+  {
+    "id": 1,
+    "field": "playerRadiusTime",
+    "file": "WeaponSpUltraShot.json",
+    "path": "CollisionParam/ChangeFrameForPlayer",
+    "raw": 10,
+    "conversion": "frames/60",
+    "expected": 0.16666666666666666
+  },
+  {
+    "id": 2,
+    "field": "duration",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "WeaponParam/SpecialTotalFrame",
+    "raw": 360,
+    "conversion": "frames/60",
+    "expected": 6.0
+  },
+  {
+    "id": 2,
+    "field": "expandSeconds",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "BlastParam/RadiusSpreadFrame",
+    "raw": 50,
+    "conversion": "frames/60",
+    "expected": 0.8333333333333334
+  },
+  {
+    "id": 2,
+    "field": "damageHeight",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "BlastParam/DamageHeightUp",
+    "raw": 20.0,
+    "conversion": "distance*S",
+    "expected": 14.976910596164249
+  },
+  {
+    "id": 2,
+    "field": "innerRadius",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "BlastParam/DamageRadiusEnd",
+    "raw": 7.7,
+    "conversion": "distance*S",
+    "expected": 5.766110579523236
+  },
+  {
+    "id": 2,
+    "field": "paintRadius",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "BlastParam/PaintRadiusEnd",
+    "raw": 7.0,
+    "conversion": "distance*S",
+    "expected": 5.2419187086574865
+  },
+  {
+    "id": 2,
+    "field": "paintInterval",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "BlastParam/PaintSpanFrame",
+    "raw": 2,
+    "conversion": "frames/60",
+    "expected": 0.03333333333333333
+  },
+  {
+    "id": 2,
+    "field": "throwSpeed",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "MoveParam/SpawnSpeedZSpecUp/Low",
+    "raw": 2.0,
+    "conversion": "speed*60*S",
+    "expected": 89.86146357698549
+  },
+  {
+    "id": 2,
+    "field": "throwLift",
+    "file": "WeaponSpTripleTornado.json",
+    "path": "MoveParam/SpawnSpeedY",
+    "raw": 0.276,
+    "conversion": "speed*60*S",
+    "expected": 12.400881973623997
+  },
+  {
+    "id": 3,
+    "field": "health",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/MaxHP",
+    "raw": 4800,
+    "conversion": "damage/10",
+    "expected": 480.0
+  },
+  {
+    "id": 3,
+    "field": "directDamage",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/HitDamage",
+    "raw": 300,
+    "conversion": "damage/10",
+    "expected": 30.0
+  },
+  {
+    "id": 3,
+    "field": "innerDamage",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/WaveParam/Damage",
+    "raw": 450,
+    "conversion": "damage/10",
+    "expected": 45.0
+  },
+  {
+    "id": 3,
+    "field": "waveFirst",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/WaveEmitFrameArray/0",
+    "raw": 90,
+    "conversion": "frames/60",
+    "expected": 1.5
+  },
+  {
+    "id": 3,
+    "field": "waveLifetime",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/WaveParam/MaxFrame/Low",
+    "raw": 160.0,
+    "conversion": "frames/60",
+    "expected": 2.6666666666666665
+  },
+  {
+    "id": 3,
+    "field": "waveRadius",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/WaveParam/MaxRadius/Low",
+    "raw": 20.0,
+    "conversion": "distance*S",
+    "expected": 14.976910596164249
+  },
+  {
+    "id": 3,
+    "field": "waveHeightUp",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/WaveParam/DamageYMax",
+    "raw": 2.8,
+    "conversion": "distance*S",
+    "expected": 2.096767483462995
+  },
+  {
+    "id": 3,
+    "field": "throwGravity",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/MoveParam/FlyGravity",
+    "raw": 0.009,
+    "conversion": "accel*3600*S",
+    "expected": 24.26259516578608
+  },
+  {
+    "id": 3,
+    "field": "throwSpeed",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/MoveParam/SpawnSpeedZSpecUp/Low",
+    "raw": 0.3,
+    "conversion": "speed*60*S",
+    "expected": 13.479219536547822
+  },
+  {
+    "id": 3,
+    "field": "throwLift",
+    "file": "WeaponSpShockSonar.json",
+    "path": "spl__BulletSpShockSonarParam/GeneratorParam/MoveParam/SpawnSpeedY",
+    "raw": 0.07,
+    "conversion": "speed*60*S",
+    "expected": 3.145151225194492
+  },
+  {
+    "id": 4,
+    "field": "effectDuration",
+    "file": "WeaponSpInkStorm.json",
+    "path": "CloudParam/RainyFrame/Low",
+    "raw": 480.0,
+    "conversion": "frames/60",
+    "expected": 8.0
+  },
+  {
+    "id": 4,
+    "field": "innerRadius",
+    "file": "WeaponSpInkStorm.json",
+    "path": "CloudParam/DamageRadius",
+    "raw": 10.0,
+    "conversion": "distance*S",
+    "expected": 7.488455298082124
+  },
+  {
+    "id": 4,
+    "field": "throwSpeed",
+    "file": "WeaponSpInkStorm.json",
+    "path": "MoveParam/SpawnSpeedZSpecUp/Low",
+    "raw": 1.12,
+    "conversion": "speed*60*S",
+    "expected": 50.322419603111875
+  },
+  {
+    "id": 4,
+    "field": "throwLift",
+    "file": "WeaponSpInkStorm.json",
+    "path": "MoveParam/SpawnSpeedY",
+    "raw": 0.24,
+    "conversion": "speed*60*S",
+    "expected": 10.783375629238257
+  },
+  {
+    "id": 5,
+    "field": "rideStartup",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/PreMoveFrame",
+    "raw": 38,
+    "conversion": "frames/60",
+    "expected": 0.6333333333333333
+  },
+  {
+    "id": 5,
+    "field": "rideDuration",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveFrame",
+    "raw": 54,
+    "conversion": "frames/60",
+    "expected": 0.9
+  },
+  {
+    "id": 5,
+    "field": "rideBrakeAllowed",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveCancelableFrame",
+    "raw": 15,
+    "conversion": "frames/60",
+    "expected": 0.25
+  },
+  {
+    "id": 5,
+    "field": "rideSpeed",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveSpeed",
+    "raw": 0.405,
+    "conversion": "speed*60*S",
+    "expected": 18.19694637433956
+  },
+  {
+    "id": 5,
+    "field": "rideAirSpeed",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveSpeed_Aerial",
+    "raw": 0.22,
+    "conversion": "speed*60*S",
+    "expected": 9.884760993468403
+  },
+  {
+    "id": 5,
+    "field": "rideAcceleration",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveAcc",
+    "raw": 0.031,
+    "conversion": "accel*3600*S",
+    "expected": 83.57116112659651
+  },
+  {
+    "id": 5,
+    "field": "rideBrake",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/MoveBrk",
+    "raw": 0.031,
+    "conversion": "accel*3600*S",
+    "expected": 83.57116112659651
+  },
+  {
+    "id": 5,
+    "field": "rideBurstDelay",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/PreBurstFrame",
+    "raw": 38,
+    "conversion": "frames/60",
+    "expected": 0.6333333333333333
+  },
+  {
+    "id": 5,
+    "field": "rideInvincibleStart",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/NoDamageStartFrame_PreMove",
+    "raw": 25,
+    "conversion": "frames/60",
+    "expected": 0.4166666666666667
+  },
+  {
+    "id": 5,
+    "field": "rideInvincibleAfter",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/NoDamageFrame_AfterBurst",
+    "raw": 28,
+    "conversion": "frames/60",
+    "expected": 0.4666666666666667
+  },
+  {
+    "id": 5,
+    "field": "rideRecovery",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/UnrelaxFrame",
+    "raw": 28,
+    "conversion": "frames/60",
+    "expected": 0.4666666666666667
+  },
+  {
+    "id": 5,
+    "field": "directDamage",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletParam/DamageValue",
+    "raw": 2200,
+    "conversion": "damage/10",
+    "expected": 220.0
+  },
+  {
+    "id": 5,
+    "field": "innerDamage",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/DistanceDamage/0/Damage",
+    "raw": 2200,
+    "conversion": "damage/10",
+    "expected": 220.0
+  },
+  {
+    "id": 5,
+    "field": "outerDamage",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/DistanceDamage/1/Damage",
+    "raw": 700,
+    "conversion": "damage/10",
+    "expected": 70.0
+  },
+  {
+    "id": 5,
+    "field": "innerRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/DistanceDamage/0/Distance",
+    "raw": 9.0,
+    "conversion": "distance*S",
+    "expected": 6.739609768273912
+  },
+  {
+    "id": 5,
+    "field": "outerRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/DistanceDamage/1/Distance",
+    "raw": 14.9,
+    "conversion": "distance*S",
+    "expected": 11.157798394142365
+  },
+  {
+    "id": 5,
+    "field": "paintRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SubSpecialSpecUpList/1/Value/Low",
+    "raw": 7.51,
+    "conversion": "distance*S",
+    "expected": 5.623829928859675
+  },
+  {
+    "id": 4,
+    "field": "rainDrops",
+    "file": "WeaponSpInkStorm.json",
+    "path": "CloudParam/RainNum",
+    "raw": 72,
+    "conversion": "identity",
+    "expected": 72
+  },
+  {
+    "id": 4,
+    "field": "rainGravity",
+    "file": "WeaponSpInkStorm.json",
+    "path": "RainParam/MoveParam/FreeGravity",
+    "raw": 0.02,
+    "conversion": "accel*3600*S",
+    "expected": 53.916878146191294
+  },
+  {
+    "id": 4,
+    "field": "rainDrag",
+    "file": "WeaponSpInkStorm.json",
+    "path": "RainParam/MoveParam/FreeAirResist",
+    "raw": 0.07,
+    "conversion": "identity",
+    "expected": 0.07
+  },
+  {
+    "id": 4,
+    "field": "rainFieldRadius",
+    "file": "WeaponSpInkStorm.json",
+    "path": "RainParam/CollisionParam/EndRadiusForField",
+    "raw": 0.25,
+    "conversion": "distance*S",
+    "expected": 0.1872113824520531
+  },
+  {
+    "id": 1,
+    "field": "firingMoveSpeed",
+    "file": "WeaponSpUltraShot.json",
+    "path": "spl__WeaponSpUltraShotParam/MoveSpeedInCharge",
+    "raw": 0.04,
+    "conversion": "speed*60*S",
+    "expected": 1.7972292715397096
+  },
+  {
+    "id": 1,
+    "field": "brakeMaxSpeed",
+    "file": "WeaponSpUltraShot.json",
+    "path": "MoveParam/GoStraightStateEndMaxSpeed",
+    "raw": 1,
+    "conversion": "speed*60*S",
+    "expected": 44.93073178849274
+  },
+  {
+    "id": 5,
+    "field": "ridePlayerRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletParam/CollisionRadiusForPlayer",
+    "raw": 0.8,
+    "conversion": "distance*S",
+    "expected": 0.5990764238465699
+  },
+  {
+    "id": 5,
+    "field": "rideDetectRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/Radius_DetectPlayer",
+    "raw": 1,
+    "conversion": "distance*S",
+    "expected": 0.7488455298082124
+  },
+  {
+    "id": 5,
+    "field": "rideDetectOffsetY",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/OffsetLocal_DetectPlayer/Y",
+    "raw": 0.8,
+    "conversion": "distance*S",
+    "expected": 0.5990764238465699
+  },
+  {
+    "id": 5,
+    "field": "rideDetectOffsetZ",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/OffsetLocal_DetectPlayer/Z",
+    "raw": 1,
+    "conversion": "distance*S",
+    "expected": 0.7488455298082124
+  },
+  {
+    "id": 5,
+    "field": "rideGravityMultiplier",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/GravityKf",
+    "raw": 1.2,
+    "conversion": "identity",
+    "expected": 1.2
+  },
+  {
+    "id": 5,
+    "field": "rideRutRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "WeaponParam/RutPaintRadius",
+    "raw": 1.2,
+    "conversion": "distance*S",
+    "expected": 0.8986146357698548
+  },
+  {
+    "id": 5,
+    "field": "reefSplashCount",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SplashAroundParam/Num",
+    "raw": 15,
+    "conversion": "identity",
+    "expected": 15
+  },
+  {
+    "id": 5,
+    "field": "reefSplashOffsetY",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SplashAroundParam/OffsetY",
+    "raw": 0.3,
+    "conversion": "distance*S",
+    "expected": 0.22465365894246372
+  },
+  {
+    "id": 5,
+    "field": "reefSplashPitchMax",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SplashAroundParam/PitchMax",
+    "raw": 30,
+    "conversion": "degrees",
+    "expected": 30
+  },
+  {
+    "id": 5,
+    "field": "reefSplashSpeedMin",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SubSpecialSpecUpList/2/Value/Low",
+    "raw": 0.6,
+    "conversion": "speed*60*S",
+    "expected": 26.958439073095644
+  },
+  {
+    "id": 5,
+    "field": "reefSplashSpeedMax",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SubSpecialSpecUpList/3/Value/Low",
+    "raw": 0.7,
+    "conversion": "speed*60*S",
+    "expected": 31.45151225194492
+  },
+  {
+    "id": 5,
+    "field": "reefSplashPaintRadius",
+    "file": "WeaponSpSkewer.json",
+    "path": "BulletBlastParam/SubSpecialSpecUpList/4/Value/Low",
+    "raw": 1,
+    "conversion": "distance*S",
+    "expected": 0.7488455298082124
+  }
+]

@@ -9,7 +9,8 @@ namespace Splatoon.Prototype
     {
         void DrawSubWeaponHud(PrototypePlayer local, PlayerSnapshot state)
         {
-            var c = GameplayConfig.GetSubWeapon(state.HeroId);
+            DrawSpecialHud(state);
+            var c = PlayerLoadout.SubWeapon(state);
             Panel(new Rect(940, 578, 320, 105), new Color(.035f, .05f, .07f, .88f));
             if (c.Common.icon != null) GUI.DrawTexture(new Rect(951, 589, 45, 45), c.Common.icon.texture, ScaleMode.ScaleToFit);
             GUI.Label(new Rect(1000, 585, 248, 25), $"E  {c.Common.displayName}  · {c.Common.inkCost:0} 墨", _small);
@@ -48,33 +49,30 @@ namespace Splatoon.Prototype
         internal void ApplyDebugSubWeaponChanges()
         {
             if (!IsWeaponDebugRoom || !InRoom) return;
-            foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
+            foreach (int id in new System.Collections.Generic.List<int>(SubWeaponConfigService.Current.Ids))
             {
-                var a = SubWeaponConfigService.Current.Source(hero.Id); if (a == null) continue;
-                try
-                {
-                    var next = a.Snapshot(); next.Validate();
-                    if (SubWeaponConfigService.Same(next,GameplayConfig.GetSubWeapon(hero.Id))) continue;
-                    foreach (var p in PrototypeMatch.Current.Players) if (p.Snapshot.Value.HeroId == hero.Id) p.CancelForSubWeaponReload();
-                    SubWeaponConfigService.Current.Set(hero.Id, a); _subDebugStatus = "已应用，现存副武器保留投出时参数";
-                }
-                catch (Exception e) { _subDebugStatus = "未应用：" + e.Message; }
+                var a=SubWeaponConfigService.Current.SourceById(id);if(a==null)continue;
+                try{var next=a.Snapshot();next.Validate();if(SubWeaponConfigService.Same(next,SubWeaponConfigService.Current.GetById(id)))continue;
+                    foreach(var p in PrototypeMatch.Current.Players)if(PlayerLoadout.From(p.Snapshot.Value).SubWeaponId==id)p.CancelForSubWeaponReload();
+                    SubWeaponConfigService.Current.SetById(id,a);_subDebugStatus="已应用，现存实体保留投出时参数";
+                }catch(Exception e){_subDebugStatus=e.Message;}
             }
         }
+
         void DrawSubWeaponDebug(PlayerSnapshot state)
         {
             Panel(new Rect(20, 315, 450, 173), new Color(.035f, .05f, .07f, .88f));
             GUI.Label(new Rect(32, 320, 426, 40), _subDebugStatus, _small);
-            var current = GameplayConfig.GetSubWeapon(state.HeroId);
+            var current = PlayerLoadout.SubWeapon(state);
             _subChoiceStyle ??= new GUIStyle(GUI.skin.button) { font=_small.font, fontSize=13, alignment=TextAnchor.MiddleCenter };
             int selection = GUI.SelectionGrid(new Rect(32, 358, 426, 88), (int)current.Type, Array.ConvertAll((SubWeaponType[])Enum.GetValues(typeof(SubWeaponType)), SubWeaponFields.TypeName), 4, _subChoiceStyle);
             if (selection != (int)current.Type)
             {
                 var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path((SubWeaponType)selection));
-                if (asset != null) { PrototypePlayer.Local.CancelForSubWeaponReload(); PrototypeMatch.Current.SubWeapons.ClearOwner(PrototypePlayer.Local.PlayerId); SubWeaponConfigService.Current.Set(state.HeroId, asset); }
+                if (asset != null) { PrototypePlayer.Local.CancelForSubWeaponReload(); PrototypeMatch.Current.SubWeapons.ClearOwner(PrototypePlayer.Local.PlayerId); PrototypePlayer.Local.RequestLoadoutChange(new PlayerLoadout(state.HeroId,selection+1,PlayerLoadout.From(state).SpecialWeaponId),HeroSelectionOrigin.Debug); }
             }
             if (GUI.Button(new Rect(32, 452, 205, 27), "定位副武器 Asset", _small))
-            { var a = SubWeaponConfigService.Current.Source(state.HeroId); UnityEditor.Selection.activeObject = a; UnityEditor.EditorGUIUtility.PingObject(a); }
+            { var a = SubWeaponConfigService.Current.SourceById(PlayerLoadout.From(state).SubWeaponId); UnityEditor.Selection.activeObject = a; UnityEditor.EditorGUIUtility.PingObject(a); }
             if (GUI.Button(new Rect(244, 452, 205, 27), "清空场上副武器", _small)) PrototypeMatch.Current.SubWeapons.Clear();
         }
 #endif

@@ -5,9 +5,9 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-
 namespace Splatoon.Config
 {
+    // Catalog IDs, not hero IDs, own configuration and historical snapshots.
     public sealed class SubWeaponConfigService
     {
         public static SubWeaponConfigService Current { get; } = new();
@@ -15,59 +15,74 @@ namespace Splatoon.Config
         readonly Dictionary<int, SubWeaponConfigAsset> _sources = new();
         readonly Dictionary<int, uint> _revisions = new();
         readonly Dictionary<(int, uint), SubWeaponRuntimeConfig> _history = new();
+        readonly Dictionary<int,int> _defaults = new();
         readonly List<AsyncOperationHandle<SubWeaponConfigAsset>> _handles = new();
-        public SubWeaponRuntimeConfig Get(cfg.HeroConfig hero)
+        public IEnumerable<int> Ids => _values.Keys;
+        public static int Id(SubWeaponType type) => (int)type + 1;
+        public int DefaultId(int hero)
         {
-            if (_values.TryGetValue(hero.Id, out var value)) return value;
+            if (_defaults.TryGetValue(hero, out int id)) return id;
+            var row=GameplayConfig.GetHero(hero);
+            foreach(var e in LubanConfigService.Current.Tables.TbSubWeapon.DataList)
+                if(e.ConfigPath==row.SubWeaponConfigPath)return e.Id;
+            throw new InvalidOperationException("英雄默认副武器未在目录注册："+row.SubWeaponConfigPath);
+        }
+        public int Resolve(int hero,int selected) => selected>0?selected:DefaultId(hero);
+        public SubWeaponRuntimeConfig GetById(int id)
+        {
+            if (_values.TryGetValue(id, out var value)) return value;
 #if UNITY_EDITOR
             if (!Application.isPlaying)
             {
-                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(hero.SubWeaponConfigPath);
-                if (asset != null) { Set(hero.Id, asset); return _values[hero.Id]; }
+                var row=LubanConfigService.Current.Tables.TbSubWeapon.Get(id);
+                var asset=UnityEditor.AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(row.ConfigPath);
+                if(asset!=null){SetById(id,asset);return _values[id];}
             }
 #endif
-            throw new InvalidOperationException($"英雄{hero.Id}副武器未加载：{hero.SubWeaponConfigPath}");
+            throw new InvalidOperationException("副武器未加载："+id);
         }
-        public SubWeaponConfigAsset Source(int hero) => _sources.TryGetValue(hero, out var a) ? a : null;
-        public uint Revision(int hero) => _revisions.TryGetValue(hero, out var n) ? n : 0;
-        public SubWeaponRuntimeConfig ForEntity(int hero, uint revision) => _history.TryGetValue((hero, revision), out var c) ? c : Get(GameplayConfig.GetHero(hero));
-        public void Set(int hero, SubWeaponConfigAsset asset)
+        public bool Contains(int id)=>_values.ContainsKey(id);
+        public SubWeaponRuntimeConfig Get(cfg.HeroConfig hero)=>GetById(DefaultId(hero.Id));
+        public SubWeaponConfigAsset SourceById(int id)=>_sources.TryGetValue(id,out var a)?a:null;
+        public uint RevisionById(int id)=>_revisions.TryGetValue(id,out var n)?n:0;
+        public SubWeaponRuntimeConfig ForEntityId(int id,uint revision)=>_history.TryGetValue((id,revision),out var c)?c:throw new InvalidOperationException("未知副武器历史版本");
+        // Compatibility helpers for existing editor fixtures. Runtime selections use explicit IDs.
+        public SubWeaponConfigAsset Source(int hero)=>SourceById(DefaultId(hero));
+        public uint Revision(int hero)=>RevisionById(DefaultId(hero));
+        public SubWeaponRuntimeConfig ForEntity(int hero,uint revision)=>ForEntityId(DefaultId(hero),revision);
+        public void Set(int hero,SubWeaponConfigAsset asset){int id=Id(asset.type);SetById(id,asset);_defaults[hero]=id;}
+        public void SetById(int id,SubWeaponConfigAsset asset)
         {
-            var c = asset.Snapshot(); c.Validate();
-            _sources[hero] = asset;
-            if (_values.TryGetValue(hero, out var old) && Same(old,c)) return;
-            uint revision = Revision(hero) + 1;
-            _values[hero] = c; _revisions[hero] = revision; _history[(hero, revision)] = c;
+            if(asset==null||Id(asset.type)!=id)throw new InvalidOperationException("副武器稳定ID与资产类型不匹配");
+            var c=asset.Snapshot();c.Validate();_sources[id]=asset;
+            if(_values.TryGetValue(id,out var old)&&Same(old,c))return;
+            uint revision=RevisionById(id)+1;_values[id]=c;_revisions[id]=revision;_history[(id,revision)]=c;
         }
-        public async UniTask InitializeAsync(IEnumerable<cfg.HeroConfig> heroes, CancellationToken token, bool editorLive = false)
+        public async UniTask InitializeAsync(IEnumerable<cfg.HeroConfig> heroes,CancellationToken token,bool editorLive=false)
         {
             Clear();
             try
             {
-                foreach (var hero in heroes)
+                foreach(var row in LubanConfigService.Current.Tables.TbSubWeapon.DataList)
                 {
-                    token.ThrowIfCancellationRequested(); SubWeaponConfigAsset asset = null;
+                    token.ThrowIfCancellationRequested();SubWeaponConfigAsset asset=null;
 #if UNITY_EDITOR
-                    if (editorLive) asset = UnityEditor.AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(hero.SubWeaponConfigPath);
+                    if(editorLive)asset=UnityEditor.AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(row.ConfigPath);
                     else
 #endif
                     {
-                        var handle = Addressables.LoadAssetAsync<SubWeaponConfigAsset>(hero.SubWeaponConfigPath); _handles.Add(handle);
-                        while (!handle.IsDone) await UniTask.Yield(token);
-                        if (handle.Status == AsyncOperationStatus.Succeeded) asset = handle.Result;
+                        var h=Addressables.LoadAssetAsync<SubWeaponConfigAsset>(row.ConfigPath);_handles.Add(h);
+                        while(!h.IsDone)await UniTask.Yield(token);
+                        if(h.Status==AsyncOperationStatus.Succeeded)asset=h.Result;
                     }
-                    if (asset == null) throw new InvalidOperationException("副武器配置加载失败：" + hero.SubWeaponConfigPath);
-                    Set(hero.Id, asset);
+                    if(asset==null||Id(asset.type)!=row.Id)throw new InvalidOperationException("副武器目录与资产不匹配："+row.ConfigPath);
+                    SetById(row.Id,asset);
                 }
+                foreach(var hero in heroes)_defaults[hero.Id]=DefaultId(hero.Id);
             }
-            catch { Clear(); throw; }
+            catch{Clear();throw;}
         }
-        public void Clear()
-        {
-            _values.Clear(); _sources.Clear(); _revisions.Clear(); _history.Clear();
-            foreach (var h in _handles) if (h.IsValid()) Addressables.Release(h);
-            _handles.Clear();
-        }
-        public static bool Same(SubWeaponRuntimeConfig a,SubWeaponRuntimeConfig b) => a.ContentHash==b.ContentHash&&a.Common.entityPrefab==b.Common.entityPrefab&&a.Common.heldPrefab==b.Common.heldPrefab&&a.Common.icon==b.Common.icon&&a.Common.useAudio==b.Common.useAudio&&a.Common.effectAudio==b.Common.effectAudio&&a.Common.effectMaterial==b.Common.effectMaterial&&a.Visuals.Equals(b.Visuals)&&a.TypeVisuals.Equals(b.TypeVisuals);
+        public void Clear(){_values.Clear();_sources.Clear();_revisions.Clear();_history.Clear();_defaults.Clear();foreach(var h in _handles)if(h.IsValid())Addressables.Release(h);_handles.Clear();}
+        public static bool Same(SubWeaponRuntimeConfig a,SubWeaponRuntimeConfig b)=>a.ContentHash==b.ContentHash&&a.Common.entityPrefab==b.Common.entityPrefab&&a.Common.heldPrefab==b.Common.heldPrefab&&a.Common.icon==b.Common.icon&&a.Common.useAudio==b.Common.useAudio&&a.Common.effectAudio==b.Common.effectAudio&&a.Common.effectMaterial==b.Common.effectMaterial&&a.Visuals.Equals(b.Visuals)&&a.TypeVisuals.Equals(b.TypeVisuals);
     }
 }

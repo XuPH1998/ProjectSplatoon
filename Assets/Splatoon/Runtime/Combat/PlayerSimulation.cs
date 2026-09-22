@@ -7,7 +7,7 @@ using Splatoon.Prototype;
 
 namespace Splatoon.Combat
 {
-    public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead, Bubble }
+    public enum MovementMode : byte { Human, Air, GroundInk, WallInk, Mantle, Dead, Bubble, Reefslider }
     public enum SwimSurface : byte { None, Friendly, Neutral }
     public enum WeaponPhase : byte { Idle, Starting, Firing, Ending, Charging, BurstCooldown }
 
@@ -19,13 +19,15 @@ namespace Splatoon.Combat
             bool inkRecovery = s.HasInkRecovery && !enemyInk;
             if (now + 1e-8 >= s.InkRecoverAt && s.SubPhase == SubWeaponPhase.Idle && now >= s.MistUntil && (!triggerHeld || s.Swimming) && s.WeaponPhase == WeaponPhase.Idle)
                 s.Ink = PrototypeRules.Recover(s.Ink, c.MaxInk, inkRecovery ? c.SwimRecoverInk : c.RecoverInk, dt);
-            if (enemyInk)
+            bool rain=now<s.RainRecoveryUntil;
+            bool reef=SpecialWeaponSimulation.Active(s)&&s.SpecialWeaponId>0&&SpecialWeaponSimulation.Invincible(s,SpecialWeaponConfigService.Current.Get(s.SpecialWeaponId),now);
+            if (enemyInk&&!reef)
             {
                 if (now >= s.ProtectedUntil) s.Health -= Mathf.Min(Mathf.Max(0, s.Health - c.EnemyInkHealthFloor), c.EnemyInkDamageRate * dt);
                 s.LastDamageAt = now;
             }
             else if (now - s.LastDamageAt + 1e-8 >= c.HealthRecoverDelay)
-                s.Health = Mathf.Min(c.MaxHealth, s.Health + (inkRecovery ? c.SwimHealthRecoverRate : c.HealthRecoverRate) * dt);
+                s.Health = Mathf.Min(c.MaxHealth, s.Health + (inkRecovery || rain ? c.SwimHealthRecoverRate : c.HealthRecoverRate) * dt);
         }
     }
 

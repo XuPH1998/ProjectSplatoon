@@ -1,0 +1,148 @@
+{
+  "baseline": "11.3.0 versus / no gear",
+  "nativeDefaultsExpanded": false,
+  "observations": [
+    {
+      "type": "primary community measurement",
+      "url": "https://wikiwiki.jp/splatoon3mix/ブキ/スペシャルウェポン/ウルトラショット",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "equipBaseFrames": 18,
+        "totalStartupFrames": 23,
+        "firstShotFrames": 38,
+        "postShotFrames": 40,
+        "lobeSeparationFrames": 4
+      },
+      "mechanics": [
+        "Player direct hits penetrate rather than explode.",
+        "A volley uses the highest hit damage; direct hit after splash upgrades total to 220."
+      ],
+      "limits": "Measured behavior, not inherited native class defaults. Rotation angular speed and threshold transition semantics remain unverified."
+    },
+    {
+      "type": "primary community measurement; approximate spatial extent",
+      "url": "https://wikiwiki.jp/splatoon3mix/ブキ/スペシャルウェポン/トリプルトルネード",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "damageDownTrainingLines": 2,
+        "damageHeightDownRaw": 10,
+        "heldMoveSpeedRaw": 0.1,
+        "damageFrames": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30,
+          35,
+          40,
+          45,
+          50
+        ]
+      },
+      "mechanics": [
+        "Enemy bombs touching active tornado disappear without exploding."
+      ],
+      "limits": "Page labels measurements version 10.0.0; downward extent and movement are approximate measurements, not 11.3.0 native defaults. Bomb cancellation applies to seven existing bomb families; all original object and terrain rules still need full comparison."
+    },
+    {
+      "type": "primary community measurement; not native inheritance",
+      "url": "https://wikiwiki.jp/splatoon3mix/ブキ/スペシャルウェポン/ホップソナー",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "normalThrowStartupFrames": 5,
+        "inkMineThrowStartupFrames": 16
+      },
+      "mechanics": [
+        "Sonar throw startup depends on the selected subweapon: Ink Mine adds 11 frames.",
+        "Waves spread across gaps and obstructions inside a cylindrical vertical range; grounded floors and wall-ink targets are affected, airborne human targets can jump clear.",
+        "The initial sensor intersects bodies within a vertical cylinder; a head can enter below its lower plane while a shorter squid form remains outside."
+      ],
+      "limits": "Page labels measurements 10.0.0. Body-overlap behavior is implemented against project human capsules and paper silhouette cells; exact original body shapes differ. Initial sensor fixed expiry and flying destructibility remain unresolved. Sonar throw timings remain separate from older subweapon common startup settings."
+    },
+    {
+      "type": "primary community measurement with unresolved numerical inconsistency",
+      "url": "https://wikiwiki.jp/splatoon3mix/システム詳細仕様",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "recoveryDelayFrames": 60,
+        "reportedNormalHpPerFrame": 0.21,
+        "reportedNormalHpPerSecond": 12.6,
+        "reportedSwimAndRainHpPerFrame": 1.75,
+        "reportedSwimAndRainHpPerSecond": 100
+      },
+      "limits": "1.75 HP/frame at 60 Hz is 105 HP/sec, not the reported 100. Pinned SplPlayer.json lacks explicit health recovery rate overrides. Project hero rates 30/60 HP/sec remain uncalibrated, and passing runtime tests is not original-value parity."
+    },
+    {
+      "type": "primary author measurement; chosen frame values, not native 11.3.0 defaults",
+      "url": "https://x.com/mukukuzu/status/1772315890761220373",
+      "retrieved": "2026-09-22",
+      "published": "2024-03-25",
+      "retrieval": "Original author text via public fxtwitter representation after direct X fetch failed",
+      "fields": {
+        "recoveryDelayFrames": 60,
+        "normalHpPerFrame": 0.21,
+        "swimAndRainHpPerFrame": 1.75,
+        "projectNormalHpPerSecond": 12.6,
+        "projectSwimAndRainHpPerSecond": 105
+      },
+      "decision": "Prefer explicit frame measurements and convert at 60Hz; replace arbitrary project 30/60 rates. Author text contains same contradictory 100 HP/sec label as wiki. Do not silently equate 1.75*60 with 100.",
+      "limits": "2024 community estimate based on damage effects; not a 11.3.0 native default extraction. Exact current-version calibration remains open."
+    },
+    {
+      "type": "explicit raw fields plus documented project trajectory approximation",
+      "url": "https://wikiwiki.jp/splatoon3mix/ブキ/スペシャルウェポン/サメライド",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "peripheralPaintExtentTrainingLinesApprox": 2.5,
+        "referenceRawUnitsPerLine": 5
+      },
+      "mechanics": [
+        "Reef burst emits 15 paint-only flights using pinned raw count, low-gear speed limits, launch offset, pitch ceiling and paint radius.",
+        "Host integrates 60Hz swept world contacts and credits actual receiving surfaces. Owner death preserves issued flights; loadout/round cleanup removes them."
+      ],
+      "limits": "Extent paragraph is labelled pre-10.1.0 and approximate. Gravity is fitted so a max-speed 30-degree flight from raw height0.3 reaches raw11.5 plus paint radius1. Angular spacing, uniform pitch/speed randomization, zero drag, ray collision and 3-second cap are project approximations, NOT extracted native defaults. No claim of exact original flight/ink footprint."
+    },
+    {
+      "type": "community observed action ordering plus pinned grounded timings",
+      "url": "https://wikiwiki.jp/splatoon3mix/ブキ/スペシャルウェポン/サメライド",
+      "retrieved": "2026-09-22",
+      "mechanics": [
+        "Activation while airborne waits for ground contact before rail/preparation begins; gauge consumption waits for grounded preparation.",
+        "The project starts pinned 38-frame preparation and 25-frame invincibility delay from actual CharacterController floor contact."
+      ],
+      "limits": "Air ordering/gauge description is from a section labelled pre-10.1.0. Pinned11.3.0 timing overrides remain authoritative for numeric grounded timings. Exact original aerial steering, vertical movement and animation still need calibration. Bubble interruption consumes an activated waiting special per explicit project requirement."
+    },
+    {
+      "type": "raw knockback/recoil fields with documented runtime interpretation",
+      "url": "https://github.com/Leanny/splat3/tree/7280ff9cde8bb1c5dcef46c700c326471584d2e6/data/parameter/1130/weapon",
+      "retrieved": "2026-09-22",
+      "fields": {
+        "TrizookaBlastAccel": 470,
+        "TrizookaBlastBias": 0.8,
+        "TrizookaBlastDistance": 8,
+        "TornadoAccel": 93.333,
+        "ReefBlastAccel": 700,
+        "ReefBlastDistance": 12,
+        "SonarContactKnockback": 400,
+        "TrizookaRecoilImpact": 0.04,
+        "TrizookaRecoilAirBreak": 0.8,
+        "TrizookaRecoilStickDown": 5
+      },
+      "mechanics": [
+        "Special impact forces are applied only after effective enemy damage to a surviving player, then carried in authority snapshots and replayed by the same collision motor.",
+        "Airborne Trizooka commitments queue backward recoil; downing, respawn and loadout cancellation clear pending forces."
+      ],
+      "limits": "Original force integration semantics are unavailable. Project interprets Accel times distance scale as world acceleration, injects one 60Hz velocity increment, uses Bias as per-frame retention and Distance as travel cap. Sonar reuses .8 retention and8 raw-unit cap as explicit project defaults. Recoil Impact is converted as raw speed/frame; backwards stick multiplies by StickDownRt. These are sourced magnitudes with approximate interpretation, not verified native behavior. No numerical parity regression per user."
+    }
+  ],
+  "unresolved": [
+    "Full native inherited defaults unavailable in pinned repository tree.",
+    "BrakeToFreeStateFrame versus velocity threshold semantics not conclusively established.",
+    "Reefslider separate Radius_DetectPlayer purpose not proven.",
+    "Raw square area per turf point still lacks an original-game fixed-area fixture.",
+    "Recovery now uses author frame estimates .21/1.75 HP per frame (12.6/105 per sec). Author also reports inconsistent 100 per sec; native11.3.0 exact values remain unverified.",
+    "Reef peripheral splash native flight defaults, random distribution and exact ink footprint remain unverified despite implementing all 15 with pinned explicit launch/paint values."
+  ]
+}

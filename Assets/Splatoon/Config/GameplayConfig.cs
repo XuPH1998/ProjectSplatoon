@@ -39,6 +39,12 @@ namespace Splatoon.Config
                     c.AirSwimFallSpeed > 0 && c.AirSwimBraking > 0, "空中弦化参数必须为正，缓降重力不得超过普通重力");
                 Require(c.MoveAcceleration > 0 && c.SwimAcceleration > 0 && c.WallSwimSpeed > 0 && c.WallProbeDistance > 0 && c.WallGraceSeconds <= .1f && c.MantleSeconds > 0 && c.EnemyInkHealthFloor <= c.MaxHealth, "移动与恢复配置无效");
             }
+            foreach(var row in tables.TbSubWeapon.DataList)
+                Require(row.Id>0&&row.Id<=13&&!string.IsNullOrWhiteSpace(row.ConfigPath),"副武器目录ID或路径无效");
+            foreach(var row in tables.TbSpecialWeapon.DataList)
+                Require(row.Id>0&&row.Id<=5&&!string.IsNullOrWhiteSpace(row.ConfigPath)&&float.IsFinite(row.RequiredPoints)&&row.RequiredPoints>0,"大招目录或充能成本无效");
+            foreach(var rule in tables.TbLoadoutCost.DataList)
+                Require((rule.HeroId==0||tables.TbHero.GetOrDefault(rule.HeroId)!=null)&&(rule.SubWeaponId==0||tables.TbSubWeapon.GetOrDefault(rule.SubWeaponId)!=null)&&(rule.SpecialWeaponId==0||tables.TbSpecialWeapon.GetOrDefault(rule.SpecialWeaponId)!=null)&&float.IsFinite(rule.RequiredPoints)&&rule.RequiredPoints>0,"配装充能规则引用或数值无效");
             foreach (var hero in tables.TbHero.DataList) WeaponConfigValidation.Validate(WeaponConfigService.Current.Get(hero));
             foreach (var m in tables.TbRoomMode.DataList)
             {

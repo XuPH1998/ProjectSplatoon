@@ -127,8 +127,10 @@ namespace Splatoon.Prototype
             owner = surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)0;
             return true;
         }
+        public double LastPaintGainedArea {get;private set;}
         public void Apply(PaintStamp stamp, bool updateOwnership)
         {
+            LastPaintGainedArea=0;
             using var marker = FramePerformance.PaintCpu.Auto(); FramePerformance.PaintStamps++;
             if (!Surfaces.TryGetValue(stamp.SurfaceId, out var surface)) throw new InvalidOperationException("未知涂色表面：" + stamp.SurfaceId);
             _paintedSurfaces.Clear(); _seamQueue.Clear();
@@ -167,7 +169,14 @@ namespace Splatoon.Prototype
             _paintedSurfaces.Add(surface);
             if (surface.Scores) _seamQueue.Add((surface, stamp));
             surface.Apply(stamp);
-            if (updateOwnership) surface.ApplyRegions(stamp, brush);
+            if (updateOwnership)
+            {
+                var grid=surface.Ownership;double before=grid==null?0:stamp.Team==1?grid.PinkArea:grid.BlueArea;
+                surface.ApplyRegions(stamp,brush);
+                if(grid!=null){double after=stamp.Team==1?grid.PinkArea:grid.BlueArea;
+                    float scale=Vector3.Cross(surface.transform.TransformVector(Vector3.right),surface.transform.TransformVector(Vector3.forward)).magnitude;
+                    LastPaintGainedArea+=System.Math.Max(0,after-before)*scale;}
+            }
         }
         public Dictionary<int, SurfaceOwnershipGrid> RegionGrids() => Surfaces.Values
             .SelectMany(s => s.GameplayRegions.Select(r => new { Key = r.Key(s), r.Grid })).ToDictionary(p => p.Key, p => p.Grid);

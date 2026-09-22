@@ -1,0 +1,14 @@
+<module name="">
+  <bean name="SubWeaponEntry" comment="自由配装副武器目录">
+    <var name="id" type="int"/><var name="name" type="string"/><var name="displayName" type="string"/><var name="configPath" type="string"/>
+  </bean>
+  <table name="TbSubWeapon" value="SubWeaponEntry" input="TbSubWeapon.xlsx" mode="map" index="id"/>
+  <bean name="SpecialWeaponEntry" comment="自由配装大招目录">
+    <var name="id" type="int"/><var name="name" type="string"/><var name="displayName" type="string"/><var name="configPath" type="string"/><var name="requiredPoints" type="float"/>
+  </bean>
+  <table name="TbSpecialWeapon" value="SpecialWeaponEntry" input="TbSpecialWeapon.xlsx" mode="map" index="id"/>
+  <bean name="LoadoutCostEntry" comment="大招充能点数覆盖；0匹配全部">
+    <var name="id" type="int"/><var name="heroId" type="int"/><var name="subWeaponId" type="int"/><var name="specialWeaponId" type="int"/><var name="requiredPoints" type="float"/>
+  </bean>
+  <table name="TbLoadoutCost" value="LoadoutCostEntry" input="TbLoadoutCost.xlsx" mode="map" index="id"/>
+</module>

@@ -4,6 +4,8 @@
 
 ## 使用
 
+现在可按 H 在统一配装界面为任意英雄自由选择全部13种副武器，也可同时选择大招。热身可换装，比赛中仅限本方出生区。主武器仍由英雄决定；各英雄最近搭配保存在本地，普通复活保留。详见 [大招与自由配装](SpecialWeapons.md)。
+
 - 按住 **E**：举起副武器，显示投掷轨迹；松开 E 后经过前摇使用。
 - 冰壶、碳酸在按住 E 时蓄力。碳酸仅按持续时间充能，不使用原作移动／跳跃／摇动加速。
 - Shift、失去焦点、打开菜单、死亡、更换英雄、结束回合会取消尚未投出的动作。取消不扣墨，不清除已经开始的恢复时间。
@@ -13,7 +15,7 @@
 
 ## 配置入口
 
-英雄表 `Config/Luban/source/TbHero.xlsx` 的 **AN / subWeaponConfigPath** 指向 `Assets/GameResource/SubWeapons/<Type>/<Type>.asset`。结构与主武器一致，通过 Addressables 加载 ScriptableObject，再转换成不可变运行时快照。
+英雄表 `Config/Luban/source/TbHero.xlsx` 的 **AN / subWeaponConfigPath** 仅用作首次默认选择。独立 `TbSubWeapon.xlsx` 目录的稳定ID指向 `Assets/GameResource/SubWeapons/<Type>/<Type>.asset`；配置与历史版本按副武器ID索引。同英雄不同副武器可同时存在。结构与主武器一致，通过 Addressables 加载 ScriptableObject，再转换成不可变运行时快照。
 
 请修改源表，再运行 `cmd /c Config\Luban\gen_luban.bat`。不要直接改生成的 `HeroConfig.cs` 或 `tbhero.json`。本次迁移保留原有 468 个单元格的值与样式；证据位于 `Reports/SubWeapons/hero-migration.json`。
 
@@ -29,7 +31,7 @@
 | 铃芽 | 冰壶炸弹 |
 | 泡霰 | 碳酸炸弹 |
 
-单机武器调试房可以选择全部 13 种副武器、定位当前 Asset、清空场上副武器。修改当前 Asset 后自动验证并应用；已投出的实体保留原快照。正式联机房间不启用调试切换。
+单机武器调试房可以选择全部 13 种副武器、定位当前 Asset、清空场上副武器。修改当前 Asset 后自动验证并应用；已投出的实体保留原快照。正式联机房间通过 H 配装提交给房主统一校验；不启用 Asset 热更新。
 
 ## Inspector 结构
 

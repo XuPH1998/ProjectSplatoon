@@ -1,0 +1,39 @@
+{
+  "commit": "7280ff9cde8bb1c5dcef46c700c326471584d2e6",
+  "version": "11.3.0",
+  "mode": "versus / no gear",
+  "distanceScale": "18 / 24.037",
+  "damageScale": 0.1,
+  "framesPerSecond": 60,
+  "nativeDefaultsExpanded": false,
+  "rawAreaPerPoint": {
+    "value": 3,
+    "status": "inferred; requires original 11.3.0 fixed-area calibration"
+  },
+  "files": {
+    "DamageRates.json": {
+      "sha256": "eb536e1c2cf4bb280c2898fdd9882fe3eb6c8f7a47c5302f0ff7fe755b6ef64a"
+    },
+    "SplPlayer.json": {
+      "sha256": "afece0e3e2016a895ba79483bfa63489b334c372293417b3b0ef072993bcb660"
+    },
+    "WeaponInfoSpecial.json": {
+      "sha256": "fc4d963b135d2e2d2024847e90b5f8155527dd7ff81fb31147633ad57f6e57ae"
+    },
+    "WeaponSpInkStorm.json": {
+      "sha256": "86be8a104a6194523223a976c8dd91506bb02e6526465e48ecce6f189001ea0b"
+    },
+    "WeaponSpShockSonar.json": {
+      "sha256": "437209c1e549ab796d1dc480a07bf870e5078936ad8e85ed1a7363fc90cf7cbe"
+    },
+    "WeaponSpSkewer.json": {
+      "sha256": "b216e08422a218b2de73c1430c4dc28d8956d43109344d59838cd5cbc2507d35"
+    },
+    "WeaponSpTripleTornado.json": {
+      "sha256": "8a4b9079b036322faaec32a9f20cc8f9269071a55aa2f03d8063434dbf1b46b3"
+    },
+    "WeaponSpUltraShot.json": {
+      "sha256": "b088c9df476ed786a4a9e76c1fd3d7166885adf0dcffd563b36d1d20b9995d22"
+    }
+  }
+}

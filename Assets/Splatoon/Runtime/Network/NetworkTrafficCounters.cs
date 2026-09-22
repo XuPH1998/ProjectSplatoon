@@ -5,7 +5,7 @@ using Splatoon.Painting;
 
 namespace Splatoon.Networking
 {
-    public enum NetworkTrafficKind { Input, Shots, Impacts, LivePaint, SnapshotJournal, SnapshotData, PlayerDelta, SubWeapons, Count }
+    public enum NetworkTrafficKind { Input, Shots, Impacts, LivePaint, SnapshotJournal, SnapshotData, PlayerDelta, SubWeapons, SpecialWeapons, Count }
     public static class NetworkTrafficCounters
     {
         static readonly long[] Bytes = new long[(int)NetworkTrafficKind.Count];
@@ -26,6 +26,7 @@ namespace Splatoon.Networking
         public static readonly NetworkTrafficKind Kind = typeof(T) == typeof(PlayerInputFrame) ? NetworkTrafficKind.Input :
             (typeof(T) == typeof(InkShot) || typeof(T) == typeof(InkBubbleState)) ? NetworkTrafficKind.Shots : typeof(T) == typeof(InkImpact) || typeof(T) == typeof(InkExplosionEvent) || typeof(T) == typeof(InkBounce) ? NetworkTrafficKind.Impacts :
             typeof(T) == typeof(SubEntityState) || typeof(T) == typeof(SubEffectEvent) || typeof(T) == typeof(SubLifecycleEvent) ? NetworkTrafficKind.SubWeapons :
+            typeof(T) == typeof(SpecialEntityState) || typeof(T) == typeof(SpecialLifecycleEvent) ? NetworkTrafficKind.SpecialWeapons :
             typeof(T) == typeof(PaintStamp) ? NetworkTrafficKind.LivePaint : throw new InvalidOperationException("Unclassified network batch.");
     }
 }

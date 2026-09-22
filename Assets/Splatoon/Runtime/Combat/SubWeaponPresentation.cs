@@ -79,17 +79,17 @@ namespace Splatoon.Combat
         {
             uint round = Match != null ? Match.State.Value.Round : 0;
             var state = new SubEntityState { Round = round, Owner = player.PlayerId, Life = s.Revision, HeroRevision = s.HeroRevision, Action = s.SubAction,
-                Hero = s.HeroId, ConfigRevision = SubWeaponConfigService.Current.Revision(s.HeroId), Team = s.Team, Yaw = s.Yaw, Charge = s.SubCharge };
+                Hero = s.HeroId, SubWeaponId = SubWeaponConfigService.Current.Resolve(s.HeroId,s.SubWeaponId), ConfigRevision = SubWeaponConfigService.Current.RevisionById(SubWeaponConfigService.Current.Resolve(s.HeroId,s.SubWeaponId)), Team = s.Team, Yaw = s.Yaw, Charge = s.SubCharge };
             var key = Key(state); if (_predicted.ContainsKey(key) || !launch.Valid) return;
             foreach (var v in _views.Values) if (v.State.ParentId == 0 && Key(v.State) == key) return;
-            var config = GameplayConfig.GetSubWeapon(s.HeroId);
+            var config = PlayerLoadout.SubWeapon(s);
             var entity = SubWeaponMotion.Create(launch, config, state, s.SubUsedAt);
             var visual = new SubWeaponVisual(config, Pool, transform, entity.State);
             visual.Present(entity.State, s.SubUsedAt, ObserverTeam);
             _predicted.Add(key, new PredictedThrow { Entity = entity, Visual = visual, Release = s.SubConsumedRelease, At = s.SubUsedAt });
             Play(config.Common.useAudio, .2f);
         }
-        public void PredictThrow(PrototypePlayer player, PlayerSnapshot s) => PredictThrow(player, s, SubWeaponService.SolveLaunch(player, s, GameplayConfig.GetSubWeapon(s.HeroId), s.SubCharge));
+        public void PredictThrow(PrototypePlayer player, PlayerSnapshot s) => PredictThrow(player, s, SubWeaponService.SolveLaunch(player, s, PlayerLoadout.SubWeapon(s), s.SubCharge));
         public void Lifecycle(SubLifecycleEvent e)
         {
             if (!_events.Add(e.Sequence)) return;
@@ -109,7 +109,7 @@ namespace Splatoon.Combat
             if (_removed.TryGetValue(state.Id, out var removed) && removed >= state.Version) return null;
             if (!_views.TryGetValue(state.Id, out var v))
             {
-                var config = SubWeaponConfigService.Current.ForEntity(state.Hero, state.ConfigRevision);
+                var config = SubWeaponConfigService.Current.ForEntityId(state.SubWeaponId>0?state.SubWeaponId:SubWeaponConfigService.Current.DefaultId(state.Hero), state.ConfigRevision);
                 SubWeaponVisual visual = null;
                 if (state.ParentId == 0 && _predicted.TryGetValue(Key(state), out var prediction))
                 { visual = prediction.Visual; _predicted.Remove(Key(state)); }
@@ -268,7 +268,7 @@ namespace Splatoon.Combat
         {
             bool holding = s.SubPhase != SubWeaponPhase.Idle && s.Health > 0;
             if (!holding) { if (_held != null) _held.Root.SetActive(false); if (_ghost != null) _ghost.Root.SetActive(false); if (_preview != null) _preview.enabled=false; return; }
-            var c = GameplayConfig.GetSubWeapon(s.HeroId);
+            var c = PlayerLoadout.SubWeapon(s);
             if (_heldConfig != c)
             { _held?.Release(); _ghost?.Release(); _held = _ghost = null; _heldConfig = c; if (_preview != null) SubWeaponVisualPool.Destroy(_preview.gameObject); _preview=null; }
             var launch = SubWeaponService.SolveLaunch(player,s,c,s.SubCharge);
@@ -295,7 +295,7 @@ namespace Splatoon.Combat
         public void Effect(SubEffectEvent e) { if (_effectEvents.Add(e.Sequence)) _pendingEffects.Add(e); }
         void SpawnEffect(SubEffectEvent e,double now)
         {
-            var c=SubWeaponConfigService.Current.ForEntity(e.Hero,e.ConfigRevision);ObservedTypes.Add(c.Type);
+            var c=SubWeaponConfigService.Current.ForEntityId(e.SubWeaponId>0?e.SubWeaponId:SubWeaponConfigService.Current.DefaultId(e.Hero),e.ConfigRevision);ObservedTypes.Add(c.Type);
             var color=PrototypeArena.TeamColor(e.Team);var line=SubWeaponVisual.Line(transform,c.Common.effectMaterial,.065f,true);
             SubWeaponVisual.Ring(line,e.Position,Mathf.Max(.15f,e.Radius),e.Normal.sqrMagnitude>.001f?e.Normal:Vector3.up);
             _effects.Add(new EffectView{Object=line.gameObject,Line=line,Born=now,Until=now+Math.Max(.08,c.Visuals.impactLifetime),Color=color});
