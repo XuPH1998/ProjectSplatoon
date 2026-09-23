@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -93,9 +94,13 @@ namespace Splatoon.Prototype
                 _mouseCalibrated = true;
             }
             var position=Vector2.Scale(new Vector2(x,y),_mouseScale)+_mouseOffset;
-            UnityEditor.EditorApplication.delayCall+=()=>_view.SendEvent(new Event{type=EventType.MouseDown,button=0,mousePosition=position});
+            var down=new UniTaskCompletionSource();
+            UnityEditor.EditorApplication.delayCall+=()=>{_view.SendEvent(new Event{type=EventType.MouseDown,button=0,mousePosition=position});down.TrySetResult();};
+            await down.Task.Timeout(TimeSpan.FromSeconds(4));
             await UniTask.Delay(100);
-            UnityEditor.EditorApplication.delayCall+=()=>_view.SendEvent(new Event{type=EventType.MouseUp,button=0,mousePosition=position});
+            var up=new UniTaskCompletionSource();
+            UnityEditor.EditorApplication.delayCall+=()=>{_view.SendEvent(new Event{type=EventType.MouseUp,button=0,mousePosition=position});up.TrySetResult();};
+            await up.Task.Timeout(TimeSpan.FromSeconds(4));
             await UniTask.Delay(180);
         }
         async UniTask<Vector2> ProbeMouse(Vector2 position)
@@ -128,6 +133,98 @@ namespace Splatoon.Prototype
             await UniTask.Yield();await ClickHeroPoint(point-Vector2.up*scroll);
         }
         UniTask ConfirmHero() => ClickHeroPoint(HeroSelectionLayout.Confirm.center);
+        async UniTask VerifyEquipment(PrototypeApp app, PrototypePlayer player)
+        {
+            var before=player.Snapshot.Value; var original=Splatoon.Combat.PlayerLoadout.From(before);
+            var tables=Splatoon.Config.LubanConfigService.Current.Tables;
+            await ClickHero(0);
+            for(int tab=0;tab<2;tab++)
+            {
+                await ClickHeroPoint(HeroSelectionLayout.Tab(tab).center);
+                int count=tab==0?tables.TbSubWeapon.DataList.Count:tables.TbSpecialWeapon.DataList.Count;
+                for(int i=0;i<count;i++)
+                {
+                    await ClickHeroPoint(HeroSelectionLayout.EquipmentCard(i,tab==0?4:3).center);
+                    int id=tab==0?tables.TbSubWeapon.DataList[i].Id:tables.TbSpecialWeapon.DataList[i].Id;
+                    Check((int)typeof(PrototypeApp).GetField(tab==0?"_previewSubId":"_previewSpecialId",Flags).GetValue(app)==id,$"equipment tab {tab} option {id} previews");
+                    Check(Splatoon.Combat.PlayerLoadout.From(player.Snapshot.Value).Matches(original),"equipment preview leaves live loadout unchanged");
+                }
+                await Capture(tab==0?"all-sub-weapons":"all-special-weapons");
+            }
+            int savedSub=(int)typeof(PrototypeApp).GetField("_previewSubId",Flags).GetValue(app);
+            int savedSpecial=(int)typeof(PrototypeApp).GetField("_previewSpecialId",Flags).GetValue(app);
+            await ClickHeroPoint(HeroSelectionLayout.Tab(0).center);
+            Check((int)typeof(PrototypeApp).GetField("_previewSubId",Flags).GetValue(app)==savedSub,"switching tabs preserves sub selection");
+            Check((int)typeof(PrototypeApp).GetField("_previewSpecialId",Flags).GetValue(app)==savedSpecial,"switching tabs preserves special selection");
+            Check(player.Snapshot.Value.ShotSequence==before.ShotSequence,"equipment clicks do not fire");
+            await Key(UnityEngine.InputSystem.Key.Escape);
+            Check(Splatoon.Combat.PlayerLoadout.From(player.Snapshot.Value).Matches(original),"closing cancels unconfirmed equipment");
+            await Key(UnityEngine.InputSystem.Key.H);
+            Check((int)typeof(PrototypeApp).GetField("_previewSubId",Flags).GetValue(app)==original.SubWeaponId,"reopen restores equipped sub");
+            await ClickHeroPoint(HeroSelectionLayout.Tab(0).center);
+            await ClickHeroPoint(HeroSelectionLayout.EquipmentCard(1,4).center);
+            await ClickHeroPoint(HeroSelectionLayout.Tab(1).center);
+            await ClickHeroPoint(HeroSelectionLayout.EquipmentCard(1,3).center);
+            await ConfirmHero();
+            await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.SubWeaponId==tables.TbSubWeapon.DataList[1].Id&&player.Snapshot.Value.SpecialWeaponId==tables.TbSpecialWeapon.DataList[1].Id).Timeout(TimeSpan.FromSeconds(5));
+            Check(player.Snapshot.Value.HeroId==before.HeroId,"confirming equipment keeps hero");
+            await Capture("equipment-confirmed");
+        }
+        async UniTask CaptureCombatStates(PrototypePlayer player, PrototypeMatch match)
+        {
+            var original=PlayerLoadout.From(player.Snapshot.Value);
+            var state=player.Snapshot.Value;
+            state.Ink=0;state.InkRecoverAt=player.NetworkManager.ServerTime.Time+60;
+            state.SpecialPoints=original.RequiredPoints;state.SpecialFailure=SpecialFailure.NoSpace;
+            player.Snapshot.Value=state;
+            await UniTask.Delay(180);
+            Check(player.PresentedState.Ink<1,"low ink fixture reaches presented HUD");
+            await Capture("combat-low-ink-special-failure");
+            await Key(UnityEngine.InputSystem.Key.Q);
+            Check(SpecialWeaponSimulation.Active(player.PresentedState),"Q activates charged special through gameplay input");
+            await Capture("combat-special-active");
+            player.Respawn();
+            player.RequestLoadoutChange(new PlayerLoadout(6,1,1),HeroSelectionOrigin.Warmup);
+            await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==6).Timeout(TimeSpan.FromSeconds(5));
+            InputSystem.QueueStateEvent(Mouse.current,new MouseState { position=Mouse.current.position.ReadValue(),buttons=1 });
+            await UniTask.Delay(350);
+            Check(SplatlingSimulation.Charging(player.PresentedState),"held fire displays Splatling charge");
+            await Capture("combat-splatling-charge");
+            InputSystem.QueueStateEvent(Mouse.current,new MouseState { position=Mouse.current.position.ReadValue() });
+            await UniTask.WaitUntil(()=>player.PresentedState.SplatlingRemaining>0).Timeout(TimeSpan.FromSeconds(3));
+            Check(player.PresentedState.SplatlingRemaining>0,"release displays Splatling remaining shots");
+            await Capture("combat-splatling-firing");
+            player.Respawn();
+            player.RequestLoadoutChange(original,HeroSelectionOrigin.Warmup);
+            await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==original.HeroId).Timeout(TimeSpan.FromSeconds(5));
+            var prefab=UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(PrototypeApp.PlayerAddress);
+            await prefab.ToUniTask();
+            try
+            {
+                match.AddTestBot(prefab.Result);
+                var bot=PrototypePlayer.ByOwner.Values.First(p=>p.IsTestBot);
+                foreach(bool friendly in new[]{true,false})
+                {
+                    state=bot.Snapshot.Value;state.Team=friendly?player.Snapshot.Value.Team:(byte)(3-player.Snapshot.Value.Team);bot.Snapshot.Value=state;
+                    bot.DiagnosticPlace(player.Snapshot.Value.Position+Vector3.right*1.5f,0);
+                    bot.ReceiveDamage((byte)(3-bot.Snapshot.Value.Team),10000,Vector3.forward);
+                    await UniTask.WaitUntil(()=>player.BubbleInteractionTarget==bot).Timeout(TimeSpan.FromSeconds(5));
+                    await Capture(friendly?"combat-rescue-prompt":"combat-execute-prompt");
+                    await Key(UnityEngine.InputSystem.Key.F);
+                    Check(friendly?bot.Snapshot.Value.IsAlive:bot.Snapshot.Value.IsDead,friendly?"F rescues friendly bubble":"F executes enemy bubble");
+                }
+            }
+            finally { match.ClearTestBots();UnityEngine.AddressableAssets.Addressables.Release(prefab); }
+            state=player.Snapshot.Value;state.ProtectedUntil=0;player.Snapshot.Value=state;
+            player.ReceiveDamage((byte)(3-state.Team),10000,Vector3.forward);
+            await UniTask.Delay(180);Check(player.PresentedState.IsBubble,"downed state reaches HUD");
+            await Capture("combat-downed");
+            state=player.Snapshot.Value;state.BubbleUntil=player.NetworkManager.ServerTime.Time-.1;player.Snapshot.Value=state;
+            await UniTask.WaitUntil(()=>player.PresentedState.IsDead).Timeout(TimeSpan.FromSeconds(5));
+            await Capture("combat-respawn-countdown");
+            await UniTask.WaitUntil(()=>player.PresentedState.IsAlive).Timeout(TimeSpan.FromSeconds(15));
+            await Capture("combat-respawned");
+        }
         async UniTask Capture(string name)
         {
             string path=Path.ChangeExtension(_output,null)+"-"+name+".png";
@@ -178,6 +275,7 @@ namespace Splatoon.Prototype
                 }
                 Check(player.Snapshot.Value.HeroId == 1, "all portrait clicks only preview");
                 Check(player.Snapshot.Value.ShotSequence == beforePreviewShots, "portrait clicks do not fire");
+                await VerifyEquipment(app,player);
                 await ClickHero(6); await ConfirmHero();
                 await UniTask.WaitUntil(()=>!player.HeroChangePending&&player.Snapshot.Value.HeroId==7).Timeout(TimeSpan.FromSeconds(5));
                 Check(player.Snapshot.Value.HeroId == 7, "seventh card confirms BubbleGirl"); await Capture("bubble-equipped");
@@ -191,13 +289,16 @@ namespace Splatoon.Prototype
                 await UniTask.WaitUntil(() => player.Snapshot.Value.Health > 0).Timeout(TimeSpan.FromSeconds(5));
                 await Key(UnityEngine.InputSystem.Key.H);Check(app.Overlay==GameplayOverlay.Game,"H closes warmup selection");
                 await Capture("hero-gameplay");
+                await CaptureCombatStates(player,match);
                 var state=match.State.Value;state.Phase=MatchPhase.Playing;state.Round=1;state.EndsAt=player.NetworkManager.ServerTime.Time+180;match.State.Value=state;
                 await Key(UnityEngine.InputSystem.Key.H);Check(app.Overlay==GameplayOverlay.Heroes,"H opens own spawn selection during match");
                 await Capture("spawn-area-selection");
                 await Key(UnityEngine.InputSystem.Key.H);Check(app.Overlay==GameplayOverlay.Game,"H closes spawn selection");
                 await Capture("spawn-area-hud");
-                await Key(UnityEngine.InputSystem.Key.Escape);await Click(80,37);Check(app.Overlay==GameplayOverlay.Debug,"match DEBUG button opens");await Capture("match-debug");
-                await Click(175,144);Check(app.Overlay==GameplayOverlay.Heroes,"DEBUG opens shared hero list");
+                await Key(UnityEngine.InputSystem.Key.Escape);
+                var edge=CombatUiLayout.Bounds(Screen.width,Screen.height);
+                await ClickHeroPoint(new Vector2(edge.x+80,edge.y+37));Check(app.Overlay==GameplayOverlay.Debug,"match DEBUG button opens");await Capture("match-debug");
+                await ClickHeroPoint(new Vector2(175,144));Check(app.Overlay==GameplayOverlay.Heroes,"DEBUG opens shared hero list");
                 await ClickHero(4);await Capture("rapid-blaster-preview");
                 before=player.Snapshot.Value;before.Ink=20;before.InkRecoverAt=player.NetworkManager.ServerTime.Time+100;player.Snapshot.Value=before;
                 uint shots=before.ShotSequence;await ConfirmHero();

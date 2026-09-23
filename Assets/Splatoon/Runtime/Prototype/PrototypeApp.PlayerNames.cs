@@ -45,8 +45,7 @@ namespace Splatoon.Prototype
                 viewport.x <= 0 || viewport.x >= 1 || viewport.y <= 0 || viewport.y >= 1) return false;
             // Trace to the actual head, not the elevated label: labels must not reveal heads behind cover.
             if (Physics.Linecast(camera.transform.position, head, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return false;
-            Vector3 screen = camera.WorldToScreenPoint(anchor);
-            guiPosition = new Vector2(screen.x * 1280f / Screen.width, (Screen.height - screen.y) * 720f / Screen.height);
+            guiPosition = CombatUiLayout.Viewport(viewport, Screen.width, Screen.height);
             return true;
         }
 

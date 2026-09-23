@@ -11,18 +11,23 @@ namespace Splatoon.Prototype
         {
             DrawSpecialHud(state);
             var c = PlayerLoadout.SubWeapon(state);
-            Panel(new Rect(940, 578, 320, 105), new Color(.035f, .05f, .07f, .88f));
-            if (c.Common.icon != null) GUI.DrawTexture(new Rect(951, 589, 45, 45), c.Common.icon.texture, ScaleMode.ScaleToFit);
-            GUI.Label(new Rect(1000, 585, 248, 25), $"E  {c.Common.displayName}  · {c.Common.inkCost:0} 墨", _small);
+            var card = CombatUiLayout.Skill(Screen.width, Screen.height, 0); UiCard(card, HudSurface,14);
+            UiKey(new Rect(card.x+13,card.y+7,25,25),"E");GUI.Label(new Rect(card.x+48,card.y+7,120,25),"副武器",_uiText);
+            UiGlyph(new Rect(card.center.x-25,card.y+38,50,50),state.SubWeaponId,Color.white,false,true);
+            UiFit(new Rect(card.x + 12, card.y + 90, card.width-24, 22), c.Common.displayName, _uiCenter);
             string status = SubWeaponSimulation.FailureText(state.SubFailure);
             if (state.Ink < c.Common.inkCost) status = "墨水不足";
             if (state.SubPhase == SubWeaponPhase.Holding) status = c.Type == SubWeaponType.FizzyBomb ? $"蓄力：{1 + Mathf.RoundToInt(state.SubCharge * 2)} 次爆炸 · 松开投出" : c.Type == SubWeaponType.CurlingBomb ? $"蓄力：{state.SubCharge:P0} · 松开投出" : "瞄准中 · 松开 E 使用 · Shift 取消";
             if (state.SubPhase == SubWeaponPhase.Starting) status = "准备投出 · 仍可调整方向";
-            GUI.Label(new Rect(951, 618, 303, 24), status, _small);
+            if (!state.IsAlive) status = state.IsBubble ? "倒地中 · 不可使用" : "等待重生";
             string recovery = state.InkRecoverAt > state.SimulatedAt ? $"回墨等待 {state.InkRecoverAt - state.SimulatedAt:0.0}s" : "可以回墨";
             if (state.SubReadyAt > state.SimulatedAt) recovery += $"  再使用 {state.SubReadyAt - state.SimulatedAt:0.0}s";
             if (c.Type == SubWeaponType.Torpedo || SubWeaponService.IsPersistent(c.Type)) recovery += $"  场上 {PrototypeMatch.Current.SubPresentation?.Count(local.PlayerId, c.Type) ?? 0}";
-            GUI.Label(new Rect(951, 648, 303, 24), recovery, _small);
+            bool ready = state.IsAlive && state.Ink >= c.Common.inkCost && state.SubReadyAt <= state.SimulatedAt && state.SubPhase == SubWeaponPhase.Idle && state.SubFailure == SubWeaponFailure.None;
+            var pill=new Rect(card.x+45,card.y+112,card.width-90,22);UiPanel(pill,ready?new Color(.24f,.84f,.94f):new Color(.34f,.38f,.46f));
+            GUI.Label(pill,ready ? "可使用" : state.SubPhase != SubWeaponPhase.Idle ? "使用中" : "暂不可用",ready?_heroAction:_uiCenter);
+            if (!ready || state.InkRecoverAt > state.SimulatedAt || c.Type == SubWeaponType.Torpedo || SubWeaponService.IsPersistent(c.Type))
+                SkillNotice(card, status + "\n" + recovery, !ready && state.SubPhase == SubWeaponPhase.Idle);
             if ((state.SubPhase == SubWeaponPhase.Holding || state.SubPhase == SubWeaponPhase.Starting) &&
                 (c.Type == SubWeaponType.Autobomb || c.Type == SubWeaponType.Torpedo))
                 GUI.Label(new Rect(465, 505, 380, 26), "投掷参考 · 索敌后落点会改变", _small);
@@ -40,7 +45,8 @@ namespace Splatoon.Prototype
                 if (until <= Manager.ServerTime.Time) continue;
                 Vector3 point = camera.WorldToViewportPoint(p.transform.position + Vector3.up * 2);
                 if (point.z <= 0) continue;
-                GUI.Label(new Rect(point.x * 1280 - 40, (1 - point.y) * 720 - 20, 160, 30), $"◆ 标记 {until - Manager.ServerTime.Time:0.0}s", _small);
+                var screen = CombatUiLayout.Viewport(point, Screen.width, Screen.height);
+                GUI.Label(new Rect(screen.x - 40, screen.y - 20, 160, 30), $"◆ 标记 {until - Manager.ServerTime.Time:0.0}s", _small);
             }
         }
 #if UNITY_EDITOR

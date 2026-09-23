@@ -3,6 +3,14 @@ Shader "Splatoon/InkSurface"
     Properties
     {
         _InkAppearance("Persistent wet ink",Float)=0
+        _InkSoftEdge("Soft ink experiment",Float)=0
+        _InkBoundary("Derived boundary distances",2D)="white" {}
+        _InkBoundaryRange("Boundary range",Float)=.24
+        _InkBoundaryDecode("Boundary decode",Vector)=(1,0,0,0)
+        _InkBoundaryDebug("Boundary debug",Float)=0
+        _InkSoftRelief("Soft height / width / interior / broad",Vector)=(.018,.12,.002,.001)
+        _InkSoftFinish("Soft smoothness / contact / residual / fine",Vector)=(.76,.03,.25,.12)
+        _InkSoftDetail("Soft filter / team height / team width / contour",Vector)=(.06,.25,.5,1)
         _InkVisualTexture("Visual state",2D)="black" {}
         _InkStateTexture("Coverage state",2D)="black" {}
         _InkIslands("UV islands",2D)="white" {}
@@ -65,11 +73,16 @@ Shader "Splatoon/InkSurface"
                 // existing wet edge/noise treatment on top of that silhouette.
                 // Display-only coverage: keep InkVisible and the CPU ownership threshold exact.
                 float coverageField=mask.a*(1+.5*InkNoise(uv,_InkShapeNoiseScale));
+                float originalCoverageField=coverageField;
                 float edgeHalfWidth=max(.5*fwidth(coverageField)*_InkEdgeAAScale,1e-5);
                 float visible=smoothstep(_InkThreshold-edgeHalfWidth,_InkThreshold+edgeHalfWidth,coverageField);
                 float interior=smoothstep(_InkThreshold,_InkThreshold+max(.15,2*edgeHalfWidth),coverageField);
                 float3 inkNormal; float wetFinish=0,contactShade=0;
-                if(_InkAppearance>.5) inkNormal=InkWetNormal(i,mask,uv,coverageField,wetFinish,contactShade);
+                if(_InkAppearance>.5)
+                {
+                    inkNormal=InkWetNormal(i,mask,uv,coverageField,wetFinish,contactShade);
+                    if(_InkSoftEdge>.5)visible=InkVisibility(coverageField);
+                }
                 else
                 {
                 // Filter height only. Filtering the silhouette would grow/shrink gameplay ink.
@@ -87,6 +100,14 @@ Shader "Splatoon/InkSurface"
                 float3 gradient=(ddx(height)*cy+ddy(height)*cx)*((det<0?-1:1)/max(abs(det),1e-12));
                 float normalStrength=lerp(_InkEdgeNormalStrength,Vector1_8e760635099b4147956bb9600d13cac2,interior);
                 inkNormal=normalize(n-normalStrength*gradient);
+                }
+                if(_InkSoftEdge>.5 && _InkBoundaryDebug>.5)
+                {
+                    if(_InkBoundaryDebug>3.5)return half4(step(_InkThreshold,originalCoverageField),step(_InkThreshold,coverageField),0,1);
+                    float2 distance=SAMPLE_TEXTURE2D(_InkBoundary,sampler_LinearClamp,i.paintUV).rg*_InkBoundaryDecode.x+_InkBoundaryDecode.y;
+                    if(_InkBoundaryDebug>2.5)return half4(inkNormal*.5+.5,1);
+                    float d=_InkBoundaryDebug>1.5?distance.y:distance.x;
+                    return half4(lerp(float3(.05,.2,.7),float3(1,.3,.1),step(0,d))*saturate(.2+abs(d)/_InkSoftRelief.y),1);
                 }
                 float3 baseColor=SAMPLE_TEXTURE2D(Texture2D_41271c3c5f484ca2a435c65087a81705,sampler_Texture2D_41271c3c5f484ca2a435c65087a81705,uv*Vector2_e97cb9b7b5564bc9857e7669e2d0b82f.xy).rgb*Color_863351f5ceea4c998ef51baab6dd758b.rgb;
                 float sparkle=_InkAppearance>.5?0:FilteredGlitter(uv*Vector2_55edcb19ba1d459dbb3c027e66abbc1e.xy,n,view);

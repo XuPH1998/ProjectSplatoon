@@ -43,7 +43,8 @@ namespace Splatoon.Prototype
             // vertical scale so a 4:3 or ultrawide viewport does not stretch circles.
             float aspectScale = Screen.width * 720f / (Screen.height * 1280f);
             var previous = GUI.matrix;
-            GUI.matrix = previous * Matrix4x4.Scale(new Vector3(1 / aspectScale, 1, 1));
+            // World projection is independent of the centered, letterboxed menu matrix.
+            GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.height / 720f, Screen.height / 720f, 1));
             try { DrawUniformReticle(local, state, weapon, new Vector2(center.x * aspectScale, center.y), aspectScale); }
             finally { GUI.matrix = previous; }
         }

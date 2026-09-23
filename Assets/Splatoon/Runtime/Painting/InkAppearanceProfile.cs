@@ -12,6 +12,22 @@ namespace Splatoon.Painting
         public const string AtlasPath = "Assets/GameResource/Environment/Ink/Textures/InkSurfaceDetail.png";
         public Texture2D DetailAtlas, FineNormal;
         public bool Enabled = true;
+        [Tooltip("普通对局初始化时使用的墨迹外观；仍可通过对照菜单临时切换")]
+        public InkLook DefaultLook = InkLook.Current;
+        public InkLook StartupLook
+        {
+            get
+            {
+                var args = Environment.GetCommandLineArgs();
+                int index = Array.IndexOf(args, "-inkStaticLook");
+                if (index >= 0 && index + 1 < args.Length)
+                {
+                    if (args[index + 1] == "soft") return InkLook.Soft;
+                    if (args[index + 1] == "legacy" || args[index + 1] == "today" || args[index + 1] == "rounded") return InkLook.Current;
+                }
+                return DefaultLook;
+            }
+        }
         public float EdgeHeight = .018f, EdgeWidth = .055f, Relief = .002f, BroadRelief = .0005f;
         public float Smoothness = .75f, FineNormalStrength = .25f, FineNormalTiling = .65f, TeamGroove = .001f;
         [Header("Rounded outer edge (display only)")]
@@ -21,6 +37,23 @@ namespace Splatoon.Painting
         [Range(.1f, 1.5f)] public float RoundedEdgeMaxSlope = .9f;
         [Range(.65f, .82f)] public float RoundedEdgeSmoothness = .78f;
         [Range(0, .08f)] public float RoundedEdgeContactShade = .08f;
+        [Header("Soft ink (metres, normal-only relief)")]
+        [Min(0)] public float SoftHeight = .018f;
+        [Range(.04f, .20f)] public float SoftWidth = .12f;
+        [Range(.65f, .82f)] public float SoftSmoothness = .76f;
+        [Range(0, .03f)] public float SoftContactShade = .03f;
+        [Min(0)] public float SoftInteriorRelief = .002f, SoftBroadRelief = .001f;
+        [Range(0, 1)] public float SoftFineResidual = .25f, SoftFineNormal = .12f;
+        [Range(.01f, .10f)] public float SoftFilterRadius = .06f;
+        [Range(0, .5f)] public float SoftTeamHeightRatio = .25f;
+        [Range(.1f, 1)] public float SoftTeamWidthRatio = .5f;
+        [Range(0, 1)] public float SoftContourSmoothing = 1;
+        public void BindSoft(MaterialPropertyBlock block)
+        {
+            block.SetVector("_InkSoftRelief", new Vector4(SoftHeight, SoftWidth, SoftInteriorRelief, SoftBroadRelief));
+            block.SetVector("_InkSoftFinish", new Vector4(SoftSmoothness, SoftContactShade, SoftFineResidual, SoftFineNormal));
+            block.SetVector("_InkSoftDetail", new Vector4(SoftFilterRadius, SoftTeamHeightRatio, SoftTeamWidthRatio, SoftContourSmoothing));
+        }
         static InkAppearanceProfile _current;
         string _hash;
         void OnValidate() { _hash = null; }

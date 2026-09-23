@@ -60,16 +60,20 @@ namespace Splatoon.Prototype
                 {
                     foreach (var s in match.Arena.Surfaces.Values)
                     {
-                        s.FlushDisplay(); var renderer = s.GetComponent<Renderer>(); var block = new MaterialPropertyBlock();
+                        s.SetInkLook(InkLook.Current); s.FlushDisplay(); var renderer = s.GetComponent<Renderer>(); var block = new MaterialPropertyBlock();
                         renderer.GetPropertyBlock(block); block.SetFloat("_InkAppearance", 0); renderer.SetPropertyBlock(block);
                     }
                     var probes = GameObject.Find("InkStaticReflections"); if (probes != null) probes.SetActive(false);
+                }
+                else if (Arg("-inkStaticLook") == "soft")
+                {
+                    foreach (var s in match.Arena.Surfaces.Values) { s.SetInkLook(InkLook.Soft); s.SetAppearance(true); }
                 }
                 else if (Arg("-inkStaticLook") == "today" || Arg("-inkStaticLook") == "rounded")
                 {
                     foreach (var s in match.Arena.Surfaces.Values)
                     {
-                        s.FlushDisplay(); s.SetAppearance(true);
+                        s.SetInkLook(InkLook.Current); s.FlushDisplay(); s.SetAppearance(true);
                         s.SetRoundedEdges(Arg("-inkStaticLook") == "rounded");
                     }
                 }

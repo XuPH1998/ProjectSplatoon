@@ -29,6 +29,7 @@ namespace Splatoon.Prototype
             if (HeroSelectionUnavailableReason(origin) != null) return;
             var player = PrototypePlayer.Local;
             _heroOrigin = origin; _previewHeroId = player.Snapshot.Value.HeroId; var loadout=PlayerLoadout.From(player.Snapshot.Value); _previewSubId=loadout.SubWeaponId; _previewSpecialId=loadout.SpecialWeaponId;
+            _loadoutTab = 0; _heroCardScroll = Vector2.zero;
             _overlay = GameplayOverlay.Heroes; CaptureMouse(false);
         }
         public void CloseOverlay()
@@ -83,7 +84,9 @@ namespace Splatoon.Prototype
             DrawStartNotice();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (_overlay == GameplayOverlay.Debug) DrawDebugWindow();
-            if (GUI.Button(new Rect(24, 18, 118, 38), "DEBUG", _button))
+            var debugBounds = CombatUiLayout.Bounds(Screen.width, Screen.height);
+            var debugRect = InRoom ? new Rect(debugBounds.x + 24, debugBounds.y + 18, 118, 38) : new Rect(24, 18, 118, 38);
+            if ((!InRoom || _overlay == GameplayOverlay.RoomMenu || _overlay == GameplayOverlay.Debug) && GUI.Button(debugRect, "DEBUG", _button))
             {
                 if (_overlay == GameplayOverlay.Debug) CloseOverlay();
                 else { _overlay = GameplayOverlay.Debug; CaptureMouse(false); }

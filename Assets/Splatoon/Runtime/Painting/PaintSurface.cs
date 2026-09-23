@@ -130,6 +130,10 @@ namespace Splatoon.Painting
                 Debug.Log($"[INK-GPU] surface={SurfaceId} atlas={ShapeAtlas.name} hash={InkShapeAtlas.ContentHash} shapeProperty={_painter.HasProperty("_ShapeAtlas")} displayMask={DisplayMask.width}x{DisplayMask.height}");
 #endif
                 if (AllocatedBytes + CheckpointBytes > GameplayConfig.Global.MaxPaintMemoryMiB * 1024L * 1024L) throw new InvalidOperationException("喷涂 RT 含检查点拷贝超过全局内存预算");
+                // Apply the configured match default only after all paint resources
+                // and bindings are ready. Explicit comparison switches still override it.
+                if (Application.isPlaying && InkAppearanceProfile.Current.StartupLook != InkLook.Current)
+                    SetInkLook(InkAppearanceProfile.Current.StartupLook);
             }
             catch { ReleaseGraphics(); throw; }
         }
@@ -137,6 +141,7 @@ namespace Splatoon.Painting
         {
             foreach (var r in _regions) r.Grid.Clear();
             _paintQueue.Clear(); HasPaint = false; _displayDirty = false; if (_mask == null) return;
+            ClearSoftEdges();
             var command = CommandBufferPool.Get("Clear ink");
             command.SetRenderTarget(_mask); command.ClearRenderTarget(false, true, Color.clear);
             command.SetRenderTarget(DisplayMask); command.ClearRenderTarget(false, true, Color.clear);
@@ -148,6 +153,7 @@ namespace Splatoon.Painting
             InkShapeAtlas.Configure(ShapeAtlas);
             if (!GraphicsEnabled) { HasPaint = true; return; } Initialize(); HasPaint = true;
             _paintQueue.Add(new PendingPaint { Stamp = stamp, Matrix = transform.localToWorldMatrix });
+            DirtySoftEdges(stamp);
             _displayDirty = true;
         }
         public void FlushPaint()
@@ -202,8 +208,9 @@ namespace Splatoon.Painting
         public void FlushDisplay()
         {
             FlushPaint();
-            if (!_displayDirty || _mask == null) return;
+            if (!_displayDirty || _mask == null) { FlushSoftEdges(); return; }
             _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend, 0); PadVisual(); _displayDirty = false;
+            FlushSoftEdges();
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (!_diagnosticScheduled) ScheduleDiagnosticReadback();
 #endif
@@ -217,7 +224,7 @@ namespace Splatoon.Painting
             var texture = new Texture2D(Resolution, Height, TextureFormat.RGBA32, false, true);
             var previous = RenderTexture.active;
             try { texture.LoadRawTextureData(rgba); texture.Apply(false, false); Graphics.Blit(texture, _mask);
-                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend, 0); HasPaint = true; }
+                _extend.SetTexture("_UVIslands", _islands); Graphics.Blit(_mask, DisplayMask, _extend, 0); HasPaint = true; ClearSoftEdges(); }
             finally { RenderTexture.active = previous; DisposeObject(texture); }
         }
         private void OnDisable() => ReleaseGraphics();
@@ -226,6 +233,7 @@ namespace Splatoon.Painting
             _paintQueue.Clear();
             if (_registeredGraphics && --_instances == 0) { foreach (var texture in Scratch.Values) Release(texture); Scratch.Clear(); }
             _registeredGraphics = false;
+            ReleaseSoftEdges();
             ReleaseAppearance();
             if (_mask != null) CheckpointBytes -= (long)_mask.width * _mask.height * 4;
             Release(_mask); Release(DisplayMask); Release(_islands); _mask = DisplayMask = _support = _islands = null;

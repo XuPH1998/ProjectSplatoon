@@ -256,6 +256,11 @@ namespace Splatoon.Prototype
             LubanConfigService.Current.Reset(); if (Current == this) Current = null;
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
             if (_chineseFont != null) Destroy(_chineseFont);
+            if (_uiRound != null) Destroy(_uiRound);
+            if (_uiFade != null) Destroy(_uiFade);
+            if (_uiInk != null) Destroy(_uiInk);
+            if (_uiWing != null) Destroy(_uiWing);
+            if (_uiProgress != null) Destroy(_uiProgress);
             if (_startClip != null) Destroy(_startClip);
         }
         private static void Panel(Rect r, Color color) { var old = GUI.color; GUI.color = color; GUI.DrawTexture(r, Texture2D.whiteTexture); GUI.color = old; }
@@ -279,33 +284,15 @@ namespace Splatoon.Prototype
                 DrawLobby();
                 return;
             }
+            GUI.matrix = HeroSelectionLayout.Matrix(Screen.width, Screen.height);
             var match=PrototypeMatch.Current; var local=PrototypePlayer.Local;
             if(match==null||local==null) return;
+            if(_overlay==GameplayOverlay.Heroes)return;
             DrawPlayerNames();
             var state=match.State.Value; var player=local.PresentedState;
             var equipped = GameplayConfig.GetHero(player.HeroId);
             var weapon = GameplayConfig.GetWeapon(player.HeroId);
-            GUI.Label(new Rect(24,542,340,30),equipped.DisplayName,_label);
-            double total=Math.Max(.0001,state.TotalArea);
-            Panel(new Rect(350,22,580,92),new Color(.04f,.065f,.09f,.92f));
-            GUI.color=PrototypeArena.Pink; GUI.Label(new Rect(378,37,200,35),$"粉队  {state.PinkArea/total:P1}",_label);
-            GUI.color=PrototypeArena.Blue; GUI.Label(new Rect(704,37,215,35),$"蓝队  {state.BlueArea/total:P1}",_label); GUI.color=Color.white;
-            double remaining=state.Phase==MatchPhase.Playing?Math.Max(0,state.EndsAt-Manager.ServerTime.Time):0;
-            string clock=state.Phase==MatchPhase.Practice?"热身":state.Phase==MatchPhase.Finished?"已结束":$"{(int)remaining/60:00}:{(int)remaining%60:00}";
-            GUI.Label(new Rect(575,38,155,35),clock,_label);
-            Panel(new Rect(378,86,524,8),new Color(.25f,.28f,.3f));
-            Panel(new Rect(378,86,(float)(524*state.PinkArea/total),8),PrototypeArena.Pink);
-            Panel(new Rect(902-(float)(524*state.BlueArea/total),86,(float)(524*state.BlueArea/total),8),PrototypeArena.Blue);
-            string latency = Manager.IsHost ? "房主 · 本机裁决" :
-                local.GameLatency.TryRead(Time.realtimeSinceStartupAsDouble, out double ping) ? $"游戏往返 {ping:0} 毫秒" : "暂无有效测量";
-            GUI.Label(new Rect(24,68,310,55),$"{Status}  /  {state.PlayerCount}/{GameplayConfig.Mode.MaxPlayers}\n{latency}",_small);
-            Panel(new Rect(24,578,330,116),new Color(.04f,.065f,.09f,.9f));
-            GUI.Label(new Rect(42,590,290,32),$"{(player.Team==1?"粉队":"蓝队")}  /  生命 {player.Health:0}",_label);
-            Panel(new Rect(42,635,285,15),new Color(.22f,.25f,.28f));
-            Panel(new Rect(42,635,285*player.Ink/equipped.MaxInk,15),PrototypeArena.TeamColor(player.Team));
-            if (weapon.FireMode != WeaponFireMode.Splatling || !(_captured && player.Health > 0 && (Splatoon.Combat.SplatlingSimulation.Charging(player) || player.SplatlingRemaining > 0)))
-                GUI.Label(new Rect(42,662,310,26),player.InkRecoverAt > player.SimulatedAt ? "射击后回墨锁定" : player.Ink < Splatoon.Combat.WeaponSimulation.InkCost(weapon) ? (weapon.FireMode == WeaponFireMode.Splatling ? "墨量不足 / 可慢速蓄力" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "墨量不足 / 回墨后继续射击" : "墨量不足 / 松开射击回墨") : player.HasInkRecovery ? "潜墨中 / 快速回墨" : player.Swimming ? (player.Movement == Splatoon.Combat.MovementMode.Air ? "空中弦化 / 普通回墨" : "弦化中 / 普通回墨") : $"墨水 {player.Ink:0} / {equipped.MaxInk:0}",_small);
-            GUI.Label(new Rect(380,625,540,82),(weapon.FireMode == WeaponFireMode.Splatling ? "左键按住蓄力／松开持续射击" : Splatoon.Combat.WeaponSimulation.IsSemi(weapon) ? "左键点击单发／长按连续" : Splatoon.Combat.WeaponSimulation.IsCharge(weapon) ? "左键蓄力，松开发射" : "左键按住射击") + "　Shift 弦化\n按住 Tab 查看战绩　Esc 房间菜单\n" + (IsWeaponDebugRoom ? "H 选择配装 · 调试房保持热身" : "回车开始（房主）"),_small);
+            DrawCombatChrome(local, state, player);
             if (_captured && player.Health>0)
             {
                 if (weapon.FireMode == WeaponFireMode.Charge)
@@ -320,22 +307,24 @@ namespace Splatoon.Prototype
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
                 if (weapon.FireMode == WeaponFireMode.Splatling) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
                 DrawCombatReticle(local, player, weapon, reticleCenter);
-                if (local.MuzzleBlocked) GUI.Label(new Rect(reticleCenter.x-60,reticleCenter.y+43,210,32),"枪口被遮挡",_small);
+                var projectedReticle = CombatUiLayout.Viewport(local.ReticleViewport, Screen.width, Screen.height);
+                if (local.MuzzleBlocked) GUI.Label(new Rect(projectedReticle.x-60,projectedReticle.y+43,210,32),"枪口被遮挡",_small);
                 if (player.Movement == Splatoon.Combat.MovementMode.WallInk) GUI.Label(new Rect(450,460,550,32),"W/S 上下　A/D 横移　空格跳离　松开 Shift 脱墙",_small);
             }
 #if UNITY_EDITOR
             if (IsWeaponDebugRoom) { DrawWeaponDebugHud(player); DrawSubWeaponDebug(player); }
 #endif
             DrawSubWeaponHud(PrototypePlayer.Local, player);
-            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(390,129,580,58), IsWeaponDebugRoom
-                ? "单机武器调试 · 无限热身\nH 选择配装 · Esc 添加 / 移除 BOT 或定位武器资产"
-                : "H 选择配装 · Esc 房间菜单可添加测试 BOT · 双方有真人后开始。",_small);
+            if (state.Phase==MatchPhase.Practice) GUI.Label(new Rect(350,105,580,28), IsWeaponDebugRoom
+                ? "无限热身 · H 选择配装 · Esc 调试房菜单"
+                : "热身 · H 选择配装 · 双方有真人后由房主开始",_uiCenter);
             DrawBubbleHud(PrototypePlayer.Local, player);
-            if(player.IsDead) GUI.Label(new Rect(475,275,460,64),$"已被击杀！{Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_label);
+            if(player.IsDead) { UiCard(new Rect(420,235,440,66),UiSurface); GUI.Label(new Rect(432,249,416,38),$"已被击杀 · {Math.Max(0,player.RespawnsAt-Manager.ServerTime.Time):0.0} 秒后重生",_uiCenter); }
             if (state.Phase == MatchPhase.Playing && _overlay == GameplayOverlay.Game && HeroSelectionUnavailableReason(HeroSelectionOrigin.SpawnArea) == null)
-                GUI.Label(new Rect(390,129,580,38), "出生区 · H 更换配装", _small);
+                GUI.Label(new Rect(350,105,580,28), "出生区 · H 更换配装", _uiCenter);
             if(_overlay == GameplayOverlay.RoomMenu)
             {
+                DrawControlHelp(weapon);
                 bool practice = state.Phase == MatchPhase.Practice;
                 float top = practice ? (Manager.IsHost ? 104 : 158) : 222;
                 Panel(new Rect(430,top,420,practice ? (Manager.IsHost ? 416 : 360) : 295),new Color(.055f,.075f,.1f,.97f));

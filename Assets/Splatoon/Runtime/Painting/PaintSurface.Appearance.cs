@@ -28,6 +28,8 @@ namespace Splatoon.Painting
         void BindAppearance()
         {
             InkAppearanceProfile.Current.Bind(_properties);
+            _properties.SetFloat("_InkSoftEdge", 0);
+            _properties.SetFloat("_InkBoundaryDebug", 0);
             if (Application.platform == RuntimePlatform.Android) _renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
             _properties.SetTexture("_InkVisualTexture", _visual);
             _properties.SetTexture("_InkStateTexture", _mask);

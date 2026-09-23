@@ -21,10 +21,6 @@ namespace Splatoon.Prototype
             string status=firing?$"连射 · 剩余 {state.SplatlingRemaining} 发":SplatlingSimulation.Charging(state)
                 ? state.SplatlingChargeSeconds>=weapon.ChargeSeconds?"满蓄 · 松开连射":state.SplatlingSlow?"慢速蓄力 · 松开连射":"蓄力 · 松开连射":"按住蓄力 · 松开连射";
             GUI.Label(new Rect(center.x-120,center.y+51,330,30),status,_small);
-            if(state.SplatlingReservedInk>0)
-                Panel(new Rect(42+285*state.Ink/Splatoon.Config.GameplayConfig.GetHero(state.HeroId).MaxInk,635,285*state.SplatlingReservedInk/Splatoon.Config.GameplayConfig.GetHero(state.HeroId).MaxInk,15),new Color(.85f,.9f,1,.85f));
-            if(SplatlingSimulation.Charging(state)||firing)
-                GUI.Label(new Rect(42,662,420,26),$"可用 {state.Ink:0.0} · 预留 {state.SplatlingReservedInk:0.0} · Shift 取消",_small);
         }
     }
 }

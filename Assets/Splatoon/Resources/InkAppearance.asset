@@ -15,6 +15,7 @@ MonoBehaviour:
   DetailAtlas: {fileID: 2800000, guid: 397293c131314264eaf4cbdb94549a58, type: 3}
   FineNormal: {fileID: 2800000, guid: fba3ffdcec99bc441a050b43f71fe28d, type: 3}
   Enabled: 1
+  DefaultLook: 1
   EdgeHeight: 0.018
   EdgeWidth: 0.055
   Relief: 0.002

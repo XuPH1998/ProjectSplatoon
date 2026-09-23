@@ -10,6 +10,7 @@ TEXTURE2D(Texture2D_01612b2f09a24a9c9879c83799445b96); SAMPLER(sampler_Texture2D
 float4 Texture2D_01612b2f09a24a9c9879c83799445b96_TexelSize;
 TEXTURE2D(_InkVisualTexture); TEXTURE2D(_InkStateTexture); TEXTURE2D(_InkIslands);
 TEXTURE2D(_InkFineNormal); SAMPLER(sampler_InkFineNormal);
+TEXTURE2D(_InkBoundary);
 CBUFFER_START(UnityPerMaterial)
     float4 Color_863351f5ceea4c998ef51baab6dd758b,Color_1bf9c5e6f5c34360a490da1c94e6a7c1;
     float4 Vector2_e97cb9b7b5564bc9857e7669e2d0b82f,Vector2_55edcb19ba1d459dbb3c027e66abbc1e;
@@ -18,6 +19,9 @@ CBUFFER_START(UnityPerMaterial)
     float Vector1_8e760635099b4147956bb9600d13cac2,Vector1_b5cc7f6f25194a778cb438f45fbbce66,Vector1_f6677799b193415b8be7686b658a6e85;
     float _InkAppearance; float4 _InkRelief, _InkFinish;
     float _InkRoundedEdge; float4 _InkRoundedRelief, _InkRoundedFinish;
+    float _InkSoftEdge, _InkBoundaryRange, _InkBoundaryDebug;
+    float4 _InkSoftRelief, _InkSoftFinish, _InkSoftDetail;
+    float4 _InkBoundaryDecode;
     float _InkWorldScale,_InkShapeNoiseScale,_InkThreshold;
     float _InkEdgeAAScale,_InkEdgeNormalStrength,_InkEdgeSmoothness;
 CBUFFER_END
@@ -161,8 +165,10 @@ float3 InkRoundedGradient(Varyings i,float3 n,float4 mask,float field,
     contact=min(_InkRoundedFinish.y,.08)*(1-smoothstep(0,.25,q))*strength;
     return g/max(magnitude,.001)*(derivative*_InkRoundedRelief.x/width)*strength;
 }
-float3 InkWetNormal(Varyings i,float4 mask,float2 uv,float field,out float finish,out float contactShade)
+#include "InkSoftSurface.hlsl"
+float3 InkWetNormal(Varyings i,float4 mask,float2 uv,inout float field,out float finish,out float contactShade)
 {
+    if(_InkSoftEdge>.5)return InkSoftNormal(i,mask,field,finish,contactShade);
     float3 n=normalize(i.normalWS);
     float2 detail=SAMPLE_TEXTURE2D(_InkVisualTexture,sampler_LinearClamp,i.paintUV).rg/max(mask.a,1.0/255);
     detail=saturate(detail);
@@ -211,7 +217,8 @@ float3 InkDepthNormal(Varyings i)
     float2 uv=InkDetailUV(i.positionWS,n,_InkWorldScale);
     float4 mask=SAMPLE_TEXTURE2D(_MaskTexture,sampler_MaskTexture,i.paintUV);
     float field=InkCoverageField(mask.a,uv),finish,contactShade;
-    return normalize(lerp(n,InkWetNormal(i,mask,uv,field,finish,contactShade),InkVisibility(field)));
+    float3 wet=InkWetNormal(i,mask,uv,field,finish,contactShade);
+    return normalize(lerp(n,wet,InkVisibility(field)));
 }
 
 #endif

@@ -29,12 +29,12 @@ namespace Splatoon.Tests
             string name = GameplayConfig.GetHero(id).CharacterPrefabAddress.Split('/').Last();
             return AssetDatabase.LoadAssetAtPath<CharacterPresentationProfile>($"Assets/GameResource/Characters/{name}/{name}Presentation.asset");
         }
-        [Test] public void SevenHeroesHaveDistinctNamedPortraitsRegisteredForPlayers()
+        [Test] public void NineHeroesHaveDistinctNamedPortraitsRegisteredForPlayers()
         {
-            string[] names = {"紫苑", "夜雀", "白凛", "隼音", "月兔", "焰橙", "沫澜"};
+            string[] names = {"紫苑", "夜雀", "白凛", "隼音", "月兔", "焰橙", "沫澜", "铃芽", "泡霰"};
             var heroes = LubanConfigService.Current.Tables.TbHero.DataList;
             Assert.That(heroes.Select(h => h.DisplayName), Is.EqualTo(names));
-            Assert.That(heroes.Select(h => h.PortraitAddress).Distinct().Count(), Is.EqualTo(7));
+            Assert.That(heroes.Select(h => h.PortraitAddress).Distinct().Count(), Is.EqualTo(9));
             foreach (var hero in heroes)
             {
                 Assert.That(hero.WeaponTypeName, Is.Not.Empty);
@@ -42,7 +42,8 @@ namespace Splatoon.Tests
                 var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(entry.AssetPath);
                 Assert.That(texture, Is.Not.Null); Assert.That(texture.width, Is.EqualTo(texture.height));
                 var importer = (TextureImporter)AssetImporter.GetAtPath(entry.AssetPath);
-                Assert.That(importer.maxTextureSize, Is.EqualTo(512));
+                Assert.That(texture.width, Is.GreaterThanOrEqualTo(512), "portrait must remain sharp at 1080p");
+                Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Default));
                 using var stream = File.OpenRead(entry.AssetPath);
                 byte[] png = new byte[24]; stream.Read(png, 0, png.Length);
                 Assert.That(png[16] * 16777216 + png[17] * 65536 + png[18] * 256 + png[19], Is.EqualTo(1024));
@@ -126,19 +127,54 @@ namespace Splatoon.Tests
             finally { UnityEngine.Object.DestroyImmediate(profile); }
         }
         [TestCase(1280,720)] [TestCase(1920,1080)] [TestCase(2560,1080)]
-        public void SixCardsStayWithinWindowAndPortraitsRemainSquare(int width, int height)
+        public void NineCardsStayWithinWindowAndPortraitsRemainSquare(int width, int height)
         {
             var matrix = HeroSelectionLayout.Matrix(width, height);
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < LubanConfigService.Current.Tables.TbHero.DataList.Count; i++)
             {
                 var r = HeroSelectionLayout.Card(i); var p = HeroSelectionLayout.Portrait(i);
                 Assert.That(r.yMax, Is.LessThan(HeroSelectionLayout.Confirm.yMin));
+                Assert.That(r.yMax, Is.LessThanOrEqualTo(HeroSelectionLayout.CardViewport.yMax));
                 var lo = matrix.MultiplyPoint3x4(p.min); var hi = matrix.MultiplyPoint3x4(p.max);
                 Assert.That(hi.x - lo.x, Is.EqualTo(hi.y - lo.y).Within(.001));
                 Assert.That(lo.x, Is.GreaterThanOrEqualTo(0)); Assert.That(hi.x, Is.LessThanOrEqualTo(width));
                 Assert.That(hi.y, Is.LessThanOrEqualTo(height));
                 for (int j = 0; j < i; j++) Assert.That(r.Overlaps(HeroSelectionLayout.Card(j)), Is.False);
             }
+        }
+        [TestCase(1280,720)] [TestCase(1920,1080)] [TestCase(2560,1080)]
+        public void HudEdgesAndWorldProjectionShareScreenSpaceWithoutStretch(int width, int height)
+        {
+            var matrix = HeroSelectionLayout.Matrix(width, height);
+            float scale = CombatUiLayout.Scale(width, height);
+            var vitals = CombatUiLayout.Vitals(width, height);
+            var left = matrix.MultiplyPoint3x4(vitals.min);
+            Assert.That(left.x, Is.EqualTo(20 * scale).Within(.01));
+            var skill = CombatUiLayout.Skill(width, height, 1);
+            Assert.That(matrix.MultiplyPoint3x4(skill.max).x, Is.EqualTo(width - 16 * scale).Within(.01));
+            Assert.That(matrix.MultiplyPoint3x4(vitals.max).y, Is.EqualTo(height - 47 * scale).Within(.01));
+            foreach (var uv in new[] {Vector2.zero, Vector2.one, new Vector2(.17f,.63f)})
+            {
+                var point = matrix.MultiplyPoint3x4(CombatUiLayout.Viewport(uv,width,height));
+                Assert.That(point.x, Is.EqualTo(uv.x*width).Within(.01));
+                Assert.That(point.y, Is.EqualTo((1-uv.y)*height).Within(.01));
+            }
+            Assert.That(vitals.Overlaps(CombatUiLayout.Skill(width,height,0)), Is.False);
+        }
+        [Test] public void EveryEquipmentOptionFitsAboveFixedFooter()
+        {
+            foreach(var pair in new[] {(LubanConfigService.Current.Tables.TbSubWeapon.DataList.Count,4),(LubanConfigService.Current.Tables.TbSpecialWeapon.DataList.Count,3)})
+                for(int i=0;i<pair.Item1;i++)
+                {
+                    var r=HeroSelectionLayout.EquipmentCard(i,pair.Item2);
+                    Assert.That(r.xMin,Is.GreaterThanOrEqualTo(HeroSelectionLayout.Equipment.xMin));
+                    Assert.That(r.xMax,Is.LessThanOrEqualTo(HeroSelectionLayout.Equipment.xMax));
+                    Assert.That(r.yMax,Is.LessThanOrEqualTo(HeroSelectionLayout.Equipment.yMax));
+                    Assert.That(r.Overlaps(HeroSelectionLayout.Confirm),Is.False);
+                    for(int j=0;j<i;j++)Assert.That(r.Overlaps(HeroSelectionLayout.EquipmentCard(j,pair.Item2)),Is.False);
+                }
+            Assert.That(HeroSelectionLayout.ContentHeight(12),Is.GreaterThan(HeroSelectionLayout.CardViewport.height));
+            Assert.That(HeroSelectionLayout.ContentHeight(12)+HeroSelectionLayout.CardViewport.y,Is.GreaterThanOrEqualTo(HeroSelectionLayout.Card(11).yMax));
         }
     }
 }
