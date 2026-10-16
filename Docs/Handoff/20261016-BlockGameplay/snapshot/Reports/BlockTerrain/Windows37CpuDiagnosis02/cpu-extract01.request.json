@@ -1,0 +1,15 @@
+{
+  "inputProfile": "D:/XPHUNITY/ProjectSplatoon/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/prototype-v1/steady250k/0fbfaddc/host.sampling.cpu.raw",
+  "outputDirectory": "D:/XPHUNITY/ProjectSplatoon/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuExtract01",
+  "longFrameThresholdMs": 33.333,
+  "profilerFrameIndices": [],
+  "maxScannedFrames": 16384,
+  "maxSeedFrames": 4,
+  "neighborFrames": 1,
+  "maxSelectedFrames": 12,
+  "maxThreadsPerFrame": 256,
+  "maxSamplesPerThread": 100000,
+  "maxTotalRetainedSamples": 1000000,
+  "maxMetadataChunksPerFrame": 65536,
+  "maxMetadataChunksTotal": 131072
+}

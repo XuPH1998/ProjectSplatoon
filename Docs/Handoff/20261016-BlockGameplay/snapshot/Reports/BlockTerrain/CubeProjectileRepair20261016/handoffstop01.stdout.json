@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "D:/XPHUNITY/ProjectSplatoon/Reports/BlockTerrain/Handoff20261016/StopOwnedEditor.cs",
+      "entry": "Splatoon.ReportGuards.StopOwnedEditor.Run",
+      "args": "[]",
+      "mode": "ephemeral",
+      "timeout_ms": "120000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 172,
+      "executeMs": 1,
+      "assemblyName": "PipelineRunScript_StopOwnedEditor_be09ff25aa694693861100a461d91e3e",
+      "success": true,
+      "result": {
+        "pid": 78316,
+        "quitScheduled": true,
+        "dirtyScenes": false,
+        "userRequestedDevelopmentStop": true,
+        "utc": "2026-10-16T13:22:05.7976326Z"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "D:\\XPHUNITY\\ProjectSplatoon"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

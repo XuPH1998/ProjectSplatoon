@@ -20,6 +20,14 @@ public sealed partial class GlobalConfig : Luban.BeanBase
 {
     public GlobalConfig(JSONNode _buf) 
     {
+        { if(!_buf["blockBlocksPerMaterial"].IsNumber) { throw new SerializationException(); }  BlockBlocksPerMaterial = _buf["blockBlocksPerMaterial"]; }
+        { if(!_buf["blockMainAttackMaxBlocks"].IsNumber) { throw new SerializationException(); }  BlockMainAttackMaxBlocks = _buf["blockMainAttackMaxBlocks"]; }
+        { if(!_buf["blockAuxiliaryBudgetFraction"].IsNumber) { throw new SerializationException(); }  BlockAuxiliaryBudgetFraction = _buf["blockAuxiliaryBudgetFraction"]; }
+        { if(!_buf["blockFriendlyBlastRadiusFraction"].IsNumber) { throw new SerializationException(); }  BlockFriendlyBlastRadiusFraction = _buf["blockFriendlyBlastRadiusFraction"]; }
+        { if(!_buf["blockBlocksPerSpecialPoint"].IsNumber) { throw new SerializationException(); }  BlockBlocksPerSpecialPoint = _buf["blockBlocksPerSpecialPoint"]; }
+        { if(!_buf["blockMainSpecialPointCap"].IsNumber) { throw new SerializationException(); }  BlockMainSpecialPointCap = _buf["blockMainSpecialPointCap"]; }
+        { if(!_buf["blockSubSpecialPointCap"].IsNumber) { throw new SerializationException(); }  BlockSubSpecialPointCap = _buf["blockSubSpecialPointCap"]; }
+        { if(!_buf["blockNetworkBytesPerSecond"].IsNumber) { throw new SerializationException(); }  BlockNetworkBytesPerSecond = _buf["blockNetworkBytesPerSecond"]; }
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["defaultModeId"].IsNumber) { throw new SerializationException(); }  DefaultModeId = _buf["defaultModeId"]; }
         { if(!_buf["networkTickRate"].IsNumber) { throw new SerializationException(); }  NetworkTickRate = _buf["networkTickRate"]; }
@@ -46,6 +54,38 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         return new GlobalConfig(_buf);
     }
 
+    /// <summary>
+    /// 积木每点材料建造格数
+    /// </summary>
+    public readonly int BlockBlocksPerMaterial;
+    /// <summary>
+    /// 积木主攻击整组建造上限
+    /// </summary>
+    public readonly int BlockMainAttackMaxBlocks;
+    /// <summary>
+    /// 积木沿途与脚下预算比例
+    /// </summary>
+    public readonly float BlockAuxiliaryBudgetFraction;
+    /// <summary>
+    /// 积木己方爆破半径比例
+    /// </summary>
+    public readonly float BlockFriendlyBlastRadiusFraction;
+    /// <summary>
+    /// 积木每点大招充能所需变化格数
+    /// </summary>
+    public readonly int BlockBlocksPerSpecialPoint;
+    /// <summary>
+    /// 积木主攻击整组充能上限
+    /// </summary>
+    public readonly int BlockMainSpecialPointCap;
+    /// <summary>
+    /// 积木副武器整次使用充能上限
+    /// </summary>
+    public readonly int BlockSubSpecialPointCap;
+    /// <summary>
+    /// 积木全房间传输预算字节每秒
+    /// </summary>
+    public readonly int BlockNetworkBytesPerSecond;
     /// <summary>
     /// 唯一全局记录 ID，固定 1
     /// </summary>
@@ -133,6 +173,14 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
+        + "blockBlocksPerMaterial:" + BlockBlocksPerMaterial + ","
+        + "blockMainAttackMaxBlocks:" + BlockMainAttackMaxBlocks + ","
+        + "blockAuxiliaryBudgetFraction:" + BlockAuxiliaryBudgetFraction + ","
+        + "blockFriendlyBlastRadiusFraction:" + BlockFriendlyBlastRadiusFraction + ","
+        + "blockBlocksPerSpecialPoint:" + BlockBlocksPerSpecialPoint + ","
+        + "blockMainSpecialPointCap:" + BlockMainSpecialPointCap + ","
+        + "blockSubSpecialPointCap:" + BlockSubSpecialPointCap + ","
+        + "blockNetworkBytesPerSecond:" + BlockNetworkBytesPerSecond + ","
         + "id:" + Id + ","
         + "defaultModeId:" + DefaultModeId + ","
         + "networkTickRate:" + NetworkTickRate + ","

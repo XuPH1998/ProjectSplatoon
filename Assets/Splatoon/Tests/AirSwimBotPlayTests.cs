@@ -110,6 +110,13 @@ namespace Splatoon.Tests
             bot.ReceiveDamage(host.Snapshot.Value.Team, 200, Vector3.forward, host.PlayerId);
             Assert.That(bot.Snapshot.Value.Health, Is.LessThanOrEqualTo(0));
             ulong botId = bot.PlayerId; uint revision = bot.Snapshot.Value.Revision;
+            // Lethal damage enters the existing rescue bubble before death/respawn.
+            Assert.That(bot.Snapshot.Value.IsBubble, Is.True); Assert.That(bot.Snapshot.Value.RespawnsAt, Is.Zero);
+            double expiredAt = bot.Snapshot.Value.BubbleUntil + .1;
+            bot.ExpireBubble(expiredAt);
+            Assert.That(bot.Snapshot.Value.IsDead, Is.True);
+            Assert.That(bot.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.Expired));
+            Assert.That(bot.Snapshot.Value.RespawnsAt, Is.GreaterThan(expiredAt));
             bot.Simulate(1f / 60, bot.Snapshot.Value.RespawnsAt + .1, MatchPhase.Practice);
             Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(GameplayConfig.GetHero(bot.Snapshot.Value.HeroId).MaxHealth));
             Assert.That(bot.Snapshot.Value.Revision, Is.GreaterThan(revision)); Assert.That(bot.PlayerId, Is.EqualTo(botId));

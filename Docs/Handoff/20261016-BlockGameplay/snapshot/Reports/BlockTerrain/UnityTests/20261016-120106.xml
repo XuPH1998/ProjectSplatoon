@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="9" result="Passed" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-16 12:00:56Z" end-time="2026-10-16 12:01:06Z" duration="10.4175926">
+  <test-suite type="TestSuite" id="3395" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="1958" result="Passed" start-time="2026-10-16 12:00:56Z" end-time="2026-10-16 12:01:06Z" duration="10.417593" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3378" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="1957" result="Passed" start-time="2026-10-16 12:00:58Z" end-time="2026-10-16 12:01:06Z" duration="7.517327" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="35536" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3379" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="1948" result="Passed" start-time="2026-10-16 12:00:58Z" end-time="2026-10-16 12:01:06Z" duration="7.501265" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3380" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="1948" result="Passed" start-time="2026-10-16 12:00:58Z" end-time="2026-10-16 12:01:06Z" duration="7.486712" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1755" name="BlockPresentationTests" fullname="Splatoon.Tests.BlockPresentationTests" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-16 12:00:58Z" end-time="2026-10-16 12:01:06Z" duration="7.475356" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1764" name="AuthorityLobeTerminationEmitsOncePerContactAndCannotReplayDebris" fullname="Splatoon.Tests.BlockPresentationTests.AuthorityLobeTerminationEmitsOncePerContactAndCannotReplayDebris" methodname="AuthorityLobeTerminationEmitsOncePerContactAndCannotReplayDebris" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="633221646" result="Passed" start-time="2026-10-16 12:01:00Z" end-time="2026-10-16 12:01:03Z" duration="3.332628" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1758" name="CompletionClearRoundAndRestorationCannotResurrectOldCubes" fullname="Splatoon.Tests.BlockPresentationTests.CompletionClearRoundAndRestorationCannotResurrectOldCubes" methodname="CompletionClearRoundAndRestorationCannotResurrectOldCubes" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="2032203018" result="Passed" start-time="2026-10-16 12:01:03Z" end-time="2026-10-16 12:01:04Z" duration="0.340061" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1757" name="CubesFollowTheAuthorityTrajectoryWithoutFluidObjectsOrColliders" fullname="Splatoon.Tests.BlockPresentationTests.CubesFollowTheAuthorityTrajectoryWithoutFluidObjectsOrColliders" methodname="CubesFollowTheAuthorityTrajectoryWithoutFluidObjectsOrColliders" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="1394145158" result="Passed" start-time="2026-10-16 12:01:04Z" end-time="2026-10-16 12:01:04Z" duration="0.328404" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1761" name="DefaultPresentationRoutesEveryWeaponToCubesAndSkipsLegacyPools" fullname="Splatoon.Tests.BlockPresentationTests.DefaultPresentationRoutesEveryWeaponToCubesAndSkipsLegacyPools" methodname="DefaultPresentationRoutesEveryWeaponToCubesAndSkipsLegacyPools" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="728956332" result="Passed" start-time="2026-10-16 12:01:04Z" end-time="2026-10-16 12:01:04Z" duration="0.333846" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1759" name="EarlyAndOutOfOrderBounceEventsKeepTheSameAuthoritativeSegments" fullname="Splatoon.Tests.BlockPresentationTests.EarlyAndOutOfOrderBounceEventsKeepTheSameAuthoritativeSegments" methodname="EarlyAndOutOfOrderBounceEventsKeepTheSameAuthoritativeSegments" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="1333735825" result="Passed" start-time="2026-10-16 12:01:04Z" end-time="2026-10-16 12:01:05Z" duration="0.329653" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1763" name="FiveSpecialPresentationsUseSolidCubesAndReplaceFluidRainAndTrails" fullname="Splatoon.Tests.BlockPresentationTests.FiveSpecialPresentationsUseSolidCubesAndReplaceFluidRainAndTrails" methodname="FiveSpecialPresentationsUseSolidCubesAndReplaceFluidRainAndTrails" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="1226835211" result="Passed" start-time="2026-10-16 12:01:05Z" end-time="2026-10-16 12:01:05Z" duration="0.352569" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1760" name="FlightAndExplosionDebrisHaveHardCapsAndReleaseTheirResources" fullname="Splatoon.Tests.BlockPresentationTests.FlightAndExplosionDebrisHaveHardCapsAndReleaseTheirResources" methodname="FlightAndExplosionDebrisHaveHardCapsAndReleaseTheirResources" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="1412185125" result="Passed" start-time="2026-10-16 12:01:05Z" end-time="2026-10-16 12:01:05Z" duration="0.319090" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1756" name="ProjectileResourceRetainsInstancingForPackagedRendering" fullname="Splatoon.Tests.BlockPresentationTests.ProjectileResourceRetainsInstancingForPackagedRendering" methodname="ProjectileResourceRetainsInstancingForPackagedRendering" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="833272084" result="Passed" start-time="2026-10-16 12:01:05Z" end-time="2026-10-16 12:01:06Z" duration="0.314569" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1762" name="RestoreUsesCubesAndNeverReplaysOldMuzzleFeedback" fullname="Splatoon.Tests.BlockPresentationTests.RestoreUsesCubesAndNeverReplaysOldMuzzleFeedback" methodname="RestoreUsesCubesAndNeverReplaysOldMuzzleFeedback" classname="Splatoon.Tests.BlockPresentationTests" runstate="Runnable" seed="1588147681" result="Passed" start-time="2026-10-16 12:01:06Z" end-time="2026-10-16 12:01:06Z" duration="0.322298" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: D:\XPHUNITY\ProjectSplatoon\Reports\BlockTerrain\UnityTests\20261016-120106.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

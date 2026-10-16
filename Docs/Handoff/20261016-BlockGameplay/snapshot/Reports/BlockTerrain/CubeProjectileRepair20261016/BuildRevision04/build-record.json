@@ -1,0 +1,29 @@
+{
+  "startedUtc": "2026-10-16T12:33:40.5022272Z",
+  "finishedUtc": "2026-10-16T12:35:01.7129058Z",
+  "output": "Builds/Blocks-20261016-block37",
+  "productionBuildReturned": true,
+  "formalAddressablesBuildSucceeded": true,
+  "preferenceDirectory": "D:/XPHUNITY/ProjectSplatoon/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/Runs/windows37-projectile-build-preferences03",
+  "sourceInputSha256": "7bc438c80cce00ca7886cb4462d6a95f30bde28cedc4bcf49955232ea9e7cfda",
+  "inventorySha256": "28418b58f78afbafc95493fe92058631997cd7b9b73d05816910ecd87b910e56",
+  "snapshot": {
+    "saved": true,
+    "preferences": 19,
+    "physicalValues": 17,
+    "snapshotPath": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\RegressionTriage\\LatestSourceFullRegression15\\Runs\\windows37-projectile-build-preferences03\\before.json",
+    "editorPid": 33144,
+    "userSid": "S-1-5-21-3807523504-3191243255-1588712949-1001"
+  },
+  "restored": {
+    "restored": true,
+    "apiEqual": true,
+    "rawEqual": true,
+    "preferences": 19,
+    "physicalValues": 17,
+    "editorPid": 33144,
+    "restoredEditorPid": 33144
+  },
+  "error": null,
+  "goalAcceptancePassed": false
+}

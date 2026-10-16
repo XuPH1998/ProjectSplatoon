@@ -25,7 +25,8 @@ namespace Splatoon.Tests
         const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         const string Output = "Reports/PlayerNames/Visual";
         const string PreferenceBackup = "Temp/PlayerNames/preference.json";
-        [Serializable] public sealed class SavedPreference { public bool had; public string name; }
+        [Serializable] public sealed class SavedPreference { public bool had; public string name; public SavedLoadout[] loadouts; }
+        [Serializable] public sealed class SavedLoadout { public int hero; public bool hadSub, hadSpecial; public int sub, special; }
         static IEnumerator Wait(Func<bool> ready, string label)
         {
             double end = Time.realtimeSinceStartupAsDouble + 45;
@@ -33,11 +34,18 @@ namespace Splatoon.Tests
             Assert.That(ready(), Is.True, label);
         }
 
-        [UnityTest] public IEnumerator HostAdmissionNamesSurviveLifecycleAndLobbyReload()
+        [UnityTest, Timeout(600000)] public IEnumerator HostAdmissionNamesSurviveLifecycleAndLobbyReload()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(PreferenceBackup));
             if (!File.Exists(PreferenceBackup)) File.WriteAllText(PreferenceBackup, JsonUtility.ToJson(new SavedPreference
-                { had = PlayerPrefs.HasKey(PlayerNames.PreferenceKey), name = PlayerPrefs.GetString(PlayerNames.PreferenceKey) }));
+                {
+                    had = PlayerPrefs.HasKey(PlayerNames.PreferenceKey), name = PlayerPrefs.GetString(PlayerNames.PreferenceKey),
+                    loadouts = Enumerable.Range(1, 9).Select(hero => new SavedLoadout
+                    {
+                        hero = hero, hadSub = PlayerPrefs.HasKey("Loadout.Sub." + hero), hadSpecial = PlayerPrefs.HasKey("Loadout.Special." + hero),
+                        sub = PlayerPrefs.GetInt("Loadout.Sub." + hero), special = PlayerPrefs.GetInt("Loadout.Special." + hero)
+                    }).ToArray()
+                }));
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode();
             yield return Scenario();
@@ -146,6 +154,14 @@ namespace Splatoon.Tests
             {
                 var saved = JsonUtility.FromJson<SavedPreference>(File.ReadAllText(PreferenceBackup));
                 if (saved.had) PlayerPrefs.SetString(PlayerNames.PreferenceKey, saved.name); else PlayerPrefs.DeleteKey(PlayerNames.PreferenceKey);
+                // Old username-only backups have no loadouts; never infer missing key states.
+                if (saved.loadouts != null)
+                    foreach (var loadout in saved.loadouts)
+                    {
+                        string subKey = "Loadout.Sub." + loadout.hero, specialKey = "Loadout.Special." + loadout.hero;
+                        if (loadout.hadSub) PlayerPrefs.SetInt(subKey, loadout.sub); else PlayerPrefs.DeleteKey(subKey);
+                        if (loadout.hadSpecial) PlayerPrefs.SetInt(specialKey, loadout.special); else PlayerPrefs.DeleteKey(specialKey);
+                    }
                 PlayerPrefs.Save(); File.Delete(PreferenceBackup);
             }
         }

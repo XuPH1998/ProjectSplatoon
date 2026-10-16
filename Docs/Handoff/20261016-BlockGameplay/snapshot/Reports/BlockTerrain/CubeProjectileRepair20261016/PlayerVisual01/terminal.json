@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37\\InkLan.exe",
+    "-force-d3d12",
+    "-screen-width",
+    "1920",
+    "-screen-height",
+    "1080",
+    "-screen-fullscreen",
+    "0",
+    "-noSystemCursor",
+    "-automated",
+    "-blockProjectileVisualOutput",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\CubeProjectileRepair20261016\\PlayerVisual01\\Pixels",
+    "-logFile",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\CubeProjectileRepair20261016\\PlayerVisual01\\Player.log"
+  ],
+  "startedUtc": "2026-10-16T12:36:34.950095+00:00",
+  "exeSha256": "c7e054edf3cd28b374e29139288d6d3cb0077a75f677ebd0dea5ebdd91c53607",
+  "scope": "Packaged main-camera cube pixels; synthetic shots only",
+  "automaticRetry": false,
+  "timedOut": false,
+  "goalAcceptancePassed": false,
+  "pid": 73980,
+  "exitCode": 0,
+  "finishedUtc": "2026-10-16T12:36:51.880593+00:00",
+  "summaryExists": true,
+  "pixelsPassed": true,
+  "passed": true
+}

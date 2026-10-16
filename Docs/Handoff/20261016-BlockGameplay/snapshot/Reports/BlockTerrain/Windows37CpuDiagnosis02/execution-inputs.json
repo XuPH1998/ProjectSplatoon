@@ -1,0 +1,74 @@
+{
+  "createdUtc": "2026-10-16T13:05:38.563101+00:00",
+  "diagnosticOnly": true,
+  "pins": [
+    {
+      "path": "Reports/BlockTerrain/Windows37CpuDiagnosis02/launch-cpu37.py",
+      "sha256": "12ba44f0e8ff90c1d5f3d44aa9e14735895d9d59bf2ea54593e9433e2b628809"
+    },
+    {
+      "path": "Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu37-harness.py",
+      "sha256": "c99d8a21daecc81c972dc8f27a43947a12e778c50c7fde09faccdb94d133dd67"
+    },
+    {
+      "path": "Tools/BlockTerrain/performance_acceptance.py",
+      "sha256": "6eb434fb0f8d2be6fd8ca40088a7964268ba791011e5a706e2e5722e9ea63d32"
+    },
+    {
+      "path": "Tools/BlockTerrain/network_acceptance.py",
+      "sha256": "65067ca8137bba592394d677f1a94a090b6a3845f62cdf87bc49a19b1c5b8393"
+    },
+    {
+      "path": "Reports/BlockTerrain/Windows20/launch-isolated-package-smoke.py",
+      "sha256": "13b31ee884c2142b9d682e5695d95b961c97a8f4ec30f4202d44eaa2b755187e"
+    },
+    {
+      "path": "Reports/BlockTerrain/Windows20/standalone-preference-guard.py",
+      "sha256": "e182275920a17e9342aafa104f28fdb750c6213697c1d18853bee93c186ee7fb"
+    },
+    {
+      "path": "Reports/BlockTerrain/FullAssemblyRegression96/launch-isolated-harness.py",
+      "sha256": "f5824b02b5be79fec0ceb655f41d5a55b14da5fc8bd725fcab89e316a34153f3"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-inventory.json",
+      "sha256": "28418b58f78afbafc95493fe92058631997cd7b9b73d05816910ecd87b910e56"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/build-source-inputs.json",
+      "sha256": "7bc438c80cce00ca7886cb4462d6a95f30bde28cedc4bcf49955232ea9e7cfda"
+    },
+    {
+      "path": "Reports/BlockTerrain/Windows37AcceptancePreparation01/launch-performance37.py",
+      "sha256": "fd231b199f8b9da06d36294ad8ff93bb729b4e6bd4d151a1ddfd6824fdef96da"
+    },
+    {
+      "path": "Reports/BlockTerrain/Windows37AcceptancePreparation01/performance37-harness.py",
+      "sha256": "3c6d1dcc32f7b01c63f1304d97b4a4462b0fcad6da74bed400d159932b6228d9"
+    },
+    {
+      "path": "Reports/BlockTerrain/FullAssemblyRegression96/desktop-inheritance-probe.py",
+      "sha256": "d84b5e5de659cdad01bc201c588700b54860aaa8b0a381d276f0623905cdc152"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/root-acceptance.json",
+      "sha256": "a4d54cf81e16ef6c08402bcbeee5290ad16b798c656429bbc0e473fc1b9d9d54"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/compile-binding.json",
+      "sha256": "9e1df3dd5c771fefea3d9896d1ffff5d647461f9ff6f9bc68ef487aa75aa2ddc"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/build-record.json",
+      "sha256": "a40d8a2c2700c71789c43fbdb45f5b843abb9f1bf34b1e211828bf1bc85ce104"
+    },
+    {
+      "path": "Reports/BlockTerrain/GoalScopeFirstPlayable20261012.md",
+      "sha256": "d26ae8cdae52d34d4017fb0efc0d88d65b4b54c6bb659c1ad3f65a95173ef522"
+    },
+    {
+      "path": "Reports/BlockTerrain/GoalScopeDeferTowerCascade20261015.md",
+      "sha256": "ce44778a3552a79b4d9fafa7bf33e4b5d63c17b7e2dd504209f654d77f20bde1"
+    }
+  ]
+}

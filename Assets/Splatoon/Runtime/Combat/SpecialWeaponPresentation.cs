@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Splatoon.Config;
 using Splatoon.Prototype;
+using Splatoon.Blocks;
 using UnityEngine;
+using UnityEngine.Rendering;
 namespace Splatoon.Combat
 {
     // Presentation consumes authority events/snapshots. No damage, paint or charge is produced here.
@@ -11,9 +13,10 @@ namespace Splatoon.Combat
         public PrototypeMatch Match;
         sealed class View
         {
-            public SpecialEntityState State;public GameObject Root,Body;public LineRenderer[] Lines;public Transform[] Lobes;
+            public SpecialEntityState State;public GameObject Root,Body;public LineRenderer[] Lines;public Transform[] Lobes,Blocks;
             public SpecialWeaponTarget Target;public bool Predicted;public double Until;public SpecialWeaponRuntimeConfig Config;
             public SpecialWeaponService.Entity Flight;
+            public byte AuthorityLobes;
         }
         readonly Dictionary<uint,View> _views=new();
         readonly Dictionary<uint,uint> _removed=new();
@@ -23,12 +26,19 @@ namespace Splatoon.Combat
         readonly HashSet<(ulong,uint,uint)> _sounds=new();
         LineRenderer _preview;GameObject _landing;readonly List<Vector3> _points=new();
         uint _snapshotWatermark;
+        Material _cubeMaterial;
+        readonly AudioSource[] _voices=new AudioSource[12];int _voice;
+        static bool BlockMode=>BlockTerrain.Current!=null&&BlockTerrain.Current.Initialized;
         static (ulong,uint,uint,uint) Key(SpecialEntityState s)=>(s.Owner,s.Life,s.HeroRevision,s.Attack);
         static double Clock=>PrototypeMatch.Current!=null?PrototypeMatch.Current.NetworkManager.ServerTime.Time:Time.timeAsDouble;
         public int Count=>_views.Count;
         public readonly HashSet<SpecialWeaponType> ObservedTypes=new();
         void Sound(SpecialWeaponRuntimeConfig c,Vector3 position,bool use)
-        {var clip=use?c.UseAudio:c.EffectAudio;if(clip!=null)AudioSource.PlayClipAtPoint(clip,position,.25f);}
+        {
+            var clip=use?c.UseAudio:c.EffectAudio;if(clip==null||!Application.isPlaying)return;int at=_voice++%_voices.Length;
+            if(_voices[at]==null){var go=new GameObject("Special block audio");go.transform.SetParent(transform,false);var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.spatialBlend=1;source.minDistance=2;source.maxDistance=24;_voices[at]=source;}
+            var voice=_voices[at];voice.transform.position=position;voice.clip=clip;voice.volume=.25f;voice.Play();
+        }
         public void Lifecycle(SpecialLifecycleEvent e)
         {
             var s=e.State;ObservedTypes.Add(s.Type);if(e.Sequence<=_snapshotWatermark&&!_views.ContainsKey(s.Id))return;
@@ -37,7 +47,7 @@ namespace Splatoon.Combat
             {
                 if(_views.TryGetValue(s.Id,out var old)&&old.State.Version>s.Version)return;
                 _removed[s.Id]=s.Version;
-                if(_views.Remove(s.Id,out var v)){if(s.Type==SpecialWeaponType.Trizooka||s.Health<=0)Impact(v.Config,s);Destroy(v.Root);}
+                if(_views.Remove(s.Id,out var v)){if(BlockMode&&s.Type==SpecialWeaponType.Trizooka)LobeImpacts(v,s);else if(s.Type==SpecialWeaponType.Trizooka||s.Health<=0)Impact(v.Config,s);HeroViewBinder.Destroy(v.Root);}
                 return;
             }
             Upsert(s);
@@ -46,15 +56,17 @@ namespace Splatoon.Combat
         {
             if(watermark<_snapshotWatermark)return;_snapshotWatermark=watermark;var live=new HashSet<uint>();
             foreach(var s in states){live.Add(s.Id);if(!_removed.TryGetValue(s.Id,out uint dead)||dead<s.Version)Upsert(s);}
-            var ids=new List<uint>(_views.Keys);foreach(uint id in ids)if(!live.Contains(id)&&_views[id].State.Version<=watermark){Destroy(_views[id].Root);_views.Remove(id);_removed[id]=watermark;}
+            var ids=new List<uint>(_views.Keys);foreach(uint id in ids)if(!live.Contains(id)&&_views[id].State.Version<=watermark){HeroViewBinder.Destroy(_views[id].Root);_views.Remove(id);_removed[id]=watermark;}
             // Ordered reliable streams + watermark make older tombstones redundant.
             var gone=new List<uint>(_removed.Keys);foreach(uint id in gone)if(_removed[id]<watermark)_removed.Remove(id);
         }
         void Upsert(SpecialEntityState s)
         {
             ObservedTypes.Add(s.Type);
-            if(_views.TryGetValue(s.Id,out var v)){if(s.Version<v.State.Version||s.SampledAt<v.State.SampledAt)return;v.State=s;return;}
-            if(_predicted.Remove(Key(s),out v)){v.Predicted=false;v.State=s;}
+            if(_views.TryGetValue(s.Id,out var v)){if(s.Version<v.State.Version||s.SampledAt<v.State.SampledAt)return;
+                if(BlockMode){LobeImpacts(v,s);if(s.Type==SpecialWeaponType.TripleInkstrike&&s.Phase==SpecialEntityPhase.Active&&v.State.Phase!=SpecialEntityPhase.Active)Impact(v.Config,s);}
+                v.State=s;return;}
+            if(_predicted.Remove(Key(s),out v)){if(BlockMode)LobeImpacts(v,s);v.Predicted=false;v.State=s;}
             else v=Create(s,SpecialWeaponConfigService.Current.Get((int)s.Type));
             _views[s.Id]=v;
             if(s.Type==SpecialWeaponType.Reefslider)Impact(v.Config,s);
@@ -62,21 +74,47 @@ namespace Splatoon.Combat
         View Create(SpecialEntityState s,SpecialWeaponRuntimeConfig c)
         {
             var root=new GameObject("Special_"+s.Type+"_"+s.Id);root.transform.SetParent(transform,false);
-            var v=new View{State=s,Root=root,Config=c,Lines=new LineRenderer[3],Lobes=new Transform[3]};
-            if(c.EntityPrefab!=null){v.Body=Instantiate(c.EntityPrefab,root.transform);foreach(var col in v.Body.GetComponentsInChildren<Collider>())col.enabled=false;Tint(v.Body,s.Team);}
+            var v=new View{State=s,Root=root,Config=c,Lines=new LineRenderer[3],Lobes=new Transform[3],AuthorityLobes=s.LiveLobes};
+            if(BlockMode){if(s.Type!=SpecialWeaponType.Trizooka)CreateBlockBody(v);}
+            else if(c.EntityPrefab!=null){v.Body=Instantiate(c.EntityPrefab,root.transform);foreach(var col in v.Body.GetComponentsInChildren<Collider>())col.enabled=false;Tint(v.Body,s.Team);}
             for(int i=0;i<3;i++)v.Lines[i]=Line(root.transform,c,s.Team,.08f);
             if(s.Type==SpecialWeaponType.Trizooka)for(int i=0;i<3;i++)
-            {var b=GameObject.CreatePrimitive(PrimitiveType.Sphere);Destroy(b.GetComponent<Collider>());b.transform.SetParent(root.transform);b.transform.localScale=Vector3.one*.35f;b.GetComponent<Renderer>().sharedMaterial=c.Material;Tint(b,s.Team);v.Lobes[i]=b.transform;}
+            {var b=BlockMode?Cube(root.transform,s.Team,"Special block lobe",.24f):GameObject.CreatePrimitive(PrimitiveType.Sphere);if(!BlockMode){Destroy(b.GetComponent<Collider>());b.transform.SetParent(root.transform);b.transform.localScale=Vector3.one*.35f;b.GetComponent<Renderer>().sharedMaterial=c.Material;Tint(b,s.Team);}v.Lobes[i]=b.transform;}
             root.transform.position=s.Position;return v;
         }
         static void Tint(GameObject go,byte team)
-        {var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",PrototypeArena.TeamColor(team));block.SetColor("_Color",PrototypeArena.TeamColor(team));foreach(var r in go.GetComponentsInChildren<Renderer>())r.SetPropertyBlock(block);}
+        {var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",PrototypeArena.TeamColor(team));block.SetColor("_Color",PrototypeArena.TeamColor(team));block.SetColor("_TeamColor",PrototypeArena.TeamColor(team));foreach(var r in go.GetComponentsInChildren<Renderer>())r.SetPropertyBlock(block);}
+        GameObject Cube(Transform parent,byte team,string label,float size)
+        {
+            if(_cubeMaterial==null)_cubeMaterial=new Material(Resources.Load<Shader>("BlockProjectile")){name="Special block material",enableInstancing=true};
+            var go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.name=label;go.transform.SetParent(parent,false);go.transform.localScale=Vector3.one*size;
+            var collider=go.GetComponent<Collider>();collider.enabled=false;HeroViewBinder.Destroy(collider);
+            var renderer=go.GetComponent<MeshRenderer>();renderer.sharedMaterial=_cubeMaterial;renderer.shadowCastingMode=ShadowCastingMode.Off;Tint(go,team);return go;
+        }
+        void CreateBlockBody(View v)
+        {
+            v.Body=new GameObject("Special block body");v.Body.transform.SetParent(v.Root.transform,false);
+            int count=v.State.Type==SpecialWeaponType.InkStorm?21:v.State.Type==SpecialWeaponType.TripleInkstrike?32:5;v.Blocks=new Transform[count];
+            for(int i=0;i<count;i++)
+            {
+                var cube=Cube(v.Body.transform,v.State.Team,"Special block "+i,i==0?.28f:.14f);v.Blocks[i]=cube.transform;
+                cube.transform.localPosition=i==0?Vector3.zero:new Vector3(i%2==0?.18f:-.18f,.12f,i<3?.18f:-.18f);
+                if(i>=5)cube.SetActive(false);
+            }
+        }
+        void LobeImpacts(View view,SpecialEntityState after)
+        {
+            if(after.Type!=SpecialWeaponType.Trizooka)return;int removed=view.AuthorityLobes&~after.LiveLobes;view.AuthorityLobes=after.LiveLobes;
+            for(int i=0;i<3;i++)if((removed&(1<<i))!=0)
+            {var impact=after;impact.Position=i==0?after.P0:i==1?after.P1:after.P2;impact.Id=after.Id*3+(uint)i;Impact(view.Config,impact);}
+        }
         static LineRenderer Line(Transform parent,SpecialWeaponRuntimeConfig c,byte team,float width)
         {var go=new GameObject("SpecialLine");go.transform.SetParent(parent,false);var l=go.AddComponent<LineRenderer>();l.sharedMaterial=c.Material;l.useWorldSpace=true;l.widthMultiplier=width;l.startColor=l.endColor=PrototypeArena.TeamColor(team);l.positionCount=0;return l;}
         static void Ring(LineRenderer l,Vector3 center,float radius)
         {l.positionCount=65;for(int i=0;i<65;i++){float a=i*Mathf.PI/32;l.SetPosition(i,center+new Vector3(Mathf.Cos(a),0,Mathf.Sin(a))*radius);}}
         void Impact(SpecialWeaponRuntimeConfig c,SpecialEntityState s)
         {
+            if(BlockMode){InkPresentation.Current?.BlockBurst(s.Position,s.Normal,s.Team,s.Id^s.Version,s.SampledAt>0?s.SampledAt:Clock,Mathf.Max(.5f,c.P.outerRadius));Sound(c,s.Position,false);return;}
             var go=new GameObject("SpecialImpact");go.transform.position=s.Position;go.transform.SetParent(transform);var l=Line(go.transform,c,s.Team,.18f);
             Ring(l,s.Position,Mathf.Max(.5f,c.P.paintRadius));Destroy(go,.25f);Sound(c,s.Position,false);
         }
@@ -119,7 +157,7 @@ namespace Splatoon.Combat
                 }
                 Present(v,now);
             }
-            foreach(var k in stale){Destroy(_predicted[k].Root);_predicted.Remove(k);}
+            foreach(var k in stale){HeroViewBinder.Destroy(_predicted[k].Root);_predicted.Remove(k);}
             PresentHeld(now);Preview();
         }
         void Present(View v,double now)
@@ -139,17 +177,21 @@ namespace Splatoon.Combat
             switch(s.Type)
             {
                 case SpecialWeaponType.Trizooka:
-                    for(int i=0;i<3;i++){bool visible=(s.LiveLobes&(1<<i))!=0&&now+1e-6>=s.Born+i*(double)p.lobeDelay;v.Lobes[i].gameObject.SetActive(visible);if(!visible)continue;var point=(i==0?s.P0:i==1?s.P1:s.P2)+s.Velocity*extrap;v.Lobes[i].position=point;var l=v.Lines[i];l.positionCount=2;l.SetPosition(0,point);l.SetPosition(1,point-s.Velocity*.035f);}break;
+                    for(int i=0;i<3;i++){bool visible=(s.LiveLobes&(1<<i))!=0&&now+1e-6>=s.Born+i*(double)p.lobeDelay;v.Lobes[i].gameObject.SetActive(visible);if(!visible)continue;var point=(i==0?s.P0:i==1?s.P1:s.P2)+s.Velocity*extrap;v.Lobes[i].position=point;
+                        if(BlockMode)v.Lobes[i].rotation=Quaternion.Euler((float)(now-s.Born)*180,i*120,(float)(now-s.Born)*90);else{var l=v.Lines[i];l.positionCount=2;l.SetPosition(0,point);l.SetPosition(1,point-s.Velocity*.035f);}}break;
                 case SpecialWeaponType.TripleInkstrike:
                     if(s.Phase==SpecialEntityPhase.Warning)Ring(v.Lines[0],position+.04f*Vector3.up,p.innerRadius);
-                    else if(s.Phase==SpecialEntityPhase.Active){float radius=p.innerRadius*Mathf.Clamp01((float)(now-s.Changed)/p.expandSeconds);var l=v.Lines[0];l.positionCount=100;for(int i=0;i<100;i++){float a=i*.45f+(float)now*8;float y=i/99f*p.damageHeight;l.SetPosition(i,position+new Vector3(Mathf.Cos(a)*radius,y,Mathf.Sin(a)*radius));}}break;
+                    else if(s.Phase==SpecialEntityPhase.Active){float radius=p.innerRadius*Mathf.Clamp01((float)(now-s.Changed)/p.expandSeconds);
+                        if(BlockMode){for(int i=0;i<v.Blocks.Length;i++){float a=i*2.39996f+(float)now*8;v.Blocks[i].gameObject.SetActive(true);v.Blocks[i].localPosition=new Vector3(Mathf.Cos(a)*radius,i/(float)(v.Blocks.Length-1)*p.damageHeight,Mathf.Sin(a)*radius);v.Blocks[i].localRotation=Quaternion.Euler(i*23,(float)now*180,0);}}
+                        else{var l=v.Lines[0];l.positionCount=100;for(int i=0;i<100;i++){float a=i*.45f+(float)now*8;float y=i/99f*p.damageHeight;l.SetPosition(i,position+new Vector3(Mathf.Cos(a)*radius,y,Mathf.Sin(a)*radius));}}}break;
                 case SpecialWeaponType.WaveBreaker:
                     if(s.Phase!=SpecialEntityPhase.Active)break;
                     for(int i=0;i<s.Pulse;i++){double age=now-s.Changed-p.waveFirst-i*p.waveInterval;if(age>=0&&age<=p.waveLifetime)Ring(v.Lines[i],position+Vector3.up*.05f,p.waveRadius*(float)(age/p.waveLifetime));}
                     if(v.Body!=null)v.Body.transform.localPosition=Vector3.up*(.1f+Mathf.Abs(Mathf.Sin((float)(now-s.Changed)*Mathf.PI/(p.waveInterval)))*.2f);break;
                 case SpecialWeaponType.InkStorm:
-                    if(s.Phase==SpecialEntityPhase.Active){if(v.Body!=null)v.Body.transform.localScale=new Vector3(p.innerRadius*2,1,p.innerRadius*2);Ring(v.Lines[0],position+Vector3.down*p.cloudHeight,p.innerRadius);
-                        var l=v.Lines[1];l.positionCount=24;for(int i=0;i<12;i++){float a=i*2.39996f;Vector3 q=position+new Vector3(Mathf.Cos(a),0,Mathf.Sin(a))*p.innerRadius*.75f;l.SetPosition(i*2,q);l.SetPosition(i*2+1,q+Vector3.down*(p.cloudHeight*.8f));}}break;
+                    if(s.Phase==SpecialEntityPhase.Active){Ring(v.Lines[0],position+Vector3.down*p.cloudHeight,p.innerRadius);
+                        if(BlockMode){for(int i=0;i<v.Blocks.Length;i++){v.Blocks[i].gameObject.SetActive(true);v.Blocks[i].localScale=Vector3.one*(i<9?.24f:.10f);v.Blocks[i].localPosition=i<9?new Vector3((i%3-1)*p.innerRadius*.6f,0,(i/3-1)*p.innerRadius*.6f):new Vector3(Mathf.Cos(i*2.39996f)*p.innerRadius*.75f,-Mathf.Repeat((float)(now-s.Changed)*7+i*.67f,p.cloudHeight*.8f),Mathf.Sin(i*2.39996f)*p.innerRadius*.75f);}}
+                        else{if(v.Body!=null)v.Body.transform.localScale=new Vector3(p.innerRadius*2,1,p.innerRadius*2);var l=v.Lines[1];l.positionCount=24;for(int i=0;i<12;i++){float a=i*2.39996f;Vector3 q=position+new Vector3(Mathf.Cos(a),0,Mathf.Sin(a))*p.innerRadius*.75f;l.SetPosition(i*2,q);l.SetPosition(i*2+1,q+Vector3.down*(p.cloudHeight*.8f));}}}break;
                 case SpecialWeaponType.Reefslider:
                     if(now-s.Born<.3)Ring(v.Lines[0],position,p.outerRadius);else v.Lines[0].positionCount=0;
                     if(v.Body!=null)v.Body.SetActive(now-s.Born<.3);break;
@@ -164,13 +206,13 @@ namespace Splatoon.Combat
                 int type=s.SpecialWeaponId;var c=SpecialWeaponConfigService.Current.Get(type);visible.Add(player.PlayerId);
                 if(!_held.TryGetValue(player.PlayerId,out var old)||old.type!=type||old.action!=s.SpecialAction)
                 {
-                    if(old.root!=null)Destroy(old.root);var go=c.HeldPrefab!=null?Instantiate(c.HeldPrefab,transform):new GameObject("SpecialHeld");Tint(go,s.Team);_held[player.PlayerId]=(go,type,s.SpecialAction);old=_held[player.PlayerId];
+                    if(old.root!=null)HeroViewBinder.Destroy(old.root);var go=BlockMode&&(c.Type==SpecialWeaponType.InkStorm||c.Type==SpecialWeaponType.TripleInkstrike)?Cube(transform,s.Team,"Special held block",.22f):c.HeldPrefab!=null?Instantiate(c.HeldPrefab,transform):new GameObject("SpecialHeld");Tint(go,s.Team);_held[player.PlayerId]=(go,type,s.SpecialAction);old=_held[player.PlayerId];
                     if(_sounds.Add((player.PlayerId,s.HeroRevision,s.SpecialAction)))Sound(c,player.transform.position,true);
                 }
                 old.root.transform.SetPositionAndRotation(player.transform.position+Quaternion.Euler(0,s.Yaw,0)*(c.Type==SpecialWeaponType.Reefslider?new Vector3(0,.25f,.3f):new Vector3(.3f,1.1f,.5f)),Quaternion.Euler(s.Pitch,s.Yaw,0));
                 old.root.SetActive(!s.Swimming);
             }
-            var keys=new List<ulong>(_held.Keys);foreach(var id in keys)if(!visible.Contains(id)){Destroy(_held[id].root);_held.Remove(id);}
+            var keys=new List<ulong>(_held.Keys);foreach(var id in keys)if(!visible.Contains(id)){HeroViewBinder.Destroy(_held[id].root);_held.Remove(id);}
         }
         void Preview()
         {
@@ -188,7 +230,7 @@ namespace Splatoon.Combat
             _preview.positionCount=_points.Count;_preview.SetPositions(_points.ToArray());
         }
         public void Clear()
-        {foreach(var v in _views.Values)Destroy(v.Root);foreach(var v in _predicted.Values)Destroy(v.Root);foreach(var v in _held.Values)Destroy(v.root);_views.Clear();_predicted.Clear();_held.Clear();_removed.Clear();_sounds.Clear();_snapshotWatermark=0;if(_preview!=null)_preview.positionCount=0;}
-        void OnDestroy()=>Clear();
+        {foreach(var v in _views.Values)HeroViewBinder.Destroy(v.Root);foreach(var v in _predicted.Values)HeroViewBinder.Destroy(v.Root);foreach(var v in _held.Values)HeroViewBinder.Destroy(v.root);_views.Clear();_predicted.Clear();_held.Clear();_removed.Clear();_sounds.Clear();_snapshotWatermark=0;if(_preview!=null)_preview.positionCount=0;foreach(var voice in _voices)if(voice!=null)voice.Stop();}
+        void OnDestroy(){Clear();if(_cubeMaterial!=null)HeroViewBinder.Destroy(_cubeMaterial);}
     }
 }

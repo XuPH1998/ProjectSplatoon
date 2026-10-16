@@ -17,6 +17,14 @@ namespace Splatoon.Combat
 
         MaterialPropertyBlock _color;
         PaperCapture _capture;
+        // A separate disabled stage evaluates replay candidates. It never owns
+        // the published hit collider, render texture or live capture history.
+        PaperCapture _traversalCapture;
+        const int TraversalContourCacheCapacity = 64;
+        readonly Dictionary<(int Frame, Vector2 Move), IReadOnlyList<Rect>> _traversalRects = new();
+        readonly Queue<(int Frame, Vector2 Move)> _traversalKeys = new();
+        (PaperBodyProfile Profile, GameObject Prefab, Vector3 Center, float Height,
+            Vector2 Size, float Thickness, string ContentHash) _traversalShape;
         public PaperCapture Capture => _capture;
         public IReadOnlyList<Rect> HitRects => _capture?.HitRects;
         static readonly List<SwimBody> Active = new();
@@ -54,7 +62,48 @@ namespace Splatoon.Combat
             ReleaseCapture();
         }
         void OnDestroy() => ReleaseCapture();
-        void ReleaseCapture() { if (HitVolume != null) HitVolume.sharedMesh = null; _capture?.Dispose(); _capture = null; }
+        void ReleaseCapture()
+        {
+            if (HitVolume != null) HitVolume.sharedMesh = null;
+            _capture?.Dispose(); _capture = null;
+            ReleaseTraversalCapture();
+        }
+        void ReleaseTraversalCapture()
+        {
+            _traversalCapture?.Dispose(); _traversalCapture = null;
+            _traversalRects.Clear(); _traversalKeys.Clear(); _traversalShape = default;
+        }
+        /// <summary>Immutable authored contour for this snapshot's current serialized
+        /// animation/move key. Does not advance animation or publish live hit geometry.</summary>
+        public IReadOnlyList<Rect> QueryTraversalRects(PlayerSnapshot state)
+        {
+            var profile = Profile;
+            if (profile == null || profile.CapturePrefab == null) return null;
+            // Profile/prefab selects the hero and weapon rig. These remaining
+            // fields are every profile value read by Sample's projection/build.
+            // CapturePrefab and its authored content hash are immutable at runtime.
+            var shape = (profile, profile.CapturePrefab, profile.CaptureCenter, profile.CaptureHeight,
+                profile.Size, profile.Thickness, profile.ContentHash ?? "");
+            if (_traversalCapture == null || !_traversalShape.Equals(shape))
+            {
+                ReleaseTraversalCapture(); _traversalShape = shape;
+                _traversalCapture = new PaperCapture(profile);
+            }
+            // Exactly PaperCapture.Sample's quantization for the explicit key
+            // supplied by the caller, including final motor validation. No live cache is consulted.
+            int frame = Mathf.FloorToInt(state.PaperAnimationTime * PaperAnimation.FramesPerSecond);
+            var move = new Vector2(Mathf.Round(state.PaperMove.x * 8) / 8, Mathf.Round(state.PaperMove.y * 8) / 8);
+            var key = (frame, move);
+            if (_traversalRects.TryGetValue(key, out var cached)) return cached;
+            _traversalCapture.Sample(state);
+            // Sample mutates its scratch list; callers must retain a value that
+            // survives later samples, deterministic FIFO eviction and rebinds.
+            var rects = new List<Rect>(_traversalCapture.HitRects).AsReadOnly();
+            if (_traversalKeys.Count == TraversalContourCacheCapacity)
+                _traversalRects.Remove(_traversalKeys.Dequeue());
+            _traversalKeys.Enqueue(key); _traversalRects.Add(key, rects);
+            return rects;
+        }
         void Sample(PlayerSnapshot state)
         {
             if (Profile == null || Profile.CapturePrefab == null) return;

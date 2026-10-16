@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "C:/Users/wepie/AppData/Local/Unity/bin/unity.exe",
+    "command",
+    "run_script",
+    "--project-path",
+    "D:\\XPHUNITY\\ProjectSplatoon",
+    "--caller",
+    "plugin",
+    "--skill",
+    "unity-cli",
+    "--format",
+    "json",
+    "--timeout",
+    "120",
+    "--",
+    "--file",
+    "D:/XPHUNITY/ProjectSplatoon/Reports/BlockTerrain/Handoff20261016/StopOwnedEditor.cs",
+    "--entry",
+    "Splatoon.ReportGuards.StopOwnedEditor.Run",
+    "--args",
+    "[]",
+    "--mode",
+    "ephemeral",
+    "--timeout_ms",
+    "120000"
+  ],
+  "startedUtc": "2026-10-16T13:22:05.540103+00:00",
+  "creationFlags": "CREATE_NO_WINDOW",
+  "automaticRetry": false,
+  "returncode": 0,
+  "finishedUtc": "2026-10-16T13:22:05.812657+00:00"
+}

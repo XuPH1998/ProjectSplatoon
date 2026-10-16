@@ -11,8 +11,7 @@ namespace Splatoon.Tests
     [InitializeOnLoad]
     public sealed class SubWeaponValidationRunner : ICallbacks
     {
-        static TestRunnerApi api;
-        static SubWeaponValidationRunner() { api=ScriptableObject.CreateInstance<TestRunnerApi>();api.RegisterCallbacks(new SubWeaponValidationRunner());EditorApplication.update+=Poll; }
+        static SubWeaponValidationRunner() { TestRunnerApi.RegisterTestCallback(new SubWeaponValidationRunner());EditorApplication.update+=Poll; }
         static void Poll()
         {
             const string build="Temp/SubWeapons/build";
@@ -38,7 +37,9 @@ namespace Splatoon.Tests
             var lines=File.ReadAllLines(request);File.Delete(request);Directory.CreateDirectory("Reports/SubWeapons");
             SessionState.SetString("SubWeapon.TestLabel",lines[0]);SessionState.SetBool("SubWeapon.TestsRunning",true);
             File.WriteAllText("Reports/SubWeapons/test-status.txt","RUNNING "+lines[0]);
-            api.Execute(new ExecutionSettings(new Filter{testMode=TestMode.EditMode,testNames=lines[1].Split(';')}));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter{testMode=TestMode.EditMode,testNames=lines[1].Split(';')})); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         public void RunStarted(ITestAdaptor tests){} public void TestStarted(ITestAdaptor test){} public void TestFinished(ITestResultAdaptor result){}
         public void RunFinished(ITestResultAdaptor result)

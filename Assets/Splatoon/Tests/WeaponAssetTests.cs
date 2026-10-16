@@ -31,7 +31,7 @@ namespace Splatoon.Tests
         [Test] public void SixAssetsExactlyPreserveOriginalWeaponValues()
         {
             var baseline = SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAssets/Migration-Baseline.json"));
-            var rows = HeroMigrationTests.CombinedHeroes();
+            var rows = HistoricalHeroFixture.WeaponAssetRows();
             Assert.That(rows.Children.Count(r => r["id"].AsInt <= 6), Is.EqualTo(6));
             foreach (var old in baseline.Children)
             {

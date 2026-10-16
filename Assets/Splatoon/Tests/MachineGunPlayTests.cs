@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Networking;
@@ -31,7 +32,7 @@ namespace Splatoon.Tests
             while(!ready()&&Time.realtimeSinceStartupAsDouble<end)yield return null;
             Assert.That(ready(),Is.True,message);
         }
-        [UnityTest] public IEnumerator RealHostMachineGunLifecycleAndFourPlayerVolley()
+        [UnityTest, Timeout(600000)] public IEnumerator RealHostMachineGunLifecycleAndFourPlayerVolley()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode();
@@ -126,23 +127,63 @@ namespace Splatoon.Tests
                 Assert.That(Vector3.Distance(view.Animator.GetBoneTransform(HumanBodyBones.LeftHand).position,view.LeftGrip.position),Is.LessThan(.045),"Support grip at pitch "+pitch);
                 Capture(camera,host,"aim-"+pitch);
             }
-            // Entering ink cancels even with the firing trigger still held.
+            // Only stable friendly blocks authorize attachment. Keep the four-player
+            // volley and resource oracle; supply the terrain that the new rule requires.
+            using var blocks = new BlockDefaultContractFixture(match);
+            // FixedUpdate is paused: naturally finish every paid projectile and
+            // deferred terrain result before diagnostic Seed can replace the world.
+            blocks.Now = Math.Max(blocks.Now, Math.Max(blocks.Terrain.SimulationTime, start + 116 / 60.0));
+            for (int frame = 0; frame < 1800 && (match.Projectiles.PendingCount > 0 || blocks.Terrain.PendingTransactions > 0); frame++)
+            {
+                blocks.Tick(); match.Projectiles.Simulate(blocks.Now);
+                yield return null;
+            }
+            Assert.That(match.Projectiles.PendingCount, Is.Zero, "Every accepted shot, foot drop and trail drop finishes naturally before seeding");
+            Assert.That(blocks.Terrain.PendingTransactions, Is.Zero, "Every accepted volley terrain result commits before seeding");
+            yield return blocks.Publish();
+            foreach (var p in players)
+            {
+                Assert.That(p.Snapshot.Value.ShotSequence, Is.EqualTo(22));
+                Assert.That(p.Snapshot.Value.Ink, Is.EqualTo(85).Within(.002), "Terrain completion does not charge a paid magazine again");
+                Assert.That(p.Snapshot.Value.SplatlingReservedInk, Is.Zero);
+            }
+            var support = blocks.Empty(); var supportCell = BlockWorld.CellAt(new Vector3(0, .05f, -20));
+            for (int x = -8; x <= 8; x++) for (int z = -8; z <= 8; z++)
+                Assert.That(support.Set(supportCell + new Vector3Int(x, 0, z), BlockCell.Create(1, true)), Is.True);
+            yield return blocks.Seed(support);
+            double lifecycleNow = Math.Max(start + 8, blocks.Now + BlockDefaultContractFixture.Dt);
+            var grounded = host.Snapshot.Value; grounded.Team = 1;
+            grounded.Position = BlockWorld.Center(supportCell) + Vector3.up * .09f;
+            grounded.Grounded = true; grounded.VerticalSpeed = 0; grounded.PlanarVelocity = Vector3.zero;
+            host.Snapshot.Value = grounded; new PlayerMotorSimulation(host.GetComponent<CharacterController>()).Restore(grounded);
+            Physics.SyncTransforms();
+            Assert.That(Physics.Raycast(grounded.Position + Vector3.up * .08f, Vector3.down, out var supportHit, .25f,
+                1 << BlockTerrain.TerrainLayer), Is.True);
+            Assert.That(blocks.Terrain.TryContact(supportHit, out var contact), Is.True);
+            Assert.That(contact.Stable && contact.Owner == grounded.Team, Is.True);
+            // Entering stable friendly blocks cancels even with the firing trigger held.
             var active=host.Snapshot.Value;active.SplatlingReservedInk=10;active.Ink=55;active.SplatlingRemaining=20;active.WeaponPhase=WeaponPhase.Firing;active.AttackNeedsRelease=false;active.SwimWasHeld=false;
             host.Snapshot.Value=active;
             Input(host,new PlayerInputFrame{Revision=active.Revision,HeroRevision=active.HeroRevision,Fire=true,FireSequence=2,Swim=true,Look=new Vector2(active.Yaw,0)});
-            host.Simulate(1f/60,start+8,MatchPhase.Practice);
+            host.Simulate(1f/60,lifecycleNow,MatchPhase.Practice);
             Assert.That(host.Snapshot.Value.SplatlingRemaining,Is.Zero);Assert.That(host.Snapshot.Value.SplatlingReservedInk,Is.Zero);
-            Assert.That(host.Snapshot.Value.Swimming,Is.True);Present(host,start+8);Capture(camera,host,"swim-cancel");
+            Assert.That(host.Snapshot.Value.Swimming,Is.True);Present(host,lifecycleNow);Capture(camera,host,"swim-cancel");
             var dead=host.Snapshot.Value;dead.ProtectedUntil=0;host.Snapshot.Value=dead;uint life=dead.Revision;
             host.ReceiveDamage((byte)(3-dead.Team),200,Vector3.forward);
             Assert.That(host.Snapshot.Value.Health,Is.LessThanOrEqualTo(0));Assert.That(host.Snapshot.Value.Swimming,Is.False);
+            Assert.That(host.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Bubble));
+            Assert.That(host.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Bubble));
+            Present(host,lifecycleNow+.01); Capture(camera,host,"downed-bubble");
+            host.ExpireBubble(host.Snapshot.Value.BubbleUntil + .01);
+            Assert.That(host.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Dead));
+            Assert.That(host.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.Expired));
             Present(host,host.Snapshot.Value.DiedAt+1);Capture(camera,host,"death");
             host.Simulate(1f/60,host.Snapshot.Value.RespawnsAt+.01,MatchPhase.Practice);Present(host,host.Snapshot.Value.SimulatedAt);
             Assert.That(host.Snapshot.Value.Revision,Is.GreaterThan(life));Assert.That(host.Snapshot.Value.HeroId,Is.EqualTo(6));
             Assert.That(host.Snapshot.Value.SplatlingRemaining,Is.Zero);Assert.That(host.CharacterView.Animator.enabled,Is.True);
             Assert.That(host.CharacterView.Weapon.parent,Is.SameAs(host.CharacterView.WeaponSocket));Capture(camera,host,"respawn");
             timings.Sort();
-            File.WriteAllText(Output+"/results.txt",$"PASS: GPU URP host boot, sixth hero selection/preload, 3 bots inherit ID6, four magazines = 88 unique rounds, total 15 ink each, full damage identity, five aim angles (-65 to 75) and left grip, swim cancel, swim death, respawn.\nPeak active projectiles={peak}\nSynchronous four-player simulation P95 ms={timings[(int)(timings.Count*.95)]:F3} (not render frame time)\nGPU={SystemInfo.graphicsDeviceName}\nResolution=960x960\n");
+            File.WriteAllText(Output+"/results.txt",$"PASS: GPU URP host boot, sixth hero selection/preload, 3 bots inherit ID6, four magazines = 88 unique rounds, total 15 ink each, full damage identity, five aim angles (-65 to 75) and left grip, stable friendly-block swim cancel, downed bubble, expiration/death, respawn.\nPeak active projectiles={peak}\nSynchronous four-player simulation P95 ms={timings[(int)(timings.Count*.95)]:F3} (not render frame time)\nGPU={SystemInfo.graphicsDeviceName}\nResolution=960x960\n");
             yield return CompareFourModels(app, camera, players);
             UnityEngine.Object.Destroy(camera.gameObject);
             yield return app.Leave().ToCoroutine();

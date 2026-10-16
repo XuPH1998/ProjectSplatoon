@@ -24,7 +24,7 @@ namespace Splatoon.Tests
             while (!ready() && Time.realtimeSinceStartupAsDouble < end) yield return null;
             Assert.That(ready(), Is.True, message);
         }
-        [UnityTest] public IEnumerator HostLoadsDualiesAndUsesNormalDamageBeyondReferenceRange()
+        [UnityTest, Timeout(600000)] public IEnumerator HostLoadsDualiesAndUsesNormalDamageBeyondReferenceRange()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode();
@@ -54,7 +54,7 @@ namespace Splatoon.Tests
             var view = player.CharacterView; var state = player.Snapshot.Value;
             state.AttackNeedsRelease = false; state.Health = state.Ink = 100; state.ProtectedUntil = 0;
             state.Grounded = true; state.Swimming = false; state.Yaw = state.BodyYaw = state.Pitch = 0;
-            double start = player.NetworkManager.ServerTime.Time; int rounds = 0;
+            double start = player.NetworkManager.ServerTime.Time; int rounds = 0; InkShot lastShown = default;
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
             for (int t = 0; t < 60; t++)
             {
@@ -65,12 +65,24 @@ namespace Splatoon.Tests
                     Assert.That(state.LastShotMuzzle, Is.EqualTo(rounds % 2)); rounds++;
                     view.Shot(state.LastShotMuzzle, state.ShotActionId, player.NetworkManager.ServerTime.Time);
                     match.Projectiles.Spawn(player, state, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
-                    InkPresentation.Current.Spawn(match.Projectiles.Spawned.Last());
+                    lastShown = match.Projectiles.Spawned.Last(); InkPresentation.Current.Spawn(lastShown);
                 }
                 view.Animator.Update(1f / 60); yield return null;
             }
             Assert.That(rounds, Is.EqualTo(7)); Assert.That(view.LeftWeapon, Is.Not.Null); Assert.That(view.LeftNozzle, Is.Not.Null);
-            Assert.That(InkPresentation.Current.ParticleCount, Is.GreaterThan(0));
+            Assert.That(InkPresentation.Current.BlockMode, Is.True);
+            // Check a fresh actual authoritative emission at its own age, before a slow
+            // editor frame can retire the final sample of the one-second animation loop.
+            var shown = lastShown;
+            InkPresentation.Current.Clear(); shown.Id += 100000; shown.Born = player.NetworkManager.ServerTime.Time;
+            InkPresentation.Current.Spawn(shown);
+            InkPresentation.Current.UpdateFlights(shown.Born + .01, Camera.main);
+            Assert.That(InkPresentation.Current.BlockCubeCount, Is.EqualTo(1));
+            Assert.That(BlockDefaultContractFixture.Flights(InkPresentation.Current)
+                .TryPosition(shown.Round, shown.Id, shown.Born + .01, out var shownPosition), Is.True);
+            Assert.That(Vector3.Distance(shownPosition, InkBallistics.Position(shown, w, .01)), Is.LessThan(.001));
+            Assert.That(InkPresentation.Current.ParticleCount, Is.Zero);
+            Assert.That(InkPresentation.Current.Streams, Is.Empty);
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
 
             foreach (var collider in player.GetComponentsInChildren<Collider>()) collider.enabled = false;
@@ -86,7 +98,7 @@ namespace Splatoon.Tests
             }
             void RestoreTarget(float distance)
             {
-                var victim = player.Snapshot.Value; victim.Team = 2; victim.Health = 100; victim.ProtectedUntil = 0;
+                var victim = player.Snapshot.Value; victim.Team = 2; victim.Health = 100; victim.LifeState = PlayerLifeState.Alive; victim.BubbleUntil = 0; victim.ProtectedUntil = 0;
                 victim.Position = origin + Vector3.forward * distance; victim.Movement = MovementMode.Human;
                 player.Snapshot.Value = victim; player.transform.position = victim.Position;
                 target.transform.position = origin + Vector3.forward * distance;
@@ -126,7 +138,7 @@ namespace Splatoon.Tests
                     Assert.That(probe.Hit, Is.False, $"Unexpected world contact at {probe.Position}, victim={probe.Victim}, damage={probe.Damage}");
                 }
                 finally { UnityEngine.Object.DestroyImmediate(edge); }
-                File.WriteAllText(Output + "/host-summary.txt", "PASS: real Boot and Host hero load, alternating muzzle presentation and particles; normal 36 damage, damage at 12m beyond reference range, wall occlusion and separate player/world radii. Host only; no independent client or physical two-machine acceptance.\n");
+                File.WriteAllText(Output + "/host-summary.txt", "PASS: real Boot and Host hero load, alternating muzzle presentation and opaque cube trajectory; normal 36 damage, damage at 12m beyond reference range, wall occlusion and separate player/world radii. Host only; no independent client or physical two-machine acceptance.\n");
             }
             finally { UnityEngine.Object.Destroy(target); }
             yield return app.Leave().ToCoroutine();

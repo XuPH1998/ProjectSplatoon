@@ -5,6 +5,7 @@ using UnityEngine;
 using Splatoon.Config;
 using Splatoon.Prototype;
 using Splatoon.Painting;
+using Splatoon.Blocks;
 
 namespace Splatoon.Combat
 {
@@ -22,6 +23,7 @@ namespace Splatoon.Combat
         public float SpreadHorizontal, SpreadVertical;
         public uint ConfigurationRevision;
         [NonSerialized] public WeaponRuntimeConfig Configuration;
+        [NonSerialized] public BlockAttackToken BlockAttack;
         public byte Team;
         public double Born;
         public byte VolleyIndex;
@@ -203,6 +205,9 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
         // Opt-in observations of the real simulation; never sent over the network.
         public Action<InkShot, double, Vector3> TraceObserved;
+        // Only an authoritative collision branch reports a contact, including an
+        // immediately blocked muzzle at age zero. Free flight never reports here.
+        public Action<InkShot, Collider, Vector3, Vector3, double> ContactObserved;
         public Action<PaintStamp> PaintObserved;
         // Diagnostic submission time on the internal 60 Hz clock, not the caller's render frame.
         public double ObservedPaintTime { get; private set; }
@@ -221,6 +226,7 @@ namespace Splatoon.Combat
             ObservedPaintTime = born;
 #endif
             var w = GameplayConfig.GetWeapon(state.HeroId);
+            var blockAttack = BlockAttackService.Active ? BlockAttackService.Main(player.PlayerId, state, round, w) : null;
             var aim = _aim.Resolve(player, state, state.LastShotMuzzle, state.LastShotCharge);
             uint groupSeed = unchecked((uint)state.ShotActionId ^ (uint)(state.ShotActionId >> 32) * 747796405u ^ round * 2891336453u ^ (uint)player.PlayerId ^ state.HeroRevision);
             groupSeed ^= (uint)(player.PlayerId >> 32) ^ (state.Revision > 1 ? InkShapeAtlas.Hash(state.Revision - 1) : 0);
@@ -240,6 +246,7 @@ namespace Splatoon.Combat
             shot.MuzzleIndex = state.LastShotMuzzle; shot.PelletIndex = pellet;
             shot.Charge = state.LastShotCharge;
             shot.Configuration = w; shot.ConfigurationRevision = WeaponConfigService.Current.Revision(state.HeroId); shot.SpreadHorizontal = state.LastShotSpread; shot.SpreadVertical = state.LastShotVerticalSpread;
+            shot.BlockAttack = blockAttack;
             float spread = shot.SpreadHorizontal;
             if (w.AngularSpread)
                 shot.Velocity = WeaponLaunch.Velocity(aim, w, shot.Charge, state.PlanarVelocity, state.Yaw,
@@ -270,7 +277,7 @@ namespace Splatoon.Combat
                     WeaponLaunch.FootOrdinal, aim.InitialDirection, w.ReferenceFootDepth);
             if (w.MotionMode == ProjectileMotionMode.BouncingBubble) BeginFlight(shot, shot.Origin, aim.InitialDirection);
             else if (aim.MuzzleBlocked && WeaponSimulation.IsFloatingBubble(w)) ResolveFloatingBubble(shot, aim.MuzzleHit, 0);
-            else if (aim.MuzzleBlocked) { uint ordinal = 0; Resolve(shot, aim.MuzzleHit.Collider, aim.MuzzleHit.Point, aim.MuzzleHit.Normal, 0, ref ordinal); }
+            else if (aim.MuzzleBlocked) { uint ordinal = 0; ResolveCollision(shot, aim.MuzzleHit, 0, ref ordinal); }
             else BeginFlight(shot, aim.Muzzle, aim.InitialDirection, (WeaponSimulation.IsSplatling(w) || DualiesNormalSimulation.Enabled(w)) ? state.Position + Vector3.up * .1f : (Vector3?)null);
             }
         }
@@ -411,7 +418,7 @@ namespace Splatoon.Combat
                     var contact=worldOverlap?world:player;
                     if (weapon.ReferenceRules) PaintReferenceTrail(ref active, from, from, start, start);
                     else PaintDualiesTrail(ref active, weapon, start - shot.Born);
-                    Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born,ref active.PaintOrdinal); return true;
+                    ResolveCollision(shot, contact,start-shot.Born,ref active.PaintOrdinal); return true;
                 }
                 bool worldHit=_aim.ClosestCast(from,delta,distance,weapon.CollisionRadius,shot.Shooter,out world,false);
                 bool playerHit=_aim.ClosestCast(from,delta,distance,playerRadius,shot.Shooter,out player,true);
@@ -420,17 +427,17 @@ namespace Splatoon.Combat
                     var contact=worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
                     if (weapon.ReferenceRules) PaintReferenceTrail(ref active, from, from + delta * (contact.Distance / Mathf.Max(.0001f, distance)), start, start + (end-start)*contact.Distance/Mathf.Max(.0001f,distance));
                     else PaintDualiesTrail(ref active, weapon, start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance));
-                    Resolve(shot,contact.Collider,contact.Point,contact.Normal,start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance),ref active.PaintOrdinal); return true;
+                    ResolveCollision(shot, contact,start-shot.Born+(end-start)*contact.Distance/Mathf.Max(.0001f,distance),ref active.PaintOrdinal); return true;
                 }
             }
             else if (!blaster && _aim.Overlap(from, weapon.CollisionRadius, shot.Shooter, -InkBallistics.Velocity(shot, weapon, start - shot.Born).normalized, out var overlap))
             {
-                Resolve(shot, overlap.Collider, overlap.Point, overlap.Normal, start - shot.Born, ref active.PaintOrdinal);
+                ResolveCollision(shot, overlap, start - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
             if (!blaster && !separateRadius && _aim.ClosestCast(from, delta, distance, weapon.CollisionRadius, shot.Shooter, out var hit))
             {
-                Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
+                ResolveCollision(shot, hit, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
                 return true;
             }
 #if UNITY_EDITOR
@@ -475,16 +482,23 @@ namespace Splatoon.Combat
 #endif
             if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
-            if (surface != null)
+            bool blockHit = BlockAttackService.Contact(h.collider, h.point, h.normal, out var block);
+            if (surface != null || blockHit && block.Owner == shot.Team)
             {
                 float resolved = radius > 0 ? radius : Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed));
                 ordinal++;
-                if (foot) _legacyFeet.Add(new LegacyFoot { Surface=surface,Shot=shot,Point=h.point,Normal=h.normal,Origin=position,Radius=resolved,Ordinal=ordinal });
+                if (foot && surface != null) _legacyFeet.Add(new LegacyFoot { Surface=surface,Shot=shot,Point=h.point,Normal=h.normal,Origin=position,Radius=resolved,Ordinal=ordinal });
                 else ApplyPaint(surface, shot, h.point, h.normal, resolved, w, ordinal, false, position);
             }
         }
         private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, WeaponRuntimeConfig w, uint ordinal, bool impact, Vector3? sightFrom = null, Vector3? paintDirection = null, float depthScale = 1)
         {
+            if (BlockAttackService.Active)
+            {
+                if (!BlockAttackService.ExplosiveMain(w))
+                    BlockAttackService.Build(shot.BlockAttack, point, normal, radius, !impact, surface != null, entityId: shot.Id, eventOrdinal: ordinal);
+                return;
+            }
             if (WeaponSimulation.IsBlaster(w) && !w.ReferenceRules)
             {
                 radius = VisiblePaintRadius(shot, surface, sightFrom ?? point + normal * .025f, point, normal, radius);
@@ -508,11 +522,20 @@ namespace Splatoon.Combat
             if (PrototypeMatch.Current != null)
                 PrototypeMatch.Current.Paint(surface, point, normal, radius, shot.Team, w.PaintHardness, w.PaintStrength, shapeSeed, paintDirection, depthScale, clip.ClipEnabled, clip.Clip0, clip.Clip1, new PaintCredit(shot.Shooter,shot.Team,shot.Round,shot.HeroRevision,PaintAttackKind.Main));
         }
+        // Preserve the original signature for synthetic Physics/map contacts and reflection fixtures.
         private void Resolve(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity = null)
+            => ResolveCore(shot, collider, point, normal, age, ref ordinal, incomingVelocity, default);
+        private void ResolveCollision(InkShot shot, TpsCollision hit, double age, ref uint ordinal, Vector3? incomingVelocity = null)
+            => ResolveCore(shot, hit.Collider, hit.Point, hit.Normal, age, ref ordinal, incomingVelocity, hit.BlockQuery);
+        private void ResolveCore(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity, BlockQueryContact blockQuery)
         {
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
+            ContactObserved?.Invoke(shot, collider, point, normal, age);
 #endif
+            BlockContact block = default;
+            bool knownBlock = blockQuery.IsKnown;
+            if (knownBlock && !blockQuery.TryResolveCurrent(out block)) return;
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
             collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(w,age,shot.Charge));
@@ -528,8 +551,17 @@ namespace Splatoon.Combat
             }
             else
             {
+                bool blockContact = knownBlock || BlockAttackService.Contact(collider, point, normal, out block);
+                if (blockContact && !BlockAttackService.ExplosiveMain(w))
+                {
+                    uint blockOrdinal = ++ordinal;
+                    if (block.Owner != shot.Team)
+                        BlockAttackService.Direct(shot.BlockAttack, point, WeaponSimulation.IsBubble(w) ? 8 : shot.BlockAttack?.DirectLimit ?? 0, shot.Id, blockOrdinal);
+                    else
+                        BlockAttackService.Build(shot.BlockAttack, point, normal, w.PaintRadiusMax, false, false, entityId: shot.Id, eventOrdinal: blockOrdinal);
+                }
                 var surface = collider.GetComponentInParent<PaintSurface>();
-                if (surface != null)
+                if (surface != null && !blockContact)
                 {
                     uint seed = shot.Seed;
                     if (w.ReferenceRules) PaintReferenceImpact(surface, shot, point, normal, incomingVelocity ?? InkBallistics.Velocity(shot, w, age), age, ref ordinal);

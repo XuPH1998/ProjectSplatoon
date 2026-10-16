@@ -16,11 +16,11 @@ namespace Splatoon.Prototype
             UiGlyph(new Rect(card.center.x-25,card.y+38,50,50),state.SubWeaponId,Color.white,false,true);
             UiFit(new Rect(card.x + 12, card.y + 90, card.width-24, 22), c.Common.displayName, _uiCenter);
             string status = SubWeaponSimulation.FailureText(state.SubFailure);
-            if (state.Ink < c.Common.inkCost) status = "墨水不足";
+            if (state.Ink < c.Common.inkCost) status = "材料不足";
             if (state.SubPhase == SubWeaponPhase.Holding) status = c.Type == SubWeaponType.FizzyBomb ? $"蓄力：{1 + Mathf.RoundToInt(state.SubCharge * 2)} 次爆炸 · 松开投出" : c.Type == SubWeaponType.CurlingBomb ? $"蓄力：{state.SubCharge:P0} · 松开投出" : "瞄准中 · 松开 E 使用 · Shift 取消";
             if (state.SubPhase == SubWeaponPhase.Starting) status = "准备投出 · 仍可调整方向";
             if (!state.IsAlive) status = state.IsBubble ? "倒地中 · 不可使用" : "等待重生";
-            string recovery = state.InkRecoverAt > state.SimulatedAt ? $"回墨等待 {state.InkRecoverAt - state.SimulatedAt:0.0}s" : "可以回墨";
+            string recovery = state.InkRecoverAt > state.SimulatedAt ? $"材料恢复等待 {state.InkRecoverAt - state.SimulatedAt:0.0}s" : "可以恢复材料";
             if (state.SubReadyAt > state.SimulatedAt) recovery += $"  再使用 {state.SubReadyAt - state.SimulatedAt:0.0}s";
             if (c.Type == SubWeaponType.Torpedo || SubWeaponService.IsPersistent(c.Type)) recovery += $"  场上 {PrototypeMatch.Current.SubPresentation?.Count(local.PlayerId, c.Type) ?? 0}";
             bool ready = state.IsAlive && state.Ink >= c.Common.inkCost && state.SubReadyAt <= state.SimulatedAt && state.SubPhase == SubWeaponPhase.Idle && state.SubFailure == SubWeaponFailure.None;
@@ -36,7 +36,7 @@ namespace Splatoon.Prototype
                 float charge = c.Type == SubWeaponType.FizzyBomb ? Mathf.Clamp01((float)(state.SubChargeSeconds / c.Fizzy.thirdCharge)) : state.SubCharge;
                 Panel(new Rect(555, 480, 170, 7), new Color(.12f, .15f, .19f)); Panel(new Rect(555, 480, charge * 170, 7), PrototypeArena.TeamColor(state.Team));
             }
-            if (state.MistUntil > state.SimulatedAt) GUI.Label(new Rect(510, 548, 300, 28), "毒雾：减速／持续耗墨", _small);
+            if (state.MistUntil > state.SimulatedAt) GUI.Label(new Rect(510, 548, 300, 28), "毒雾：减速／持续消耗材料", _small);
             var camera = Camera.main; if (camera == null) return;
             foreach (var p in PrototypePlayer.ByOwner.Values)
             {

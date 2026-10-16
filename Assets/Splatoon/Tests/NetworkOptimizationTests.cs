@@ -97,6 +97,7 @@ namespace Splatoon.Tests
                 object boxed = new PlayerSnapshot(); var type = field.FieldType;
                 object value = type == typeof(Vector2) ? new Vector2(.1234567f, -123.875f) :
                     type == typeof(Vector3) ? new Vector3(.1234567f, -123.875f, 9.25f) :
+                    type == typeof(Vector3Int) ? new Vector3Int(7, -11, 13) :
                     type == typeof(Quaternion) ? new Quaternion(.1f, .2f, .3f, .9f) :
                     type.IsEnum ? Enum.ToObject(type, 1) : Convert.ChangeType(type == typeof(bool) ? 1 : 7, type);
                 field.SetValue(boxed, value);
@@ -189,6 +190,7 @@ namespace Splatoon.Tests
                 var type = field.FieldType;
                 object value = type == typeof(Vector2) ? new Vector2(denseFloat, denseFloat) :
                     type == typeof(Vector3) ? new Vector3(denseFloat, denseFloat, denseFloat) :
+                    type == typeof(Vector3Int) ? new Vector3Int(0x12345678, -0x12345679, 0x23456789) :
                     type == typeof(Quaternion) ? new Quaternion(denseFloat, denseFloat, denseFloat, denseFloat) :
                     type == typeof(float) ? denseFloat : type == typeof(double) ? BitConverter.Int64BitsToDouble(0x3ff123456789abcd) :
                     type == typeof(ulong) ? 0x1234567812345678UL : type == typeof(long) ? 0x1234567812345678L :

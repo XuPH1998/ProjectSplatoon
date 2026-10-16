@@ -1,0 +1,232 @@
+{
+  "verifiedUtc": "2026-10-16T12:41:07.468532+00:00",
+  "projectileDisplayGatePassed": true,
+  "goalAcceptancePassed": false,
+  "packagePath": "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37",
+  "runtimeMvid": "ccd65caf-bf48-42b1-9543-3a12417940df",
+  "runtimeDllSha256": "69353fdffa928efe25245be9d1e600baa9e521a5db3354a4b545df83f6de6c3c",
+  "compiledSourceCount": 700,
+  "buildInputs": 2944,
+  "actualTargetedTestsPassed": 10,
+  "editorDisplayCases": 18,
+  "packagedDisplayCases": 18,
+  "graphicsApi": "Direct3D12",
+  "resolution": "1920x1080",
+  "gpu": "NVIDIA GeForce RTX 3060",
+  "minimumTeamPixels": 156,
+  "maximumTeamPixels": 318139,
+  "allPackageFilesUnchangedAfterPlayer": true,
+  "allSourceInputsUnchangedAfterPlayer": true,
+  "playerExitCode": 0,
+  "playerPreferencesRestored": true,
+  "editorPreferencesRestored": true,
+  "visualImagesReviewed": "All 18 in pixel crop contact sheet; originals hero3-team1, hero7-team2 and hero9-team1 also reviewed",
+  "visualScope": "GPU display only: real weapon configurations -> synthetic InkShot -> InkPresentation.Spawn -> automatic LateUpdate -> actual main-camera backbuffer. No paid firing, authority collision or RPC acceptance.",
+  "windowAudit": {
+    "samplePeriodSeconds": 2,
+    "samples": 9,
+    "samplesWithPlayerWindows": 8,
+    "readErrors": 0,
+    "samplesWithUnclassifiedWindowOwners": 9,
+    "observedPlayerWindowOnInputDesktop": false,
+    "auditThreadFinished": true,
+    "fatalAuditError": null,
+    "scope": "sampled desktop/window ownership only; no rendering, focus, frame-time, or gameplay acceptance"
+  },
+  "proofs": [
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/compile-binding.json",
+      "sha256": "9e1df3dd5c771fefea3d9896d1ffff5d647461f9ff6f9bc68ef487aa75aa2ddc"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/targeted-tests.json",
+      "sha256": "4c6552b7322e44418b8faed5bc2fc200098f6134ca97054e8fea9e6853d504b9"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/build-record.json",
+      "sha256": "a40d8a2c2700c71789c43fbdb45f5b843abb9f1bf34b1e211828bf1bc85ce104"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-verification.json",
+      "sha256": "2a2c6e7a77941743b21850cb6194ca6503706b43048e02b3fc1102a573f19c00"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-inventory.json",
+      "sha256": "28418b58f78afbafc95493fe92058631997cd7b9b73d05816910ecd87b910e56"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/terminal.json",
+      "sha256": "4e4312f9e053d52f28a840bb49866224894ad00f73631cabd552c8544c42e246"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/summary.json",
+      "sha256": "bfb45435e8cbf0ea9bd850b812d8470298a42e196660b484de64837102a7f675"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/_desktop-launch/bootstrap.json",
+      "sha256": "f5c5a6ded5bafac7b168d9013b4ac5a56d94ad092c60c92c420d6eee26db2fcc"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/_desktop-launch/native-launch.json",
+      "sha256": "b5c16d6d98a4aebf3c6d743833185f8e6c731c060c1bae6b505155aae90d96f0"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/_desktop-launch/StandalonePreferences/verification.json",
+      "sha256": "e73ed864297093f1e96ae3194d48ebd273c5b1c68793d8b808faebce0746e281"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/cube-projectile-contact-sheet.png",
+      "sha256": "2ee3a3227bad8d0bb56688696188dd441eb3c711d2c53a2ad409b0bfed5e02d3"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-1-team-1.png",
+      "sha256": "bacd4a1f28fe7d9fd92475903ca081d5fdd9ea19f4c854cd2a9bbf231caef636"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-1-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-1-team-2.png",
+      "sha256": "dcdd893d327eb8682df2e44c0659617d58bf92291858ad4103732138ec578061"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-1-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-2-team-1.png",
+      "sha256": "d95b9f188ef8ab8844c96c03d0f2613dbe69c0a5a1108aababf6ab03774c05e9"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-2-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-2-team-2.png",
+      "sha256": "b7a9a03e471db11c9f6c9ec3dace2fb16d48cb1394fd54e4adb9d55f379e7022"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-2-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-3-team-1.png",
+      "sha256": "3751ed3db3ebc4835a2b4070772b8f225e50a72e7363fe4317c6a70ab0671b29"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-3-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-3-team-2.png",
+      "sha256": "e90fbd09682ba33f08c686589f3e621a8d3c52d6df8d5c8f524e2095d5cdad46"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-3-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-4-team-1.png",
+      "sha256": "380c7c278f581a8888d65a25eaf2124adb0cb210c05e086ac68e4da140f8ad89"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-4-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-4-team-2.png",
+      "sha256": "b970ea3357229d2aeff26c4ba97cf4127e8479e80e14132d97e27dc05524013b"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-4-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-5-team-1.png",
+      "sha256": "2810ea86792b9e7a860853a9d50a893ce323b5d293766f762979386a01943e22"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-5-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-5-team-2.png",
+      "sha256": "a668f878a6ad1ca20976a556acd645b3a86af2be605df68214b9fb625df41be2"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-5-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-6-team-1.png",
+      "sha256": "2d6f56c6e4ed882a5b560d62e2e67c33d4155f42b13fc085cac20d46868b033d"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-6-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-6-team-2.png",
+      "sha256": "7dde105892f799cee25b3c4fe021984da7b386a450460b9f5c2ed4996ed5a4cf"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-6-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-7-team-1.png",
+      "sha256": "8793fdbff99c4ffff325dccfd2912798845950b2f8eb33fe9eade6cf85f2b618"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-7-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-7-team-2.png",
+      "sha256": "94061dcafcfefc3cf63d9d083637628b96182ba20ce0269b4ad063e5c8f8ec8d"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-7-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-8-team-1.png",
+      "sha256": "1f9d1f26c2ca67a715db24375b014e6f0fe75456e42141ff9fc77858cfffff20"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-8-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-8-team-2.png",
+      "sha256": "9a197baadf6674d0afb956ea2ebd881a121e3ab69830aff783c0fce44fd4afe8"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-8-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-9-team-1.png",
+      "sha256": "09160bc42b42a3147591ad9d8ce5be1384330ada0b8d7add50e5541319f872a4"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-9-team-1-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-9-team-2.png",
+      "sha256": "dd0cbd008f98abae28a4b61b1e66374dbe920d88fce9886bde4784102b488a89"
+    },
+    {
+      "path": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/hero-9-team-2-control.png",
+      "sha256": "1e9aa36486113dca48d236dc5d489803fdd3f74480ed50d587dc53d981838ba1"
+    }
+  ],
+  "remainingGoalGates": [
+    "four performance cases",
+    "weak network movement correction",
+    "six network recovery groups",
+    "final report and final package acceptance"
+  ]
+}

@@ -2,6 +2,7 @@ using Splatoon.Config;
 using Splatoon.Prototype;
 using Splatoon.Painting;
 using UnityEngine;
+using Splatoon.Blocks;
 
 namespace Splatoon.Combat
 {
@@ -109,6 +110,7 @@ namespace Splatoon.Combat
             bool floating = WeaponSimulation.IsFloatingBubble(shot.Configuration);
             Vector3 origin = visibilityOrigin ?? (floating ? position : position + (collision ? normal.normalized * (explosher ? shot.Configuration.ExplosherBlastOffset : .01f) : Vector3.zero));
             var match = PrototypeMatch.Current;
+            if (BlockAttackService.Active) BlockAttackService.Blast(shot.BlockAttack, origin, radius, shot.Id);
             match?.SpecialWeapons.DamageFromMainExplosion(shot,origin,collision,directSpecialObject);
             match?.SubWeapons.DamageObjectsFromMainExplosion(shot, origin, collision, directObject);
             if (match != null)
@@ -133,7 +135,7 @@ namespace Splatoon.Combat
                         ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex });
                 }
             }
-            if (ammo.ExplosionPaint && radius > 0)
+            if (!BlockAttackService.Active && ammo.ExplosionPaint && radius > 0)
             {
                 double paintAge = (at ?? shot.Born + shot.Configuration.Lifetime) - shot.Born;
                 _paintedExplosionSurfaces.Clear(); _explosionPaintSites.Clear(); _explosherPaintPlanes.Clear();
@@ -259,7 +261,7 @@ namespace Splatoon.Combat
             {
                 var contact = worldOverlap ? world : player;
                 if (w.ReferenceRules) PaintReferenceTrail(ref active, from, from, start, start);
-                Resolve(shot, contact.Collider, contact.Point, contact.Normal, start - shot.Born, ref active.PaintOrdinal);
+                ResolveCollision(shot, contact, start - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
             bool worldHit = _aim.ClosestCast(from, delta, distance, w.CollisionRadius, shot.Shooter, out world, false);
@@ -267,7 +269,7 @@ namespace Splatoon.Combat
             if (!worldHit && !playerHit) return false;
             var hit = worldHit && (!playerHit || world.Distance <= player.Distance) ? world : player;
             if (w.ReferenceRules) PaintReferenceTrail(ref active, from, from + delta * (hit.Distance / Mathf.Max(.0001f, distance)), start, start + (end-start)*hit.Distance/Mathf.Max(.0001f,distance));
-            Resolve(shot, hit.Collider, hit.Point, hit.Normal, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
+            ResolveCollision(shot, hit, start - shot.Born + (end - start) * hit.Distance / Mathf.Max(.0001f, distance), ref active.PaintOrdinal);
             return true;
         }
     }

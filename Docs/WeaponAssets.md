@@ -1,10 +1,10 @@
 # 武器资产、实时散布与单机调试
 
-现行基准为喷3 11.3.0。完整数值、弹道、涂墨与验证状态见 [本轮对齐报告](WeaponAlignment1130/Report.md)；旧迁移验收文件保留为历史记录。
+默认玩法现为积木建造与拆毁，建造、拆除、共享支付预算及调参入口见 [积木玩法说明](BlockGameplay.md)。喷3 11.3.0 的数值、弹道、涂墨与验证状态见 [历史对齐报告](WeaponAlignment1130/Report.md)；其中涂墨结论和旧包验收不作为当前积木玩法通过证据。
 
 TbHero 只配置英雄标识、角色模型、生命与墨量、资源恢复、基本移动和 `weaponConfigPath`。普通移速及起跳留在表；射击移速、旋转枪蓄力移动及起跳归武器。源表改动仍运行 `cmd /c Config\Luban\gen_luban.bat`，不要修改生成 C#/JSON。
 
-七份武器资产位于 `Assets/GameResource/Weapons/<角色名>/<角色名>WeaponConfig.asset`，角色名依次为 RifleGirl、DualPistolGirl、ShotgunGirl、PistolGirl、RocketLauncherGirl、MachineGunGirl、BubbleGirl。表里填写完整 `Assets/.../*.asset` 路径，Addressables 使用同一完整路径。现有武器模型地址（例如 `Weapon/MachineGun`）在资产中配置。
+九份武器资产位于 `Assets/GameResource/Weapons/<角色名>/<角色名>WeaponConfig.asset`，角色名依次为 RifleGirl、DualPistolGirl、ShotgunGirl、PistolGirl、RocketLauncherGirl、MachineGunGirl、BubbleGirl、SplooshGirl、BubbleShotgunGirl。表里填写完整 `Assets/.../*.asset` 路径，Addressables 使用同一完整路径。现有武器模型地址（例如 `Weapon/MachineGun`）在资产中配置。积木字段 `blockBuild`、`blockEnemyRemoval`、`blockRemovalRadius` 沿同一资产链路调参，旧墨量字段在当前玩法中表示材料。
 
 PistolGirl 的精确速射配置与验收规则见 [窄域标记枪式主武器](WeaponAssets/PistolGirl-Splash.md)。
 

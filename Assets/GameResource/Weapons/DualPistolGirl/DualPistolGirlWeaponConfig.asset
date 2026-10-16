@@ -12,40 +12,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: DualPistolGirlWeaponConfig
   m_EditorClassIdentifier: 
+  blockBuild: 1
+  blockEnemyRemoval: 12
+  blockRemovalRadius: 0.2
+  aimMode: 1
+  shotGuideSeconds: 0.11666666666666667
+  inheritForwardMovement: 1
+  angularSpread: 1
+  detailedPaint: 1
+  footSequence: 0
+  footPhase: 0
+  motionMode: 3
+  bubbleVolleySeconds: 0.55
+  bubbleIntervalSeconds: 0.05
+  bubbleGroundBounces: 3
+  bubbleMaxBounces: 6
+  bubbleNormalRetention: 0.72
+  bubbleTangentRetention: 0.9
+  bubbleWallRetention: 0.9
+  floatingPitchSpreadDegrees: 0
   weaponPrefabAddress: Weapon/DualPistols
   ammoConfig: {fileID: 11400000, guid: c37f636a6a084521ae1bbea51f8db649, type: 2}
   fireMode: 0
-  fireRate: 6.666666666666667
+  fireRate: 6.6666665
   shotInk: 1.4
   startSeconds: 0
   emergeStartSeconds: 0.06666666666666667
   inkRecoverLockSeconds: 0.3333333333333333
-  shootMoveSpeed: 2.6958439073095644
+  shootMoveSpeed: 2.695844
   burstCount: 1
   burstRecoverySeconds: 0
-  speedMin: 128.0525855972043
-  speedMax: 128.0525855972043
-  projectileGravity: 43.13350251695304
+  speedMin: 128.05258
+  speedMax: 128.05258
+  projectileGravity: 43.133503
   lifetime: 10
-  collisionRadius: 0.14976910596164247
+  collisionRadius: 0.14976911
   spreadDegrees: 3.2
   straightSeconds: 0.05
   brakeSeconds: 0.06666666666666667
   brakeSpeedMultiplier: 0.66
   jumpSpreadDegrees: 8
   landingSpreadRecoverSeconds: 0.2
-  effectiveRange: 11.232682947123186
+  effectiveRange: 11.232683
   damage: 36
   damageMin: 18
   damageReduceStartSeconds: 0.11666666666666667
   damageReduceEndSeconds: 0.6666666666666666
-  paintRadiusMin: 1.4078295960394391
-  paintRadiusMax: 1.4976910596164248
+  paintRadiusMin: 1.4078296
+  paintRadiusMax: 1.497691
   paintHardness: 0.55
   paintStrength: 1
-  trailSpacing: 5.2419187086574865
-  trailRadiusMin: 1.1367475142488663
-  trailRadiusMax: 1.1367475142488663
+  trailSpacing: 5.2419186
+  trailRadiusMin: 1.1367475
+  trailRadiusMax: 1.1367475
   trailMaxDrop: 2.4
   chargeSeconds: 0
   chargeMinDamage: 0
@@ -77,11 +96,17 @@ MonoBehaviour:
   spreadRecoverSeconds: 0.5
   baseSpreadDegrees: 0
   baseJumpSpreadDegrees: 0
-  motionMode: 3
-  dualiesBrakeEndSpeed: 126.32275242334734
+  blasterRepeatSeconds: 0
+  blasterPostSeconds: 0
+  blasterPlayerRadius: 0
+  blasterBrakeEndSpeed: 0
+  blasterBrakeDrag: 0
+  blasterBrakeGravity: 0
+  blasterTrailCount: 0
+  dualiesBrakeEndSpeed: 126.322754
   dualiesBrakeDrag: 0.36
-  dualiesBrakeGravity: 188.70907351166954
-  dualiesPlayerRadius: 0.21342097599534052
+  dualiesBrakeGravity: 188.70908
+  dualiesPlayerRadius: 0.21342097
   dualiesSpreadMinBias: 0.03
   dualiesSpreadMaxBias: 0.25
   dualiesSpreadPerShot: 0.03
@@ -89,63 +114,102 @@ MonoBehaviour:
   dualiesJumpBias: 0.4
   dualiesJumpRecoverStartSeconds: 0.4166666666666667
   dualiesJumpRecoverEndSeconds: 1.1666666666666667
-  dualiesTrailStartDistance: 0.7488455298082124
+  dualiesTrailStartDistance: 0.7488455
   dualiesTrailCount: 2
   dualiesFootEvery: 5
-  dualiesFootRadius: 1.591446519948413
+  dualiesFootRadius: 1.5914465
   referenceRules: 1
+  referenceBrakeEndSpeed: 126.322754
   referenceBrakeDrag: 0.36
-  referenceBrakeGravity: 188.70907351166954
+  referenceBrakeGravity: 188.70908
   referenceFreeDrag: 0
-  paintDropGravity: 43.13350251695304
-  paintDropLifetime: 5
+  referencePlayerRadius: 0.21342097
+  referenceSpreadEnabled: 0
+  referenceBiasMin: 0.01
+  referenceBiasMax: 0.25
+  referenceBiasPerShot: 0.01
+  referenceBiasRecovery: 0.9
+  referenceJumpBias: 0.4
+  referenceJumpStart: 0.4166666666666667
+  referenceJumpEnd: 1.1666666666666667
+  referencePitchBias: 0.4
+  referenceTrailBudget: 2
+  referenceTrailStart: 0.7488455
+  referenceTrailRandomPhase: 0
   referenceFootEvery: 5
-  referenceBrakeEndSpeed: 126.32275242334735
-  referencePlayerRadius: 0.21342097599534052
+  referenceFootRadius: 1.5914465
   paintDepthMin: 1.31
   paintDepthMax: 2.24
   paintDepthBreakMin: 1.12
   paintDepthBreakMax: 2.24
-  paintDistanceMiddle: 0.8237300827890337
-  paintDistanceFar: 11.232682947123186
-  referenceTrailBudget: 2.0
-  referenceTrailStart: 0.7488455298082124
-  referenceTrailRandomPhase: 0
-  referenceFootRadius: 1.591446519948413
+  paintDistanceMiddle: 0.8237301
+  paintDistanceFar: 11.232683
+  paintBreakHeight: 2.2465365
   trailDepthScale: 1
-  wallDropRadius: 0.48674959437533805
-  wallDropGroundRadius: 0.44930731788492745
-  wallDropSpeed: 2.6958439073095644
+  paintDropGravity: 43.133503
+  paintDropLifetime: 5
+  wallDropRadius: 0.4867496
+  wallDropGroundRadius: 0.44930732
+  wallDropSpeed: 2.695844
   wallDropSeconds: 1.0833333333333333
-  aimMode: 1
-  angularSpread: 1
-  inheritForwardMovement: 1
-  detailedPaint: 1
+  collisionExplosionPaintRadius: 0
+  bubbleAirSpeed: 0
+  bubbleLaterSpeed: 0
+  bubbleLaterAirSpeed: 0
+  bubbleSpeedDecrement: 0
+  bubbleUpwardRate: 0.2
+  bubbleInitialRadiusRate: 0.1
+  bubbleFieldGrowSeconds: 0.06666666666666667
+  bubblePlayerGrowSeconds: 0.08333333333333333
+  bubbleLaterFieldRadius: 0
+  bubbleLaterPlayerRadius: 0
+  bubbleRadiusDecrement: 0
+  bubbleBounceRadiusRate: 1
+  bubbleBouncePaintRate: 1
+  bubbleFirstBouncePaintRadius: 0
+  bubbleLaterBouncePaintRadius: 0
+  bubbleBouncePaintDecrement: 0
+  bubbleLaterImpactRadius: 0
   shooterDetails: 0
-  footSequence: 0
-  footPhase: 0
-  shotGuideSeconds: 0.11666666666666667
-  shooterMoveForwardRate: 2.0
-  shooterSplitNum: 5
-  shooterPaintNearDistance: 0.0
-  shooterPaintNearRadius: 1.4976910596164248
-  shooterSplashDepthMin: 1.0
-  shooterSplashDepthMax: 1.2
-  shooterSplashHeightMin: 2.246536589424637
-  shooterSplashHeightMax: 7.488455298082124
+  shooterPostSeconds: 0
+  shooterMoveForwardRate: 2
+  shooterPaintNearDistance: 0
+  shooterPaintNearRadius: 1.497691
   shooterPaintAngleMin: 10
   shooterPaintAngleMax: 35
-  shooterFallHeightMin: 1.1232682947123185
-  shooterFallHeightMax: 7.488455298082124
-  shooterSplashSideSpeed: 2.4711902483671007
-  shooterSplashUpSpeed: 0.6739609768273911
-  shooterSplashForwardMin: 0.44930731788492745
-  shooterSplashForwardMax: 0.8986146357698549
-  shooterWallGravity: 21.56675125847652
+  shooterFallHeightMin: 1.1232682
+  shooterFallHeightMax: 7.4884553
+  shooterSplitNum: 5
+  shooterSplashDepthMin: 1
+  shooterSplashDepthMax: 1.2
+  shooterSplashHeightMin: 2.2465365
+  shooterSplashHeightMax: 7.4884553
+  shooterSplashSideSpeed: 2.4711902
+  shooterSplashUpSpeed: 0.673961
+  shooterSplashForwardMin: 0.44930732
+  shooterSplashForwardMax: 0.89861465
   shooterWallFirstMin: 0.3333333333333333
   shooterWallFirstMax: 0.6666666666666666
   shooterWallMiddle: 0.16666666666666666
   shooterWallLastMin: 0.25
   shooterWallLastMax: 0.5833333333333334
-  shooterWallFirstSpeed: 2.6958439073095644
-  shooterWallShockRadius: 0.9734991887506761
+  shooterWallFirstSpeed: 2.695844
+  shooterWallGravity: 21.566751
+  shooterWallShockRadius: 0.9734992
+  explosherAirSpeed: 0
+  explosherUpwardRate: 0
+  explosherMoveSideRate: 0
+  explosherMoveForwardRate: 0
+  explosherMoveVerticalRate: 0
+  explosherFieldInitialRadius: 0
+  explosherPlayerInitialRadius: 0
+  explosherFieldGrowSeconds: 0
+  explosherPlayerGrowSeconds: 0
+  explosherPostSeconds: 0
+  explosherMoveLimitSeconds: 0
+  explosherPaintNearDistance: 0
+  explosherPaintFarDistance: 0
+  explosherBlastOffset: 0
+  explosherTrailPhaseMax: 0
+  explosherFootDepth: 0
+  referenceFootDepth: 1

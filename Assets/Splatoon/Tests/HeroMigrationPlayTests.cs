@@ -25,7 +25,7 @@ namespace Splatoon.Tests
             while (!condition() && Time.realtimeSinceStartupAsDouble < until) yield return null;
             Assert.That(condition(), Is.True, message);
         }
-        [UnityTest] public IEnumerator RealAppLoadsSelectsRespawnsAndReleasesHeroModels()
+        [UnityTest, Timeout(600000)] public IEnumerator RealAppLoadsSelectsRespawnsAndReleasesHeroModels()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity", OpenSceneMode.Single);
             yield return new EnterPlayMode();
@@ -40,7 +40,13 @@ namespace Splatoon.Tests
             ushort port;
             using (var socket = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0))) port = (ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
             yield return app.Connect(true, "127.0.0.1", port).ToCoroutine();
-            Assert.That(app.InRoom, Is.True, app.Error); Assert.That(app.Heroes.AssetCount, Is.EqualTo(12));
+            Assert.That(app.InRoom, Is.True, app.Error);
+            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            int expectedAssets = rows.SelectMany(row => new[] { row.CharacterPrefabAddress,
+                GameplayConfig.GetWeapon(row.Id).WeaponPrefabAddress }).Distinct(StringComparer.Ordinal).Count();
+            CollectionAssert.AreEqual(Enumerable.Range(1, 9), rows.Select(row => row.Id).OrderBy(id => id));
+            Assert.That(app.Heroes.AssetCount, Is.EqualTo(expectedAssets), "Each distinct configured character and weapon is loaded once");
+            Assert.That(app.Heroes.PortraitCount, Is.EqualTo(rows.Select(row => row.PortraitAddress).Distinct().Count()));
             yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current != null, "Host local player spawn");
             var player = PrototypePlayer.Local;
             var match = PrototypeMatch.Current;
@@ -52,7 +58,7 @@ namespace Splatoon.Tests
             var playerId = player.NetworkObjectId;
             Assert.That(player.Snapshot.Value.HeroId, Is.EqualTo(1));
             app.OpenHeroSelection(HeroSelectionOrigin.Warmup); Assert.That(app.Overlay, Is.EqualTo(GameplayOverlay.Heroes));
-            for (int hero = 2; hero <= 5; hero++)
+            for (int hero = 2; hero <= 9; hero++)
             {
                 var before = player.Snapshot.Value; before.Ink = 20; before.InkRecoverAt = player.NetworkManager.ServerTime.Time + 100; player.Snapshot.Value = before;
                 player.RequestHeroChange(hero, HeroSelectionOrigin.Warmup);
@@ -93,7 +99,7 @@ namespace Splatoon.Tests
             yield return Wait(() => PrototypePlayer.Local != null, "Reconnected host local player spawn");
             Assert.That(PrototypePlayer.Local.Snapshot.Value.HeroId, Is.EqualTo(1));
             yield return app.Leave().ToCoroutine();
-            File.WriteAllText("Reports/HeroMigration/play-validation.txt", "PASS: real Addressables + NGO host; 5 hero models; dual hand assembly; each new hero swim-death and 3s respawn; shotgun 8 independent Physics hits reduce 100HP to 20HP; warmup/DEBUG/invalid selection; selected-hero respawn; leave/reenter default; resource release.\nRemote client and physical LAN are separate acceptance items.\n");
+            File.WriteAllText("Reports/HeroMigration/play-validation.txt", "PASS: real Addressables + NGO host; 9 hero models; dual hand assembly; selected heroes downed-execution and timed respawn; frozen historical shotgun 8 independent Physics hits reduce 100HP to 20HP without changing the live Explosher; warmup/DEBUG/invalid selection; selected-hero respawn; leave/reenter default; resource release.\nRemote client and physical LAN are separate acceptance items.\n");
             yield return HeroUiSmoke.RunInEditorAsync(port).ToCoroutine();
         }
         static IEnumerator VerifyDeathAndRespawn(PrototypePlayer player, int hero)
@@ -103,6 +109,9 @@ namespace Splatoon.Tests
             player.Snapshot.Value=state;
             player.ReceiveDamage((byte)(state.Team==1?2:1),200,Quaternion.Euler(0,state.BodyYaw,0)*Vector3.forward);
             Assert.That(player.Snapshot.Value.Health,Is.Zero); Assert.That(player.Snapshot.Value.Swimming,Is.False);
+            Assert.That(player.Snapshot.Value.IsBubble, Is.True, "Lethal damage first permits rescue");
+            player.EndBubble(BubbleOutcome.Executed, player.NetworkManager.ServerTime.Time);
+            Assert.That(player.Snapshot.Value.IsDead, Is.True, "Execution starts the ordinary respawn timer");
             yield return null;
             Assert.That(player.CharacterView.Animator.enabled,Is.True);
             Assert.That(player.CharacterView.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>r.enabled),Is.True);
@@ -116,10 +125,15 @@ namespace Splatoon.Tests
         static IEnumerator VerifyShotgunDamage(PrototypePlayer player)
         {
             var state=player.Snapshot.Value;state.Health=100;state.ProtectedUntil=0;player.Snapshot.Value=state;
+            // Keep the retired eight-pellet damage contract explicit; current hero 3 remains Explosher.
+            var current = GameplayConfig.GetWeapon(3); WeaponRuntimeConfig historical;
+            using (new HistoricalCombatContractFixture(3)) historical = GameplayConfig.GetWeapon(3);
+            Assert.That(GameplayConfig.GetWeapon(3), Is.SameAs(current), "Historical measurement restores the live configuration before simulation");
+            Assert.That(historical.PelletCount, Is.EqualTo(8)); Assert.That(historical.Damage, Is.EqualTo(10));
             Physics.SyncTransforms();var service=new InkProjectileService();double born=player.NetworkManager.ServerTime.Time;
             var origin=state.Position+Vector3.up*.9f+Vector3.forward*.7f;
             for(byte i=0;i<8;i++)service.SpawnForMeasurement(new InkShot { Id=(uint)i+1,ActionId=123,HeroId=3,PelletIndex=i,
-                Shooter=ulong.MaxValue,Team=(byte)(state.Team==1?2:1),Born=born,Origin=origin,Velocity=Vector3.back*22 });
+                Shooter=ulong.MaxValue,Team=(byte)(state.Team==1?2:1),Born=born,Origin=origin,Velocity=Vector3.back*22,Configuration=historical });
             service.Simulate(born+.1);
             Assert.That(service.Impacts.Count,Is.EqualTo(8));Assert.That(service.Impacts.Select(x=>x.Id).Distinct().Count(),Is.EqualTo(8));
             Assert.That(service.Impacts.Sum(x=>x.Damage),Is.EqualTo(80).Within(.001));Assert.That(player.Snapshot.Value.Health,Is.EqualTo(20).Within(.001));

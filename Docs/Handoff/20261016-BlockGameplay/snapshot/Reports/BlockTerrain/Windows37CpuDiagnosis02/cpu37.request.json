@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "kind": "smoke",
+  "desktopName": "CodexBlockTests20261013a",
+  "reportRoot": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\Windows37CpuDiagnosis02\\CpuRun01",
+  "harnessArguments": [
+    "--player",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37\\InkLan.exe",
+    "--output",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\Windows37CpuDiagnosis02\\CpuRun01",
+    "--execution-inputs",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\Windows37CpuDiagnosis02\\execution-inputs.json",
+    "--execution-sha",
+    "30d5e4ef34836c739a7080c5c72b00ac7a817a43fd7f4132865a66b6939eb91c"
+  ],
+  "standalonePreferences": {
+    "schema": 1,
+    "companyName": "DefaultCompany",
+    "productName": "喷墨对战",
+    "registrySubKey": "Software\\DefaultCompany\\喷墨对战",
+    "logicalKeys": [
+      "Splatoon.PlayerName",
+      "Loadout.Sub.1",
+      "Loadout.Special.1",
+      "Loadout.Sub.2",
+      "Loadout.Special.2",
+      "Loadout.Sub.3",
+      "Loadout.Special.3",
+      "Loadout.Sub.4",
+      "Loadout.Special.4",
+      "Loadout.Sub.5",
+      "Loadout.Special.5",
+      "Loadout.Sub.6",
+      "Loadout.Special.6",
+      "Loadout.Sub.7",
+      "Loadout.Special.7",
+      "Loadout.Sub.8",
+      "Loadout.Special.8",
+      "Loadout.Sub.9",
+      "Loadout.Special.9"
+    ],
+    "registryViews": [
+      64,
+      32
+    ]
+  },
+  "systemCursorChildEnvironment": {
+    "SPLATOON_DISABLE_SYSTEM_CURSOR": "1"
+  }
+}

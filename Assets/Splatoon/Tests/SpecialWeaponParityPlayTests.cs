@@ -1,11 +1,15 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
+using Splatoon.Networking;
 using Splatoon.Prototype;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -278,7 +282,7 @@ namespace Splatoon.Tests
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator ReplacingThirdMineKeepsChargeProducedInsidePlayerSimulation()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");yield return new EnterPlayMode();
@@ -287,6 +291,7 @@ namespace Splatoon.Tests
             yield return Wait(()=>PrototypePlayer.Local!=null&&PrototypeMatch.Current!=null);
             var host=PrototypePlayer.Local;var match=PrototypeMatch.Current;match.enabled=false;
             foreach(var player in match.Players)player.enabled=false;
+            using var blocks=new BlockDefaultContractFixture(match);
             try
             {
                 Vector3 point=new(0,0,-20);
@@ -294,30 +299,58 @@ namespace Splatoon.Tests
                 var place=typeof(PrototypePlayer).GetMethod("DiagnosticPlace",BindingFlags.Instance|BindingFlags.NonPublic);
                 place.Invoke(host,new object[]{floor.point+Vector3.up*.08f,0f});
                 var s=host.Snapshot.Value;s.SubWeaponId=8;s.SpecialWeaponId=1;s.SpecialPhase=SpecialPhase.Charging;
-                s.SpecialPoints=0;s.SpecialChargeLockedUntil=0;s.SubNeedsRelease=false;s.SubPhase=SubWeaponPhase.Starting;
-                s.SubReleaseAt=0;s.SubRecoveryUntil=s.AttackRecoveryUntil=0;s.Ink=100;s.Grounded=true;host.Snapshot.Value=s;
-                PrototypeArena.Current.ClearPaint();double now=match.NetworkManager.ServerTime.Time;
-                var config=PlayerLoadout.SubWeapon(s);Assert.That(config.Deployment.maxCount,Is.EqualTo(2));
+                s.SpecialPoints=0;s.SpecialChargeLockedUntil=0;s.SubNeedsRelease=false;s.SubPhase=SubWeaponPhase.Idle;
+                s.SubReleaseAt=0;s.SubReadyAt=s.SubRecoveryUntil=s.AttackRecoveryUntil=0;s.Ink=100;s.Grounded=true;host.Snapshot.Value=s;
+                double now=blocks.Now;var config=PlayerLoadout.SubWeapon(s);
+                Assert.That(config.Deployment.maxCount,Is.EqualTo(2));
+                var seed=blocks.Empty();var center=BlockWorld.CellAt(floor.point+Vector3.right*3+Vector3.up*.05f);
+                for(int x=-3;x<=3;x++)for(int z=-2;z<=2;z++)
+                    Assert.That(seed.Set(center+new Vector3Int(x,0,z),BlockCell.Create(2,true)),Is.True);
+                for(int x=-4;x<=4;x++)
+                    Assert.That(seed.Set(center+new Vector3Int(x,0,-6),BlockCell.Create(1,true)),Is.True);
+                yield return blocks.Seed(seed);now=blocks.Now;
+                SubWeaponService.Entity oldest=null;
                 for(int i=0;i<2;i++)
                 {
-                    var e=match.SubWeapons.Spawn(host,s,0,now,match.State.Value.Round,new SubLaunchSolution{Position=floor.point+Vector3.right*(i==0?3:-3),Normal=Vector3.up,Surface=floor.collider});
-                    Assert.That(e,Is.Not.Null);
+                    float charge=blocks.PaySub(host,SubWeaponType.InkMine);now=blocks.Now;s=host.Snapshot.Value;
+                    var e=match.SubWeapons.Spawn(host,s,charge,now,match.State.Value.Round,new SubLaunchSolution{Position=floor.point+Vector3.right*(i==0?3:-3),Normal=Vector3.up,Surface=floor.collider});
+                    Assert.That(e,Is.Not.Null);Assert.That(e.BlockAttack,Is.Not.Null);
+                    if(i==0)oldest=e;
                 }
+                s=host.Snapshot.Value;s.Ink=100;s.SubReadyAt=s.SubRecoveryUntil=s.AttackRecoveryUntil=0;host.Snapshot.Value=s;
                 var input=new Splatoon.Networking.PlayerInputFrame{HeroRevision=s.HeroRevision,SpecialSequence=s.SpecialConsumed,JumpSequence=s.ConsumedJump};
                 typeof(PrototypePlayer).GetField("_lastInput",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(host,input);
-                typeof(PrototypePlayer).GetField("_lastReceivedAt",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(host,now);
+                void SimulateAt(double time)
+                {
+                    // The fixture's accelerated simulation clock is not the live
+                    // NGO receive clock used to reject stale input.
+                    typeof(PrototypePlayer).GetField("_lastReceivedAt",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(host,host.NetworkManager.ServerTime.Time);
+                    host.Simulate(1f/60,time,Splatoon.Networking.MatchPhase.Practice);
+                    Assert.That(host.Snapshot.Value.InputTimedOut,Is.False,"Fixture-supplied input must remain fresh");
+                }
                 var queued=typeof(PrototypePlayer).GetField("_serverInputs",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(host);
                 queued.GetType().GetMethod("Clear").Invoke(queued,null);
                 s.SubPhase=SubWeaponPhase.Idle;host.Snapshot.Value=s;
-                for(int frame=0;frame<12;frame++)host.Simulate(1f/60,now+frame/60d,Splatoon.Networking.MatchPhase.Practice);
-                s=host.Snapshot.Value;s.SubPhase=SubWeaponPhase.Starting;s.SubReleaseAt=0;s.SubNeedsRelease=false;host.Snapshot.Value=s;
-                now+=12d/60;
-                host.Simulate(1f/60,now,Splatoon.Networking.MatchPhase.Practice);
+                for(int frame=0;frame<12;frame++)SimulateAt(now+frame/60d);
+                now+=12d/60;s=host.Snapshot.Value;s.SubPhase=SubWeaponPhase.Starting;s.SubReleaseAt=0;s.SubNeedsRelease=false;
+                s.SubReadyAt=s.SubRecoveryUntil=s.AttackRecoveryUntil=0;s.Ink=100;host.Snapshot.Value=s;
+                int enemyBefore=blocks.Terrain.BlueCount,friendlyBefore=blocks.Terrain.PinkCount;double pointsBefore=s.SpecialPoints;
+                SimulateAt(now);
                 Assert.That(host.Snapshot.Value.SubAction,Is.EqualTo(s.SubAction+1),"Third mine commitment: "+host.Snapshot.Value.SubFailure);
-                Assert.That(PrototypeArena.Current.PinkArea+PrototypeArena.Current.BlueArea,Is.GreaterThan(0),"Old mine produced real ground coverage");
-                Assert.That(host.Snapshot.Value.SpecialPoints,Is.GreaterThan(0),"Commit must not overwrite paint credit from the replaced mine");
+                Assert.That(host.Snapshot.Value.Ink,Is.LessThan(s.Ink),"The real player simulation pays the third deployment");
+                Assert.That(oldest.Removed,Is.True);Assert.That(match.SubWeapons.Count(host.PlayerId,SubWeaponType.InkMine),Is.EqualTo(2));
+                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(pointsBefore),"Replacing a mine cannot pay unpublished structure removals inside its local snapshot");
+                blocks.Now=now;yield return blocks.Publish(()=>oldest.BlockAttack.RemovedEnemy>0);now=blocks.Now;
+                int enemyRemoved=enemyBefore-blocks.Terrain.BlueCount,friendlyRemoved=friendlyBefore-blocks.Terrain.PinkCount;
+                Assert.That(enemyRemoved,Is.EqualTo(35));Assert.That(friendlyRemoved,Is.EqualTo(9));
+                Assert.That(oldest.BlockAttack.Added,Is.Zero);Assert.That(oldest.BlockAttack.RemovedEnemy,Is.EqualTo(enemyRemoved));
+                double expected=Math.Min(BlockGameplaySettings.SubSpecialPointCap,enemyRemoved/(double)BlockGameplaySettings.BlocksPerSpecialPoint);
+                Assert.That(host.Snapshot.Value.SpecialPoints-pointsBefore,Is.EqualTo(expected).Within(.00001),"The replaced paid deployment credits only published enemy removal");
+                double earned=host.Snapshot.Value.SpecialPoints;
+                SimulateAt(now+1d/60);
+                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(earned),"A later real simulation cannot overwrite or duplicate the published replacement income");
             }
-            finally{match.SubWeapons.Clear();match.enabled=true;foreach(var player in match.Players)player.enabled=true;}
+            finally{blocks.Dispose();match.SubWeapons.Clear();match.enabled=true;foreach(var player in match.Players)player.enabled=true;}
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
 
@@ -445,7 +478,7 @@ namespace Splatoon.Tests
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator ThrowPreviewAndFrameRateSamplingMatchAuthorityAtWalls()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");yield return new EnterPlayMode();
@@ -471,6 +504,23 @@ namespace Splatoon.Tests
                     for(int f=0;f<180&&!previewLanded;f++)
                     {previewLanded=SpecialWeaponService.AdvanceThrow(config,ref preview,ref velocity,out _);trajectory.Add(preview);}
                     Assert.That(previewLanded,Is.True);
+                    // Replays must observe the same world as the cached preview.
+                    // Authority landing creates a real sonar target, so evaluate
+                    // every FPS trajectory before introducing that future body.
+                    var predictions=new System.Collections.Generic.List<(int fps,SpecialWeaponService.Entity entity)>();
+                    foreach(int fps in new[]{30,60,144})
+                    {
+                        var predicted=new SpecialWeaponService.Entity(start,config);
+                        for(int f=1;f<=fps*3;f++)
+                        {
+                            SpecialWeaponService.SampleThrow(predicted,start.Born+f/(double)fps);
+                            int tick=Math.Min(trajectory.Count-1,(int)Math.Floor(f*60d/fps+1e-6));
+                            Assert.That(predicted.ThrowFrames,Is.EqualTo(tick),$"Type {id}, {fps} FPS, sample {f}");
+                            Assert.That(Vector3.Distance(predicted.State.Position,trajectory[tick]),Is.LessThan(.00001f),$"Every sampled position: type={id}, fps={fps}, sample={f}, tick={tick}, phase={authority.State.Phase}, expected={trajectory[tick]:F6}, actual={predicted.State.Position:F6}, born={start.Born:R}");
+                        }
+                        Assert.That(predicted.ThrowLanded,Is.True);
+                        predictions.Add((fps,predicted));
+                    }
                     for(int f=0;f<180&&authority.State.Phase==SpecialEntityPhase.Flying;f++)
                     {now+=1d/60;match.SpecialWeapons.Step(now,1f/60,match.Players);}
                     Assert.That(authority.State.Phase,Is.Not.EqualTo(SpecialEntityPhase.Flying));
@@ -481,17 +531,9 @@ namespace Splatoon.Tests
                         Assert.That(authority.State.Normal.y,Is.GreaterThan(.99));
                     }
                     else Assert.That(authority.State.Normal.z,Is.LessThan(-.99),"Locator and rain generator activate at wall contact");
-                    foreach(int fps in new[]{30,60,144})
+                    foreach(var sample in predictions)
                     {
-                        var predicted=new SpecialWeaponService.Entity(start,config);
-                        for(int f=1;f<=fps*3;f++)
-                        {
-                            SpecialWeaponService.SampleThrow(predicted,start.Born+f/(double)fps);
-                            int tick=Math.Min(trajectory.Count-1,(int)Math.Floor(f*60d/fps+1e-6));
-                            Assert.That(predicted.ThrowFrames,Is.EqualTo(tick),$"Type {id}, {fps} FPS, sample {f}");
-                            Assert.That(Vector3.Distance(predicted.State.Position,trajectory[tick]),Is.LessThan(.00001f),"Every sampled position, not only the eventual landing");
-                        }
-                        Assert.That(predicted.ThrowLanded,Is.True);
+                        int fps=sample.fps;var predicted=sample.entity;
                         Assert.That(Vector3.Distance(predicted.State.Position,authority.State.Position),Is.LessThan(.00001f),$"Type {id}, {fps} FPS display sampling");
                         Assert.That(predicted.State.Velocity,Is.EqualTo(Vector3.zero));
                         var stopped=predicted.State.Position;SpecialWeaponService.SampleThrow(predicted,start.Born+3);
@@ -755,14 +797,32 @@ namespace Splatoon.Tests
             var app=PrototypeApp.Current;yield return app.StartWeaponDebugRoom().ToCoroutine();
             yield return Wait(()=>PrototypePlayer.Local!=null&&PrototypeMatch.Current!=null);
             var host=PrototypePlayer.Local;var match=PrototypeMatch.Current;match.enabled=false;host.enabled=false;
+            using var blocks=new BlockDefaultContractFixture(match);
             Assert.That(Physics.Raycast(new Vector3(0,3,-20),Vector3.down,out var floor,6,PlayerMotorSimulation.WorldMask),Is.True);
-            double born=match.NetworkManager.ServerTime.Time+10;var config=SpecialWeaponConfigService.Current.Get(5);
+            double born=blocks.Now+10;var config=SpecialWeaponConfigService.Current.Get(5);
             try
             {
-                PrototypeArena.Current.ClearPaint();
-                var s=host.Snapshot.Value;s.Position=floor.point+Vector3.up*.02f;s.Health=100;s.LifeState=PlayerLifeState.Alive;s.SpecialWeaponId=5;s.SpecialAction++;
+                var s=host.Snapshot.Value;s.Team=1;s.Position=floor.point+Vector3.up*.02f;s.Health=100;s.LifeState=PlayerLifeState.Alive;s.SpecialWeaponId=5;s.SpecialAction++;
                 s.SpecialPhase=SpecialPhase.Recovering;s.SpecialPoints=0;s.SpecialChargeLockedUntil=born+10;s.Swimming=s.CompactBody=false;s.AirHumanOffset=0;
-                host.Snapshot.Value=s;
+                var blastCenter=PlayerMotorSimulation.HumanPosition(s)+Vector3.up*.6f*SpecialWeaponDefaults.Scale;
+                float enemyRadius=config.P.outerRadius,friendlyRadius=enemyRadius*BlockGameplaySettings.FriendlyBlastRadiusFraction;
+                Assert.That(BlockGameplaySettings.FriendlyBlastRadiusFraction,Is.EqualTo(.5f));
+                var seed=blocks.Empty();var center=BlockWorld.CellAt(floor.point+Vector3.up*.05f);
+                var targets=new List<(Vector3Int cell,byte team)>();
+                int extent=Mathf.CeilToInt(enemyRadius/BlockWorld.CellSize)+2;
+                for(int x=-extent;x<=extent;x++)foreach(byte team in new byte[]{1,2})
+                {
+                    var cell=center+new Vector3Int(x,0,team==1?-2:2);
+                    // Avoid the one-cell sphere/voxel intersection shell; the radius oracle below stays strict.
+                    float sampleDistance=Vector3.Distance(BlockWorld.Center(cell),blastCenter);
+                    if(Mathf.Abs(sampleDistance-(team==1?friendlyRadius:enemyRadius))<BlockWorld.CellSize)continue;
+                    Assert.That(seed.Set(cell,BlockCell.Create(team,true)),Is.True);
+                    targets.Add((cell,team));
+                }
+                Assert.That(targets.Any(t=>t.team==2&&Vector3.Distance(BlockWorld.Center(t.cell),blastCenter)>enemyRadius+BlockWorld.CellSize),Is.True,"Real enemy samples also exist strictly outside the configured radius");
+                Assert.That(targets.Any(t=>t.team==1&&Vector3.Distance(BlockWorld.Center(t.cell),blastCenter)>friendlyRadius+BlockWorld.CellSize
+                    &&Vector3.Distance(BlockWorld.Center(t.cell),blastCenter)<enemyRadius-BlockWorld.CellSize),Is.True,"Same outer region contains friendly survivors and enemy removal samples");
+                yield return blocks.Seed(seed);host.Snapshot.Value=s;blocks.Now=born;
                 var reef=match.SpecialWeapons.Spawn(host,s,born,match.State.Value.Round);uint initialPaint=match.PaintSequence;
                 Assert.That(match.SpecialWeapons.Lifecycle[match.SpecialWeapons.Lifecycle.Count-1].State.Expires,Is.EqualTo(reef.State.Expires),"Reliable activation carries final fragment lifetime");
                 var starts=(Vector3[])reef.ReefSplashPositions.Clone();var velocities=(Vector3[])reef.ReefSplashVelocities.Clone();
@@ -774,34 +834,82 @@ namespace Splatoon.Tests
                     Assert.That(speed,Is.InRange(config.P.reefSplashSpeedMin-.0001f,config.P.reefSplashSpeedMax+.0001f));
                     float pitch=Mathf.Asin(reef.ReefSplashVelocities[i].y/speed)*Mathf.Rad2Deg;Assert.That(pitch,Is.InRange(0,30.0001f));
                 }
+                yield return blocks.Publish();
+                int removedEnemy=0,removedFriendly=0,outerEnemySamples=0;
+                var staticMap=match.Arena.GetComponentsInChildren<Collider>(true)
+                    .Where(c=>c.enabled&&c.gameObject.activeInHierarchy&&!c.isTrigger&&c.gameObject.layer!=BlockTerrain.TerrainLayer).ToArray();
+                foreach(var target in targets)
+                {
+                    Vector3 at=BlockWorld.Center(target.cell),delta=at-blastCenter;float distance=delta.magnitude;
+                    bool occluded=staticMap.Any(c=>c.Raycast(new Ray(blastCenter,delta.normalized),out _,Mathf.Max(0,distance-.01f)));
+                    bool removed=distance<=(target.team==1?friendlyRadius:enemyRadius)&&!occluded;
+                    Assert.That(blocks.Terrain.World.TryGet(target.cell,out var actual),Is.EqualTo(!removed),"Real center blast applies the complete configured team radius and static map occlusion at "+target.cell);
+                    if(!removed)Assert.That(actual.Owner,Is.EqualTo(target.team));
+                    else if(target.team==2){removedEnemy++;if(distance>enemyRadius*.9f)outerEnemySamples++;}else removedFriendly++;
+                }
+                Assert.That(removedEnemy,Is.GreaterThan(0));Assert.That(removedFriendly,Is.GreaterThan(0));
+                Assert.That(outerEnemySamples,Is.GreaterThan(0),"Real removal reaches the outer enemy radius beyond the smaller legacy central paint disk");
+                Assert.That(blocks.Terrain.PinkCount,Is.GreaterThan(0));Assert.That(blocks.Terrain.BlueCount,Is.GreaterThan(0));
+                Assert.That(reef.BlockAttack.RemovedEnemy,Is.EqualTo(removedEnemy));Assert.That(reef.BlockAttack.Added,Is.Zero);
+                var afterCentralBlast=blocks.Capture();
                 for(int frame=1;frame<=120;frame++)
                 {
                     if(frame==2){var dead=host.Snapshot.Value;dead.Health=0;dead.LifeState=PlayerLifeState.Dead;host.Snapshot.Value=dead;}
                     match.SpecialWeapons.Step(born+frame/60d,1f/60,match.Players);
                 }
-                Assert.That(match.PaintSequence,Is.GreaterThan(initialPaint),"Peripheral flights produce authoritative paint beyond the immediate disk");
+                blocks.Now=born+2;yield return blocks.Publish();
+                blocks.Unchanged(afterCentralBlast,"Peripheral trajectories near surviving structures do not create blocks or unconfigured extra explosions");
+                Assert.That(match.PaintSequence,Is.EqualTo(initialPaint),"Default explosive skill emits no legacy gameplay paint");
                 float farthest=0;
                 for(int i=0;i<15;i++)
                 {
                     Assert.That(reef.ReefSplashDone[i],Is.True,$"Splash {i} contacts arena geometry even after owner death");
                     Vector3 d=reef.ReefSplashPositions[i]-s.Position;farthest=Mathf.Max(farthest,new Vector2(d.x,d.z).magnitude);
                 }
-                Assert.That(farthest+config.P.reefSplashPaintRadius,Is.GreaterThan(config.P.paintRadius),"Peripheral ink extends beyond the central disk");
+                Assert.That(farthest+config.P.reefSplashPaintRadius,Is.GreaterThan(config.P.paintRadius),"Derived peripheral contact envelope is retained");
                 Assert.That(host.Snapshot.Value.SpecialPoints,Is.Zero,"Dead/locked owner receives no self charge");
-                Assert.That(reef.Removed,Is.True,"Completed splashes release authority entity");
-                uint finishedPaint=match.PaintSequence;match.SpecialWeapons.Step(born+3,1f/60,match.Players);Assert.That(match.PaintSequence,Is.EqualTo(finishedPaint),"No repeated landing stamps");
-                host.Snapshot.Value=s;
+                Assert.That(reef.BlockAttack.AwardedPoints,Is.Zero);Assert.That(reef.Removed,Is.True,"Completed splashes release authority entity");
+                match.SpecialWeapons.Step(born+3,1f/60,match.Players);blocks.Unchanged(afterCentralBlast,"Completed peripheral events are not replayed");
+                yield return blocks.Seed(seed);host.Snapshot.Value=s;blocks.Now=born+4;
                 var batched=match.SpecialWeapons.Spawn(host,s,born+4,match.State.Value.Round);
                 batched.ReefSplashPositions=(Vector3[])starts.Clone();batched.ReefSplashVelocities=(Vector3[])velocities.Clone();
+                yield return blocks.Publish();var beforeBatched=blocks.Capture();
                 for(int sample=1;sample<=60;sample++)match.SpecialWeapons.Step(born+4+sample/30d,1f/30,match.Players);
                 for(int i=0;i<15;i++)Assert.That(Vector3.Distance(batched.ReefSplashPositions[i],reef.ReefSplashPositions[i]),Is.LessThan(.00001f),$"Splash {i}: 30Hz callbacks preserve the same 60Hz contact point");
-                Assert.That(batched.Removed,Is.True);
-                var cancelled=match.SpecialWeapons.Spawn(host,s,born+7,match.State.Value.Round);uint beforeClear=match.PaintSequence;
+                Assert.That(batched.Removed,Is.True);blocks.Now=born+6;yield return blocks.Publish();
+                blocks.Unchanged(beforeBatched,"Batching cannot mint extra construction/destruction");
+
+                // This collider belongs to the saved arena and is in the terrain's static map set.
+                var shield=staticMap.Single(c=>c.name=="CenterCover_1_-1");
+                var shieldedOrigin=shield.bounds.center+Vector3.right*(shield.bounds.extents.x+.4f);
+                var blockedCell=BlockWorld.CellAt(shield.bounds.center-Vector3.right*(shield.bounds.extents.x+.25f));
+                var exposedCell=BlockWorld.CellAt(shieldedOrigin+Vector3.forward*enemyRadius*.6f);
+                var friendlyFar=BlockWorld.CellAt(shieldedOrigin+Vector3.back*enemyRadius*.6f);
+                var friendlyNear=BlockWorld.CellAt(shieldedOrigin+Vector3.right*enemyRadius*.2f);
+                Vector3 blockedDelta=BlockWorld.Center(blockedCell)-shieldedOrigin;
+                Assert.That(shield.Raycast(new Ray(shieldedOrigin,blockedDelta.normalized),out _,blockedDelta.magnitude),Is.True,"Actual saved wall lies between skill and enemy structure");
+                Assert.That(blockedDelta.magnitude,Is.LessThan(enemyRadius));
+                var shieldSeed=blocks.Empty();
+                Assert.That(shieldSeed.Set(blockedCell,BlockCell.Create(2,true)),Is.True);
+                Assert.That(shieldSeed.Set(exposedCell,BlockCell.Create(2,true)),Is.True);
+                Assert.That(shieldSeed.Set(friendlyFar,BlockCell.Create(1,true)),Is.True);
+                Assert.That(shieldSeed.Set(friendlyNear,BlockCell.Create(1,true)),Is.True);
+                yield return blocks.Seed(shieldSeed);
+                s.SpecialAction++;s.Health=100;s.LifeState=PlayerLifeState.Alive;s.Position=shieldedOrigin-Vector3.up*.6f*SpecialWeaponDefaults.Scale;host.Snapshot.Value=s;blocks.Now=born+7;
+                var cancelled=match.SpecialWeapons.Spawn(host,s,born+7,match.State.Value.Round);
+                yield return blocks.Publish();
+                Assert.That(blocks.Terrain.World.TryGet(blockedCell,out var blockedOwner)&&blockedOwner.Owner==2,Is.True,"Saved static map wall shields the in-radius enemy block");
+                Assert.That(blocks.Terrain.World.TryGet(exposedCell,out _),Is.False,"Unshielded enemy at the same outer region is removed");
+                Assert.That(blocks.Terrain.World.TryGet(friendlyFar,out var friendlyOwner)&&friendlyOwner.Owner==1,Is.True,"Friendly structure outside half radius survives");
+                Assert.That(blocks.Terrain.World.TryGet(friendlyNear,out _),Is.False,"Friendly structure within half radius is removed");
+                var beforeClear=blocks.Capture();uint paintBeforeClear=match.PaintSequence;
                 match.SpecialWeapons.ClearOwner(host.PlayerId);match.SpecialWeapons.Step(born+8,1f/60,match.Players);
-                Assert.That(cancelled.Removed,Is.True);Assert.That(match.PaintSequence,Is.EqualTo(beforeClear),"Changing loadout clears pending peripheral paint");
-                Debug.Log($"[REEF-SPLASH] All 15 landed, furthest centre={farthest}, paint events={finishedPaint-initialPaint}");
+                blocks.Now=born+8;yield return blocks.Publish();
+                Assert.That(cancelled.Removed,Is.True);blocks.Unchanged(beforeClear,"Changing loadout clears pending peripheral events without free terrain mutation");
+                Assert.That(match.PaintSequence,Is.EqualTo(paintBeforeClear));Assert.That(host.Snapshot.Value.SpecialPoints,Is.Zero);
+                Debug.Log($"[REEF-SPLASH-BLOCK] All 15 landed, furthest centre={farthest}, real central enemy removals={removedEnemy}, friendly removals={removedFriendly}; complete radius, saved wall shielding, derived-event isolation.");
             }
-            finally{match.SpecialWeapons.Clear();match.enabled=true;host.enabled=true;}
+            finally{blocks.Dispose();match.SpecialWeapons.Clear();match.enabled=true;host.enabled=true;}
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
 
@@ -920,7 +1028,7 @@ namespace Splatoon.Tests
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator SpecialKnockbackAndAirRecoilMoveThroughCollisionAndReset()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");yield return new EnterPlayMode();
@@ -930,13 +1038,16 @@ namespace Splatoon.Tests
             var host=PrototypePlayer.Local;var match=PrototypeMatch.Current;
             var enemy=match.AddTestBot(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
             match.enabled=false;foreach(var player in match.Players)player.enabled=false;
-            Vector3 origin=new(3600,20,3600);double now=match.NetworkManager.ServerTime.Time+10;
+            Vector3 origin=new(0,20,0);double now=match.NetworkManager.ServerTime.Time+10;
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.position=origin+Vector3.down*.5f;floor.transform.localScale=new Vector3(50,1,50);
             var wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.transform.position=origin+new Vector3(3,2,0);wall.transform.localScale=new Vector3(.2f,4,10);wall.SetActive(false);
             var place=typeof(PrototypePlayer).GetMethod("DiagnosticPlace",BindingFlags.Instance|BindingFlags.NonPublic);
             var step=typeof(PrototypePlayer).GetMethod("Step",BindingFlags.Instance|BindingFlags.NonPublic);
             void Place(PrototypePlayer p,Vector3 at,byte team)
-            {place.Invoke(p,new object[]{at,0f});var s=p.Snapshot.Value;s.Team=team;s.Health=100;s.ProtectedUntil=0;s.SpecialPhase=SpecialPhase.Charging;s.SpecialWeaponId=1;s.SpecialImpulseVelocity=Vector3.zero;s.SpecialImpulseRemaining=0;p.Snapshot.Value=s;p.SwimBody.ApplyCollision(s);Physics.SyncTransforms();}
+            {place.Invoke(p,new object[]{at,0f});var s=p.Snapshot.Value;s.Team=team;s.Health=100;s.ProtectedUntil=0;s.SpecialPhase=SpecialPhase.Charging;s.SpecialWeaponId=1;s.SpecialImpulseVelocity=Vector3.zero;s.SpecialImpulseRemaining=0;p.Snapshot.Value=s;p.SwimBody.ApplyCollision(s);Physics.SyncTransforms();
+                Assert.That(BlockTerrain.Current != null && BlockTerrain.Current.Initialized, Is.True, "The real block terrain must remain active for the impulse fixture");
+                Assert.That(BlockTerrain.Current.PublishedTraversalPoseFits(p,s), Is.True, "The complete placed impulse/recoil fixture pose must fit the published world");
+            }
             try
             {
                 Place(host,origin+Vector3.back*10,1);Place(enemy,origin+new Vector3(2,.05f,0),2);
@@ -988,6 +1099,343 @@ namespace Splatoon.Tests
 
         [UnityTearDown]public IEnumerator Cleanup()
         {if(!Application.isPlaying)yield break;if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom)yield return PrototypeApp.Current.Leave().ToCoroutine();yield return new ExitPlayMode();}
+    }
+    // Real server damage/impulse intake, shared outer player Step and ordinary
+    // historical owner reconciliation. This is same-process semantic coverage;
+    // it does not claim independent Player/network or rendering acceptance.
+    public sealed class BlockSpecialImpulseSafetyPlayTests
+    {
+        const float Dt = 1f / 60;
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        PrototypeApp app;
+        PrototypeMatch match;
+        PrototypePlayer attacker, victim, replay;
+        BlockTerrain terrain;
+        Action serverTick;
+        BoxCollider obstacle;
+        PlayerMotorSimulation observedMotor;
+        readonly List<PlayerMotorSimulation.MotorBranchObservation> observations = new();
+
+        static object Call(PrototypePlayer player, string name, params object[] args) =>
+            typeof(PrototypePlayer).GetMethod(name, Private).Invoke(player, args);
+        static void Set(PrototypePlayer player, string name, object value) =>
+            typeof(PrototypePlayer).GetField(name, Private).SetValue(player, value);
+        static PlayerMotorSimulation Motor(PrototypePlayer player) =>
+            (PlayerMotorSimulation)typeof(PrototypePlayer).GetField("_motor", Private).GetValue(player);
+        static List<PlayerInputFrame> History(PrototypePlayer player) =>
+            (List<PlayerInputFrame>)typeof(PrototypePlayer).GetField("_history", Private).GetValue(player);
+        static PlayerSnapshot Predicted(PrototypePlayer player) =>
+            (PlayerSnapshot)typeof(PrototypePlayer).GetField("_predicted", Private).GetValue(player);
+
+        IEnumerator Wait(Func<bool> ready, string label)
+        {
+            double end = Time.realtimeSinceStartupAsDouble + 45;
+            while (!ready() && Time.realtimeSinceStartupAsDouble < end)
+            { PrototypeApp.Current?.CaptureMouse(false); yield return null; }
+            Assert.That(ready(), Is.True, label);
+        }
+
+        [UnityTest, Timeout(600000)] public IEnumerator TripleInkstrikeAirPaperRejectsPostMotorSilhouetteOnlyImpulseAndReplaysExactly()
+        {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
+            yield return new EnterPlayMode();
+            yield return Scenario(false);
+            yield return app.Leave().ToCoroutine();
+            yield return new ExitPlayMode();
+        }
+
+        [UnityTest, Timeout(600000)] public IEnumerator TripleInkstrikeWallPaperRejectsPostMotorSilhouetteOnlyImpulseAndReplaysExactly()
+        {
+            EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
+            yield return new EnterPlayMode();
+            yield return Scenario(true);
+            yield return app.Leave().ToCoroutine();
+            yield return new ExitPlayMode();
+        }
+
+        void Observe(PlayerMotorSimulation source, PlayerMotorSimulation.MotorBranchObservation observation)
+        { if (source == observedMotor) observations.Add(observation); }
+
+        PlayerSnapshot Outer(PrototypePlayer player, PlayerSnapshot origin, PlayerInputFrame input,
+            out PlayerSnapshot postMotor)
+        {
+            observedMotor = Motor(player); observations.Clear();
+            observedMotor.Restore(origin, false);
+            object[] args = { origin, input, Dt, origin.SimulatedAt + 1d / 60, MatchPhase.Practice };
+            Assert.That((bool)Call(player, "Step", args), Is.False, "No main paid attack is requested");
+            Assert.That(observations.Count(e => e.Branch == PlayerMotorSimulation.MotorTraceBranch.StepComplete), Is.EqualTo(1),
+                "A rejected post-motor impulse cannot rerun the motor or its animation");
+            postMotor = observations.Single(e => e.Branch == PlayerMotorSimulation.MotorTraceBranch.StepComplete).After;
+            return (PlayerSnapshot)args[0];
+        }
+
+        static bool CapsuleOverlaps(PlayerSnapshot s, bool shrink = true)
+        {
+            var shape = HeroBodyShape.For(s.HeroId);
+            float height = s.Swimming || s.CompactBody ? shape.CompactHeight : shape.Height;
+            float segment = Mathf.Max(0, height * .5f - shape.Radius);
+            Vector3 center = s.Position + Vector3.up * (height * .5f);
+            return Physics.CheckCapsule(center - Vector3.up * segment, center + Vector3.up * segment,
+                shape.Radius - (shrink ? Mathf.Max(.005f, shape.SkinWidth) : 0),
+                PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
+        }
+
+        static bool CapsuleSweepBlocked(PlayerSnapshot s, Vector3 destination)
+        {
+            var shape = HeroBodyShape.For(s.HeroId);
+            float height = s.Swimming || s.CompactBody ? shape.CompactHeight : shape.Height;
+            float segment = Mathf.Max(0, height * .5f - shape.Radius);
+            Vector3 center = s.Position + Vector3.up * (height * .5f);
+            Vector3 a = center - Vector3.up * segment, b = center + Vector3.up * segment, delta = destination - s.Position;
+            return CapsuleOverlaps(s, false) || delta.sqrMagnitude > .000000000001f &&
+                Physics.CapsuleCast(a, b, shape.Radius, delta.normalized, out _, delta.magnitude,
+                    PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
+        }
+
+        static bool PaperOverlaps(PlayerSnapshot s, IReadOnlyList<Rect> rects, PaperBodyProfile profile)
+        {
+            foreach (var rect in rects)
+                if (Physics.CheckBox(s.PaperCenter + s.PaperRotation * new Vector3(rect.center.x, rect.center.y, 0),
+                    new Vector3(rect.width * .5f, rect.height * .5f, profile.Thickness * .5f), s.PaperRotation,
+                    PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return true;
+            return false;
+        }
+
+        sealed class LiveStamp
+        {
+            readonly SwimBody body;
+            readonly PaperCapture capture;
+            readonly int version;
+            readonly IReadOnlyList<Rect> rects;
+            readonly Rect[] values;
+            readonly Mesh mesh;
+            readonly Vector3[] vertices;
+            readonly int[] triangles;
+            readonly Vector3 hitPosition, renderPosition;
+            readonly Quaternion hitRotation, renderRotation;
+            readonly Bounds bounds;
+            public LiveStamp(SwimBody source)
+            {
+                body = source; capture = body.Capture; Assert.That(capture, Is.Not.Null);
+                version = capture.PoseVersion; rects = body.HitRects; values = rects.ToArray();
+                mesh = body.HitVolume.sharedMesh; Assert.That(mesh, Is.Not.Null);
+                vertices = mesh.vertices; triangles = mesh.triangles; bounds = capture.PosedBounds;
+                hitPosition = body.HitVolume.transform.localPosition; hitRotation = body.HitVolume.transform.localRotation;
+                renderPosition = body.BodyRenderer.transform.localPosition; renderRotation = body.BodyRenderer.transform.localRotation;
+            }
+            public void AssertUnchanged()
+            {
+                Assert.That(body.Capture, Is.SameAs(capture)); Assert.That(capture.PoseVersion, Is.EqualTo(version));
+                Assert.That(body.HitRects, Is.SameAs(rects)); CollectionAssert.AreEqual(values, body.HitRects);
+                Assert.That(body.HitVolume.sharedMesh, Is.SameAs(mesh));
+                CollectionAssert.AreEqual(vertices, mesh.vertices); CollectionAssert.AreEqual(triangles, mesh.triangles);
+                Assert.That(capture.PosedBounds, Is.EqualTo(bounds));
+                Assert.That(body.HitVolume.transform.localPosition, Is.EqualTo(hitPosition));
+                Assert.That(body.HitVolume.transform.localRotation, Is.EqualTo(hitRotation));
+                Assert.That(body.BodyRenderer.transform.localPosition, Is.EqualTo(renderPosition));
+                Assert.That(body.BodyRenderer.transform.localRotation, Is.EqualTo(renderRotation));
+            }
+        }
+
+        void AssertLivePublication(PrototypePlayer player, PlayerSnapshot s)
+        {
+            var body = player.SwimBody;
+            Assert.That(player.transform.position.Equals(s.Position), Is.True);
+            Assert.That(CapsuleOverlaps(s), Is.False);
+            Assert.That(terrain.PublishedTraversalPoseFits(player, s), Is.True);
+            using var oracle = new PaperCapture(body.Profile); oracle.Sample(s);
+            Assert.That(PaperOverlaps(s, oracle.HitRects, body.Profile), Is.False);
+            CollectionAssert.AreEqual(oracle.HitRects, body.HitRects);
+            Assert.That(body.HitVolume.transform.position, Is.EqualTo(s.PaperCenter));
+            Assert.That(Quaternion.Angle(body.HitVolume.transform.rotation, s.PaperRotation), Is.LessThan(.0001f));
+        }
+
+        bool FindSilhouetteOnlyObstacle(PlayerSnapshot initial, PlayerSnapshot postMotor, PlayerSnapshot unsafeEnd,
+            Rect[] initialRects, Rect[] postMotorRects, Rect[] futureRects, PaperBodyProfile profile)
+        {
+            // Independent real authored samples choose the distinguishing point;
+            // the production candidate query only confirms the chosen witness.
+            for (int y = PaperSilhouette.Rows - 2; y > 0; y--)
+            for (int x = 1; x < PaperSilhouette.Columns - 1; x++)
+            {
+                var point = new Vector2(((x + .5f) / PaperSilhouette.Columns - .5f) * profile.Size.x,
+                    ((y + .5f) / PaperSilhouette.Rows - .5f) * profile.Size.y);
+                var square = new Rect(point - Vector2.one * .005f, Vector2.one * .01f);
+                if (!futureRects.Any(r => r.xMin < square.xMin && r.xMax > square.xMax &&
+                    r.yMin < square.yMin && r.yMax > square.yMax)) continue;
+                obstacle.transform.SetPositionAndRotation(unsafeEnd.PaperCenter + unsafeEnd.PaperRotation * new Vector3(point.x, point.y, 0),
+                    unsafeEnd.PaperRotation);
+                obstacle.enabled = true; Physics.SyncTransforms();
+                if (CapsuleOverlaps(initial) || CapsuleOverlaps(postMotor) || CapsuleOverlaps(unsafeEnd) ||
+                    CapsuleSweepBlocked(postMotor, unsafeEnd.Position) || PaperOverlaps(initial, initialRects, profile) ||
+                    PaperOverlaps(postMotor, postMotorRects, profile) || !PaperOverlaps(unsafeEnd, futureRects, profile)) continue;
+                Assert.That(terrain.PublishedTraversalPoseFits(victim, postMotor), Is.True);
+                Assert.That(terrain.PublishedTraversalPoseFits(victim, unsafeEnd), Is.False);
+                return true;
+            }
+            obstacle.enabled = false; Physics.SyncTransforms(); return false;
+        }
+
+        IEnumerator Scenario(bool wall)
+        {
+            yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Boot ready");
+            app = PrototypeApp.Current; yield return app.StartWeaponDebugRoom().ToCoroutine();
+            yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current?.Blocks != null, "Actual NGO block host");
+            app.CaptureMouse(false); match = PrototypeMatch.Current; attacker = PrototypePlayer.Local; terrain = match.Blocks;
+            Assert.That(GameplayConfig.Global.SimulationRate, Is.EqualTo(60), "Use the actual configured dt for authority/replay raw equality");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
+            victim = match.AddTestBot(prefab); Assert.That(victim, Is.Not.Null, match.TestBotMessage);
+            Assert.That(victim.IsServer, Is.True);
+            match.enabled = false; foreach (var player in match.Players) player.enabled = false;
+            serverTick = (Action)Delegate.CreateDelegate(typeof(Action), match, typeof(PrototypeMatch).GetMethod("ServerTick", Private));
+            match.NetworkManager.NetworkTickSystem.Tick -= serverTick;
+            PlayerMotorSimulation.MotorBranchObserved += Observe;
+            try
+            {
+                match.Projectiles.Clear(); match.SubWeapons.Clear(); match.SpecialWeapons.Clear(); BlockAttackService.Clear();
+                terrain.Clear(match.State.Value.Round);
+                foreach (var mapCollider in match.Arena.GetComponentsInChildren<Collider>(true))
+                    if (mapCollider.enabled && mapCollider.gameObject.activeInHierarchy && !mapCollider.isTrigger)
+                        Assert.That(mapCollider.bounds.max.y, Is.LessThan(19), "Retain the actual map; paper/wall fixture is above its geometry");
+                var world = new BlockWorld(terrain.World.Dimensions, terrain.Round, terrain.World.Bottom);
+                byte team = (byte)(3 - attacker.Snapshot.Value.Team);
+                if (wall) for (int x = -8; x <= 8; x++) for (int y = 190; y <= 250; y++)
+                    world.Set(new Vector3Int(x, y, 10), BlockCell.Create(team, true));
+                Assert.That(terrain.QueueSeed(world), Is.True);
+                double now = match.NetworkManager.ServerTime.Time + 10;
+                for (int i = 0; i < 1000 && terrain.PendingTransactions != 0; i++)
+                { terrain.Tick(false, now, Dt); app.CaptureMouse(false); yield return null; }
+                Assert.That(terrain.PendingTransactions, Is.Zero); Assert.That(terrain.FailedTransactions, Is.Zero);
+                Physics.SyncTransforms();
+
+                var initial = victim.Snapshot.Value;
+                initial.HeroId = 1; initial.HeroRevision++; initial.Team = team; initial.Health = 100; initial.Ink = 43;
+                initial.LifeState = PlayerLifeState.Alive; initial.ProtectedUntil = 0; initial.LastDamageAt = 0;
+                initial.SubWeaponId = SubWeaponConfigService.Current.DefaultId(1); initial.SpecialWeaponId = 1;
+                initial.SpecialPhase = SpecialPhase.Charging; initial.SpecialPoints = 0; initial.SpecialRemaining = 0;
+                initial.SpecialShotAt = 0; initial.SpecialImpulseVelocity = Vector3.zero; initial.SpecialImpulseRemaining = 0;
+                initial.Position = new Vector3(.05f, 22.87f, wall ? .48f : -3);
+                initial.Movement = MovementMode.Air; initial.Swimming = true; initial.CompactBody = false; initial.Grounded = false;
+                initial.AirHumanOffset = .87f; initial.CameraRebaseOffset = -.2f; initial.VerticalSpeed = -.1f;
+                initial.Velocity = Vector3.down * .1f; initial.PlanarVelocity = Vector3.zero; initial.GroundNormal = Vector3.up;
+                initial.SwimSource = initial.AirSwimSource = SwimSurface.Friendly; initial.SwimWasHeld = true;
+                initial.PaperPose = PaperPose.Air; initial.PaperRotation = PaperPoseSimulation.GroundRotation(Vector3.up, 90);
+                initial.PaperAnimationTime = .13f; initial.PaperMove = Vector2.zero; initial.SimulatedAt = now;
+                Call(victim, "EnsureHeroPresentation", initial.HeroId);
+                initial.PaperCenter = initial.Position + Vector3.up * victim.SwimBody.Profile.SurfaceOffset;
+                var input = new PlayerInputFrame { Swim = true, Move = wall ? Vector2.up : Vector2.zero, Look = Vector2.zero,
+                    Sequence = initial.AcknowledgedInput + 1, Tick = 100, Revision = initial.Revision, HeroRevision = initial.HeroRevision,
+                    SpecialSequence = initial.SpecialConsumed, FireSequence = initial.ConsumedFire, ReleaseSequence = initial.ConsumedRelease,
+                    SubPressSequence = initial.SubConsumedPress, SubReleaseSequence = initial.SubConsumedRelease, JumpSequence = initial.ConsumedJump };
+                Motor(victim).Restore(initial);
+                if (wall)
+                {
+                    Motor(victim).Step(ref initial, input, Dt, now, false);
+                    Assert.That(initial.Movement, Is.EqualTo(MovementMode.WallInk));
+                    Assert.That(initial.PaperPose, Is.EqualTo(PaperPose.Wall));
+                    Assert.That(initial.SupportTerrainRevision, Is.EqualTo(terrain.Revision));
+                }
+                else Assert.That(initial.PaperPose, Is.EqualTo(PaperPose.Air));
+                input.Move = Vector2.zero; input.Look = new Vector2(37, -11);
+                victim.Snapshot.Value = initial; Motor(victim).Restore(initial); Physics.SyncTransforms();
+                Assert.That(CapsuleOverlaps(initial), Is.False);
+
+                // Use the real loaded TripleInkstrike entity/service, real server
+                // ReceiveDamage and real ReceiveSpecialKnockback. Do not inject a
+                // sentinel impulse into the snapshot or invoke the impulse helper.
+                var owner = attacker.Snapshot.Value; owner.SpecialWeaponId = 2; owner.SpecialAction++;
+                attacker.Snapshot.Value = owner;
+                var tornado = match.SpecialWeapons.Spawn(attacker, owner, now, match.State.Value.Round);
+                tornado.State.Position = initial.Position - Vector3.right * .5f;
+                tornado.State.Phase = SpecialEntityPhase.Active; tornado.State.Changed = now - tornado.Config.P.expandSeconds;
+                tornado.State.Expires = now + tornado.Config.P.effectDuration;
+                match.SpecialWeapons.Step(now, Dt, match.Players);
+                initial = victim.Snapshot.Value; initial.RequiredPaintSequence = match.PaintSequence;
+                Assert.That(initial.Health, Is.EqualTo(100 - tornado.Config.P.damagePerSecond * 5f / 60).Within(.0001f));
+                Assert.That(initial.IsAlive && initial.ShowsSwimBody, Is.True, "The real nonlethal tick leaves the original paper active");
+                Assert.That(initial.PaperPose, Is.EqualTo(wall ? PaperPose.Wall : PaperPose.Air));
+                Assert.That(initial.SpecialImpulseVelocity.x, Is.GreaterThan(0));
+                Assert.That(initial.SpecialImpulseRemaining, Is.EqualTo(tornado.Config.P.knockbackDistance));
+                match.SpecialWeapons.Clear(); // No second damage tick or terrain publication during this movement comparison.
+
+                obstacle = new GameObject("Post-motor authored silhouette-only impulse witness").AddComponent<BoxCollider>();
+                obstacle.size = Vector3.one * .004f; obstacle.enabled = false;
+                var noImpulse = initial; noImpulse.SpecialImpulseVelocity = Vector3.zero; noImpulse.SpecialImpulseRemaining = 0;
+                var ordinaryFinal = Outer(victim, noImpulse, input, out var ordinaryPostMotor);
+                var unsafeFinal = Outer(victim, initial, input, out var postMotor);
+                Assert.That(postMotor.Position.Equals(ordinaryPostMotor.Position), Is.True);
+                Assert.That(postMotor.PaperCenter.Equals(ordinaryPostMotor.PaperCenter), Is.True);
+                Assert.That(postMotor.PaperAnimationTime, Is.EqualTo(ordinaryPostMotor.PaperAnimationTime));
+                Assert.That(Vector3.Distance(unsafeFinal.Position, postMotor.Position), Is.GreaterThan(.01f), "Actual unobstructed product impulse moves");
+                var profile = victim.SwimBody.Profile;
+                using var oracle = new PaperCapture(profile);
+                oracle.Sample(initial); var initialRects = oracle.HitRects.ToArray();
+                oracle.Sample(postMotor); var postMotorRects = oracle.HitRects.ToArray();
+                oracle.Sample(unsafeFinal); var futureRects = oracle.HitRects.ToArray();
+                Assert.That(FindSilhouetteOnlyObstacle(initial, postMotor, unsafeFinal, initialRects, postMotorRects, futureRects, profile), Is.True,
+                    "Coverage requires a real authored future contour blocked outside the clear capsule and native impulse sweep; never skip the scenario");
+
+                Vector3 requested = Vector3.ClampMagnitude(initial.SpecialImpulseVelocity * Dt, initial.SpecialImpulseRemaining);
+                var expected = ordinaryFinal;
+                expected.SpecialImpulseVelocity = initial.SpecialImpulseVelocity * Mathf.Pow(initial.SpecialImpulseRetention, Dt * 60);
+                expected.SpecialImpulseRetention = initial.SpecialImpulseRetention;
+                expected.SpecialImpulseRemaining = Mathf.Max(0, initial.SpecialImpulseRemaining - requested.magnitude);
+                var authority = Outer(victim, initial, input, out var finalPostMotor);
+                Assert.That(authority.Equals(expected), Is.True,
+                    "Retain every post-motor movement/key/paid-action/resource field, then consume/decay the attempted impulse exactly once");
+                Assert.That(finalPostMotor.Position.Equals(postMotor.Position), Is.True);
+                Assert.That(authority.SimulationTick, Is.EqualTo(initial.SimulationTick + 1));
+                Assert.That(authority.SimulatedAt, Is.EqualTo(initial.SimulatedAt + 1d / 60));
+                AssertLivePublication(victim, authority);
+
+                // The replay runs against the same static collision world, not
+                // against an extra overlapping copy of its authority capsule.
+                victim.GetComponent<CharacterController>().enabled = false;
+                replay = UnityEngine.Object.Instantiate(prefab).GetComponent<PrototypePlayer>(); replay.enabled = false;
+                replay.gameObject.layer = 8;
+                Assert.That(replay.IsServer || replay.IsSpawned, Is.False, "A genuine unspawned owner prediction fixture has no server publication branch");
+                Call(replay, "EnsureHeroPresentation", initial.HeroId);
+                var conflictingLiveSeed = initial; conflictingLiveSeed.PaperAnimationTime += .43f; conflictingLiveSeed.PaperMove = Vector2.right;
+                replay.SwimBody.ApplyCollision(conflictingLiveSeed);
+                var stamp = new LiveStamp(replay.SwimBody);
+                Set(replay, "_predicted", initial); History(replay).Clear(); History(replay).Add(input);
+                observedMotor = Motor(replay); observations.Clear();
+                Call(replay, "ReconcilePrediction", initial, false, true, (uint)0, MatchPhase.Practice);
+                Assert.That(replay.TerrainReplayPending, Is.False); Assert.That(replay.LastReplaySteps, Is.EqualTo(1));
+                Assert.That(observations.Count(e => e.Branch == PlayerMotorSimulation.MotorTraceBranch.StepComplete), Is.EqualTo(1));
+                Assert.That(Predicted(replay).Equals(authority), Is.True, "Compare every raw snapshot field after real historical outer-Step replay");
+                stamp.AssertUnchanged();
+                Assert.That(replay.transform.position.Equals(authority.Position), Is.True);
+                Assert.That(terrain.PublishedTraversalPoseFits(replay, Predicted(replay)), Is.True);
+                replay.SwimBody.ApplyCollision(Predicted(replay)); Physics.SyncTransforms();
+                AssertLivePublication(replay, Predicted(replay));
+            }
+            finally { CleanupOwned(); }
+        }
+
+        void CleanupOwned()
+        {
+            PlayerMotorSimulation.MotorBranchObserved -= Observe;
+            if (obstacle != null) { obstacle.enabled = false; UnityEngine.Object.Destroy(obstacle.gameObject); obstacle = null; }
+            if (replay != null) { replay.gameObject.SetActive(false); UnityEngine.Object.Destroy(replay.gameObject); replay = null; }
+            if (match != null)
+            {
+                if (serverTick != null && match.NetworkManager.NetworkTickSystem != null)
+                    match.NetworkManager.NetworkTickSystem.Tick += serverTick;
+                serverTick = null;
+                match.Projectiles.Clear(); match.SubWeapons.Clear(); match.SpecialWeapons.Clear();
+            }
+            BlockAttackService.Clear(); app?.CaptureMouse(false);
+        }
+
+        [UnityTearDown] public IEnumerator Cleanup()
+        {
+            if (!Application.isPlaying) yield break;
+            CleanupOwned();
+            if (PrototypeApp.Current != null && PrototypeApp.Current.InRoom)
+                yield return PrototypeApp.Current.Leave().ToCoroutine();
+            yield return new ExitPlayMode();
+        }
     }
 }
 #endif

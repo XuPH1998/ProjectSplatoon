@@ -21,7 +21,9 @@ namespace Splatoon.Tests
         }
         [Test] public void GeneratedDefaultsResolveFourTablesAndBallisticValues()
         {
-            var t = Tables(); GameplayConfig.Validate(t);
+            var t = Tables();
+            using var historical = new HistoricalWeaponFixture("LegacyRifle", t.TbHero.Get(1));
+            GameplayConfig.Validate(t);
             Assert.That(t.TbHero.Get(1).MaxHealth, Is.EqualTo(100));
             Assert.That(WeaponConfigService.Current.Get(t.TbHero.Get(1)).FireRate, Is.EqualTo(15));
             Assert.That(WeaponConfigService.Current.Get(t.TbHero.Get(1)).Damage, Is.EqualTo(36));
@@ -31,9 +33,24 @@ namespace Splatoon.Tests
             Assert.That(t.TbGlobal.Get(1).ProjectileStepRate, Is.EqualTo(120));
             Assert.That(t.TbGlobal.Get(1).AimCorrectionDistance, Is.EqualTo(6));
             Assert.That(t.TbGlobal.Get(1).AimFarCorrectionDistance, Is.EqualTo(50));
-            Assert.That(t.TbGlobal.Get(1).SnapshotBytesPerSecond, Is.EqualTo(262144));
+            // Current source-table budget: Global!S4, raised in d2808d44 (2026-09-21).
+            Assert.That(t.TbGlobal.Get(1).SnapshotBytesPerSecond, Is.EqualTo(1048576));
             Assert.That(t.TbGlobal.Get(1).SnapshotMaxInFlightRecords, Is.EqualTo(8));
         }
+        [Test] public void CurrentNineHeroTablesResolveTheRealAuthoredWeaponSnapshots()
+        {
+            var t = Tables(); GameplayConfig.Validate(t);
+            CollectionAssert.AreEqual(System.Linq.Enumerable.Range(1, 9), System.Linq.Enumerable.Select(t.TbHero.DataList, h => h.Id));
+            foreach (var h in t.TbHero.DataList)
+            {
+                var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<Splatoon.Config.WeaponConfigAsset>(h.WeaponConfigPath);
+                Assert.That(authored, Is.Not.Null, h.WeaponConfigPath);
+                Assert.That(WeaponConfigService.Current.Get(h).SameValues(authored.Snapshot()), Is.True, h.WeaponConfigPath);
+            }
+            var rifle = WeaponConfigService.Current.Get(t.TbHero.Get(1));
+            Assert.That(rifle.FireRate, Is.EqualTo(10)); Assert.That(rifle.Damage, Is.EqualTo(36));
+        }
+
         [Test] public void InvalidCrossTableReferenceIsRejected()
         {
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate(Tables(d => d["tbroommode"][0]["heroId"] = 999)));

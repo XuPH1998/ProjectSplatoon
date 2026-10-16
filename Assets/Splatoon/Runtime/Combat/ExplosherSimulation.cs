@@ -102,7 +102,7 @@ namespace Splatoon.Combat
             {
                 double time = start + (end - start) * world.Distance / Mathf.Max(.0001f, length);
                 PaintReferenceTrail(ref active, from, from + delta.normalized * world.Distance, start, time);
-                Resolve(shot, world.Collider, world.Point, world.Normal, time - shot.Born, ref active.PaintOrdinal);
+                ResolveCollision(shot, world, time - shot.Born, ref active.PaintOrdinal);
                 return true;
             }
             PaintReferenceTrail(ref active, from, to, start, end);

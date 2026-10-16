@@ -12,6 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621138b3be574601a2622a259a1e39dc, type: 3}
   m_Name: BubbleShotgunGirlWeaponConfig
   m_EditorClassIdentifier: Splatoon.Config::Splatoon.Config.WeaponConfigAsset
+  blockBuild: 0
+  blockEnemyRemoval: 0
+  blockRemovalRadius: 0.2
+  aimMode: 0
+  shotGuideSeconds: 0
+  inheritForwardMovement: 0
+  angularSpread: 0
+  detailedPaint: 0
+  footSequence: 0
+  footPhase: 0
   motionMode: 6
   bubbleVolleySeconds: 0.55
   bubbleIntervalSeconds: 0.05

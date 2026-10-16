@@ -5,6 +5,7 @@ using Splatoon.Painting;
 using Splatoon.Prototype;
 using Unity.Netcode;
 using UnityEngine;
+using Splatoon.Blocks;
 namespace Splatoon.Combat
 {
     public enum SpecialEntityPhase:byte { Flying, Warning, Active, Removed }
@@ -37,6 +38,10 @@ namespace Splatoon.Combat
         {
             public SpecialEntityState State;
             public readonly SpecialWeaponRuntimeConfig Config;
+            public BlockAttackToken BlockAttack;
+            public uint BlockOrdinal;
+            public bool BlockAttachment;
+            public Vector3Int BlockAttachmentCell;
             public readonly HashSet<(ulong,uint)> Hit=new();
             public readonly Dictionary<(ulong,uint),float> PlayerDamage=new();
             public readonly HashSet<(ulong,uint,int)> WaveHits=new();
@@ -86,6 +91,7 @@ namespace Splatoon.Combat
             var state=new SpecialEntityState{Id=++_id,Round=round,Life=s.Revision,HeroRevision=s.HeroRevision,Action=s.SpecialAction,Attack=s.SpecialAttack,Owner=player.PlayerId,Team=s.Team,Type=c.Type,
                 Phase=SpecialEntityPhase.Flying,Position=position,Velocity=velocity,Direction=Quaternion.Euler(0,s.Yaw,0)*Vector3.forward,Normal=Vector3.up,Born=now,Changed=now,Expires=now+10,LiveLobes=7,Health=c.P.health,P0=position,P1=position,P2=position};
             var e=new Entity(state,c);_entities.Add(e);Publish(e);
+            if(BlockAttackService.Active)e.BlockAttack=BlockAttackService.Special(player.PlayerId,s,round);
             if(c.Type==SpecialWeaponType.Reefslider)
             {e.State.Position=PlayerMotorSimulation.HumanPosition(s)+Vector3.up*.6f*SpecialWeaponDefaults.Scale;e.State.Radius=c.P.outerRadius;Blast(e,e.State.Position,null,false);StartReefSplashes(e,PlayerMotorSimulation.HumanPosition(s));e.State.Expires=now+3;Phase(e,SpecialEntityPhase.Active);}
             return e;
@@ -99,6 +105,8 @@ namespace Splatoon.Combat
                 if(e.Removed)continue;
                 if(!PrototypePlayer.ByOwner.TryGetValue(e.State.Owner,out var owner)||owner.Snapshot.Value.HeroRevision!=e.State.HeroRevision||owner.Snapshot.Value.Team!=e.State.Team){Remove(e);continue;}
                 if(now+1e-6>=e.State.Expires){Remove(e);continue;}
+                if(e.BlockAttachment&&e.State.Health>0&&BlockTerrain.Current!=null&&!BlockTerrain.Current.World.TryGet(e.BlockAttachmentCell,out _))
+                {e.BlockAttachment=false;DestroyGenerator(e,true);if(e.Removed)continue;}
                 if(e.State.Phase==SpecialEntityPhase.Flying){if(e.State.Type==SpecialWeaponType.Trizooka)StepTrizooka(e,dt);else StepThrow(e,dt);}
                 else if(e.State.Type==SpecialWeaponType.TripleInkstrike)StepTornado(e,players,dt);
                 else if(e.State.Type==SpecialWeaponType.WaveBreaker)StepSonar(e,players);
@@ -230,17 +238,22 @@ namespace Splatoon.Combat
                 {TpsAimSolver.UnembedFloatingContact(ref hit,c.P.throwRadius);return true;}
                 return StormThrowAim.ClosestCast(from,delta,delta.magnitude,c.P.throwRadius,0,out hit,false,0);
             }
-            if(!Physics.SphereCast(from,c.P.throwRadius,delta.normalized,out var h,delta.magnitude,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))return false;
-            hit=new TpsCollision{Collider=h.collider,Point=h.point,Normal=h.normal,Center=from+delta.normalized*h.distance,Distance=h.distance};return true;
+            if(StormThrowAim.Overlap(from,c.P.throwRadius,0,delta.sqrMagnitude>0?-delta.normalized:Vector3.up,out hit,false,0))return true;
+            return StormThrowAim.ClosestCast(from,delta,delta.magnitude,c.P.throwRadius,0,out hit,false,0);
         }
         // Shared by authority, trajectory preview and fixed-frame visual prediction.
         // Returns a deployment contact, not a sonar's intermediate wall contact.
         public static bool AdvanceThrow(SpecialWeaponRuntimeConfig c,ref Vector3 position,ref Vector3 velocity,out Vector3 normal,float dt=1f/60)
         {
-            var p=c.P;normal=Vector3.zero;velocity*=Mathf.Exp(-p.throwDrag*dt);
+            bool landed=AdvanceThrowContact(c,ref position,ref velocity,out var hit,dt);
+            normal=hit.Normal;return landed;
+        }
+        static bool AdvanceThrowContact(SpecialWeaponRuntimeConfig c,ref Vector3 position,ref Vector3 velocity,out TpsCollision hit,float dt=1f/60)
+        {
+            var p=c.P;hit=default;velocity*=Mathf.Exp(-p.throwDrag*dt);
             Vector3 delta=velocity*dt+Vector3.down*p.throwGravity*dt*dt*.5f;velocity+=Vector3.down*p.throwGravity*dt;
-            if(!ThrowCollision(c,position,delta,out var hit)){position+=delta;return false;}
-            normal=hit.Normal;
+            if(!ThrowCollision(c,position,delta,out hit)){position+=delta;return false;}
+            var normal=hit.Normal;
             if(c.Type==SpecialWeaponType.WaveBreaker&&normal.y<.6f)
             {
                 position=hit.Center+normal*(p.throwRadius+.01f);velocity=Vector3.ProjectOnPlane(velocity,normal);return false;
@@ -262,13 +275,27 @@ namespace Splatoon.Combat
         void StepThrow(Entity e,float dt)
         {
             var p=e.Config.P;
-            bool landed=AdvanceThrow(e.Config,ref e.State.Position,ref e.State.Velocity,out var normal,dt);
+            bool landed=AdvanceThrowContact(e.Config,ref e.State.Position,ref e.State.Velocity,out var hit,dt);
+            BlockContact support=default;bool knownBlock=hit.BlockQuery.IsKnown;
+            if(knownBlock&&!hit.BlockQuery.TryResolveCurrent(out support)){Remove(e);return;}
+            var normal=hit.Normal;
             if(normal.sqrMagnitude>0)e.State.Normal=normal;
             if(landed)
             {
                 e.State.Expires=_now+p.effectDelay+p.effectDuration;
                 if(e.State.Type==SpecialWeaponType.WaveBreaker)
                 {
+                    if(knownBlock)
+                    {
+                        // A falling contact cannot borrow a stable support from its shared point.
+                        if(support.Stable){e.BlockAttachment=true;e.BlockAttachmentCell=support.Cell;}
+                    }
+                    else
+                    {
+                        var terrain=BlockTerrain.Current;
+                        var supportCell=BlockWorld.CellAt(e.State.Position-e.State.Normal*.05f);
+                        if(terrain!=null&&terrain.World.TryGet(supportCell,out _)){e.BlockAttachment=true;e.BlockAttachmentCell=supportCell;}
+                    }
                     e.State.Expires=_now+p.effectDuration;Phase(e,SpecialEntityPhase.Active);
                     var go=new GameObject("WaveBreakerTarget_"+e.State.Id);e.Target=go.AddComponent<SpecialWeaponTarget>();e.Target.Initialize(this,e);
                 }
@@ -371,8 +398,8 @@ namespace Splatoon.Combat
                 }
                 Vector3 velocity=e.RainVelocities[i]*Mathf.Pow(1-p.rainDrag,dt*60);
                 Vector3 delta=velocity*dt+Vector3.down*p.rainGravity*dt*dt*.5f;velocity+=Vector3.down*p.rainGravity*dt;
-                if(Physics.SphereCast(e.RainPositions[i],p.rainFieldRadius,delta.normalized,out var hit,delta.magnitude,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))
-                {PaintSurface(e,hit,p.paintRadius);e.RainReadyAt[i]=_now+dt;}
+                if(_aim.ClosestCast(e.RainPositions[i],delta,delta.magnitude,p.rainFieldRadius,e.State.Owner,out var hit,false))
+                {PaintCollision(e,hit,p.paintRadius);e.RainReadyAt[i]=_now+dt;}
                 else{e.RainPositions[i]+=delta;e.RainVelocities[i]=velocity;if(e.RainPositions[i].y< -10)e.RainReadyAt[i]=_now+dt;}
             }
             DamageObjects(e,e.State.Position,p.innerRadius,p.damagePerSecond*dt,true,100);
@@ -389,7 +416,8 @@ namespace Splatoon.Combat
                 if(damage>0&&Visible(position,point)){if(deduplicate)ApplyVolleyDamage(e,player,damage,point-position);else DamageWithKnockback(e,player,damage,point-position,p.knockbackAcceleration);}
             }
             DamageObjects(e,position,p.outerRadius,p.outerDamage,false,0,p.innerRadius,p.innerDamage);
-            PaintDisk(e,position,p.paintRadius);
+            if(BlockAttackService.Active)BlockAttackService.Blast(e.BlockAttack,position,p.outerRadius,e.State.Id,++e.BlockOrdinal);
+            else PaintDisk(e,position,p.paintRadius);
         }
         // Sample the current tick's expanding field even when subs are stepped before specials.
         public bool AbsorbsBomb(Vector3 from,Vector3 to,float radius,byte team,double now)
@@ -460,9 +488,30 @@ namespace Splatoon.Combat
         }
         public static bool Visible(Vector3 from,Vector3 to)=>!Physics.Linecast(from,to,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore);
         void PaintSurface(Entity e,RaycastHit hit,float radius)
+            =>PaintSurface(e,hit.collider,hit.point,hit.normal,radius);
+        void PaintSurface(Entity e,Collider collider,Vector3 point,Vector3 normal,float radius)
+            =>PaintSurfaceCore(e,collider,point,normal,radius,default);
+        void PaintCollision(Entity e,TpsCollision hit,float radius)
+            =>PaintSurfaceCore(e,hit.Collider,hit.Point,hit.Normal,radius,hit.BlockQuery);
+        void PaintSurfaceCore(Entity e,Collider collider,Vector3 point,Vector3 normal,float radius,BlockQueryContact blockQuery)
         {
-            var surface=hit.collider.GetComponentInParent<PaintSurface>();if(surface==null||radius<=0)return;
-            Vector3 point=hit.point;var normal=hit.normal;var stamp=new PaintStamp{Position=point,Normal=normal};InkShapeAtlas.StampBasis(stamp,out var tangent,out var bitangent);
+            if(radius<=0)return;
+            if(BlockAttackService.Active)
+            {
+                // Rain is a finite nonexplosive constructor. Explosion splashes and
+                // the rider's old paint rut never create terrain in block mode.
+                if(e.State.Type!=SpecialWeaponType.InkStorm)return;
+                BlockContact block;
+                bool blockHit=blockQuery.IsKnown?blockQuery.TryResolveCurrent(out block):BlockAttackService.Contact(collider,point,normal,out block);
+                if(blockQuery.IsKnown&&!blockHit)return;
+                uint ordinal=++e.BlockOrdinal;
+                if(blockHit&&block.Owner!=e.State.Team)BlockAttackService.Direct(e.BlockAttack,point,8,e.State.Id,ordinal);
+                else if(blockHit||collider.GetComponentInParent<PaintSurface>()!=null)
+                    BlockAttackService.Build(e.BlockAttack,point,normal,radius,false,!blockHit,8,e.State.Id,ordinal);
+                return;
+            }
+            var surface=collider.GetComponentInParent<PaintSurface>();if(surface==null)return;
+            var stamp=new PaintStamp{Position=point,Normal=normal};InkShapeAtlas.StampBasis(stamp,out var tangent,out var bitangent);
             Vector4 clip0=default,clip1=default;
             for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 dir=tangent*Mathf.Cos(a)+bitangent*Mathf.Sin(a);float extent=radius*1.414214f;
                 if(Physics.Raycast(point+normal*.025f,dir,out var edge,extent,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))extent=Mathf.Max(0,edge.distance-.025f);
@@ -472,6 +521,11 @@ namespace Splatoon.Combat
         }
         void PaintDisk(Entity e,Vector3 position,float radius)
         {
+            if(BlockAttackService.Active&&e.State.Type!=SpecialWeaponType.InkStorm)
+            {
+                if(e.State.Type==SpecialWeaponType.TripleInkstrike)BlockAttackService.Blast(e.BlockAttack,position,radius,e.State.Id,++e.BlockOrdinal);
+                return;
+            }
             if(Physics.Raycast(position+Vector3.up*.1f,Vector3.down,out var floor,radius+2,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))PaintSurface(e,floor,radius);
             // Splash paints actual nearby receiver planes, with radial clipping at obstacles.
             for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 d=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));if(Physics.Raycast(position,d,out var hit,radius,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))PaintSurface(e,hit,Mathf.Sqrt(Mathf.Max(0,radius*radius-hit.distance*hit.distance)));}

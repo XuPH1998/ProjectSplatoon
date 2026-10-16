@@ -9,8 +9,9 @@ namespace Splatoon.Combat
         public readonly uint Round, Equipment;
         public readonly byte Team;
         public readonly PaintAttackKind Kind;
-        public PaintCredit(ulong owner,byte team,uint round,uint equipment,PaintAttackKind kind)
-        {Owner=owner;Team=team;Round=round;Equipment=equipment;Kind=kind;}
+        public readonly bool IsBlockPoints;
+        public PaintCredit(ulong owner,byte team,uint round,uint equipment,PaintAttackKind kind,bool isBlockPoints=false)
+        {Owner=owner;Team=team;Round=round;Equipment=equipment;Kind=kind;IsBlockPoints=isBlockPoints;}
         // Working calibration: legacy 300 square units / point, with the 10:1 reference
         // distance normalization gives 3. This still requires a captured 11.3.0 area fixture;
         // see Docs/SpecialWeapons.md. Never confuse this with the confirmed 200-point cost.
@@ -24,8 +25,9 @@ namespace Splatoon.Combat
         }
         public void ApplyTo(ref PlayerSnapshot s,double area,double now)
         {
-            if(s.HeroRevision!=Equipment||s.Team!=Team)return;
-            SpecialWeaponSimulation.AddPoints(ref s,Points(area),now,PlayerLoadout.From(s).RequiredPoints);
+            // Surface paint is retained for compatibility/presentation, not block-mode income.
+            if(!IsBlockPoints||Kind==PaintAttackKind.Special||s.HeroRevision!=Equipment||s.Team!=Team)return;
+            SpecialWeaponSimulation.AddPoints(ref s,area,now,PlayerLoadout.From(s).RequiredPoints);
         }
     }
 }

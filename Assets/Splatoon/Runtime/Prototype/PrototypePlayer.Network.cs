@@ -103,7 +103,8 @@ namespace Splatoon.Prototype
         public override void OnNetworkSpawn()
         {
             GameLatency.Reset(); ResetPredictionDiagnostics();
-            _paintReplayPending = _syncReplayPending = _predictionPaused = false;
+            ResetTerrainReplayState();
+            _paintReplayPending = _syncReplayPending = _terrainReplayPending = _predictionPaused = false;
             if (IsServer)
             {
                 TestBot.Value = _initialTestBot;
@@ -124,7 +125,7 @@ namespace Splatoon.Prototype
                 NetworkManager.NetworkTickSystem.Tick += SendInput;
                 PrototypeApp.Current.CaptureMouse(true);
                 _audio = gameObject.AddComponent<AudioSource>(); _audio.playOnAwake = false; _audio.spatialBlend = 0;
-                _shotAudio = Tone("墨弹发射", 170, .035f); _hitAudio = Tone("命中确认", 720, .045f);
+                _shotAudio = Tone("积木弹发射", 170, .035f); _hitAudio = Tone("命中确认", 720, .045f);
             }
         }
         void Update()
@@ -331,7 +332,7 @@ namespace Splatoon.Prototype
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
             if (!IsServer && now < s.MistUntil) s.Ink = Mathf.Max(0, s.Ink - s.MistDrainRate * dt);
-            ResourceSimulation.Step(ref s, hero, s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
+            ResourceSimulation.Step(ref s, hero, Splatoon.Blocks.BlockTerrain.Current == null && s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
@@ -491,6 +492,7 @@ namespace Splatoon.Prototype
         public override void OnNetworkDespawn()
         {
             GameLatency.Reset(); ResetPredictionDiagnostics();
+            ResetTerrainReplayState();
             _paintReplayPending = _syncReplayPending = _predictionPaused = false;
             _teamRequest = null; _heroRequest = null; TeamChangePending = HeroChangePending = false;
             DisposeBubble();

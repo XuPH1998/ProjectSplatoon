@@ -28,6 +28,9 @@ namespace Splatoon.Prototype
         {
             if(!s.IsAlive||s.SpecialImpulseRemaining<=0||s.SpecialImpulseVelocity.sqrMagnitude<.000001f)
             {s.SpecialImpulseVelocity=Vector3.zero;s.SpecialImpulseRemaining=0;return;}
+            // The ordinary motor has finalized its exact animation/pose already.
+            // This later native move must not invalidate that committed contour.
+            var postMotor = s;
             Vector3 delta=Vector3.ClampMagnitude(s.SpecialImpulseVelocity*dt,s.SpecialImpulseRemaining),before=transform.position;
             if(!_controller.enabled)_controller.enabled=true;
             _controller.Move(delta);Vector3 moved=transform.position-before;
@@ -36,6 +39,33 @@ namespace Splatoon.Prototype
             s.SpecialImpulseRemaining=Mathf.Max(0,s.SpecialImpulseRemaining-delta.magnitude);
             s.SpecialImpulseVelocity*=Mathf.Pow(s.SpecialImpulseRetention,dt*60);
             if(moved.sqrMagnitude<delta.sqrMagnitude*.01f)s.SpecialImpulseVelocity=Vector3.zero;
+
+            var terrain = Splatoon.Blocks.BlockTerrain.Current;
+            if (terrain == null || !terrain.Initialized || terrain.PublishedTraversalPoseFits(this, s)) return;
+
+            // Keep exactly the original one-attempt budget/decay result. Only the
+            // physical displacement is provisional; no motor, animation, weapon
+            // or resource step is executed again when that displacement is rejected.
+            var accounted = s;
+            if (terrain.PublishedTraversalPoseFits(this, postMotor))
+            {
+                s = postMotor;
+                s.SpecialImpulseVelocity = accounted.SpecialImpulseVelocity;
+                s.SpecialImpulseRetention = accounted.SpecialImpulseRetention;
+                s.SpecialImpulseRemaining = accounted.SpecialImpulseRemaining;
+            }
+            else if (!terrain.TryRecoverPublishedTraversalPose(this, accounted, postMotor, out s))
+            {
+                // A malformed/currently invalid entry has no safe frame to
+                // retain. Restore native state before the existing shared-step
+                // failure escapes; do not publish an embedded success snapshot.
+                s = postMotor;
+                _motor.Restore(s, false);
+                throw new System.InvalidOperationException("无法为大招位移找到已验证的安全位置；本次模拟结果未提交。");
+            }
+            // Restore only the exact verified snapshot. Historical replay does
+            // not need a live paper capture/hit-mesh publication to do this.
+            _motor.Restore(s, false);
         }
         static void CommitSpecialRecoil(ref PlayerSnapshot s,PlayerInputFrame input,SpecialWeaponRuntimeConfig c)
         {

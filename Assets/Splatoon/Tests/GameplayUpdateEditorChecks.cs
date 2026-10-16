@@ -12,12 +12,11 @@ namespace Splatoon.Tests
     {
         const string Output = "Reports/GameplayUpdate";
         const string Running = "GameplayUpdate.Running";
-        static readonly TestRunnerApi Api;
         static double nextPoll;
         [Serializable] public sealed class Request { public string label; public string[] names; }
         static GameplayUpdateEditorChecks()
         {
-            Api = ScriptableObject.CreateInstance<TestRunnerApi>(); Api.RegisterCallbacks(new Results());
+            TestRunnerApi.RegisterTestCallback(new Results());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -43,7 +42,9 @@ namespace Splatoon.Tests
                 { File.WriteAllText(Output + "/blocked.txt", "当前场景有未保存修改，测试未启动。"); return; }
             SessionState.SetString("GameplayUpdate.Label", request.label); SessionState.SetBool(Running, true);
             File.WriteAllText(Output + "/started.txt", request.label + " " + DateTime.UtcNow.ToString("O"));
-            Api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = request.names }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = request.names })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         sealed class Results : ICallbacks
         {

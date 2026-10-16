@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-16 12:05:28Z" end-time="2026-10-16 12:06:25Z" duration="57.170063">
+  <test-suite type="TestSuite" id="1000" name="喷墨对战" fullname="喷墨对战" runstate="Runnable" testcasecount="1958" result="Passed" start-time="2026-10-16 12:05:28Z" end-time="2026-10-16 12:06:25Z" duration="57.170063" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="3378" name="Splatoon.Tests.dll" fullname="D:/XPHUNITY/ProjectSplatoon/Library/ScriptAssemblies/Splatoon.Tests.dll" runstate="Runnable" testcasecount="1957" result="Passed" start-time="2026-10-16 12:05:35Z" end-time="2026-10-16 12:06:25Z" duration="49.635431" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="35536" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="3379" name="Splatoon" fullname="Splatoon" runstate="Runnable" testcasecount="1948" result="Passed" start-time="2026-10-16 12:05:35Z" end-time="2026-10-16 12:06:25Z" duration="49.599145" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="3380" name="Tests" fullname="Splatoon.Tests" runstate="Runnable" testcasecount="1948" result="Passed" start-time="2026-10-16 12:05:35Z" end-time="2026-10-16 12:06:25Z" duration="49.591020" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="3341" name="WeaponPresentationPlayTests" fullname="Splatoon.Tests.WeaponPresentationPlayTests" classname="Splatoon.Tests.WeaponPresentationPlayTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-16 12:05:35Z" end-time="2026-10-16 12:06:25Z" duration="49.582791" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="3342" name="FlightInkAndShotgunGripInRealHost" fullname="Splatoon.Tests.WeaponPresentationPlayTests.FlightInkAndShotgunGripInRealHost" methodname="FlightInkAndShotgunGripInRealHost" classname="Splatoon.Tests.WeaponPresentationPlayTests" runstate="Runnable" seed="496728505" result="Passed" start-time="2026-10-16 12:01:09Z" end-time="2026-10-16 12:06:23Z" duration="314.643487" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="600000" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[GUI字体预热] phase=initialize status=complete font=Microsoft YaHei calls=11 yields=0 elapsedMs=875.506 frame=361 screen=2560x1440 ready=False busy=True inRoom=False scope=finite-hud
+[LAN] Ready. Config loaded from Luban.
+[GUI字体预热] phase=connect status=complete font=Microsoft YaHei calls=11 yields=0 elapsedMs=0.198 frame=1080 screen=2560x1440 ready=True busy=True inRoom=False scope=finite-hud
+[LAN] Match spawned server=True cells=150208 hash=1225880668
+[LAN] Player joined id=0 team=1 slot=0
+[LAN] 房间码=02ZR-0000-XK1B2
+[LAN] Connected role=host address=127.0.0.1 port=55685
+[LAN] Returned to menu. 
+Saving results to: D:\XPHUNITY\ProjectSplatoon\Reports\BlockTerrain\UnityTests\20261016-120625.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Prototype;
@@ -21,7 +22,7 @@ namespace Splatoon.Tests
 {
     public sealed class WeaponPresentationPlayTests
     {
-        const string Output = "Reports/InkFlightReference/WeaponPlayMode";
+        static readonly string Output = "Reports/InkFlightReference/WeaponPlayMode/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N");
         static IEnumerator Wait(Func<bool> condition, string message, double seconds = 20)
         {
             double end = Time.realtimeSinceStartupAsDouble + seconds;
@@ -29,7 +30,7 @@ namespace Splatoon.Tests
             Assert.That(condition(), Is.True, message);
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator FlightInkAndShotgunGripInRealHost()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
@@ -52,6 +53,13 @@ namespace Splatoon.Tests
             var player = PrototypePlayer.Local;
             var match = PrototypeMatch.Current;
             var flightPresentation = InkPresentation.Current;
+            var staleCamera = new GameObject("Retired projectile camera").AddComponent<Camera>();
+            staleCamera.enabled = false;
+            var cameraField = typeof(InkPresentation).GetField("_camera", BindingFlags.Instance | BindingFlags.NonPublic);
+            cameraField.SetValue(flightPresentation, staleCamera);
+            yield return null;
+            Assert.That(cameraField.GetValue(flightPresentation), Is.SameAs(Camera.main), "Automatic LateUpdate must replace a disabled, non-null camera");
+            UnityEngine.Object.Destroy(staleCamera.gameObject);
             var camera = new GameObject("Weapon repair capture").AddComponent<Camera>();
             camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1; camera.fieldOfView = 35;
             var report = new List<string>();
@@ -66,9 +74,9 @@ namespace Splatoon.Tests
             match.Projectiles.Spawn(player, live, live.SimulatedAt, match.State.Value.Round);
             File.WriteAllText(Output + "/clock.txt", "new shot age at spawn=" + clockAge.ToString("F6") + "s\n");
             Assert.That(clockAge, Is.InRange(-.04, .05), "Simulation and presentation clocks after hitch");
-            yield return Wait(() => flightPresentation.ParticleCount > 0, "Newly fired ink visible after an editor hitch; initial age=" + clockAge, 2);
+            yield return Wait(() => flightPresentation.BlockCubeCount > 0, "Newly fired cubes visible after an editor hitch; initial age=" + clockAge, 2);
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
-            foreach (int hero in new[] { 1, 2, 3, 4, 5, 6 })
+            foreach (int hero in Enumerable.Range(1, 9))
             {
                 player.RequestHeroChange(hero, HeroSelectionOrigin.Warmup);
                 yield return Wait(() => !player.HeroChangePending && player.Snapshot.Value.HeroId == hero, "Select hero " + hero);
@@ -90,65 +98,82 @@ namespace Splatoon.Tests
                         camera.transform.LookAt(player.transform.position + new Vector3(0, 1.15f, .3f));
                         Capture(camera, "shotgun-aim-" + pitch);
                     }
-                    // Unfocused batch Editors cancel live input. Release once through authority
-                    // before this explicit press, as required after cancellation / hero changes.
-                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                    var released = player.Snapshot.Value;
-                    var neutral = new PlayerInputFrame { Revision = released.Revision, HeroRevision = released.HeroRevision,
-                        FireSequence = released.ConsumedFire, ReleaseSequence = released.ConsumedRelease };
-                    ((SortedDictionary<uint, PlayerInputFrame>)typeof(PrototypePlayer).GetField("_serverInputs", flags).GetValue(player)).Clear();
-                    typeof(PrototypePlayer).GetField("_lastInput", flags).SetValue(player, neutral);
-                    typeof(PrototypePlayer).GetField("_lastReceivedAt", flags).SetValue(player, player.NetworkManager.ServerTime.Time);
-                    player.Simulate(1f / 60, player.NetworkManager.ServerTime.Time, match.State.Value.Phase);
-                    Assert.That(player.Snapshot.Value.AttackNeedsRelease, Is.False);
-                    var beforeShot = player.Snapshot.Value;
-                    var input = new PlayerInputFrame { Fire = true, FireSequence = beforeShot.ConsumedFire + 1,
-                        Revision = beforeShot.Revision, HeroRevision = beforeShot.HeroRevision,
-                        Look = new Vector2(0, 15), Move = Vector2.right };
-                    ((SortedDictionary<uint, PlayerInputFrame>)typeof(PrototypePlayer).GetField("_serverInputs", flags).GetValue(player)).Clear();
-                    typeof(PrototypePlayer).GetField("_lastInput", flags).SetValue(player, input);
-                    typeof(PrototypePlayer).GetField("_lastReceivedAt", flags).SetValue(player, player.NetworkManager.ServerTime.Time);
-                    match.Projectiles.Clear(); InkPresentation.Current.Clear();
-                    double shotTime = player.NetworkManager.ServerTime.Time;
-                    for (int tick = 0; tick < 4; tick++) player.Simulate(1f/60, shotTime + tick/60.0, match.State.Value.Phase);
-                    Assert.That(player.Snapshot.Value.ShotSequence, Is.EqualTo(beforeShot.ShotSequence + 1));
-                    Assert.That(player.Snapshot.Value.Ink, Is.EqualTo(beforeShot.Ink - 4).Within(.001f));
-                    Assert.That(match.Projectiles.Spawned.Count, Is.EqualTo(8), "Live shotgun emits eight pellets through authority");
-                    yield return null; yield return null;
+                    // Hero 3 is the live one-projectile Explosher. Exercise actual
+                    // authored startup/payment and authority Spawn, preserving its grip.
+                    using var paid = new BlockDefaultContractFixture(match);
+                    var token = paid.PayMain(player, 3); var beforeShot = player.Snapshot.Value;
+                    Assert.That(WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(3)), Is.True);
+                    Assert.That(beforeShot.Ink, Is.EqualTo(100 - 11.7f).Within(.001));
+                    Assert.That(token.BuildLimit, Is.Zero);
+                    match.Projectiles.Clear(); flightPresentation.Clear();
+                    match.Projectiles.Spawn(player, beforeShot, paid.Now, match.State.Value.Round);
+                    Assert.That(match.Projectiles.Spawned.Count, Is.EqualTo(1), "Paid live Explosher emits one immutable projectile");
+                    Assert.That(match.Projectiles.Spawned[0].BlockAttack, Is.SameAs(token), "Spawn shares the paid attack budget");
+                    player.CharacterView.Present(beforeShot, 1f / 60, paid.Now);
+                    player.CharacterView.Shot(0, beforeShot.ShotActionId, paid.Now);
+                    player.CharacterView.Animator.Update(1f / 60);
+                    // A paid single shot fades in over the authored presentation interval.
+                    // Complete that finite 60 Hz sample before evaluating the shot pose.
+                    const float shotDt = 1f / 60;
+                    float shotFade = Mathf.Min(player.CharacterView.Profile.BlendSeconds,
+                        Mathf.Max(.01f, player.CharacterView.Profile.ShotPlaybackSeconds) * .1f);
+                    int shotFrames = Mathf.CeilToInt(shotFade / shotDt);
+                    for (int frame = 1; frame < shotFrames; frame++)
+                    {
+                        player.CharacterView.Present(beforeShot, shotDt, paid.Now + frame * shotDt);
+                        player.CharacterView.Animator.Update(shotDt);
+                    }
                     Assert.That(player.CharacterView.Animator.GetLayerWeight(1), Is.GreaterThan(.5f));
-                    Capture(camera, "shotgun-moving-shot");
+                    Capture(camera, "explosher-moving-shot");
+                    paid.FlushEvents();
                 }
                 foreach (byte team in new byte[] { 1, 2 })
                 {
-                    match.Projectiles.Clear(); InkPresentation.Current.Clear();
-                    double born = player.NetworkManager.ServerTime.Time;
-                    // Put the flight in clear air, keeping actual configured speed,
-                    // gravity, lifetime, the host RPC path, and team material.
-                    Vector3 origin = new Vector3(0, 5, 0);
-                    var w = GameplayConfig.GetWeapon(hero);
+                    match.Projectiles.Clear(); flightPresentation.Clear();
+                    // Allow the previous frame's Graphics.DrawMeshInstanced submissions
+                    // to retire, then capture the control before submitting this sample.
+                    yield return null;
+                    var w = GameplayConfig.GetWeapon(hero); double born = player.NetworkManager.ServerTime.Time + .01;
+                    double age = .03; double delay = WeaponSimulation.UsesBubbleMesh(w) ? BubbleFlightPresentation.RenderDelay : 0;
+                    var shots = new List<InkShot>();
+                    var origin = new Vector3(0, 12, -20);
                     for (byte pellet = 0; pellet < w.PelletCount; pellet++)
-                        match.Projectiles.SpawnForMeasurement(new InkShot { Id = (uint)(1000 + hero * 20 + team * 8 + pellet),
+                    {
+                        var shot = new InkShot { Id = (uint)(1000 + hero * 20 + team * 8 + pellet),
                             HeroId = hero, Team = team, Shooter = ulong.MaxValue, Round = match.State.Value.Round,
                             ActionId = (ulong)(100 + hero), PelletIndex = pellet, Seed = (uint)(100 + pellet), Born = born,
-                            Origin = origin, Velocity = (hero == 3 ? InkBallistics.PelletVelocity(Vector3.forward, w, w.SpreadDegrees, pellet, 123) : Vector3.forward * w.SpeedMin) });
-
-                    yield return Wait(() => flightPresentation.ParticleCount > 0, "Live flying particles hero=" + hero + " team=" + team, 2);
-                    var particles = new ParticleSystem.Particle[2048]; int count = flightPresentation.CopyParticles(team, particles);
-                    var stream = flightPresentation.Streams.FirstOrDefault(p => p.particleCount > 0);
-                    Assert.That(stream, Is.Not.Null, "Native particle state must match active flight state hero=" + hero + " team=" + team);
-                    Assert.That(count, Is.GreaterThanOrEqualTo(w.PelletCount));
-                    Vector3 center = particles.Take(count).Aggregate(Vector3.zero, (sum, p) => sum + p.position) / count;
-                    camera.transform.position = center + new Vector3(2, .7f, -2); camera.transform.LookAt(center);
-                    var renderer = stream.GetComponent<ParticleSystemRenderer>();
-                    var mesh = new Mesh(); renderer.BakeMesh(mesh, camera, ParticleSystemBakeMeshOptions.Default);
-                    Assert.That(mesh.bounds.size.sqrMagnitude, Is.GreaterThan(.001f), "Noncollapsed flight geometry");
-                    UnityEngine.Object.Destroy(mesh);
+                            Origin = origin, Velocity = w.PelletCount > 1 ? InkBallistics.PelletVelocity(Vector3.forward, w, w.SpreadDegrees, pellet, 123) :
+                                WeaponSimulation.IsExplosher(w) ? ExplosherSimulation.Launch(Vector3.forward, w, true) : Vector3.forward * w.SpeedMin,
+                            Configuration = w, ConfigurationRevision = WeaponConfigService.Current.Revision(hero) };
+                        shots.Add(shot);
+                    }
+                    var center = shots.Select(shot => InkBallistics.Position(shot, w, age)).Aggregate(Vector3.zero, (sum, point) => sum + point) / shots.Count;
+                    camera.transform.position = center + new Vector3(1.2f, .5f, -2); camera.transform.LookAt(center);
                     string label = "hero-" + hero + "-team-" + team;
+                    var hidden = Capture(camera, label + "-control");
+                    // Keep the same host shot RPC used by a live authoritative service.
+                    using (var rpc = new BlockDefaultContractFixture(match))
+                    {
+                        foreach (var shot in shots) match.Projectiles.SpawnForMeasurement(shot);
+                        rpc.FlushEvents();
+                    }
+                    var flight = BlockDefaultContractFixture.Flights(flightPresentation);
+                    flightPresentation.UpdateFlights(born + age + delay, camera);
+                    int perShot = hero == 3 ? 4 : 1;
+                    var matrices = BlockDefaultContractFixture.RenderedInstances(flightPresentation, team, shots.Count * perShot);
+                    Assert.That(flightPresentation.ParticleCount + flightPresentation.VersionPoolCount, Is.Zero);
+                    Assert.That(flightPresentation.Streams, Is.Empty);
+                    Assert.That(flight.CubeMesh.vertexCount, Is.EqualTo(24));
+                    for (int i = 0; i < shots.Count; i++)
+                    {
+                        Assert.That(flight.TryPosition(shots[i].Round, shots[i].Id, born + age, out var actual), Is.True);
+                        Assert.That(Vector3.Distance(actual, InkBallistics.Position(shots[i], w, age)), Is.LessThan(.001), "Actual cube trajectory retains the immutable shot physics");
+                        Assert.That(matrices.Skip(i * perShot).Take(perShot).All(m => m.GetColumn(0).magnitude > .01f && m.GetColumn(1).magnitude > .01f && m.GetColumn(2).magnitude > .01f), Is.True);
+                    }
                     var visible = Capture(camera, label);
-                    renderer.enabled = false; var hidden = Capture(camera, label + "-control"); renderer.enabled = true;
                     int changed = visible.Zip(hidden, (a, b) => Math.Abs(a.r-b.r)+Math.Abs(a.g-b.g)+Math.Abs(a.b-b.b)).Count(d => d > 30);
-                    Assert.That(changed, Is.GreaterThan(25), label + " must contribute visible pixels on camera");
-                    report.Add(label + ": particles=" + count + ", visiblePixels=" + changed + ", host RPC + GPU PASS");
+                    Assert.That(changed, Is.GreaterThan(25), label + " must contribute visible opaque cube pixels through the real camera");
+                    report.Add(label + ": cubes=" + matrices.Length + ", visiblePixels=" + changed + ", host RPC + GPU PASS");
                 }
             }
             player.RequestHeroChange(3, HeroSelectionOrigin.Warmup);
@@ -156,14 +181,17 @@ namespace Splatoon.Tests
             var state = player.Snapshot.Value; state.ProtectedUntil = 0; state.Swimming = true; player.Snapshot.Value = state;
             uint life = state.Revision;
             player.ReceiveDamage((byte)(state.Team == 1 ? 2 : 1), 200, Vector3.forward);
-            yield return Wait(() => player.Snapshot.Value.Revision > life && player.Snapshot.Value.Health > 0, "Shotgun timed respawn", 5);
+            Assert.That(player.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Bubble));
+            Assert.That(player.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Bubble));
+            yield return Wait(() => player.Snapshot.Value.Revision > life && player.Snapshot.Value.Health > 0,
+                "Natural bubble expiration and Explosher respawn", GameplayConfig.Mode.BubbleSeconds + GameplayConfig.Mode.RespawnSeconds + 5);
             yield return null;
             Assert.That(player.CharacterView.Weapon.parent, Is.SameAs(player.CharacterView.WeaponSocket));
             Assert.That(player.CharacterView.Animator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"), Is.True, "Respawn must evaluate its pose immediately");
             camera.transform.position = player.transform.position + new Vector3(2.4f, 1.4f, 1.6f);
             camera.transform.LookAt(player.transform.position + new Vector3(0, 1.15f, .3f));
             Capture(camera, "shotgun-respawn");
-            report.Add("Shotgun: live idle/down/up aim, support grip, hero switching and swim-death-respawn PASS");
+            report.Add("Explosher: live idle/down/up aim, support grip, authored paid one-projectile emission, hero switching and downed-bubble/expiration/respawn PASS");
             UnityEngine.Object.Destroy(camera.gameObject);
             yield return app.Leave().ToCoroutine();
             File.WriteAllLines(Output + "/results.txt", report);

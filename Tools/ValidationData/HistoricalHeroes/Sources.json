@@ -1,0 +1,21 @@
+{
+  "sourcePath": "Assets/GameResource/Bootstrap/Config/Luban/tbhero.json",
+  "files": {
+    "MachineGun-After.json": {
+      "commit": "bfb059a9077b62a23ce4c1a2ac8321b4d3c5063d",
+      "blob": "bfa9ba33e8027f20a2b7e41018d9979b6d994950",
+      "sha256": "e3dff4205ea299003a66b9529a24788f02c9f2e2d111cfcdb5305cbd81812486",
+      "rows": 6,
+      "purpose": "Complete post-MachineGun-addition hero and monolithic weapon inputs, independent of Heroes-Before and Migration-Baseline expected oracles."
+    },
+    "WeaponAsset-Heroes.json": {
+      "commit": "8659ca2899f748e62923cd436ce264e70103ff56",
+      "blob": "ef7e78b3d6337c1d380f055af07207142dc5556a",
+      "sha256": "ffc43ca275229036793e795f8f0673909aa50ee1aa9a1e76c4eab3d544e95e49",
+      "rows": 9,
+      "purpose": "Complete post-main-weapon-replacement hero-only inputs, merged with live weapon assets for the original preservation assertions."
+    }
+  },
+  "schemaCompatibilityPolicy": "MachineGun old keys win; add only its nine absent hero schema fields from the complete pinned WeaponAsset-Heroes source.",
+  "expectedOracles": "Existing Heroes-Before, Migration-Baseline, approved tuning records and frozen SHA expectations remain untouched."
+}

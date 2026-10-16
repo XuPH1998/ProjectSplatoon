@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "createdUtc": "2026-10-16T13:33:09.631890+00:00",
+  "purpose": "Cross-computer Codex handoff. Selected source-byte-preserving evidence and local tools only.",
+  "scopeNote": "This is not a complete Reports or Builds backup. Historical results retain their original scope; interrupted CPU checkpoint is not final acceptance.",
+  "excluded": [
+    "Windows Player packages",
+    "Unity caches",
+    "UserSettings",
+    "registry raw snapshots",
+    "host.sampling.cpu.raw",
+    "all other unselected Reports files"
+  ],
+  "fileCount": 60,
+  "totalBytes": 8593001,
+  "files": [
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/block-projectile-shader-variants.txt",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/block-projectile-shader-variants.txt",
+      "bytes": 1036,
+      "sha256": "55373ed277f779881b59865110c2cf264d7aa425301e49d48fcdd5c6e279877e"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/build-record.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/build-record.json",
+      "bytes": 1204,
+      "sha256": "a40d8a2c2700c71789c43fbdb45f5b843abb9f1bf34b1e211828bf1bc85ce104"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-inventory.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-inventory.json",
+      "bytes": 76313,
+      "sha256": "28418b58f78afbafc95493fe92058631997cd7b9b73d05816910ecd87b910e56"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-verification.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/BuildRevision04/package-verification.json",
+      "bytes": 836,
+      "sha256": "2a2c6e7a77941743b21850cb6194ca6503706b43048e02b3fc1102a573f19c00"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/EditorRecovery04/exit.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/EditorRecovery04/exit.json",
+      "bytes": 156,
+      "sha256": "2c216e682ba205bade07006a0c262b771be775a6aa6579c4bd03c2a7625e6a88"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/summary.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/Pixels/summary.json",
+      "bytes": 15085,
+      "sha256": "bfb45435e8cbf0ea9bd850b812d8470298a42e196660b484de64837102a7f675"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/cube-projectile-contact-sheet.png",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/cube-projectile-contact-sheet.png",
+      "bytes": 46627,
+      "sha256": "2ee3a3227bad8d0bb56688696188dd441eb3c711d2c53a2ad409b0bfed5e02d3"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/terminal.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/PlayerVisual01/terminal.json",
+      "bytes": 1014,
+      "sha256": "4e4312f9e053d52f28a840bb49866224894ad00f73631cabd552c8544c42e246"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/Validation.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/Validation.md",
+      "bytes": 5239,
+      "sha256": "d3639d0d93d90805d8723d579a7af5e20a48fd9a97b10ae27b7518cfc0f41559"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/build-source-inputs.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/build-source-inputs.json",
+      "bytes": 596329,
+      "sha256": "7bc438c80cce00ca7886cb4462d6a95f30bde28cedc4bcf49955232ea9e7cfda"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/compile-binding.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/compile-binding.json",
+      "bytes": 199695,
+      "sha256": "9e1df3dd5c771fefea3d9896d1ffff5d647461f9ff6f9bc68ef487aa75aa2ddc"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/editor-command.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/editor-command.py",
+      "bytes": 1807,
+      "sha256": "ebf88d888185eb44e297bbf71c0b5629773d78c43abf13317d9e5e4bb536818a"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/handoffstop01.command.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/handoffstop01.command.json",
+      "bytes": 776,
+      "sha256": "a5e16c289441a387add59078823c472637ba58264a63ffd705f162356441f47a"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/handoffstop01.stdout.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/handoffstop01.stdout.json",
+      "bytes": 933,
+      "sha256": "7e9dab47a68a6df5e436dfea002088b2882f7ed37eaf6790b269c4d7ef748e3b"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/root-acceptance.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/root-acceptance.json",
+      "bytes": 11712,
+      "sha256": "a4d54cf81e16ef6c08402bcbeee5290ad16b798c656429bbc0e473fc1b9d9d54"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/CubeProjectileRepair20261016/targeted-tests.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/CubeProjectileRepair20261016/targeted-tests.json",
+      "bytes": 2505,
+      "sha256": "4c6552b7322e44418b8faed5bc2fc200098f6134ca97054e8fea9e6853d504b9"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/FirstPlayableStatus20261013.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/FirstPlayableStatus20261013.md",
+      "bytes": 316942,
+      "sha256": "527d1b62191b493278545c707ce7465e9ce3107e8e6cfdc1da548f8d9069cbbd"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/FullAssemblyRegression96/IsolatedDesktopProbe.cs",
+      "includedPath": "snapshot/Reports/BlockTerrain/FullAssemblyRegression96/IsolatedDesktopProbe.cs",
+      "bytes": 6550,
+      "sha256": "43aa390e9d3d297cd8f576ec86ac15264ec610cb67cbed8386736c254c8a53b4"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/FullAssemblyRegression96/desktop-inheritance-probe.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/FullAssemblyRegression96/desktop-inheritance-probe.py",
+      "bytes": 9563,
+      "sha256": "d84b5e5de659cdad01bc201c588700b54860aaa8b0a381d276f0623905cdc152"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/FullAssemblyRegression96/launch-editor-on-isolated-desktop.ps1",
+      "includedPath": "snapshot/Reports/BlockTerrain/FullAssemblyRegression96/launch-editor-on-isolated-desktop.ps1",
+      "bytes": 8714,
+      "sha256": "213193cdbd9c65878035673c89f160f20bf2fbce7f9479f24f196ff015b8186e"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/FullAssemblyRegression96/launch-isolated-harness.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/FullAssemblyRegression96/launch-isolated-harness.py",
+      "bytes": 18628,
+      "sha256": "f5824b02b5be79fec0ceb655f41d5a55b14da5fc8bd725fcab89e316a34153f3"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/GoalScopeDeferTowerCascade20261015.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/GoalScopeDeferTowerCascade20261015.md",
+      "bytes": 2764,
+      "sha256": "ce44778a3552a79b4d9fafa7bf33e4b5d63c17b7e2dd504209f654d77f20bde1"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/GoalScopeFirstPlayable20261012.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/GoalScopeFirstPlayable20261012.md",
+      "bytes": 3915,
+      "sha256": "d26ae8cdae52d34d4017fb0efc0d88d65b4b54c6bb659c1ad3f65a95173ef522"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Handoff20261016/StopOwnedEditor.cs",
+      "includedPath": "snapshot/Reports/BlockTerrain/Handoff20261016/StopOwnedEditor.cs",
+      "bytes": 1528,
+      "sha256": "ba567078670034de8466695ee21151b8f78e27c3f5058b0604ef25643ef05c46"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Handoff20261016/source-package-last-check.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Handoff20261016/source-package-last-check.json",
+      "bytes": 128,
+      "sha256": "43f8435989b27b9c0de7d3c66183b8de1e21ac6fbbe031e1a47427aa3fc2775d"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/PostImpulseBuildCapApplicationPreparation01/actual-progress.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/PostImpulseBuildCapApplicationPreparation01/actual-progress.md",
+      "bytes": 36251,
+      "sha256": "36ce1b0772f0692ebf5fb37ca13718497bcb0073caa1efa6cf565f4294c1d1df"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/FullRegressionPreferenceGuard.cs",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/FullRegressionPreferenceGuard.cs",
+      "bytes": 20296,
+      "sha256": "99189b7727846a24ef298efd94dcd0b2e853b542b9594acc1fbfd61318d5876e"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/build_inventory.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/build_inventory.py",
+      "bytes": 9596,
+      "sha256": "ba1dc454e3929a4b288be94c62550f9266ade1f951b311d1bba36b7404e7bf29"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/prepare_runner.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/prepare_runner.py",
+      "bytes": 14559,
+      "sha256": "f4d7ad7362b41997150e1460ba18263e4d8cbea470cfb8557b4b85854ea2daec"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/run-editor-filters.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/run-editor-filters.py",
+      "bytes": 28326,
+      "sha256": "d9f41d7cd2b5459f5c193ca02e64919d062107f535da0e949c2d8080e3734ff5"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/run-full-regression-preserved.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/run-full-regression-preserved.py",
+      "bytes": 15436,
+      "sha256": "e14dea75b6a798960480723797fe6b75679d4493af18f1431292799b5d656151"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/runner-before.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/runner-before.py",
+      "bytes": 3585,
+      "sha256": "f4561eadcc8a295b343389020141122458fc71a6a2968aeda77f642917331d82"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/source-class-selectors.txt",
+      "includedPath": "snapshot/Reports/BlockTerrain/RegressionTriage/LatestSourceFullRegression15/source-class-selectors.txt",
+      "bytes": 4578,
+      "sha256": "8fb87cb9fb19bfbdacd654ef31660ddbb60d846d53faf8ab2fa0747e9e6fe07c"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/UnityTests/20261016-120106.xml",
+      "includedPath": "snapshot/Reports/BlockTerrain/UnityTests/20261016-120106.xml",
+      "bytes": 8931,
+      "sha256": "0a4f3e5f59ac30daf75ab3b605bc69ece098d19ffb3ad5183cfb3c142c8ff244"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/UnityTests/20261016-120625.xml",
+      "includedPath": "snapshot/Reports/BlockTerrain/UnityTests/20261016-120625.xml",
+      "bytes": 4080,
+      "sha256": "5f641627f6419d81490ecbff028fa2de2daa524bb2b81d1164ce21e694949f43"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows20/launch-isolated-package-smoke.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows20/launch-isolated-package-smoke.py",
+      "bytes": 2358,
+      "sha256": "13b31ee884c2142b9d682e5695d95b961c97a8f4ec30f4202d44eaa2b755187e"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows20/standalone-preference-guard.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows20/standalone-preference-guard.py",
+      "bytes": 17923,
+      "sha256": "e182275920a17e9342aafa104f28fdb750c6213697c1d18853bee93c186ee7fb"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/RootObservation20261016.md",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/RootObservation20261016.md",
+      "bytes": 1483,
+      "sha256": "6cd8698fdb94554a25de27f2f489be0d9df9305a5b6ec8eaface6eac85b3593d"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/execution-start.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/execution-start.json",
+      "bytes": 1552,
+      "sha256": "556b4011a3f0d91a9058f2aa1d66ec67893b7bc4c4b7344a67e83407d6d6e6a3"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/execution-terminal.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/execution-terminal.json",
+      "bytes": 1788,
+      "sha256": "2fb816db1af3d3fda2ecf615c5f163359dab6b0c7e8937aa7f2980e1dd0e0825"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/case.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/case.json",
+      "bytes": 1454993,
+      "sha256": "53942712291b2810489b8dfa88bbb5ffa1a70b8dbb7e8a2be94b98eecabd285d"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/host.performance.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/host.performance.json",
+      "bytes": 1614944,
+      "sha256": "4ee9b51a2b0966111b099093f8c9b15e9a99f124ac4bfbb556ebc22d2d074e53"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/main-camera.png",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/steady250k/e5912604/main-camera.png",
+      "bytes": 1402401,
+      "sha256": "8d716707fb018306e6c9b96bca3c41056121f54d23796440cc1532a9b94f8d76"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/summary.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/prototype-v1/summary.json",
+      "bytes": 1626660,
+      "sha256": "53e254c6c39ec173e024a805d01572e54b49cd2f0cf6d3597cadfe7bbc1a1b81"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/root-observation.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/PerformanceRun01/root-observation.json",
+      "bytes": 1090,
+      "sha256": "60089f05bc7b6b1988d0a6bf58bab9f17e13ff269d6ce53bf85570782c3e9b4f"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/execution-inputs.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/execution-inputs.json",
+      "bytes": 3096,
+      "sha256": "419d0878505cc74bfea5c046b62ea560cbfaccab4421725fe0f93757018420dc"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/launch-performance37.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/launch-performance37.py",
+      "bytes": 655,
+      "sha256": "fd231b199f8b9da06d36294ad8ff93bb729b4e6bd4d151a1ddfd6824fdef96da"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/performance37-harness.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/performance37-harness.py",
+      "bytes": 5401,
+      "sha256": "3c6d1dcc32f7b01c63f1304d97b4a4462b0fcad6da74bed400d159932b6228d9"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37AcceptancePreparation01/performance37.request.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37AcceptancePreparation01/performance37.request.json",
+      "bytes": 1570,
+      "sha256": "7bc352042ab8be9fdb9b8d055b34e043c000a306969e38d437413f72beb12967"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/execution-start.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/execution-start.json",
+      "bytes": 1277,
+      "sha256": "68e954cbf6be9b31bc0bf24ead25007c35482b0c284bb6ba890854c96e58c152"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/preference-recovery.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/preference-recovery.json",
+      "bytes": 485,
+      "sha256": "028241f897c1b45f7e03c24f7ec5b8e8532d318d67ffd1f89217b144beb57e2a"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/prototype-v1/steady250k/0fbfaddc/host.performance.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/prototype-v1/steady250k/0fbfaddc/host.performance.json",
+      "bytes": 936015,
+      "sha256": "c44070e62f6e5ea894ce9f78043544b2a516c43f8ef68b9d0891b5071ea3c2ab"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/prototype-v1/steady250k/0fbfaddc/progress.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/CpuRun01/prototype-v1/steady250k/0fbfaddc/progress.json",
+      "bytes": 175,
+      "sha256": "87931594a663298bf2001011b3182aa540ee81acdcd885a4c9a9964d1ef7fc7a"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu-extract01.request.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu-extract01.request.json",
+      "bytes": 623,
+      "sha256": "68a12572b560c016ddff0f6ceb3f9ec1b881cb14895690fc68e94856bae5f26e"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu37-harness.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu37-harness.py",
+      "bytes": 7447,
+      "sha256": "c99d8a21daecc81c972dc8f27a43947a12e778c50c7fde09faccdb94d133dd67"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu37.request.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/cpu37.request.json",
+      "bytes": 1527,
+      "sha256": "d717a3e74891979d2f05a8c1cd6a599be87b89a4b1c244ec634eb724795c1bf8"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/eval-extract-cpu37.cs",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/eval-extract-cpu37.cs",
+      "bytes": 29499,
+      "sha256": "88b1a691f2b4defe778a5a1ae809961e648f02935a5350a3f9e443bd5f9ca7cf"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/execution-inputs.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/execution-inputs.json",
+      "bytes": 3234,
+      "sha256": "30d5e4ef34836c739a7080c5c72b00ac7a817a43fd7f4132865a66b6939eb91c"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/interrupted-raw-binding.json",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/interrupted-raw-binding.json",
+      "bytes": 522,
+      "sha256": "c806236e0909ba2041d5274eb7eb8881c35bacf64107ec5f78e26f289517ca3c"
+    },
+    {
+      "originalPath": "Reports/BlockTerrain/Windows37CpuDiagnosis02/launch-cpu37.py",
+      "includedPath": "snapshot/Reports/BlockTerrain/Windows37CpuDiagnosis02/launch-cpu37.py",
+      "bytes": 646,
+      "sha256": "12ba44f0e8ff90c1d5f3d44aa9e14735895d9d59bf2ea54593e9433e2b628809"
+    }
+  ]
+}

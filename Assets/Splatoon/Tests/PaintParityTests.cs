@@ -48,11 +48,24 @@ namespace Splatoon.Tests
         }
         [Test] public void EmptySpinnerWindowAndResourceCycleAreExplicit()
         {
-            var empty=WeaponReferenceMeasurements.Capture(6,1,"flat",60,1,null,fullActions:true,options:Options(0,1));
+            var empty=WeaponReferenceMeasurements.Capture(6,1,"flat",60,1,null,fullActions:true,options:Options(0,.1));
+            // The live spinner minimum charge is 8/60 s: a 0.1 s input window is
+            // independently shorter than any legal release, even with an unlimited tank.
+            Assert.That(GameplayConfig.GetWeapon(6).SplatlingMinChargeSeconds, Is.EqualTo(8.0 / 60).Within(1e-8));
             Assert.That(empty.emittedProjectiles,Is.Zero); Assert.That(empty.firstPaintSeconds,Is.EqualTo(-1));
-            var cycle=WeaponReferenceMeasurements.Capture(6,1,"tank",60,3,null,fullActions:true,fullTank:true,options:Options(0));
+            var w = GameplayConfig.GetWeapon(6);
+            Assert.That(w.ChargeSeconds, Is.EqualTo(27.0 / 60).Within(1e-8));
+            Assert.That(w.SplatlingSlowChargeMultiplier, Is.EqualTo(6));
+            Assert.That(w.ShotInk, Is.EqualTo(15f / 22).Within(.000001));
+            // ActionTimeline uses the requested fraction as a trigger-hold duration.
+            // Hold each magazine for the independent empty-tank maximum, 162 ticks,
+            // so low material cannot make the fixture release a partial magazine at
+            // the normal 27-tick boundary. Actual released charge remains capped at 1.
+            var cycle=WeaponReferenceMeasurements.Capture(6,6,"tank",60,8,null,fullActions:true,fullTank:true,options:Options(0));
             Assert.That(cycle.resourceMode,Is.EqualTo("resource-cycle"));Assert.That(cycle.inkGenerated,Is.GreaterThan(0));
-            Assert.That(cycle.inkSpent,Is.GreaterThan(100));
+            Assert.That(cycle.completedActions, Is.EqualTo(8), "Complete all eight magazines rather than truncating the exhausted tank");
+            Assert.That(cycle.emittedProjectiles, Is.EqualTo(8 * 22));
+            Assert.That(cycle.inkSpent, Is.EqualTo(120).Within(.001), "Eight authored 15-material magazines require the real slow filling cycle");
         }
 
         [Test, Timeout(900000), Explicit("Frozen project measurements; does not change gameplay configuration")]

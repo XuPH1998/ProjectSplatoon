@@ -12,11 +12,10 @@ namespace Splatoon.Tests
     public sealed class BubbleShotgunValidationRunner : ICallbacks
     {
         const string Root = "Reports/BubbleShotgun", Running = "BubbleShotgun.Running", Label = "BubbleShotgun.Label";
-        static TestRunnerApi api;
         static double next;
         static BubbleShotgunValidationRunner()
         {
-            api = ScriptableObject.CreateInstance<TestRunnerApi>(); api.RegisterCallbacks(new BubbleShotgunValidationRunner());
+            TestRunnerApi.RegisterTestCallback(new BubbleShotgunValidationRunner());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -37,7 +36,9 @@ namespace Splatoon.Tests
             var lines = File.ReadAllLines(request); File.Delete(request);
             Directory.CreateDirectory(Root); SessionState.SetString(Label, lines[0]); SessionState.SetBool(Running, true);
             File.WriteAllText(Root + "/test-status.txt", "RUNNING " + lines[0] + " " + DateTime.UtcNow.ToString("O"));
-            api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         public void RunStarted(ITestAdaptor tests) { }
         public void TestStarted(ITestAdaptor test) { }

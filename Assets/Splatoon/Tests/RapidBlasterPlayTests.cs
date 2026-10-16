@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Networking;
@@ -25,7 +26,7 @@ namespace Splatoon.Tests
             while (!ready() && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
             Assert.That(ready(), Is.True, message);
         }
-        [UnityTest] public IEnumerator HostChecksActualHitsPaperOcclusionAndPresentation()
+        [UnityTest, Timeout(600000)] public IEnumerator HostChecksActualHitsPaperOcclusionAndPresentation()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode();
@@ -42,7 +43,7 @@ namespace Splatoon.Tests
         static void Place(PrototypePlayer player, Vector3 position, byte team = 2, bool paper = false)
         {
             var s = player.Snapshot.Value;
-            s.Health = 100; s.Ink = 100; s.ProtectedUntil = 0; s.Position = position;
+            s.Health = 100; s.Ink = 100; s.LifeState = PlayerLifeState.Alive; s.BubbleUntil = 0; s.ProtectedUntil = 0; s.Position = position;
             s.Team = team; s.Swimming = paper; s.CompactBody = false; s.Grounded = true;
             s.Movement = paper ? MovementMode.GroundInk : MovementMode.Human;
             s.PaperPose = PaperPose.None; s.PlanarVelocity = Vector3.zero; s.VerticalSpeed = 0;
@@ -176,36 +177,93 @@ namespace Splatoon.Tests
             Assert.That(Vector3.Distance(center, paperPoint), Is.LessThan(w.Ammo.ExplosionRadius));
             Fire(origin); Assert.That(enemy.Snapshot.Value.Health, Is.EqualTo(65), "Paper takes one blast using its current mesh");
 
-            // Render the authoritative event in the real training scene and exercise duplicate rejection.
-            var visible = visual.Position + Vector3.up * 2;
-            foreach (byte team in new byte[] { 1, 2 })
+            // Default blast cosmetics are bounded opaque fragments. Retain both
+            // teams, normal/early collision radii, duplicate and stale event rejection,
+            // real-camera pixels, wall depth occlusion and complete natural retirement.
+            using var blocks = new BlockDefaultContractFixture(match);
+            var terrainBeforeVisuals = blocks.Capture(); double visualPoints = host.Snapshot.Value.SpecialPoints;
+            var presentation = InkPresentation.Current;
+            var camera = new GameObject("Default blaster fragment acceptance").AddComponent<Camera>();
+            camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1; camera.fieldOfView = 45;
+            var visible = new Vector3(0, 8, -20); camera.transform.position = visible + new Vector3(0, 1, -5); camera.transform.LookAt(visible);
+            try
             {
-                var evt = splash.Explosions[0]; evt.ShotId = ++id; evt.Team = team; evt.Position = visible;
-                var presentation = InkPresentation.Current; presentation.Clear(); evt.Time = host.NetworkManager.ServerTime.Time + .001;
-                presentation.Explosion(evt); presentation.Explosion(evt);
-                var roots = Enumerable.Range(0, presentation.transform.childCount).Select(i => presentation.transform.GetChild(i)).Where(t => t.name == "Ink explosion" && t.gameObject.activeSelf).ToArray();
-                Assert.That(roots.Length, Is.EqualTo(1));
-                Assert.That(roots[0].localScale.x, Is.EqualTo(w.Ammo.ExplosionRadius).Within(.00001));
-                foreach (var ps in roots[0].GetComponentsInChildren<ParticleSystem>())
-                { Assert.That(ps.main.startColor.color, Is.EqualTo(PrototypeArena.TeamColor(team))); ps.Simulate(.10f, false, true, false); }
-                Capture(visible, "ink-explosion-team-" + team, new Vector3(3, 2, 7));
-                // A same-round delayed event after clearing must not restore the burst.
-                presentation.Clear(); evt.ShotId = ++id; evt.Time = host.NetworkManager.ServerTime.Time - 1;
-                presentation.Explosion(evt);
-                Assert.That(Enumerable.Range(0, presentation.transform.childCount).Select(i => presentation.transform.GetChild(i)).Count(t => t.name == "Ink explosion" && t.gameObject.activeSelf), Is.Zero);
+                foreach (bool collision in new[] { false, true }) foreach (byte team in new byte[] { 1, 2 })
+                {
+                    presentation.Clear(); yield return null;
+                    var hidden = Pixels(camera);
+                    var evt = splash.Explosions[0]; evt.ShotId = ++id; evt.Team = team; evt.Collision = collision; evt.Position = visible;
+                    evt.Time = host.NetworkManager.ServerTime.Time + .001;
+                    float radius = InkExplosionRules.Radius(w.Ammo, collision);
+                    int expected = Mathf.Clamp(Mathf.CeilToInt(radius * 18), 16, 64);
+                    presentation.Explosion(evt); presentation.Explosion(evt);
+                    Assert.That(presentation.BlockDebrisCount, Is.EqualTo(expected), "The duplicate ID emits exactly one complete radius-scaled fragment burst");
+                    presentation.UpdateFlights(evt.Time + .08, camera);
+                    Assert.That(presentation.BlockCubeCount, Is.EqualTo(expected));
+                    Assert.That(presentation.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
+                    var shown = Pixels(camera);
+                    Assert.That(shown.Zip(hidden, (a, b) => Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b) > 20).Count(changed => changed),
+                        Is.GreaterThan(25), "Configured cube fragments visibly render for both teams and both blast radii");
+                    blocks.Unchanged(terrainBeforeVisuals, "Cosmetic blast cannot mutate structure or scores");
+                    Assert.That(host.Snapshot.Value.SpecialPoints, Is.EqualTo(visualPoints));
+                    // At .3 s all generated .49..7 s lifetimes are still active.
+                    presentation.UpdateFlights(evt.Time + .3, camera); Assert.That(presentation.BlockDebrisCount, Is.EqualTo(expected));
+                    presentation.UpdateFlights(evt.Time + .71, camera); Assert.That(presentation.BlockDebrisCount, Is.Zero);
+                    presentation.Clear(); evt.ShotId = ++id; evt.Time = host.NetworkManager.ServerTime.Time - 1;
+                    presentation.Explosion(evt); Assert.That(presentation.BlockDebrisCount, Is.Zero);
+                }
+                // A fully covering opaque wall must reject every fragment pixel.
+                var depthWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                try
+                {
+                    depthWall.transform.position = visible + Vector3.back * 2; depthWall.transform.localScale = new Vector3(10, 10, .3f);
+                    Physics.SyncTransforms(); presentation.Clear(); yield return null;
+                    var hidden = Pixels(camera); var evt = splash.Explosions[0]; evt.ShotId = ++id; evt.Position = visible;
+                    evt.Time = host.NetworkManager.ServerTime.Time + .001;
+                    presentation.Explosion(evt); presentation.UpdateFlights(evt.Time + .08, camera);
+                    Assert.That(Pixels(camera).Zip(hidden, (a, b) => Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b) > 6).Count(changed => changed),
+                        Is.LessThan(20), "Opaque wall hides the actual instance draw");
+                }
+                finally { UnityEngine.Object.DestroyImmediate(depthWall); }
             }
-            yield return RapidBlasterExplosionChecks.Check(splash.Explosions[0], visual, host, view.Profile);
-            int actualStamps = 0;
-            Vector3 paintCenter = default, paintNormal = Vector3.up;
-            var paint = new InkProjectileService { PaintObserved = stamp => { actualStamps++; paintCenter = stamp.Position; paintNormal = stamp.Normal; } };
-            double paintBorn = host.NetworkManager.ServerTime.Time;
-            var paintOrigin = visual.Position + Vector3.up * 1.2f;
-            paint.SpawnForMeasurement(new InkShot { Id = ++id, Round = match.State.Value.Round, HeroId = 5, Team = 1,
-                Shooter = host.PlayerId, Born = paintBorn, Origin = paintOrigin, Velocity = Vector3.forward * w.SpeedMin, Configuration = w });
-            paint.Simulate(paintBorn + .25);
-            Assert.That(actualStamps, Is.GreaterThan(0), "Training scene receives authoritative paint");
-            foreach (var surface in PrototypeArena.Current.Surfaces.Values) surface.FlushDisplay();
-            Capture(paintCenter, "training-paint", paintNormal * 4 + Vector3.up * 2 + Vector3.right * 3);
+            finally { presentation.Clear(); UnityEngine.Object.DestroyImmediate(camera.gameObject); }
+
+            // Paid collision against a clear real floor removes the complete prescribed
+            // mixed target set. The outer pair independently witnesses the 50% friendly radius.
+            Assert.That(Physics.Raycast(new Vector3(0, 4, -20), Vector3.down, out var floor, 10,
+                PlayerMotorSimulation.WorldMask & ~(1 << BlockTerrain.TerrainLayer)), Is.True);
+            var seed = blocks.Empty(); var anchor = BlockWorld.CellAt(floor.point + Vector3.up * .05f);
+            for (int x = -4; x <= 4; x++)
+            {
+                Assert.That(seed.Set(anchor + new Vector3Int(x, 0, -3), BlockCell.Create(1, true)), Is.True);
+                Assert.That(seed.Set(anchor + new Vector3Int(x, 0, 3), BlockCell.Create(2, true)), Is.True);
+            }
+            var outerFriendly = anchor + new Vector3Int(9, 0, 0); var outerEnemy = anchor + new Vector3Int(-9, 0, 0);
+            Assert.That(seed.Set(outerFriendly, BlockCell.Create(1, true)), Is.True);
+            Assert.That(seed.Set(outerEnemy, BlockCell.Create(2, true)), Is.True);
+            yield return blocks.Seed(seed); int pinkBefore = blocks.Terrain.PinkCount, blueBefore = blocks.Terrain.BlueCount;
+            uint legacyBefore = match.PaintSequence; double pointsBefore = host.Snapshot.Value.SpecialPoints;
+            var paidShot = blocks.PaidShot(host, 5, ++id, floor.point + Vector3.up * 1.3f, Vector3.down * w.SpeedMin);
+            var payment = paidShot.BlockAttack; float paidMaterial = host.Snapshot.Value.Ink;
+            var demolition = new InkProjectileService { PaintObserved = _ => Assert.Fail("Explosive mains cannot build legacy paint") };
+            demolition.SpawnForMeasurement(paidShot); demolition.Simulate(paidShot.Born + 2);
+            Assert.That(demolition.Explosions.Count, Is.EqualTo(1));
+            Assert.That(payment.BuildLimit, Is.Zero);
+            yield return blocks.Publish(() => payment.RemovedEnemy > 0);
+            var blast = demolition.Explosions.Single(); float collisionRadius = InkExplosionRules.Radius(w.Ammo, blast.Collision);
+            Assert.That(blast.Collision, Is.True);
+            Assert.That(Vector3.Distance(BlockWorld.Center(outerFriendly), blast.Position), Is.InRange(collisionRadius * .5f + .051f, collisionRadius));
+            Assert.That(Vector3.Distance(BlockWorld.Center(outerEnemy), blast.Position), Is.LessThan(collisionRadius));
+            for (int x = -4; x <= 4; x++) foreach (int z in new[] { -3, 3 })
+                Assert.That(blocks.Terrain.World.TryGet(anchor + new Vector3Int(x, 0, z), out _), Is.False, "Every inner-row target must be removed");
+            Assert.That(blocks.Terrain.World.TryGet(outerEnemy, out _), Is.False);
+            Assert.That(blocks.Terrain.World.TryGet(outerFriendly, out var survivingFriendly) && survivingFriendly.Owner == 1, Is.True);
+            Assert.That(blueBefore - blocks.Terrain.BlueCount, Is.EqualTo(10));
+            Assert.That(pinkBefore - blocks.Terrain.PinkCount, Is.EqualTo(9));
+            Assert.That(payment.RemovedEnemy, Is.EqualTo(10)); Assert.That(payment.Added, Is.Zero);
+            Assert.That(host.Snapshot.Value.Ink, Is.EqualTo(paidMaterial)); Assert.That(match.PaintSequence, Is.EqualTo(legacyBefore));
+            Assert.That(host.Snapshot.Value.SpecialPoints - pointsBefore, Is.EqualTo(10 / 32.0).Within(.00001));
+            Capture(floor.point, "training-block-destruction", new Vector3(4, 5, -6));
             // Use a detached source clone to exercise the real editor transaction without
             // changing the user's weapon asset, including a shot already in flight.
             var source = WeaponConfigService.Current.Source(5);
@@ -230,8 +288,19 @@ namespace Splatoon.Tests
                 Assert.That(w.Damage, Is.EqualTo(85));
             }
             finally { WeaponConfigService.Current.SetForEditor(5, w, source); UnityEngine.Object.DestroyImmediate(clone); }
-            File.WriteAllText(Output + "/host-summary.txt", "PASS: Host training load and rapid firing animation; real direct 85 / blast 35 / collision blast 17.5; all three defeat combinations; actual blast geometry boundary; friend pass-through and immunity; wall collision/occlusion; two simultaneous victims; paper mesh; current and stale event rejection; both team particle colors; authoritative training paint; real editor hot reload retains old shot trajectory and earned recovery. Independent clients and devices not tested.\n");
+            File.WriteAllText(Output + "/host-summary.txt", "PASS: Host training load and rapid firing animation; real direct 85 / blast 35 / collision blast 17.5; all three defeat combinations; actual blast geometry boundary; friend pass-through and immunity; wall collision/occlusion; two simultaneous victims; paper mesh; current and stale event rejection; both team opaque fragment pixels; depth occlusion; paid complete mixed-block demolition with differential radii; real editor hot reload retains old shot trajectory and earned recovery. Independent clients and devices not tested.\n");
             yield return app.Leave().ToCoroutine();
+        }
+        static Color32[] Pixels(Camera camera)
+        {
+            var target = new RenderTexture(640, 640, 24); var previous = RenderTexture.active;
+            var image = new Texture2D(640, 640, TextureFormat.RGB24, false);
+            try
+            {
+                camera.targetTexture = target; camera.Render(); RenderTexture.active = target;
+                image.ReadPixels(new Rect(0, 0, 640, 640), 0, 0); image.Apply(); return image.GetPixels32();
+            }
+            finally { camera.targetTexture = null; RenderTexture.active = previous; UnityEngine.Object.DestroyImmediate(target); UnityEngine.Object.DestroyImmediate(image); }
         }
         static void Capture(Vector3 target, string name, Vector3? offset = null)
         {

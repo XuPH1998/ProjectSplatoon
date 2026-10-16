@@ -1,5 +1,13 @@
 [
   {
+    "blockBlocksPerMaterial": 32,
+    "blockMainAttackMaxBlocks": 512,
+    "blockAuxiliaryBudgetFraction": 0.25,
+    "blockFriendlyBlastRadiusFraction": 0.5,
+    "blockBlocksPerSpecialPoint": 32,
+    "blockMainSpecialPointCap": 2,
+    "blockSubSpecialPointCap": 10,
+    "blockNetworkBytesPerSecond": 2097152,
     "id": 1,
     "defaultModeId": 1,
     "networkTickRate": 30,

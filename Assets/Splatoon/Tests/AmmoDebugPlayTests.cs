@@ -1,8 +1,10 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEditor;
@@ -12,12 +14,14 @@ using UnityEngine.TestTools;
 using Splatoon.Config;
 using Splatoon.Combat;
 using Splatoon.Prototype;
+using Splatoon.Networking;
 
 namespace Splatoon.Tests
 {
     public sealed class AmmoDebugPlayTests
     {
         const string Output = "Reports/InkFlightReference/AmmoMerge";
+        static readonly List<UnityEngine.Object> Fixtures = new();
         static IEnumerator Wait(Func<bool> ready, string message)
         {
             double end = Time.realtimeSinceStartupAsDouble + 45;
@@ -35,6 +39,20 @@ namespace Splatoon.Tests
             yield return Scenario();
             yield return new ExitPlayMode();
         }
+        [UnityTearDown] public IEnumerator Cleanup()
+        {
+            if (Application.isPlaying && PrototypeApp.Current != null && PrototypeApp.Current.InRoom)
+                yield return PrototypeApp.Current.Leave().ToCoroutine();
+            foreach (var fixture in Fixtures)
+                if (fixture != null)
+                {
+                    if (Application.isPlaying) UnityEngine.Object.Destroy(fixture);
+                    else UnityEngine.Object.DestroyImmediate(fixture);
+                }
+            Fixtures.Clear();
+            if (!Application.isPlaying) yield break;
+            yield return new ExitPlayMode();
+        }
         static IEnumerator Scenario()
         {
             Directory.CreateDirectory(Output);
@@ -46,9 +64,14 @@ namespace Splatoon.Tests
             var player = PrototypePlayer.Local; var match = PrototypeMatch.Current;
             player.RequestHeroChange(1, HeroSelectionOrigin.Warmup);
             yield return Wait(() => player.Snapshot.Value.HeroId == 1 && !player.HeroChangePending, "Rifle");
-            app.CaptureMouse(false); match.enabled = false; player.enabled = false;
+            app.CaptureMouse(false);
+            bool matchEnabled = match.enabled, playerEnabled = player.enabled;
+            var presentation = InkPresentation.Current; bool presentationEnabled = presentation.enabled;
+            match.enabled = false; player.enabled = false; presentation.enabled = false; presentation.Clear();
+            Assert.That(presentation.BlockMode, Is.True, "Ammo debug uses the default block presentation");
             var weapon = WeaponConfigService.Current.Source(1); var ammo = weapon.ammoConfig;
             var savedAmmo = UnityEngine.Object.Instantiate(ammo); var savedWeapon = UnityEngine.Object.Instantiate(weapon);
+            Fixtures.Add(savedAmmo); Fixtures.Add(savedWeapon);
             savedAmmo.name = ammo.name; savedWeapon.name = weapon.name;
             bool ammoDirty = EditorUtility.IsDirty(ammo), weaponDirty = EditorUtility.IsDirty(weapon);
             ParticleSystem replacementFlight = null, replacementMuzzle = null;
@@ -59,10 +82,16 @@ namespace Splatoon.Tests
                 var prior = GameplayConfig.GetWeapon(1); var state = player.Snapshot.Value;
                 state.AttackNeedsRelease = false; state.Health = 100; player.Snapshot.Value = state;
                 uint heroRevision = state.HeroRevision;
-                player.CharacterView.Present(state, .016f, state.SimulatedAt);
-                player.CharacterView.Shot(0, 900001);
-                var oldMuzzle = player.CharacterView.GetComponentInChildren<InkMuzzleEmitter>();
-                Assert.That(oldMuzzle, Is.Not.Null);
+                var oldShot = PaidDebugShot(player, match, 0xe0000001u);
+                presentation.Spawn(oldShot);
+                var blockFlight = BlockFlightHistoryAssertions.Flight(presentation);
+                BlockFlightHistoryAssertions.AssertFrozen(presentation, oldShot, prior);
+                Assert.That(player.CharacterView.GetComponentsInChildren<InkMuzzleEmitter>(true), Is.Empty,
+                    "Default block firing cannot revive the old particle muzzle");
+                uint paidSequence = player.Snapshot.Value.ShotSequence;
+                float paidMaterial = player.Snapshot.Value.Ink;
+                var terrain = match.Blocks.ExportSnapshot();
+                int active = blockFlight.ActiveShots, debris = blockFlight.DebrisCount;
                 // Do not edit the weapon itself: the nested Ammo asset must trigger observation.
                 using (var edited = new SerializedObject(ammo))
                 {
@@ -89,10 +118,22 @@ namespace Splatoon.Tests
                 Assert.That(prior.Ammo.MuzzleBurstCount, Is.EqualTo(savedAmmo.muzzleBurstCount));
                 Assert.That(player.Snapshot.Value.HeroRevision, Is.EqualTo(heroRevision));
                 Assert.That(player.Snapshot.Value.AttackNeedsRelease, Is.False, "Ammo edit must not cancel the action");
-                var newMuzzle = player.CharacterView.GetComponentInChildren<InkMuzzleEmitter>();
-                Assert.That(newMuzzle, Is.Not.SameAs(oldMuzzle)); Assert.That(newMuzzle.Ammo.MuzzleBurstCount, Is.EqualTo(17));
-                Assert.That(newMuzzle.BurstCount, Is.Zero, "Reload alone must not synthesize another muzzle action");
-                yield return Wait(() => oldMuzzle == null, "Retired muzzle drains naturally and is destroyed");
+                BlockFlightHistoryAssertions.AssertFrozen(presentation, oldShot, prior);
+                Assert.That(blockFlight.ActiveShots, Is.EqualTo(active), "Reload alone cannot synthesize another block shot");
+                Assert.That(blockFlight.DebrisCount, Is.EqualTo(debris), "Reload alone cannot synthesize fragments");
+                Assert.That(player.Snapshot.Value.ShotSequence, Is.EqualTo(paidSequence));
+                Assert.That(player.Snapshot.Value.Ink, Is.EqualTo(paidMaterial));
+                CollectionAssert.AreEqual(terrain, match.Blocks.ExportSnapshot(), "Reload alone cannot build or dismantle terrain");
+                Assert.That(presentation.VersionPoolCount, Is.Zero);
+                var newShot = PaidDebugShot(player, match, 0xe0000002u);
+                presentation.Spawn(newShot);
+                BlockFlightHistoryAssertions.AssertFrozen(presentation, newShot, current);
+                BlockFlightHistoryAssertions.AssertFrozen(presentation, oldShot, prior);
+                Assert.That(newShot.Configuration.Ammo.MuzzleBurstCount, Is.EqualTo(17));
+                Assert.That(blockFlight.ActiveShots, Is.EqualTo(active + 1));
+                Assert.That(BlockFlightHistoryAssertions.Flight(presentation), Is.SameAs(blockFlight), "Ammo revisions share the block renderer");
+                Assert.That(player.CharacterView.GetComponentsInChildren<InkMuzzleEmitter>(true), Is.Empty,
+                    "Reloaded Ammo keeps the default block muzzle path");
                 revision = WeaponConfigService.Current.Revision(1);
                 Undo.FlushUndoRecordObjects(); Undo.PerformUndo();
                 yield return Applied(app, 1, revision);
@@ -103,6 +144,7 @@ namespace Splatoon.Tests
 
                 replacementFlight = UnityEngine.Object.Instantiate(ammo.flightPrefab); replacementFlight.name = ammo.flightPrefab.name;
                 replacementMuzzle = UnityEngine.Object.Instantiate(ammo.muzzlePrefab); replacementMuzzle.name = ammo.muzzlePrefab.name;
+                Fixtures.Add(replacementFlight.gameObject); Fixtures.Add(replacementMuzzle.gameObject);
                 replacementFlight.gameObject.SetActive(false); replacementMuzzle.gameObject.SetActive(false);
                 revision = WeaponConfigService.Current.Revision(1);
                 ammo.flightPrefab = replacementFlight; ammo.muzzlePrefab = replacementMuzzle;
@@ -111,24 +153,30 @@ namespace Splatoon.Tests
                 Assert.That(GameplayConfig.GetWeapon(1).Ammo.MuzzlePrefab, Is.SameAs(replacementMuzzle));
 
                 replacementAmmo = UnityEngine.Object.Instantiate(ammo); replacementAmmo.name = ammo.name;
+                Fixtures.Add(replacementAmmo);
                 revision = WeaponConfigService.Current.Revision(1); weapon.ammoConfig = replacementAmmo;
                 yield return Applied(app, 1, revision);
                 Assert.That(GameplayConfig.GetWeapon(1).Ammo.Source, Is.SameAs(replacementAmmo));
                 var lastValid = GameplayConfig.GetWeapon(1);
+                uint lastValidRevision = WeaponConfigService.Current.Revision(1);
                 replacementAmmo.burstInterval = float.NaN;
                 yield return Wait(() => app.WeaponDebugStatus.StartsWith("修改未应用"), "Invalid ammo is rejected");
                 Assert.That(GameplayConfig.GetWeapon(1), Is.SameAs(lastValid));
+                Assert.That(WeaponConfigService.Current.Revision(1), Is.EqualTo(lastValidRevision));
                 replacementAmmo.burstInterval = ammo.burstInterval;
                 revision = WeaponConfigService.Current.Revision(1); weapon.ammoConfig = ammo;
                 yield return Applied(app, 1, revision);
                 yield return CapacityScenario(app, ammo);
-                File.AppendAllText(Output + "/host-reload.txt", "PASS: nested Ammo scalars, same-name prefab replacement, Ammo replacement, Undo/Redo, old revision, action preservation, muzzle rebind, invalid edit rejection.\n");
+                File.AppendAllText(Output + "/host-reload.txt", "PASS: nested Ammo scalars, same-name prefab replacement, Ammo replacement, Undo/Redo, frozen old block shot and trajectory, new paid debug-shot revision, reload has no shot/material/terrain effects, action preservation, invalid edit rejection.\n");
             }
             finally
             {
                 EditorUtility.CopySerialized(savedAmmo, ammo); EditorUtility.CopySerialized(savedWeapon, weapon);
                 if (!ammoDirty) EditorUtility.ClearDirty(ammo); if (!weaponDirty) EditorUtility.ClearDirty(weapon);
                 Undo.ClearUndo(ammo); UnityEngine.Object.Destroy(savedAmmo); UnityEngine.Object.Destroy(savedWeapon);
+                if (presentation != null) { presentation.Clear(); presentation.enabled = presentationEnabled; }
+                if (match != null) match.enabled = matchEnabled;
+                if (player != null) player.enabled = playerEnabled;
             }
             yield return app.Leave().ToCoroutine();
             if (replacementFlight != null) UnityEngine.Object.Destroy(replacementFlight.gameObject);
@@ -153,45 +201,133 @@ namespace Splatoon.Tests
             finally { normalSource.burstInterval = savedInterval; }
             yield return app.Leave().ToCoroutine();
             yield return null;
-            Assert.That(InkPresentation.Current, Is.Null, "Leaving room releases all version pools");
+            Assert.That(InkPresentation.Current, Is.Null, "Leaving room releases the block renderer and retained revisions");
+        }
+
+        static InkShot PaidDebugShot(PrototypePlayer player, PrototypeMatch match, uint id)
+        {
+            // The debug room isolates simulation while checking reload history. Pay
+            // through the real weapon state machine, then submit its visual event.
+            var config = GameplayConfig.GetWeapon(1); var state = player.Snapshot.Value;
+            float material = state.Ink; uint sequence = state.ShotSequence;
+            double now = Math.Max(match.NetworkManager.ServerTime.Time, state.NextShotAt);
+            state.WeaponPhase = WeaponPhase.Idle; state.AttackNeedsRelease = false;
+            var input = new PlayerInputFrame { Sequence = state.FireBurstSequence + 1,
+                Fire = true, FireSequence = state.ConsumedFire + 1, ReleaseSequence = state.ConsumedRelease };
+            bool fired = WeaponSimulation.Step(ref state, input, config, now, false, true, out var result);
+            if (!fired)
+            {
+                now += config.StartSeconds + 1.0 / 60;
+                fired = WeaponSimulation.Step(ref state, input, config, now, false, true, out result);
+            }
+            Assert.That(fired, Is.True, "Debug history sample uses an accepted paid weapon emission");
+            Assert.That(state.ShotSequence, Is.EqualTo(sequence + 1));
+            Assert.That(material - state.Ink, Is.EqualTo(WeaponSimulation.InkCost(config, result.Charge)).Within(.003f));
+            state.SimulatedAt = now; player.Snapshot.Value = state;
+            var geometry = WeaponLaunch.Geometry(new Vector3(1000, 1000, 995), Vector3.forward,
+                new Vector3(1000, 1000, 1000), config, result.Charge);
+            var shot = WeaponLaunch.Representative(geometry, config, result.Charge);
+            shot.Id = id; shot.ActionId = result.ActionId; shot.ShotSequence = state.ShotSequence;
+            shot.Round = match.State.Value.Round; shot.Born = now; shot.Team = state.Team;
+            shot.HeroId = 1; shot.Shooter = player.PlayerId; shot.HeroRevision = state.HeroRevision;
+            shot.Lifecycle = state.Revision; shot.ConfigurationRevision = WeaponConfigService.Current.Revision(1);
+            return shot;
         }
 
         static IEnumerator CapacityScenario(PrototypeApp app, AmmoConfigAsset ammo)
         {
-            var presentation = InkPresentation.Current; presentation.enabled = false; presentation.Clear();
-            ammo.visualLifetime = 10;
-            uint revision = WeaponConfigService.Current.Revision(1);
-            yield return Applied(app, 1, revision);
-            double born = PrototypeMatch.Current.NetworkManager.ServerTime.Time;
-            uint round = PrototypeMatch.Current.State.Value.Round;
-            for (int i = 0; i < InkPresentation.VersionPoolLimit; i++)
+            var presentation = InkPresentation.Current; bool enabled = presentation.enabled;
+            presentation.enabled = false; presentation.Clear();
+            var shots = new List<InkShot>();
+            try
             {
-                if (i > 0)
+                ammo.visualLifetime = 10;
+                uint revision = WeaponConfigService.Current.Revision(1);
+                yield return Applied(app, 1, revision);
+                uint round = PrototypeMatch.Current.State.Value.Round;
+                BlockFlightPresentation renderer = null; Mesh mesh = null;
+                // Keep the isolated presentation clock used by the original test.
+                // Each retained shot is sampled at its own Born + .03, independently
+                // of the real time spent editing thirteen different revisions.
+                for (int i = 0; i <= InkPresentation.VersionPoolLimit; i++)
                 {
-                    revision = WeaponConfigService.Current.Revision(1); ammo.maxRibbonGap += .01f;
-                    yield return Applied(app, 1, revision);
+                    if (i > 0)
+                    {
+                        revision = WeaponConfigService.Current.Revision(1); ammo.maxRibbonGap += .01f;
+                        yield return Applied(app, 1, revision);
+                    }
+                    var config = GameplayConfig.GetWeapon(1);
+                    var shot = new InkShot { Id = 0xf0000000u + (uint)i, Round = round, HeroId = 1,
+                        Team = 1, Shooter = ulong.MaxValue, ActionId = (ulong)i + 1, Seed = 123,
+                        Born = PrototypeMatch.Current.NetworkManager.ServerTime.Time,
+                        Origin = Vector3.one * 1000, Velocity = Vector3.forward * 32,
+                        Configuration = config, ConfigurationRevision = WeaponConfigService.Current.Revision(1) };
+                    shots.Add(shot); presentation.Spawn(shot);
+                    renderer ??= BlockFlightHistoryAssertions.Flight(presentation); mesh ??= renderer.CubeMesh;
+                    Assert.That(BlockFlightHistoryAssertions.Flight(presentation), Is.SameAs(renderer));
+                    Assert.That(renderer.CubeMesh, Is.SameAs(mesh), "Every Ammo revision shares the same cube mesh");
+                    Assert.That(renderer.ActiveShots, Is.EqualTo(i + 1), "Legal revisions cannot drop older block flights");
+                    Assert.That(renderer.Dropped, Is.Zero);
+                    Assert.That(presentation.VersionPoolCount, Is.Zero, "Block revisions do not allocate old particle version pools");
+                    foreach (var retained in shots)
+                        BlockFlightHistoryAssertions.AssertFrozen(presentation, retained, retained.Configuration);
                 }
-                var config = GameplayConfig.GetWeapon(1);
-                presentation.Spawn(new InkShot { Id = 0xf0000000u + (uint)i, Round = round, HeroId = 1,
-                    Team = 1, Shooter = ulong.MaxValue, ActionId = (ulong)i + 1, Seed = 123,
-                    Born = PrototypeMatch.Current.NetworkManager.ServerTime.Time, Origin = Vector3.one * 1000, Velocity = Vector3.forward * 32,
-                    Configuration = config, ConfigurationRevision = WeaponConfigService.Current.Revision(1) });
+                revision = WeaponConfigService.Current.Revision(1); ammo.maxRibbonGap = 2.5f;
+                yield return Applied(app, 1, revision);
+                Assert.That(GameplayConfig.GetWeapon(1).Ammo.MaxRibbonGap, Is.EqualTo(2.5f));
+                revision = WeaponConfigService.Current.Revision(1); ammo.maxRibbonGap = 2.7f;
+                yield return Applied(app, 1, revision);
+                Assert.That(GameplayConfig.GetWeapon(1).Ammo.MaxRibbonGap, Is.EqualTo(2.7f));
+                Assert.That(renderer.ActiveShots, Is.EqualTo(shots.Count), "Latest edit cannot retire retained shots");
+                foreach (var retained in shots)
+                    BlockFlightHistoryAssertions.AssertFrozen(presentation, retained, retained.Configuration);
+                Assert.That(presentation.Streams, Is.Empty); Assert.That(presentation.VersionPoolCount, Is.Zero);
+                double expiredAt = shots.Max(s => s.Born + s.Configuration.Lifetime) + .1;
+                presentation.UpdateFlights(expiredAt, Camera.main);
+                Assert.That(renderer.ActiveShots, Is.Zero, "Each block flight expires at its own frozen weapon lifetime");
+                Assert.That(presentation.ActiveShots, Is.Zero);
+                presentation.ClearFlights(expiredAt);
+                foreach (var shot in shots) presentation.Spawn(shot);
+                Assert.That(renderer.ActiveShots, Is.Zero, "Old events cannot revive flights across the clear cutoff");
+                File.AppendAllText(Output + "/host-reload.txt", "PASS: 13 retained Ammo revisions share one block renderer and mesh, preserve individual snapshots/trajectories, apply latest legal edits without particle-pool blocking, expire and reject stale replay. The presentation clock is isolated; the 2048-shot hard limit is covered by BlockPresentationTests.\n");
             }
-            Assert.That(presentation.VersionPoolCount, Is.EqualTo(InkPresentation.VersionPoolLimit));
-            revision = WeaponConfigService.Current.Revision(1);
-            ammo.maxRibbonGap = 2.5f;
-            yield return Wait(() => { app.ApplyDebugWeaponChanges(); return app.WeaponDebugStatus.StartsWith("等待旧墨弹结束"); }, "Capacity waits");
-            Assert.That(WeaponConfigService.Current.Revision(1), Is.EqualTo(revision));
-            ammo.maxRibbonGap = 2.7f;
-            yield return Wait(() => { app.ApplyDebugWeaponChanges(); return app.WeaponDebugStatus.StartsWith("等待旧墨弹结束"); }, "Latest pending edit");
-            // Allow observation of the latest asset value before freeing a version slot.
-            for (int i = 0; i < 4; i++) yield return null;
-            presentation.Impact(new InkImpact { Round = round, Id = 0xf0000000u });
-            yield return Applied(app, 1, revision);
-            Assert.That(GameplayConfig.GetWeapon(1).Ammo.MaxRibbonGap, Is.EqualTo(2.7f));
-            Assert.That(presentation.VersionPoolCount, Is.LessThanOrEqualTo(InkPresentation.VersionPoolLimit));
-            presentation.Clear(); presentation.enabled = true;
-            File.AppendAllText(Output + "/host-reload.txt", "PASS: 12 active versions block revision commit; latest pending edit applies after old shot completion.\n");
+            finally { presentation.Clear(); presentation.enabled = enabled; }
+        }
+    }
+
+    // Read-only test inspection keeps production APIs unchanged while proving that
+    // the retained visual, configuration history and actual trajectory agree.
+    internal static class BlockFlightHistoryAssertions
+    {
+        const BindingFlags Fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        public static BlockFlightPresentation Flight(InkPresentation presentation)
+        {
+            var flight = (BlockFlightPresentation)typeof(InkPresentation).GetField("_blocks", Fields).GetValue(presentation);
+            Assert.That(flight, Is.Not.Null, "The block renderer has accepted a real visual event");
+            return flight;
+        }
+        public static InkShot Retained(InkPresentation presentation, uint round, uint id)
+        {
+            var flight = Flight(presentation);
+            var visuals = (Array)typeof(BlockFlightPresentation).GetField("_shots", Fields).GetValue(flight);
+            var shotField = visuals.GetType().GetElementType().GetField("Shot", Fields);
+            for (int index = 0; index < flight.ActiveShots; index++)
+            {
+                var shot = (InkShot)shotField.GetValue(visuals.GetValue(index));
+                if (shot.Round == round && shot.Id == id) return shot;
+            }
+            Assert.Fail("Missing retained block visual " + round + ":" + id);
+            return default;
+        }
+        public static void AssertFrozen(InkPresentation presentation, InkShot original, WeaponRuntimeConfig expected)
+        {
+            var retained = Retained(presentation, original.Round, original.Id);
+            Assert.That(retained.Configuration, Is.SameAs(expected));
+            Assert.That(retained.ConfigurationRevision, Is.EqualTo(original.ConfigurationRevision));
+            Assert.That(WeaponConfigService.Current.ForShot(original.HeroId, original.ConfigurationRevision), Is.SameAs(expected));
+            Assert.That(Flight(presentation).TryPosition(original.Round, original.Id, original.Born + .03, out var position), Is.True);
+            Assert.That(Vector3.Distance(position, InkBallistics.Position(original, expected, .03)), Is.LessThan(.0001f),
+                "The old flight evaluates its immutable weapon snapshot after reload");
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Splatoon.Prototype
             _lobbyField ??= new GUIStyle(_field) { fontSize = 18, richText = false, padding = new RectOffset(8,8,6,6) };
             Panel(new Rect(0,0,1280,720),new Color(.055f,.075f,.10f));
             Panel(new Rect(147,34,6,52),PrototypeArena.Pink);
-            GUI.Label(new Rect(170,30,675,66),"喷墨对战 / 局域网",_title);
+            GUI.Label(new Rect(170,30,675,66),"积木对战 / 局域网",_title);
             DrawUsernameField();
             Panel(new Rect(30,151,815,431),new Color(.085f,.115f,.15f));
             GUI.Label(new Rect(48,160,280,32),$"局域网房间  ·  {_discovery.Rooms.Count}",_label);
@@ -112,7 +112,7 @@ namespace Splatoon.Prototype
             }
             if(!Ready&&!Busy&&GUI.Button(new Rect(1118,592,110,33),"重试启动",_small)) Initialize().Forget();
             if(!string.IsNullOrEmpty(Error)) GUI.Label(new Rect(40,650,1190,62),Error,_small);
-            else GUI.Label(new Rect(42,653,1180,54),"WASD 移动 · 鼠标瞄准 / 射击 · 空格跳跃 · Shift 潜墨 · Esc 菜单 · 房主回车开始",_small);
+            else GUI.Label(new Rect(42,653,1180,54),"WASD 移动 · 鼠标建造 / 拆毁 · 空格跳跃 · Shift 弦化 · Esc 菜单 · 房主回车开始",_small);
         }
     }
 }

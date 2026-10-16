@@ -93,6 +93,9 @@ namespace Splatoon.Editor
         public static void BuildContent()
         {
             ConfigureAddressables();
+            // SBP writes its settings while building. Release handles cached by the
+            // asset import/save above before that write on Windows.
+            AssetDatabase.ReleaseCachedFileHandles();
             AddressableAssetSettings.BuildPlayerContent(out var content);
             if (!string.IsNullOrEmpty(content.Error)) throw new BuildFailedException(content.Error);
         }

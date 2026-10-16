@@ -26,7 +26,7 @@ namespace Splatoon.Tests
             while (!ready() && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
             Assert.That(ready(), Is.True, label);
         }
-        [UnityTest] public IEnumerator HostChecksSelectionCeilingHitsPaperAndHotReload()
+        [UnityTest, Timeout(600000)] public IEnumerator HostChecksSelectionCeilingHitsPaperAndHotReload()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode(); yield return Scenario(); yield return new ExitPlayMode();
@@ -39,7 +39,7 @@ namespace Splatoon.Tests
         }
         static void Place(PrototypePlayer player, Vector3 position, byte team = 1)
         {
-            var s = player.Snapshot.Value; s.HeroId = 8; s.Health = s.Ink = 100; s.ProtectedUntil = 0; s.Position = position;
+            var s = player.Snapshot.Value; s.HeroId = 8; s.Health = s.Ink = 100; s.LifeState = PlayerLifeState.Alive; s.BubbleUntil = 0; s.ProtectedUntil = 0; s.Position = position;
             s.Team = team; s.Swimming = s.CompactBody = false; s.Grounded = true; s.Movement = MovementMode.Human;
             s.PaperPose = PaperPose.None; s.AirHumanOffset = 0; s.PlanarVelocity = Vector3.zero; s.VerticalSpeed = 0;
             player.Snapshot.Value = s; new PlayerMotorSimulation(player.GetComponent<CharacterController>()).Restore(s);
@@ -101,9 +101,15 @@ namespace Splatoon.Tests
                     Assert.That(bot.Snapshot.Value.Health, Is.EqualTo(Mathf.Max(0,before-w.Damage)), "new upper body, torso and legs remain hittable");
                 }
                 for (int extra=0; extra<5 && bot.Snapshot.Value.Health>0; extra++) Fire(origin + Vector3.up * .8f, Vector3.forward);
-                Assert.That(bot.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Dead));
+                Assert.That(bot.Snapshot.Value.Health, Is.Zero);
+                Assert.That(bot.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Bubble), "Lethal damage first downs the standing body");
+                Assert.That(bot.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Bubble));
                 bot.SwimBody.ApplyCollision(bot.Snapshot.Value);
                 Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
+                bot.ExpireBubble(bot.Snapshot.Value.BubbleUntil + .01);
+                Assert.That(bot.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Dead));
+                Assert.That(bot.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.Expired));
+                Assert.That(bot.Snapshot.Value.Movement, Is.EqualTo(MovementMode.Dead));
                 bot.Respawn(); Assert.That(bot.Snapshot.Value.HeroId, Is.EqualTo(8));
                 Place(bot, origin + Vector3.forward * 2, 2);
                 var paper = bot.Snapshot.Value; paper.Swimming = true; paper.SwimSource = SwimSurface.Friendly; paper.Movement = MovementMode.GroundInk;
@@ -115,6 +121,10 @@ namespace Splatoon.Tests
                 for (int extra=0; extra<5 && bot.Snapshot.Value.Health>0; extra++) Fire(point + Vector3.up, Vector3.down);
                 Assert.That(bot.Snapshot.Value.Health, Is.Zero, "paper silhouette can receive a lethal hit");
                 bot.SwimBody.ApplyCollision(bot.Snapshot.Value); Assert.That(bot.SwimBody.UsesHitProxy, Is.False);
+                Assert.That(bot.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Bubble), "Lethal paper damage also enters the rescue bubble");
+                bot.ExpireBubble(bot.Snapshot.Value.BubbleUntil + .01);
+                Assert.That(bot.Snapshot.Value.LifeState, Is.EqualTo(PlayerLifeState.Dead));
+                Assert.That(bot.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.Expired));
                 bot.Respawn(); Assert.That(bot.GetComponent<CharacterController>().height, Is.EqualTo(1.5f));
                 var blocker = roof; blocker.SetActive(true); blocker.transform.position = origin + Vector3.up * .8f + Vector3.forward;
                 blocker.GetComponent<BoxCollider>().size = new Vector3(3, 3, .1f); Place(bot, origin + Vector3.forward * 2, 2); Physics.SyncTransforms();
@@ -140,7 +150,7 @@ namespace Splatoon.Tests
                 SplooshSummerPlayEvidence.CaptureTransitions(host);
                 Place(bot, original + Vector3.forward * 2, 2);
                 SplooshSummerPlayEvidence.CaptureHitVolumes(bot);
-                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; configured portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; new capsule receives configured MG damage at upper body/torso/legs; standing and paper death disable hit proxies; respawn restores 1.5m body; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload; rendered transitions and collision evidence.\n");
+                File.WriteAllText(Output + "/playmode.txt", "PASS: actual Boot/Addressables Host; configured portraits; hero 8; low ceiling rejects 8 -> 1; clear space accepts 8 -> 1 -> 8; new capsule receives configured MG damage at upper body/torso/legs; standing and paper downs disable hit proxies, expired bubbles enter Dead; respawn restores 1.5m body; wall blocks damage and embedded muzzle; immutable in-flight detail configuration across hot reload; rendered transitions and collision evidence.\n");
             }
             finally { Object.Destroy(roof); }
             yield return app.Leave().ToCoroutine();

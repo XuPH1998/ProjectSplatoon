@@ -16,12 +16,13 @@ namespace Splatoon.Tests
 {
     public sealed class CombatGirlsWeaponTests
     {
+        readonly List<HistoricalCombatContractFixture> _historical = new();
         [SetUp] public void Setup()
         {
             HeroMigrationTests.Load();
             // Retain the retired semi-auto alternation contract in a test-only fixture.
             // Authored automatic dualies are covered by DualPistolGirlTests.
-            WeaponConfigService.Current.SetForEditor(2, WeaponAssetTests.Changed(2, a =>
+            _historical.Add(new HistoricalCombatContractFixture(2, a =>
             {
                 a.motionMode = ProjectileMotionMode.Ballistic; a.fireMode = WeaponFireMode.SemiAutomatic;
                 a.fireRate = 10; a.shotInk = .7f; a.startSeconds = 2.0 / 60;
@@ -29,14 +30,18 @@ namespace Splatoon.Tests
             }));
             // Exercise semi-auto buffering independently of PistolGirl's authored
             // main weapon, which is now automatic. Never edit the source asset.
-            WeaponConfigService.Current.SetForEditor(4, WeaponAssetTests.Changed(4, a =>
+            _historical.Add(new HistoricalCombatContractFixture(4, a =>
             {
                 a.fireMode = WeaponFireMode.SemiAutomatic;
                 a.fireRate = 5; a.shotInk = 1;
                 a.startSeconds = 2.0 / 60; a.semiBufferSeconds = .1;
             }));
         }
-        [TearDown] public void Cleanup() => LubanConfigService.Current.Reset();
+        [TearDown] public void Cleanup()
+        {
+            for (int i = _historical.Count - 1; i >= 0; i--) _historical[i].Dispose();
+            _historical.Clear(); LubanConfigService.Current.Reset();
+        }
         static PlayerSnapshot Player(int id) => new() { HeroId=id,Health=100,Ink=100,Grounded=true,Team=1,Revision=1 };
         static bool Step(ref PlayerSnapshot s,int tick,uint press,bool held=false,bool cancel=false,bool clearance=true)
             => WeaponSimulation.Step(ref s,new PlayerInputFrame { Sequence=(uint)tick+1,FireSequence=press,Fire=held,CancelFire=cancel },GameplayConfig.GetWeapon(s.HeroId),tick/60.0,false,clearance);
@@ -57,6 +62,7 @@ namespace Splatoon.Tests
         [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void SixFrameBufferAcceptsOneClickAndNeverBuildsAQueue(int id)
         {
+            using var shotgun = id == 3 ? new HistoricalCombatContractFixture(3) : null;
             var w=GameplayConfig.GetWeapon(id);var s=Player(id);uint press=1;var shots=new List<int>();
             int intervalTicks=(int)Math.Ceiling(60.0/w.FireRate-1e-6);
             int next=2+intervalTicks;
@@ -112,6 +118,7 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunSpendsOnceForEightDistinctBoundedDeterministicPellets()
         {
+            using var shotgun = new HistoricalCombatContractFixture(3);
             var s=Player(3);for(int tick=0;tick<3;tick++)Step(ref s,tick,1);
             var w=GameplayConfig.GetWeapon(3);
             Assert.That(s.Ink,Is.EqualTo(96));Assert.That(s.ShotSequence,Is.EqualTo(1));
@@ -128,6 +135,25 @@ namespace Splatoon.Tests
             HeroMigrationTests.Load(rows=>rows[1]["pelletCount"]=8);
             Assert.Throws<InvalidOperationException>(()=>GameplayConfig.Validate());
         }
+        [TestCase(2)] [TestCase(3)]
+        public void CurrentNineHeroGunAssembliesValidateAndSpendTheRealAuthoredShot(int hero)
+        {
+            HeroMigrationTests.Load(); GameplayConfig.Validate();
+            CollectionAssert.AreEqual(Enumerable.Range(1, 9), LubanConfigService.Current.Tables.TbHero.DataList.Select(row => row.Id));
+            var authored = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(hero).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var w = authored.Snapshot(); WeaponConfigValidation.Validate(w);
+            WeaponConfigService.Current.SetForEditor(hero, w);
+            Assert.That(w.PelletCount, Is.EqualTo(1));
+            Assert.That(w.FireMode, Is.EqualTo(hero == 2 ? WeaponFireMode.Automatic : WeaponFireMode.Explosher));
+            Assert.That(w.MotionMode, Is.EqualTo(hero == 2 ? ProjectileMotionMode.DualiesNormal : ProjectileMotionMode.Explosher));
+            var s = Player(hero); bool emitted = false;
+            for (int tick = 0; tick <= WeaponTimeFixture.ReferenceFrames(w.StartSeconds) + 3 && !emitted; tick++)
+                emitted = Step(ref s, tick, 1, true);
+            Assert.That(emitted, Is.True); Assert.That(s.ShotSequence, Is.EqualTo(1));
+            Assert.That(s.Ink, Is.EqualTo(100 - w.ShotInk).Within(.0002));
+        }
+
         [Test] public void SnapshotRoundTripRestoresBufferedClickAndBothHandTimelines()
         {
             var s=Player(2);for(int tick=0;tick<=12;tick++)Step(ref s,tick,(uint)(tick<10?1:2));

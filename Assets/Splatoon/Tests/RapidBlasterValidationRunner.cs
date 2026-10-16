@@ -12,11 +12,10 @@ namespace Splatoon.Tests
     public sealed class RapidBlasterValidationRunner : ICallbacks
     {
         const string Report = "Reports/RapidBlaster", Running = "RapidBlaster.Running", Label = "RapidBlaster.Label";
-        static TestRunnerApi api;
         static double next;
         static RapidBlasterValidationRunner()
         {
-            api = ScriptableObject.CreateInstance<TestRunnerApi>(); api.RegisterCallbacks(new RapidBlasterValidationRunner());
+            TestRunnerApi.RegisterTestCallback(new RapidBlasterValidationRunner());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -40,7 +39,9 @@ namespace Splatoon.Tests
         {
             Directory.CreateDirectory(Report); SessionState.SetBool(Running, true); SessionState.SetString(Label, label);
             File.WriteAllText(Report + "/test-status.txt", "RUNNING " + label + " " + DateTime.UtcNow.ToString("O"));
-            api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = names.Split(';') }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = names.Split(';') })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         public void RunStarted(ITestAdaptor tests) { }
         public void TestStarted(ITestAdaptor test) { }

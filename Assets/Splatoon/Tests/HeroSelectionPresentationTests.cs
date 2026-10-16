@@ -29,6 +29,28 @@ namespace Splatoon.Tests
             string name = GameplayConfig.GetHero(id).CharacterPrefabAddress.Split('/').Last();
             return AssetDatabase.LoadAssetAtPath<CharacterPresentationProfile>($"Assets/GameResource/Characters/{name}/{name}Presentation.asset");
         }
+        // Only the old fixed weapon-specific assertions use these archived inputs.
+        // Production four-stat/unit assertions and real range tests still read live assets.
+        static WeaponRuntimeConfig HistoricalStatWeapon(int id)
+        {
+            var rows = SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAssets/Migration-Baseline.json"));
+            var archived = rows.Children.Single(entry => entry["id"].AsInt == id);
+            var row = SimpleJSON.JSONNode.Parse(archived.ToString());
+            WeaponTimeFixture.ToSeconds(row);
+            var asset = ScriptableObject.CreateInstance<WeaponConfigAsset>();
+            try
+            {
+                JsonUtility.FromJsonOverwrite(row.ToString(), asset);
+                foreach (var field in typeof(WeaponConfigAsset).GetFields())
+                    if (field.FieldType == typeof(double) && row.HasKey(field.Name))
+                        field.SetValue(asset, row[field.Name].AsDouble);
+                asset.motionMode = ProjectileMotionMode.Ballistic;
+                asset.referenceRules = asset.referenceSpreadEnabled = false;
+                WeaponAlignmentFixture.DisableReconstruction(asset);
+                return asset.Snapshot();
+            }
+            finally { UnityEngine.Object.DestroyImmediate(asset); }
+        }
         [Test] public void NineHeroesHaveDistinctNamedPortraitsRegisteredForPlayers()
         {
             string[] names = {"紫苑", "夜雀", "白凛", "隼音", "月兔", "焰橙", "沫澜", "铃芽", "泡霰"};
@@ -56,13 +78,19 @@ namespace Splatoon.Tests
             var values = HeroSelectionStats.Create(w, Profile(id), g.AimCorrectionDistance, g.AimFarCorrectionDistance);
             Assert.That(values.Select(s => s.Label), Is.EqualTo(new[]{"伤害", "射速", "最大散布", "平射射程"}));
             Assert.That(values[3].Value, Does.Contain("米"));
+            var productionValues = values;
+            if (id == 3 || id == 5)
+            {
+                w = HistoricalStatWeapon(id);
+                values = HeroSelectionStats.Create(w, Profile(id), g.AimCorrectionDistance, g.AimFarCorrectionDistance);
+            }
             if (id == 3) { Assert.That(values[0].Note, Does.Contain("8 颗")); Assert.That(values[1].Value, Does.Contain("次齐射/秒")); }
             if (id == 5) { Assert.That(HeroSelectionStats.MaximumGroundSpread(w), Is.EqualTo(2)); Assert.That(HeroSelectionStats.FullChargeRate(w), Is.LessThan(w.FireRate)); }
             if (id == 6) Assert.That(values[1].Note, Is.EqualTo("连射阶段"));
             if (id == 7) { Assert.That(values[0].Note, Does.Contain("4 颗")); Assert.That(values[1].Value, Does.Contain("组/秒")); Assert.That(values[3].Note, Does.Contain("弹跳")); }
             Directory.CreateDirectory("Reports/HeroSelection");
             File.WriteAllLines($"Reports/HeroSelection/stats-{id}.txt", new[] { GameplayConfig.GetHero(id).DisplayName }
-                .Concat(values.Select(s => s.Label + ": " + s.Value + " (" + s.Note + ")")));
+                .Concat(productionValues.Select(s => s.Label + ": " + s.Value + " (" + s.Note + ")")));
         }
         [TestCase(1,0)] [TestCase(2,0)] [TestCase(3,0)] [TestCase(4,0)] [TestCase(5,0)] [TestCase(5,1)] [TestCase(6,0)] [TestCase(6,1)] [TestCase(7,0)]
         public void CalculatedRangeMatchesRealProjectileGroundCollision(int id, int full)
@@ -102,6 +130,10 @@ namespace Splatoon.Tests
             var asset = UnityEngine.Object.Instantiate(WeaponConfigService.Current.Source(1) ?? AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(1).WeaponConfigPath));
             try
             {
+                // Pin the test's one-gravity ballistic contract, as in TpsAimTests.
+                asset.motionMode = ProjectileMotionMode.Ballistic;
+                asset.referenceRules = asset.referenceSpreadEnabled = false;
+                WeaponAlignmentFixture.DisableReconstruction(asset);
                 foreach (bool zeroGravity in new[] {true, false})
                 {
                     asset.projectileGravity = zeroGravity ? 0 : 18; asset.lifetime = zeroGravity ? 10 : .01f;

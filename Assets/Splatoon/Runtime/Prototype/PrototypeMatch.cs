@@ -6,6 +6,7 @@ using Splatoon.Networking;
 using Splatoon.Config;
 using Splatoon.Combat;
 using Splatoon.Painting;
+using Splatoon.Blocks;
 
 namespace Splatoon.Prototype
 {
@@ -17,7 +18,8 @@ namespace Splatoon.Prototype
         public PrototypeArena Arena => PrototypeArena.Current;
         public readonly InkProjectileService Projectiles = new();
         public readonly MatchCombatStats CombatStats = new();
-        public bool CanStartRound => PrototypeRules.CanStart(
+        public bool ServerClockReady { get; private set; }
+        public bool CanStartRound => ServerClockReady && PrototypeRules.CanStart(
             Players.Count(p => p != null && p.IsSpawned && !p.IsTestBot && p.Snapshot.Value.Team == 1),
             Players.Count(p => p != null && p.IsSpawned && !p.IsTestBot && p.Snapshot.Value.Team == 2), State.Value.Phase, GameplayConfig.Mode.MinPlayers);
         public void PublishCombatStats()
@@ -40,21 +42,30 @@ namespace Splatoon.Prototype
         private readonly SortedDictionary<uint, PaintStamp> _buffered = new();
         public override void OnNetworkSpawn()
         {
+            if (IsServer) State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice };
+            _simulationTime = _networkFrameOffset = 0;
+            _serverClockAnchorTime = _serverClockAnchorUnscaled = 0; ServerClockReady = false;
             Current = this; _paintRound = State.Value.Round;
+            EnsureBlocks(); Blocks.Clear(_paintRound);
             EnsureSubPresentation(); EnsureSpecialPresentation();
             if (IsServer)
             {
-                State.Value = new MatchStateSnapshot { Phase = MatchPhase.Practice, TotalArea = Arena.TotalArea };
+                // A server has no remote clock target; avoid NGO's default equal-offset adjustment.
+                NetworkManager.NetworkTimeSystem.AdjustmentRatio = 0;
                 InitialSyncComplete = true; NetworkManager.NetworkTickSystem.Tick += ServerTick;
                 this.RegisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
+                this.RegisterNetworkUpdate(NetworkUpdateStage.Update);
                 _networkFrameOffset = NetworkManager.ServerTime.Time - Time.timeAsDouble;
             }
-            else RequestSnapshotRpc();
+            else { InitialSyncComplete = false; RequestBlockSnapshotRpc(); }
             Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
         }
         public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint? shapeSeed = null, Vector3? direction = null, float depthScale = 1, bool clipEnabled = false, Vector4 clip0 = default, Vector4 clip1 = default, PaintCredit? credit = null)
         {
             if (!IsServer || State.Value.Phase == MatchPhase.Finished) return;
+            // Only paid block attacks may modify the new terrain. Legacy paint-only
+            // feedback (including rescue) cannot mint free blocks or area credit.
+            if (Blocks != null) return;
             var sequence = ++PaintSequence;
             uint entropy = InkShapeAtlas.Hash(sequence ^ (uint)surface.SurfaceId * 0x9e3779b9u ^ team);
             uint appearance = shapeSeed ?? InkShapeAtlas.Pack((int)(entropy % InkShapeAtlas.Count), entropy);
@@ -87,8 +98,11 @@ namespace Splatoon.Prototype
             if (!IsServer || !CanStartRound || (PrototypeApp.Current != null && PrototypeApp.Current.IsWeaponDebugRoom)) return;
             ClearTestBots();
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Playing;
-            s.StartsAt = NetworkManager.ServerTime.Time; s.EndsAt = s.StartsAt + GameplayConfig.Mode.MatchSeconds;
-            s.PinkArea = s.BlueArea = 0; State.Value = s;
+            // Project from an actual completed NGO frame to this synchronous start boundary.
+            // StartRound stays immediate once eligible, and these deadlines never re-anchor later.
+            s.StartsAt = _serverClockAnchorTime + System.Math.Max(0, Time.realtimeSinceStartupAsDouble - _serverClockAnchorUnscaled);
+            s.EndsAt = s.StartsAt + GameplayConfig.Mode.MatchSeconds;
+            s.PinkArea = s.BlueArea = s.TotalArea = 0; s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = 0; s.TerrainFrozenAt = 0; State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round);
             CombatStats.Reset(s.Round);
             foreach (var p in Players) if (p != null && p.IsSpawned) {p.ResetSpecialCharge(); p.Respawn();}
@@ -99,7 +113,8 @@ namespace Splatoon.Prototype
         {
             if (!IsServer || State.Value.Phase != MatchPhase.Finished) return;
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Practice;
-            s.StartsAt = s.EndsAt = 0; s.PinkArea = s.BlueArea = 0;
+            s.StartsAt = s.EndsAt = s.TerrainFrozenAt = 0; s.PinkArea = s.BlueArea = s.TotalArea = 0;
+            s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = 0;
             State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round); CombatStats.Reset(s.Round);
             foreach (var player in Players) if (player != null && player.IsSpawned) {player.ResetSpecialCharge(); player.Respawn();}
@@ -108,6 +123,7 @@ namespace Splatoon.Prototype
         }
         private void ResetPaint(uint round)
         {
+            BlockAttackService.Clear(); Blocks?.Clear(round); ResetBlockSync();
             _bubbleInteractions.Clear();
             _paintRound = round; PaintSequence = _appliedSequence = 0; Projectiles.Clear();
             ClearSubWeapons(); ClearSpecialWeapons();
@@ -119,27 +135,47 @@ namespace Splatoon.Prototype
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer && round > _paintRound) ResetPaint(round); }
         private double _simulationTime;
         private double _networkFrameOffset;
+        private double _serverClockAnchorTime, _serverClockAnchorUnscaled;
         public void NetworkUpdate(NetworkUpdateStage stage)
         {
-            if (stage != NetworkUpdateStage.EarlyUpdate || !IsSpawned || !IsServer) return;
+            if (!IsSpawned || !IsServer || NetworkManager == null || !NetworkManager.IsListening) return;
+            if (stage == NetworkUpdateStage.Update)
+            {
+                // This stage follows NGO PreUpdate, and is outside Unity's FixedUpdate time context.
+                // Newly created NGO instances can still be zero here if this frame's PreUpdate passed.
+                double actualServerTime = NetworkManager.NetworkTimeSystem.ServerTime;
+                if (actualServerTime <= 0) return;
+                _serverClockAnchorTime = actualServerTime;
+                _serverClockAnchorUnscaled = Time.unscaledTimeAsDouble;
+                ServerClockReady = true; return;
+            }
+            if (stage != NetworkUpdateStage.EarlyUpdate) return;
             // NGO advances its unscaled clock in PreUpdate, after Unity's fixed
             // steps. Anchor this frame's fixed timestamps to that same clock.
             // Unity caps catch-up at maximumDeltaTime; accumulating dt forever
             // therefore loses time on a hitch and makes new shots look expired.
-            double frameServerTime = NetworkManager.ServerTime.Time + Time.unscaledDeltaTime;
+            double frameServerTime = NetworkManager.NetworkTimeSystem.ServerTime + Time.unscaledDeltaTime;
             _networkFrameOffset = frameServerTime - Time.timeAsDouble;
         }
         private void FixedUpdate()
         {
-            if (!IsSpawned || !IsServer) return;
+            if (!IsSpawned) return;
+            if (!IsServer)
+            {
+                var remote = State.Value;
+                double terrainTime = remote.Phase == MatchPhase.Finished ? remote.TerrainFrozenAt : NetworkManager.ServerTime.Time;
+                Blocks?.Tick(false, terrainTime, 1f / GameplayConfig.Global.SimulationRate); return;
+            }
             _simulationTime = System.Math.Max(_simulationTime, Time.fixedTimeAsDouble + _networkFrameOffset);
             double now = _simulationTime; var s = State.Value;
+            Blocks?.Tick(true, now, 1f / GameplayConfig.Global.SimulationRate);
+            ReadBlockScore(ref s);
 #if UNITY_EDITOR
             PrototypeApp.Current?.ApplyDebugWeaponChanges();
             PrototypeApp.Current?.ApplyDebugSubWeaponChanges();
 #endif
             if (PrototypeRules.HasEnded(s.Phase, now, s.EndsAt))
-            { s.Phase = MatchPhase.Finished; Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[LAN] Round finished pink={Arena.PinkArea} blue={Arena.BlueArea} hash={Arena.OwnershipHash()}"); }
+            { s.Phase = MatchPhase.Finished; s.TerrainFrozenAt = now; Blocks?.FinishRound(s.TerrainFrozenAt); ReadBlockScore(ref s); Projectiles.Clear(); ClearShotsClientRpc(s.Round); Debug.Log($"[BLOCK] Round finished pink={s.PinkBlockCount} blue={s.BlueBlockCount} revision={s.TerrainRevision} frozenAt={s.TerrainFrozenAt:F6}"); }
             State.Value = s; Players.RemoveAll(p => p == null || !p.IsSpawned);
             if (s.Phase == MatchPhase.Finished) {ClearSubWeapons(); ClearSpecialWeapons();}
             foreach (var p in Players) p.Simulate(1f / GameplayConfig.Global.SimulationRate, now, s.Phase);
@@ -162,7 +198,9 @@ namespace Splatoon.Prototype
             if (Projectiles.Impacts.Count > 0) { ImpactsClientRpc(new NetworkBatch<InkImpact>(Projectiles.Impacts)); Projectiles.Impacts.Clear(); }
             if (Projectiles.Explosions.Count > 0) { ExplosionsClientRpc(new NetworkBatch<InkExplosionEvent>(Projectiles.Explosions)); Projectiles.Explosions.Clear(); }
             if (_pending.Count > 0) { PaintClientRpc(new NetworkBatch<PaintStamp>(_pending)); _pending.Clear(); }
-            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count; s.PinkArea = Arena.PinkArea; s.BlueArea = Arena.BlueArea; State.Value = s;
+            s.Tick = (uint)NetworkManager.ServerTime.Tick; s.PlayerCount = Players.Count;
+            if (s.Phase != MatchPhase.Finished) ReadBlockScore(ref s);
+            State.Value = s;
         }
         [ClientRpc] private void ShotsClientRpc(NetworkBatch<InkShot> shots)
         { try { if (State.Value.Phase != MatchPhase.Finished) for (int i = 0; i < shots.Count; i++) { var shot = shots[i]; if (shot.Round == _paintRound) InkPresentation.Current?.Spawn(shot); } } finally { shots.Dispose(); } }
@@ -208,7 +246,10 @@ namespace Splatoon.Prototype
         }
         public override void OnNetworkDespawn()
         {
+            BlockAttackService.Clear(); ResetBlockSync(); DetachBlockPublications(); Blocks?.Clear(0);
             this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
+            this.UnregisterNetworkUpdate(NetworkUpdateStage.Update);
+            ServerClockReady = false; _serverClockAnchorTime = _serverClockAnchorUnscaled = 0;
             if (NetworkManager.NetworkTickSystem != null) NetworkManager.NetworkTickSystem.Tick -= ServerTick;
             _captureGeneration++; Projectiles.Clear(); CombatStats.Clear(); Players.Clear(); _transfers.Clear(); _waiting.Clear(); _buffered.Clear();
             ClearSubWeapons(); ClearSpecialWeapons();

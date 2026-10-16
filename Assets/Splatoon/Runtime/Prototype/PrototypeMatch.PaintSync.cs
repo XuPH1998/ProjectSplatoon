@@ -58,6 +58,7 @@ namespace Splatoon.Prototype
         private void Update()
         {
             if (!IsSpawned) return;
+            if (Blocks != null) { UpdateBlockSync(); return; }
             if (!IsServer)
             {
                 bool gap = _buffered.Count > 0 && InitialSyncComplete && !_buffered.ContainsKey(_appliedSequence + 1);
@@ -75,6 +76,7 @@ namespace Splatoon.Prototype
         }
         private void LateUpdate()
         {
+            if (IsSpawned && Blocks != null) { SendBlockTransfers(); return; }
             // NGO's network tick has already queued this frame's live state, shots, hits and paint.
             if (!IsSpawned || !IsServer || _transfers.Count == 0) return;
             double now = Time.unscaledTimeAsDouble;

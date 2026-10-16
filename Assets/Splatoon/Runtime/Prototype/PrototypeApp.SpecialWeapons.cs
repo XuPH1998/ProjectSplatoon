@@ -49,7 +49,7 @@ namespace Splatoon.Prototype
             UiInk(new Rect(card.xMax-24,card.y-10,34,34),HeroAccent);
             bool active=SpecialWeaponSimulation.Active(s);
             string status=active?(c.Type==SpecialWeaponType.Reefslider?(s.SpecialRideStage<0?"等待落地":s.SpecialRideStage==0?"准备冲刺":s.SpecialRideStage==2?"制动蓄爆":s.SpecialPhase==SpecialPhase.Recovering?"爆炸后恢复":"冲刺中 · 左键提前制动"):c.Type==SpecialWeaponType.WaveBreaker||c.Type==SpecialWeaponType.InkStorm?"持握中 · 左键瞄准投出":$"剩余 {s.SpecialRemaining} 次 · {System.Math.Max(0,s.SpecialUntil-s.SimulatedAt):0.0}s"):
-                s.SpecialPoints+1e-7>=cost?"已就绪 · 按 Q 启动":$"{s.SpecialPoints:0.0} / {cost:0} · 涂地充能";
+                s.SpecialPoints+1e-7>=cost?"已就绪 · 按 Q 启动":$"{s.SpecialPoints:0.0} / {cost:0} · 建造／拆敌充能";
             if(!s.IsAlive)status=s.IsBubble?"倒地中 · 能量保留":"死亡 · 能量已减半";
             else if(!active&&s.SpecialChargeLockedUntil>s.SimulatedAt)status=$"充能锁定 {s.SpecialChargeLockedUntil-s.SimulatedAt:0.0}s";
             else if(s.SpecialPoints+1e-7<cost&&s.SpecialFailure==SpecialFailure.NotReady)status=$"能量不足 · {s.SpecialPoints:0.0} / {cost:0}";

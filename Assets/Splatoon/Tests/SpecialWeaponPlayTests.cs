@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -34,6 +35,7 @@ namespace Splatoon.Tests
             Assert.That(Physics.Raycast(point+Vector3.up*3,Vector3.down,out var floor,6,PlayerMotorSimulation.WorldMask),Is.True);
             point=floor.point;var surface=floor.collider.GetComponentInParent<PaintSurface>();Assert.That(surface.Scores,Is.True);
             double now=match.NetworkManager.ServerTime.Time;
+            using var blocks=new BlockDefaultContractFixture(match);
             void Place(PrototypePlayer player,Vector3 at,byte team)
             {
                 var s=player.Snapshot.Value;s.Position=at;s.Health=s.Ink=100;s.Team=team;s.LifeState=PlayerLifeState.Alive;s.ProtectedUntil=0;s.SpecialPhase=SpecialPhase.Charging;s.SpecialChargeLockedUntil=0;s.SpecialPoints=0;s.Swimming=s.CompactBody=false;s.PaperPose=PaperPose.None;s.Grounded=true;s.AirHumanOffset=0;
@@ -44,26 +46,48 @@ namespace Splatoon.Tests
                 var s=host.Snapshot.Value;s.SpecialWeaponId=id;s.SpecialAction++;s.SpecialAttack++;host.Snapshot.Value=s;
                 var e=match.SpecialWeapons.Spawn(host,s,now,match.State.Value.Round);e.State.Position=e.State.P0=e.State.P1=e.State.P2=at;e.State.Velocity=Vector3.down*2;return e;
             }
-            void Step(int frames){for(int i=0;i<frames;i++){now+=1d/60;match.SpecialWeapons.Step(now,1f/60,match.Players);Physics.SyncTransforms();}}
+            void Step(int frames){for(int i=0;i<frames;i++){now+=1d/60;blocks.Now=now;match.SpecialWeapons.Step(now,1f/60,match.Players);Physics.SyncTransforms();}}
             GameObject roof=null;
             try
             {
                 Place(host,point+Vector3.back*8,1);Place(enemy,point+Vector3.right*20,2);arena.ClearPaint();
-                var credit=new PaintCredit(host.PlayerId,1,match.State.Value.Round,host.Snapshot.Value.HeroRevision,PaintAttackKind.Main);
-                match.Paint(surface,point,Vector3.up,2,1,1,1,shapeSeed:123,credit:credit);
-                double first=host.Snapshot.Value.SpecialPoints,area=arena.LastPaintGainedArea;
-                Assert.That(first,Is.GreaterThan(0),"Player ID zero receives authoritative coverage");
-                Assert.That(first,Is.EqualTo(PaintCredit.Points(area)).Within(.00001));
-                match.Paint(surface,point,Vector3.up,2,1,1,1,shapeSeed:123,credit:credit);
-                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(PaintCredit.Points(arena.PinkArea)).Within(.00001),"Only new fringe cells count on overlapping brushes");
-                for(int i=0;i<12;i++)match.Paint(surface,point,Vector3.up,2,1,1,1,shapeSeed:123,credit:credit);
-                double saturated=host.Snapshot.Value.SpecialPoints;
-                match.Paint(surface,point,Vector3.up,2,1,1,1,shapeSeed:123,credit:credit);
-                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(saturated),"Saturated friendly overlap gives zero credit");
-                match.Paint(surface,point,Vector3.up,2,2,1,1,shapeSeed:123);
-                double beforeReclaim=arena.PinkArea;
-                match.Paint(surface,point,Vector3.up,2,1,1,1,shapeSeed:123,credit:credit);
-                Assert.That(host.Snapshot.Value.SpecialPoints-saturated,Is.EqualTo(PaintCredit.Points(arena.PinkArea-beforeReclaim)).Within(.00001),"Enemy reclaim credits actual new cells");
+                yield return blocks.Seed(blocks.Empty());
+                var shot=blocks.PaidShot(host,1,800001,point+Vector3.up*1.2f,Vector3.down*32);
+                var attack=shot.BlockAttack; uint legacyBefore=match.PaintSequence;
+                double initialPoints=host.Snapshot.Value.SpecialPoints;
+                var shots=new InkProjectileService(); shots.SpawnForMeasurement(shot); shots.Simulate(shot.Born+.3);
+                Assert.That(attack.Added,Is.Zero,"Accepted contact has no unpublished credit");
+                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(initialPoints));
+                yield return blocks.Publish(()=>attack.Added>0);
+                double first=host.Snapshot.Value.SpecialPoints;
+                Assert.That(first-initialPoints,Is.EqualTo(Math.Min(BlockGameplaySettings.MainSpecialPointCap,
+                    (attack.Added+attack.RemovedEnemy)/(double)BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001));
+                Assert.That(first,Is.GreaterThan(initialPoints),"Player ID zero receives published block income");
+                var afterAttack=blocks.Capture(); int accepted=attack.Added+attack.RemovedEnemy;
+                shots.Clear(); shots.SpawnForMeasurement(shot); shots.Simulate(shot.Born+.3);
+                yield return blocks.Publish();
+                Assert.That(attack.Added+attack.RemovedEnemy,Is.EqualTo(accepted),"Replaying one paid shot cannot mint a second result");
+                blocks.Unchanged(afterAttack,"Identical attack replay preserves the published snapshot");
+                Assert.That(host.Snapshot.Value.SpecialPoints,Is.EqualTo(first));
+                var second=blocks.PaidShot(host,1,800002,point+Vector3.up*1.5f,Vector3.down*32);
+                shots.Clear(); shots.SpawnForMeasurement(second); shots.Simulate(second.Born+.3);
+                yield return blocks.Publish(()=>second.BlockAttack.Added>0);
+                Assert.That(host.Snapshot.Value.SpecialPoints-first,Is.EqualTo(Math.Min(BlockGameplaySettings.MainSpecialPointCap,
+                    second.BlockAttack.Added/(double)BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001),"A new payment may continue friendly three-dimensional stacking");
+                var enemySeed=blocks.Empty();var center=BlockWorld.CellAt(point+Vector3.up*.05f);
+                for(int x=-3;x<=3;x++)for(int z=-3;z<=3;z++)
+                    Assert.That(enemySeed.Set(center+new Vector3Int(x,0,z),BlockCell.Create(2,true)),Is.True);
+                yield return blocks.Seed(enemySeed);
+                double beforeRemoval=host.Snapshot.Value.SpecialPoints;int enemyCount=blocks.Terrain.BlueCount;
+                var direct=blocks.PaidShot(host,1,800003,point+Vector3.up*1.2f,Vector3.down*32);
+                shots.Clear(); shots.SpawnForMeasurement(direct); shots.Simulate(direct.Born+.3);
+                yield return blocks.Publish(()=>direct.BlockAttack.RemovedEnemy>0);
+                Assert.That(direct.BlockAttack.RemovedEnemy,Is.EqualTo(GameplayConfig.GetWeapon(1).BlockEnemyRemoval));
+                Assert.That(enemyCount-blocks.Terrain.BlueCount,Is.EqualTo(direct.BlockAttack.RemovedEnemy));
+                Assert.That(host.Snapshot.Value.SpecialPoints-beforeRemoval,Is.EqualTo(Math.Min(BlockGameplaySettings.MainSpecialPointCap,
+                    (direct.BlockAttack.Added+direct.BlockAttack.RemovedEnemy)/(double)BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001),"Only actual published construction/enemy removal counts");
+                Assert.That(match.PaintSequence,Is.EqualTo(legacyBefore));
+                shots.Clear();yield return blocks.Seed(blocks.Empty());now=blocks.Now;
                 // A normal respawn retains a deployment lock and both selections.
                 var saved=host.Snapshot.Value;saved.SpecialChargeLockedUntil=now+8;saved.SubWeaponId=13;saved.SpecialWeaponId=4;host.Snapshot.Value=saved;host.Respawn();
                 Assert.That(host.Snapshot.Value.SpecialChargeLockedUntil,Is.EqualTo(saved.SpecialChargeLockedUntil));Assert.That(host.Snapshot.Value.SubWeaponId,Is.EqualTo(13));
@@ -108,15 +132,16 @@ namespace Splatoon.Tests
                 // All five authority entities can be reconstructed solely from a snapshot.
                 match.SpecialWeapons.Clear();Place(host,point+Vector3.back*8,1);Place(enemy,point+Vector3.right*20,2);
                 for(int id=1;id<=5;id++)Spawn(id,point+new Vector3((id-3)*2,2,0));
+                yield return blocks.Publish();now=blocks.Now;
                 match.SpecialPresentation.Apply(match.SpecialWeapons.Capture(),match.SpecialWeapons.Watermark);
                 Assert.That(match.SpecialPresentation.Count,Is.EqualTo(5));
                 Camera.main.transform.position=point+new Vector3(8,8,-14);Camera.main.transform.LookAt(point+Vector3.up*2);app.CaptureMouse(true);
                 yield return null;Directory.CreateDirectory("Reports/SpecialWeapons");ScreenCapture.CaptureScreenshot("Reports/SpecialWeapons/five-specials.png");yield return null;
                 match.SpecialWeapons.Clear();match.SpecialPresentation.Clear();var hs=host.Snapshot.Value;hs.SpecialPhase=SpecialPhase.Charging;host.Snapshot.Value=hs;
                 app.OpenHeroSelection(HeroSelectionOrigin.Warmup);yield return null;ScreenCapture.CaptureScreenshot("Reports/SpecialWeapons/loadout.png");yield return null;
-                File.WriteAllText("Reports/SpecialWeapons/host-scenarios.txt","PASS: real floor seam/repaint credit, owner zero, respawn loadout/lock, sonar damage/mark/jump/destruction, tornado warning/damage, moving rain lock, five snapshot presentations.");
+                File.WriteAllText("Reports/SpecialWeapons/host-scenarios.txt","PASS: paid real floor block credit, shared result cap and replay isolation, friendly stacking, actual enemy removal, owner zero, respawn loadout/lock, sonar damage/mark/jump/destruction, tornado warning/damage, moving rain lock, five snapshot presentations.");
             }
-            finally{if(roof!=null)UnityEngine.Object.Destroy(roof);match.SpecialWeapons.Clear();match.enabled=true;foreach(var player in match.Players)player.enabled=true;}
+            finally{blocks.Dispose();if(roof!=null)UnityEngine.Object.Destroy(roof);match.SpecialWeapons.Clear();match.enabled=true;foreach(var player in match.Players)player.enabled=true;}
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
         [UnityTearDown]public IEnumerator Cleanup()

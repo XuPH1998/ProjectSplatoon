@@ -50,7 +50,7 @@ namespace Splatoon.Tests
                 var copy = ScriptableObject.CreateInstance<WeaponConfigAsset>();
                 try
                 {
-                    var current = JSONNode.Parse(row.ToString());
+                    var current = row.Clone();
                     WeaponTimeFixture.ToSeconds(current);
                     JsonUtility.FromJsonOverwrite(current.ToString(), copy);
                     // SimpleJSON's textual formatter rounds doubles. Preserve the
@@ -82,8 +82,8 @@ namespace Splatoon.Tests
             for (int i = 0; i < baseline["Weapon"].Count; i++)
                 rows[i]["trailRadiusMin"] = rows[i]["trailRadiusMax"] = baseline["Weapon"][i]["trailRadius"];
         });
-        static readonly string[] CharacterNames={"","RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl","MachineGunGirl"};
-        static readonly string[] WeaponNames={"","RifleGirlRifle","DualPistols","Shotgun","Pistol","RocketLauncher","MachineGun"};
+        static readonly string[] CharacterNames={"","RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl","MachineGunGirl","BubbleGirl","SplooshGirl","BubbleShotgunGirl"};
+        static readonly string[] WeaponNames={"","RifleGirlRifle","DualPistols","Shotgun","Pistol","RocketLauncher","MachineGun","BubbleGun","SplooshGun","BubbleShotgun"};
         static GameObject Character(int id)=>AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{CharacterNames[id]}/Prefabs/{CharacterNames[id]}Visual.prefab");
         static GameObject Weapon(int id)=>AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Weapons/{CharacterNames[id]}/Prefabs/{WeaponNames[id]}.prefab");
         [SetUp] public void Setup() => Load();
@@ -99,7 +99,7 @@ namespace Splatoon.Tests
         [Test] public void MachineGunAdditionPreservesTheExistingFiveHeroes()
         {
             var before = JSONNode.Parse(File.ReadAllText("Tools/ValidationData/MachineGun/Heroes-Before.json"));
-            var actual = CombinedHeroes();
+            var actual = HistoricalHeroFixture.MachineGunRows();
             Assert.That(actual.Count, Is.EqualTo(before.Count + 1));
             for (int i = 0; i < before.Count; i++)
                 foreach (var field in before[i].Keys)
@@ -110,7 +110,7 @@ namespace Splatoon.Tests
         }
         [Test] public void SelectedHeroDrivesMovementRecoveryAndDisplay()
         {
-            Load(rows => { rows[1]["maxHealth"] = 80; rows[1]["maxInk"] = 60; rows[1]["moveSpeed"] = 2; rows[1]["recoverInk"] = 4; });
+            HistoricalHeroFixture.LoadMachineGunEra(rows => { rows[1]["maxHealth"] = 80; rows[1]["maxInk"] = 60; rows[1]["moveSpeed"] = 2; rows[1]["recoverInk"] = 4; });
             var floor = Root("Hero movement floor"); floor.layer = 0; floor.transform.position = new Vector3(500, -.5f, 500);
             floor.AddComponent<BoxCollider>().size = new Vector3(100, 1, 100);
             float Distance(int id)
@@ -174,14 +174,14 @@ namespace Splatoon.Tests
         static Assets Catalog()
         {
             var result=new Assets();
-            for(int id=1;id<=6;id++){result.Values["Character/"+CharacterNames[id]]=Character(id);result.Values["Weapon/"+WeaponNames[id]]=Weapon(id);}
+            for(int id=1;id<CharacterNames.Length;id++){result.Values["Character/"+CharacterNames[id]]=Character(id);result.Values["Weapon/"+WeaponNames[id]]=Weapon(id);}
             return result;
         }
         [Test] public void CatalogDeduplicatesAddressesAndRecoversAfterFailureAndCancellation()
         {
             var source = Catalog();
             using var service = new HeroContentService(source);
-            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            var rows = HistoricalHeroFixture.OriginalSixHeroes();
             source.Fails = "Weapon/RifleGirlRifle";
             Assert.Throws<InvalidOperationException>(() => service.InitializeAsync(rows, default).GetAwaiter().GetResult());
             Assert.That(service.AssetCount, Is.Zero); Assert.That(service.All, Is.Empty);
@@ -203,7 +203,7 @@ namespace Splatoon.Tests
         {
             var source = Catalog();
             using var service = new HeroContentService(source);
-            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            var rows = HistoricalHeroFixture.OriginalSixHeroes();
             source.Fails = rows[2].PortraitAddress;
             Assert.Throws<InvalidOperationException>(() => service.InitializeAsync(rows, default).GetAwaiter().GetResult());
             Assert.That(service.PortraitCount, Is.Zero); Assert.That(service.AssetCount, Is.Zero); Assert.That(service.All, Is.Empty);
@@ -225,7 +225,7 @@ namespace Splatoon.Tests
             var assets=Catalog();
             assets.Values["Test/AlternateCharacter"]=otherCharacter;assets.Values["Test/AlternateWeapon"]=otherWeapon;
             using var service=new HeroContentService(assets);
-            service.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList,default).GetAwaiter().GetResult();
+            service.InitializeAsync(HistoricalHeroFixture.OriginalSixHeroes(),default).GetAwaiter().GetResult();
             Assert.That(assets.Loads,Is.EqualTo(12));
             using var binder=new HeroViewBinder(Root("Alternate address hero").transform);
             binder.Apply(service.Get(1));var first=binder.Visual;
@@ -233,6 +233,51 @@ namespace Splatoon.Tests
             Assert.That(binder.View.BoundWeaponPrefab,Is.SameAs(otherWeapon));
             Assert.That(binder.Content.CharacterPrefab,Is.SameAs(otherCharacter));
             Assert.That(binder.View.Weapon.parent,Is.SameAs(binder.View.WeaponSocket));
+        }
+        [Test] public void CurrentNineHeroDefaultsRetainCompleteSchemaAndValidatedSnapshots()
+        {
+            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            CollectionAssert.AreEqual(Enumerable.Range(1, 9), rows.Select(hero => hero.Id));
+            GameplayConfig.Validate();
+        }
+        [TestCase(7)] [TestCase(8)] [TestCase(9)]
+        public void CurrentNineHeroCatalogLoadsAndRecoversAcrossNewHeroFailures(int hero)
+        {
+            var source = Catalog();
+            using var service = new HeroContentService(source);
+            var rows = LubanConfigService.Current.Tables.TbHero.DataList;
+            source.Fails = GameplayConfig.GetWeapon(hero).WeaponPrefabAddress;
+            Assert.Throws<InvalidOperationException>(() => service.InitializeAsync(rows, default).GetAwaiter().GetResult());
+            Assert.That(service.AssetCount, Is.Zero); Assert.That(service.PortraitCount, Is.Zero); Assert.That(service.All, Is.Empty);
+            source.Fails = null; source.Loads = source.PortraitLoads = 0;
+            service.InitializeAsync(rows, default).GetAwaiter().GetResult();
+            Assert.That(source.Loads, Is.EqualTo(18)); Assert.That(service.AssetCount, Is.EqualTo(18));
+            Assert.That(source.PortraitLoads, Is.EqualTo(9)); Assert.That(service.PortraitCount, Is.EqualTo(9));
+            CollectionAssert.AreEqual(Enumerable.Range(1, 9), service.All.Select(content => content.Config.Id));
+            foreach (var row in rows)
+            {
+                var content = service.Get(row.Id);
+                Assert.That(content.CharacterPrefab, Is.SameAs(Character(row.Id)));
+                Assert.That(content.WeaponPrefab, Is.SameAs(Weapon(row.Id)));
+                Assert.That(content.Portrait, Is.Not.Null);
+            }
+            var portrait = service.Get(hero).Portrait;
+            var candidate = service.PrepareWeaponAsync(hero, GameplayConfig.GetWeapon(hero), default).GetAwaiter().GetResult();
+            Assert.That(candidate.Portrait, Is.SameAs(portrait));
+            Assert.That(source.Loads, Is.EqualTo(18)); Assert.That(source.PortraitLoads, Is.EqualTo(9));
+            source.Fails = GameplayConfig.GetHero(hero).PortraitAddress;
+            Assert.Throws<InvalidOperationException>(() => service.InitializeAsync(rows, default).GetAwaiter().GetResult());
+            Assert.That(service.AssetCount, Is.Zero); Assert.That(service.PortraitCount, Is.Zero); Assert.That(service.All, Is.Empty);
+            source.Fails = null;
+            service.InitializeAsync(rows, default).GetAwaiter().GetResult();
+            using var cancel = new CancellationTokenSource(); cancel.Cancel();
+            Assert.Throws<OperationCanceledException>(() => service.InitializeAsync(rows, cancel.Token).GetAwaiter().GetResult());
+            Assert.That(service.AssetCount, Is.Zero); Assert.That(service.PortraitCount, Is.Zero); Assert.That(service.All, Is.Empty);
+            source.Loads = source.PortraitLoads = 0;
+            service.InitializeAsync(rows, default).GetAwaiter().GetResult();
+            Assert.That(source.Loads, Is.EqualTo(18)); Assert.That(service.AssetCount, Is.EqualTo(18));
+            Assert.That(source.PortraitLoads, Is.EqualTo(9)); Assert.That(service.PortraitCount, Is.EqualTo(9));
+            Assert.That(service.Get(hero).Config.Id, Is.EqualTo(hero));
         }
         [Test] public void SignatureIncludesNonDefaultHeroPresentationAndIsIndependentOfEnumerationOrder()
         {

@@ -83,7 +83,12 @@ namespace Splatoon.Painting
         private MeshRenderer _renderer;
         private MaterialPropertyBlock _properties;
         public bool GraphicsEnabled => SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
-        private void OnEnable() { if (Application.isPlaying && GraphicsEnabled) Initialize(); }
+        private void OnEnable()
+        {
+            // The production arena builds blocks. Legacy painting tests/tools may
+            // initialize textures lazily through Apply without arena startup cost.
+            if (Application.isPlaying && GraphicsEnabled && GetComponentInParent<PrototypeArena>() == null) Initialize();
+        }
         private RenderTexture Texture(string suffix, GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm)
         {
             // Set Linear at construction as well: otherwise descriptor copies can retain the

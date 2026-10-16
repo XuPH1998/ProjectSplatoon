@@ -1,6 +1,6 @@
 # 工程配置中文说明
 
-运行时界面及项目菜单采用中文。稳定键、资源地址、程序集名及 Unity/第三方序列化字段保留英文，以下为当前工程配置的中文索引。
+运行时界面及项目菜单采用中文。稳定键、资源地址、程序集名及 Unity/第三方序列化字段保留英文，以下为当前工程配置的中文索引。默认积木玩法、Luban 与武器资产调参、首版交付要求见 [积木玩法说明](BlockGameplay.md)，Player 性能条件见 [积木地形基准](BlockTerrainBenchmark.md)。
 
 | 配置入口 / 字段 | 中文含义与当前值 |
 | --- | --- |
@@ -25,7 +25,7 @@
 | `Packages/manifest.json` | 包依赖清单；保留包的正式名称与版本标识 |
 | `*.asmdef` | 程序集依赖清单，标识需与代码引用一致 |
 
-角色 Inspector 中 `Visual` 是外观根节点、`CharacterView` 绑定动画和 IK、`SimulationMuzzle` 是不受表现后坐力影响的逻辑枪口。场地 `Unpaintable` 为不计分地面投影，`SpawnPoints` 为正式出生点；各模型上的 `PaintSurface` 管理稳定表面 ID、是否计分和绘制纹理尺寸。技能定义字段同样添加中文说明，技能事件下拉项显示中文。
+角色 Inspector 中 `Visual` 是外观根节点、`CharacterView` 绑定动画和 IK、`SimulationMuzzle` 是不受表现后坐力影响的逻辑枪口。`SpawnPoints` 为正式出生点；场地 `Unpaintable` 与各模型的 `PaintSurface` 保留旧地图/涂色配置和稳定标识。默认积木玩法的存活数量、阵营、动态碰撞及计分由 `BlockWorld` 统一发布，不按旧表面涂色面积计分。技能定义字段同样添加中文说明，技能事件下拉项显示中文。
 
 ## 输入与渲染资产
 

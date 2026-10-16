@@ -18,7 +18,33 @@ namespace Splatoon.Tests
         {
             var baseline = SimpleJSON.JSONNode.Parse(System.IO.File.ReadAllText("Tools/ValidationData/SplooshGirlSummer/tbhero-before.json"));
             var current = SimpleJSON.JSONNode.Parse(System.IO.File.ReadAllText("Assets/GameResource/Bootstrap/Config/Luban/tbhero.json"));
-            Assert.That(current.Children.Single(r=>r["id"].AsInt==hero).ToString(), Is.EqualTo(baseline.Children.Single(r=>r["id"].AsInt==hero).ToString()));
+            var expected = baseline.Children.Single(r => r["id"].AsInt == hero);
+            var actual = current.Children.Single(r => r["id"].AsInt == hero);
+            // Preserve the complete model-era row, with only separately documented later changes.
+            // Docs/SpecialWeaponParameters.md: ordinary 0.21 HP/frame, swimming 1.75 HP/frame.
+            expected["healthRecoverRate"] = 0.21 * 60;
+            expected["swimHealthRecoverRate"] = 1.75 * 60;
+            // Docs/SubWeapons.md: the new independent catalog keeps these original default choices.
+            string[] defaults = { "SuctionBomb", "SplashWall", "PointSensor", "BurstBomb", "Torpedo", "Autobomb", "Sprinkler" };
+            string type = defaults[hero - 1];
+            expected["subWeaponConfigPath"] = "Assets/GameResource/SubWeapons/" + type + "/" + type + ".asset";
+            if (hero == 6)
+            {
+                var replacement = SimpleJSON.JSONNode.Parse(System.IO.File.ReadAllText("Tools/ValidationData/MainWeaponReplacement/Tuning.json"))["heroChanges"]["6"];
+                CollectionAssert.AreEquivalent(new[] { "weaponTypeName", "moveSpeed", "swimSpeed" }, replacement.Linq.Select(pair => pair.Key).ToArray(), "Approved replacement overlay has only these fields");
+                foreach (string key in replacement.Keys)
+                {
+                    if (replacement[key].IsNumber)
+                    {
+                        Assert.That(actual[key].AsDouble, Is.EqualTo(replacement[key].AsDouble).Within(.00001), "Approved replacement value: " + key);
+                        expected[key] = actual[key]; // Normalize only the independently checked float serialization.
+                    }
+                    else expected[key] = replacement[key];
+                }
+            }
+            CollectionAssert.AreEquivalent(expected.Linq.Select(pair => pair.Key).ToArray(), actual.Linq.Select(pair => pair.Key).ToArray(), "Complete model row schema plus the explicit new catalog field");
+            foreach (string key in expected.Keys)
+                Assert.That(actual[key].ToString(), Is.EqualTo(expected[key].ToString()), "Frozen model migration field or approved overlay: " + key);
         }
         [Test]
         public void SummerModelHasIndependentAvatarAndCompleteSkinBinding()

@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -45,7 +46,7 @@ namespace Splatoon.Tests
         static IEnumerator Scenario()
         {
             Directory.CreateDirectory(Output);
-            yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Bootstrap all seven heroes");
+            yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Bootstrap all nine heroes");
             ushort port; using (var socket = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0))) port = (ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
             var app = PrototypeApp.Current; yield return app.Connect(true, "127.0.0.1", port).ToCoroutine();
             yield return Wait(() => PrototypePlayer.Local != null && InkPresentation.Current != null && Camera.main != null, "Host and presentation");
@@ -53,7 +54,7 @@ namespace Splatoon.Tests
             host.RequestHeroChange(7, HeroSelectionOrigin.Warmup);
             yield return Wait(() => !host.HeroChangePending && host.Snapshot.Value.HeroId == 7, "Select BubbleGirl");
             yield return null; app.CaptureMouse(false);
-            Assert.That(app.Heroes.All.Count(), Is.EqualTo(7)); Assert.That(host.CharacterView.Profile.SingleShot, Is.True);
+            Assert.That(app.Heroes.All.Count(), Is.EqualTo(9)); Assert.That(host.CharacterView.Profile.SingleShot, Is.True);
             Assert.That(host.SwimBody.Profile, Is.Not.Null); Assert.That(host.CharacterView.Weapon.parent, Is.SameAs(host.CharacterView.WeaponSocket));
             var camera = new GameObject("Bubble validation camera").AddComponent<Camera>();
             camera.CopyFrom(Camera.main); camera.enabled = false; camera.aspect = 1; camera.fieldOfView = 40;
@@ -62,6 +63,7 @@ namespace Splatoon.Tests
             var botPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             var victim = match.AddTestBot(botPrefab); Assert.That(victim, Is.Not.Null);
             match.enabled = false; host.enabled = victim.enabled = false;
+            using var blocks = new BlockDefaultContractFixture(match);
             var target = victim.Snapshot.Value; target.Team = (byte)(host.Snapshot.Value.Team == 1 ? 2 : 1);
             target.Health = 100; target.ProtectedUntil = 0; target.Position = new Vector3(1000, 1, 1000); target.Swimming = false;
             victim.Snapshot.Value = target; victim.transform.position = target.Position; Physics.SyncTransforms();
@@ -84,22 +86,44 @@ namespace Splatoon.Tests
             }
             Assert.That(health, Is.EqualTo(new[] { 68f, 36f, 4f, 0f }));
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
-            var surface = UnityEngine.Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)
-                .First(s => s.GetComponent<Collider>() != null && s.GetComponent<Collider>().bounds.size.y > 2 && s.GetComponent<Collider>().bounds.size.x > 5 && s.GetComponent<Collider>().bounds.size.z < 1);
+            var surface = match.Arena.GetComponentsInChildren<PaintSurface>(true)
+                .Single(s => s.name == "CenterCover_1_-1");
             var wall = surface.GetComponent<Collider>(); var center = wall.bounds.center;
             Assert.That(wall.Raycast(new Ray(center + Vector3.forward * 3, Vector3.back), out var hit, 5), Is.True);
             var paint = new List<PaintStamp>(); match.Projectiles.PaintObserved = paint.Add;
-            var bounceShot = MakeShot(host, match, ++id, hit.point + hit.normal * .9f, -hit.normal * 14);
+            yield return blocks.Seed(blocks.Empty());
+            double beforePoints = host.Snapshot.Value.SpecialPoints;
+            var bounceShot = blocks.PaidShot(host, 7, ++id, hit.point + hit.normal * .9f, -hit.normal * 14);
+            var payment = bounceShot.BlockAttack; float paidInk = host.Snapshot.Value.Ink;
             match.Projectiles.SpawnForMeasurement(bounceShot); match.Projectiles.Simulate(bounceShot.Born + .1);
-            Assert.That(match.Projectiles.Bounces.Count, Is.EqualTo(1)); Assert.That(paint.Count, Is.GreaterThan(0));
+            Assert.That(match.Projectiles.Bounces.Count, Is.EqualTo(1)); Assert.That(paint, Is.Empty, "Default blocks do not emit obsolete ink stamps");
+            Assert.That(payment.Added, Is.Zero, "Flight contact cannot credit unpublished terrain");
+            var contactTime = match.Projectiles.Bounces[0].Time;
+            yield return blocks.Publish(() => payment.Added > 0);
+            Assert.That(payment.Added, Is.LessThanOrEqualTo(payment.BuildLimit));
+            Assert.That(payment.BuildLimit, Is.LessThanOrEqualTo(BlockGameplaySettings.MainAttackMaxBlocks));
+            Assert.That(blocks.Terrain.PinkCount + blocks.Terrain.BlueCount, Is.EqualTo(payment.Added));
+            Assert.That(host.Snapshot.Value.SpecialPoints - beforePoints,
+                Is.EqualTo(Math.Min(BlockGameplaySettings.MainSpecialPointCap, payment.Added / (double)BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001));
+            Assert.That(host.Snapshot.Value.Ink, Is.EqualTo(paidInk), "Publication does not charge the volley again");
+            Assert.That(Physics.Raycast(hit.point + hit.normal * .6f, -hit.normal, out var publishedHit, .8f,
+                1 << BlockTerrain.TerrainLayer), Is.True, "Actual wall blocks have published collision");
+            Assert.That(blocks.Terrain.TryContact(publishedHit, out var publishedContact), Is.True);
+            Assert.That(publishedContact.Owner, Is.EqualTo(host.Snapshot.Value.Team));
             Assert.That(match.Projectiles.ActiveCount, Is.EqualTo(1), "Wall contact must not terminate the bubble");
             uint paintSequence = match.PaintSequence;
-            yield return Wait(() => InkPresentation.Current.GetComponentsInChildren<Renderer>().Any(r => r.gameObject.name.StartsWith("BubbleInk") && r.gameObject.activeInHierarchy), "Host RPC creates pooled bubble mesh", 3);
+            blocks.FlushEvents();
+            yield return Wait(() => InkPresentation.Current.BlockCubeCount > 0, "Host RPC creates actual cube instances", 3);
+            var terrainBeforeVisual = blocks.Capture();
             camera.transform.position = hit.point + hit.normal * 5 + Vector3.up * .6f + Vector3.right * 2;
             camera.transform.LookAt(hit.point + hit.normal * .5f);
-            InkPresentation.Current.UpdateFlights(match.Projectiles.Bounces.Count > 0 ? match.Projectiles.Bounces[0].Time + .14 : bounceShot.Born + .19, camera);
+            InkPresentation.Current.UpdateFlights(contactTime + .14, camera);
+            Assert.That(BlockDefaultContractFixture.Flights(InkPresentation.Current).TryPosition(bounceShot.Round, bounceShot.Id,
+                contactTime + .14 - BubbleFlightPresentation.RenderDelay, out var shownBounce), Is.True);
+            Assert.That(Vector3.Dot(shownBounce - hit.point, hit.normal), Is.GreaterThan(0), "Actual rendered cube follows the reflected side of the wall");
             Capture(camera, "wall-bounce");
-            Assert.That(match.PaintSequence, Is.EqualTo(paintSequence), "Rendering cannot add gameplay ink");
+            Assert.That(match.PaintSequence, Is.EqualTo(paintSequence), "Rendering cannot add legacy paint");
+            blocks.Unchanged(terrainBeforeVisual, "Block RPC/rendering cannot modify published gameplay terrain");
             match.Projectiles.Clear(); InkPresentation.Current.Clear(); match.Projectiles.PaintObserved = null;
             // Four simultaneous mesh bodies with a shared physical timeline, in a clear view above the arena.
             InkPresentation.Current.ClearFlights(); // This isolated capture intentionally starts before now.
@@ -114,12 +138,14 @@ namespace Splatoon.Tests
             camera.transform.position = origin + new Vector3(5, 1, 2.87f); camera.transform.LookAt(origin + Vector3.forward * 2.87f + Vector3.down * .45f);
             Capture(camera, "four-bubbles");
             Assert.That(InkPresentation.Current.ActiveShots, Is.EqualTo(4));
-            var before = match.Arena.OwnershipHash();
-            InkPresentation.Current.Clear(); Assert.That(match.Arena.OwnershipHash(), Is.EqualTo(before));
+            Assert.That(InkPresentation.Current.BlockCubeCount, Is.EqualTo(4));
+            var before = blocks.Capture(); double pointsBeforeClear = host.Snapshot.Value.SpecialPoints;
+            InkPresentation.Current.Clear(); blocks.Unchanged(before, "Clearing cube visuals preserves exact gameplay terrain");
+            Assert.That(host.Snapshot.Value.SpecialPoints, Is.EqualTo(pointsBeforeClear));
             UnityEngine.Object.Destroy(camera.gameObject);
             match.enabled = true; host.enabled = true;
-            yield return app.Leave().ToCoroutine();
-            File.WriteAllText(Output + "/result.txt", "PASS: seven heroes load; BubbleGirl select, weapon grip and paper binding; authoritative projectile damage 70/40/10/0; wall reflection retains bubble and paints the real map; Host RPC mesh; four-body GPU captures; visual clearing preserves paint. Independent remote machines and target-device performance are separate acceptance gates.");
+            blocks.Dispose(); yield return app.Leave().ToCoroutine();
+            File.WriteAllText(Output + "/result.txt", "PASS: nine heroes load; BubbleGirl select, weapon grip and paper binding; authoritative projectile damage 70/40/10/0; wall reflection retains its paid finite volley and publishes real wall blocks; Host RPC cube instances; four-body GPU captures; visual clearing preserves the exact block snapshot and income. Independent remote machines and target-device performance are separate acceptance gates.");
         }
         static InkShot MakeShot(PrototypePlayer host, PrototypeMatch match, uint id, Vector3 origin, Vector3 velocity)
         {

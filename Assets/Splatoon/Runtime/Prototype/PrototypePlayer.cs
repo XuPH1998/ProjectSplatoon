@@ -11,7 +11,7 @@ namespace Splatoon.Prototype
     public enum BubbleOutcome : byte { None, Rescued, Executed, Expired }
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 36;
+        public const uint ProtocolVersion = 37;
         public Vector3 SpecialImpulseVelocity;
         public float SpecialImpulseRetention, SpecialImpulseRemaining;
         public int SubWeaponId, SpecialWeaponId;
@@ -87,6 +87,9 @@ namespace Splatoon.Prototype
         public bool Swimming, Grounded, Firing, InputTimedOut;
         public double InputExpiredAt;
         public uint AcknowledgedInput, SimulationTick, ConsumedJump, ConsumedFire, ShotSequence, RequiredPaintSequence;
+        public Vector3Int SupportCell;
+        public uint SupportTerrainRevision;
+        public Vector3 GroundNormal;
         public uint FireBurstSequence, BurstShotIndex;
         public ulong ShotActionId => ((ulong)FireBurstSequence << 32) | BurstShotIndex;
         public double SimulatedAt, WeaponReadyAt, NextShotAt, InkRecoverAt, LastDamageAt, WallSeenAt, MantleStartedAt;
@@ -145,6 +148,7 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref TurnStartedAt); s.SerializeValue(ref FireStartedAt); s.SerializeValue(ref DiedAt); s.SerializeValue(ref DeathDirection);
             s.SerializeValue(ref AcknowledgedInput); s.SerializeValue(ref SimulationTick); s.SerializeValue(ref ConsumedJump); s.SerializeValue(ref ConsumedFire); s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref RequiredPaintSequence);
+            s.SerializeValue(ref SupportCell); s.SerializeValue(ref SupportTerrainRevision); s.SerializeValue(ref GroundNormal);
             s.SerializeValue(ref FireBurstSequence); s.SerializeValue(ref BurstShotIndex);
             s.SerializeValue(ref SimulatedAt); s.SerializeValue(ref WeaponReadyAt); s.SerializeValue(ref NextShotAt); s.SerializeValue(ref InkRecoverAt); s.SerializeValue(ref LastDamageAt);
             s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread); s.SerializeValue(ref CurrentVerticalSpread);

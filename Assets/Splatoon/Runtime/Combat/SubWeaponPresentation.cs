@@ -300,7 +300,9 @@ namespace Splatoon.Combat
             SubWeaponVisual.Ring(line,e.Position,Mathf.Max(.15f,e.Radius),e.Normal.sqrMagnitude>.001f?e.Normal:Vector3.up);
             _effects.Add(new EffectView{Object=line.gameObject,Line=line,Born=now,Until=now+Math.Max(.08,c.Visuals.impactLifetime),Color=color});
             var source=e.Kind==SubEffectKind.Destroyed?c.Visuals.endPrefab:c.Visuals.impactPrefab;
-            var fx=Pool.Rent(source,transform);
+            bool blocks = Splatoon.Blocks.BlockTerrain.Current != null;
+            if (blocks) InkPresentation.Current?.BlockBurst(e.Position,e.Normal,e.Team,e.Sequence,now,e.Radius);
+            var fx=blocks?null:Pool.Rent(source,transform);
             if(fx!=null)
             {
                 fx.transform.position=e.Position;fx.transform.localScale=Vector3.one*Mathf.Max(.4f,e.Radius*.35f);
@@ -319,6 +321,11 @@ namespace Splatoon.Combat
         }
         void EndEffect(View v,double now)
         {
+            if (Splatoon.Blocks.BlockTerrain.Current != null)
+            {
+                InkPresentation.Current?.BlockBurst(v.State.Position,v.State.Normal,v.State.Team,v.State.Id,now,.5f);
+                return;
+            }
             var go=Pool.Rent(v.Visual.Config.Visuals.endPrefab,transform);if(go==null)return;
             go.transform.position=v.State.Position;
             foreach(var ps in go.GetComponentsInChildren<ParticleSystem>()){var main=ps.main;main.startColor=PrototypeArena.TeamColor(v.State.Team);ps.Play(true);}

@@ -17,6 +17,8 @@ namespace Splatoon.Prototype
     {
         static HeroUiSmoke _instance;
         readonly List<string> _checks = new();
+        readonly List<string> _mouseDiagnostics = new();
+        bool _firstClickLogged;
         string _output;
         bool _manual;
         ushort _editorPort;
@@ -28,6 +30,10 @@ namespace Splatoon.Prototype
         Vector2 _mouseScale;
         UnityEditor.EditorWindow _view;
         object _sizeGroup; int _temporarySize = -1, _previousSize;
+        object _zoomArea;
+        Vector2 _previousZoomScale, _previousZoomTranslation;
+        float _previousDefaultScale;
+        bool _zoomSaved;
         const System.Reflection.BindingFlags Flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public;
         void ConfigureView()
         {
@@ -54,15 +60,44 @@ namespace Splatoon.Prototype
                 var size=Activator.CreateInstance(sizeType,Flags,null,new[]{Enum.Parse(kind,"FixedResolution"),(object)width,height,"Hero UI temporary"},null);
                 _sizeGroup.GetType().GetMethod("AddCustomSize",Flags).Invoke(_sizeGroup,new[]{size});selected=count;_temporarySize=count;
             }
-            var selector=_view.GetType().GetProperty("selectedSizeIndex",Flags);_previousSize=(int)selector.GetValue(_view);selector.SetValue(_view,selected);
+            var selector=_view.GetType().GetProperty("selectedSizeIndex",Flags);_previousSize=(int)selector.GetValue(_view);
+            _zoomArea = _view.GetType().GetField("m_ZoomArea", Flags).GetValue(_view);
+            _previousZoomScale = (Vector2)_zoomArea.GetType().GetProperty("scale", Flags).GetValue(_zoomArea);
+            _previousZoomTranslation = (Vector2)_zoomArea.GetType().GetProperty("translation", Flags).GetValue(_zoomArea);
+            _previousDefaultScale = (float)_view.GetType().GetField("m_defaultScale", Flags).GetValue(_view);
+            _zoomSaved = true;
+            selector.SetValue(_view,selected);
+            // A size-index assignment does not refresh GameView zoom. Fit the whole target
+            // before measuring real mouse events so every production UI control is visible.
+            _view.GetType().GetMethod("UpdateZoomAreaAndParent", Flags).Invoke(_view, null);
+            float fitScale = (float)_view.GetType().GetProperty("minScale", Flags).GetValue(_view);
+            SetZoomTransform(Vector2.zero, Vector2.one * fitScale);
+            _view.GetType().GetMethod("EnforceZoomAreaConstraints", Flags).Invoke(_view, null);
+            _view.Repaint();
             UnityEditor.EditorApplication.update+=EditorTick;
         }
         void EditorTick(){if(UnityEditor.EditorApplication.isPaused)UnityEditor.EditorApplication.isPaused=false;_view?.Repaint();}
         void RestoreView()
         {
             UnityEditor.EditorApplication.update-=EditorTick;
-            if(_view!=null)_view.GetType().GetProperty("selectedSizeIndex",Flags).SetValue(_view,_previousSize);
+            if(_view!=null)
+            {
+                _view.GetType().GetProperty("selectedSizeIndex",Flags).SetValue(_view,_previousSize);
+                _view.GetType().GetMethod("UpdateZoomAreaAndParent", Flags).Invoke(_view, null);
+                if (_zoomSaved)
+                {
+                    SetZoomTransform(_previousZoomTranslation, _previousZoomScale);
+                    _view.GetType().GetField("m_defaultScale", Flags).SetValue(_view, _previousDefaultScale);
+                    _zoomSaved = false;
+                }
+                _view.Repaint();
+            }
             if(_temporarySize>=0)_sizeGroup.GetType().GetMethod("RemoveCustomSize",Flags).Invoke(_sizeGroup,new object[]{_temporarySize});
+        }
+        void SetZoomTransform(Vector2 translation, Vector2 scale)
+        {
+            _zoomArea.GetType().GetMethod("SetTransform", Flags, null, new[] { typeof(Vector2), typeof(Vector2) }, null)
+                .Invoke(_zoomArea, new object[] { translation, scale });
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Initialize()
         {
@@ -73,6 +108,13 @@ namespace Splatoon.Prototype
         void OnGUI()
         {
             if(Event.current.rawType==EventType.MouseDown)_mouseSample=new Vector2(Event.current.mousePosition.x * 1280 / Screen.width, Event.current.mousePosition.y * 720 / Screen.height);
+            if (Event.current.rawType == EventType.MouseDown && !_mouseCalibrated)
+                MouseDiagnostic($"probe observed requested={_requestedWidth}x{_requestedHeight} screen={Screen.width}x{Screen.height} rawType={Event.current.rawType} type={Event.current.type} button={Event.current.button} eventPosition={Event.current.mousePosition.ToString("F6")} normalizedSample={_mouseSample.Value.ToString("F6")} matrix={GUI.matrix.ToString("F6").Replace("\r", "").Replace("\n", "|")}");
+        }
+        void MouseDiagnostic(string detail)
+        {
+            _mouseDiagnostics.Add(detail);
+            Debug.Log("[HERO-UI-MOUSE] " + detail);
         }
         async UniTask Click(float x,float y)
         {
@@ -85,6 +127,7 @@ namespace Splatoon.Prototype
                 // dimensions alone do not describe SendEvent's mapping to game pixels.
                 var first = target.position + Vector2.Scale(new Vector2(400, 240), scale);
                 var second = target.position + Vector2.Scale(new Vector2(800, 480), scale);
+                MouseDiagnostic($"calibration begin requested={_requestedWidth}x{_requestedHeight} screen={Screen.width}x{Screen.height} target={target.ToString("F6")} view={_view.position.ToString("F6")} pixelsPerPoint={UnityEditor.EditorGUIUtility.pixelsPerPoint:F6} first={first.ToString("F6")} second={second.ToString("F6")}");
                 var firstSample = await ProbeMouse(first);
                 var secondSample = await ProbeMouse(second);
                 var delta = secondSample - firstSample;
@@ -92,8 +135,14 @@ namespace Splatoon.Prototype
                 _mouseScale = new Vector2((second.x - first.x) / delta.x, (second.y - first.y) / delta.y);
                 _mouseOffset = first - Vector2.Scale(firstSample, _mouseScale);
                 _mouseCalibrated = true;
+                MouseDiagnostic($"calibration result requested={_requestedWidth}x{_requestedHeight} screen={Screen.width}x{Screen.height} target={target.ToString("F6")} first={first.ToString("F6")} second={second.ToString("F6")} firstSample={firstSample.ToString("F6")} secondSample={secondSample.ToString("F6")} delta={delta.ToString("F6")} mouseScale={_mouseScale.ToString("F6")} mouseOffset={_mouseOffset.ToString("F6")}");
             }
             var position=Vector2.Scale(new Vector2(x,y),_mouseScale)+_mouseOffset;
+            if (!_firstClickLogged)
+            {
+                _firstClickLogged = true;
+                MouseDiagnostic($"first click injection requested={_requestedWidth}x{_requestedHeight} screen={Screen.width}x{Screen.height} logical=({x:F6},{y:F6}) viewPosition={position.ToString("F6")} target={target.ToString("F6")} mouseScale={_mouseScale.ToString("F6")} mouseOffset={_mouseOffset.ToString("F6")}");
+            }
             var down=new UniTaskCompletionSource();
             UnityEditor.EditorApplication.delayCall+=()=>{_view.SendEvent(new Event{type=EventType.MouseDown,button=0,mousePosition=position});down.TrySetResult();};
             await down.Task.Timeout(TimeSpan.FromSeconds(4));
@@ -309,7 +358,7 @@ namespace Splatoon.Prototype
                 await app.Leave();Check(app.Overlay==GameplayOverlay.Game,"leave clears overlays");
             }
             catch(Exception e){error=e.ToString();Debug.LogError("[HERO-UI] "+error);}
-            File.WriteAllText(_output,"passed="+(error==null)+"\n"+string.Join("\n",_checks)+"\nerror="+error);
+            File.WriteAllText(_output,"passed="+(error==null)+"\n"+string.Join("\n",_checks)+"\nmouseDiagnostics:\n"+string.Join("\n",_mouseDiagnostics)+"\nerror="+error);
             if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom)await PrototypeApp.Current.Leave();
             RestoreView();return error;
         }

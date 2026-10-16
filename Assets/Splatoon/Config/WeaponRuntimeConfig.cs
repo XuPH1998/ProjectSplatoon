@@ -6,6 +6,9 @@ namespace Splatoon.Config
     /// <summary>Immutable values shared by simulation and the shots emitted under this configuration.</summary>
     public sealed class WeaponRuntimeConfig
     {
+        public readonly bool BlockBuild;
+        public readonly int BlockEnemyRemoval;
+        public readonly float BlockRemovalRadius;
         public readonly WeaponAimMode AimMode;
         public readonly double ShotGuideSeconds;
         public readonly bool InheritForwardMovement, AngularSpread, DetailedPaint;
@@ -206,6 +209,9 @@ namespace Splatoon.Config
         public readonly float ShooterWallShockRadius;
         public WeaponRuntimeConfig(WeaponConfigAsset source)
         {
+            BlockBuild = source.blockBuild;
+            BlockEnemyRemoval = source.blockEnemyRemoval;
+            BlockRemovalRadius = source.blockRemovalRadius;
             AimMode = source.aimMode;
             ShotGuideSeconds = source.shotGuideSeconds;
             InheritForwardMovement = source.inheritForwardMovement;
@@ -410,6 +416,7 @@ namespace Splatoon.Config
         }
         public void Write(BinaryWriter writer)
         {
+            writer.Write(BlockBuild); writer.Write(BlockEnemyRemoval); writer.Write(BlockRemovalRadius);
             writer.Write((int)AimMode);
             writer.Write(ShotGuideSeconds);
             writer.Write(InheritForwardMovement);

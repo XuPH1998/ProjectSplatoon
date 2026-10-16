@@ -1,0 +1,18 @@
+{
+  "verifiedUtc": "2026-10-16T12:36:28.936517+00:00",
+  "packagePath": "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37",
+  "formalBuildPassed": true,
+  "editorPreferencesRestored": true,
+  "inputCount": 2944,
+  "buildInputsUnchanged": true,
+  "fileCount": 359,
+  "totalBytes": 322179584,
+  "completeInventoryVerified": true,
+  "inventorySha256": "28418b58f78afbafc95493fe92058631997cd7b9b73d05816910ecd87b910e56",
+  "buildRecordSha256": "a40d8a2c2700c71789c43fbdb45f5b843abb9f1bf34b1e211828bf1bc85ce104",
+  "exeSha256": "c7e054edf3cd28b374e29139288d6d3cb0077a75f677ebd0dea5ebdd91c53607",
+  "runtimeDllSha256": "69353fdffa928efe25245be9d1e600baa9e521a5db3354a4b545df83f6de6c3c",
+  "previousWindows36InventoryUnchanged": true,
+  "actualPackagedVisualCheckPending": true,
+  "goalAcceptancePassed": false
+}

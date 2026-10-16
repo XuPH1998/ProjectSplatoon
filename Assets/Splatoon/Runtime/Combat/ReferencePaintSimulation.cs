@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Splatoon.Config;
 using Splatoon.Painting;
 using UnityEngine;
+using Splatoon.Blocks;
 
 namespace Splatoon.Combat
 {
@@ -32,7 +33,7 @@ namespace Splatoon.Combat
 
         void QueuePaintDrop(InkShot shot, Vector3 origin, double born, float radius, uint ordinal, Vector3 direction, float depth, Vector3 velocity = default, float gravity = -1, bool scaleDepthWithFall = false)
         {
-            if (radius <= 0) return;
+            if (radius <= 0 || BlockAttackService.Active && BlockAttackService.ExplosiveMain(shot.Configuration)) return;
             _paintDrops.Add(new PaintDrop { Shot = shot, Origin = origin, Born = born, SimulatedUntil = born,
                 Radius = radius, Ordinal = ordinal, Direction = direction, Depth = depth, Velocity = velocity, Gravity = gravity >= 0 ? gravity : shot.Configuration.PaintDropGravity, ScaleDepthWithFall = scaleDepthWithFall });
         }
@@ -69,11 +70,21 @@ namespace Splatoon.Combat
                     var to = d.Origin + d.Velocity * (float)b + Vector3.down * (float)(.5 * d.Gravity * b * b);
                     // Non-paintable geometry blocks the drop too. No teleport through floors.
                     Vector3 rayDirection = w.UsesDetailedPaint ? (to - from).normalized : Vector3.down;
+                    if (BlockAttackService.Active && _aim.ClosestCast(from - rayDirection * .001f, rayDirection, Vector3.Distance(from, to) + .001f,
+                        0, d.Shot.Shooter, out var blockHit, false))
+                    {
+                        bool blockContact = BlockAttackService.Contact(blockHit, out var contact);
+                        if (blockHit.BlockQuery.IsKnown && !blockContact) { done = true; break; }
+                        var receiver = blockHit.Collider.GetComponentInParent<PaintSurface>();
+                        if (receiver != null || blockContact && contact.Owner == d.Shot.Team)
+                            ApplyPaint(receiver, d.Shot, blockHit.Point, blockHit.Normal, d.Radius, w, d.Ordinal, false);
+                        done = true; break;
+                    }
                     if (Physics.Raycast(from - rayDirection * .001f, rayDirection, out var hit, Vector3.Distance(from, to) + .001f,
                         PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore))
                     {
                         var surface = hit.collider.GetComponentInParent<PaintSurface>();
-                        if (surface != null) ApplyPaint(surface, d.Shot, hit.point, hit.normal, d.Radius, w, d.Ordinal, false, null, d.Direction,
+                        if (surface != null || BlockAttackService.Contact(hit.collider, hit.point, hit.normal, out var block) && block.Owner == d.Shot.Team) ApplyPaint(surface, d.Shot, hit.point, hit.normal, d.Radius, w, d.Ordinal, false, null, d.Direction,
                             d.ScaleDepthWithFall ? ShooterDetailSimulation.SplashDepth(Mathf.Max(0, d.Origin.y - hit.point.y), w) : d.Depth);
                         done = true; break;
                     }

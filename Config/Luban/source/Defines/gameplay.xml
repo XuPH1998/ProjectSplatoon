@@ -70,6 +70,14 @@
   </bean>
   <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id" />
   <bean name="GlobalConfig" comment="Global 强类型配置">
+    <var name="blockBlocksPerMaterial" type="int" comment="积木每点材料建造格数" />
+    <var name="blockMainAttackMaxBlocks" type="int" comment="积木主攻击整组建造上限" />
+    <var name="blockAuxiliaryBudgetFraction" type="float" comment="积木沿途与脚下预算比例" />
+    <var name="blockFriendlyBlastRadiusFraction" type="float" comment="积木己方爆破半径比例" />
+    <var name="blockBlocksPerSpecialPoint" type="int" comment="积木每点大招充能所需变化格数" />
+    <var name="blockMainSpecialPointCap" type="int" comment="积木主攻击整组充能上限" />
+    <var name="blockSubSpecialPointCap" type="int" comment="积木副武器整次使用充能上限" />
+    <var name="blockNetworkBytesPerSecond" type="int" comment="积木全房间传输预算字节每秒" />
     <var name="id" type="int" comment="唯一全局记录 ID，固定 1" />
     <var name="defaultModeId" type="int" comment="默认房间模式 ID" />
     <var name="networkTickRate" type="int" comment="网络频率（Hz）" />

@@ -228,11 +228,12 @@ namespace Splatoon.Tests
         [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)] [TestCase(5)] [TestCase(6)] [TestCase(7)]
         public void ExistingHeroesKeepFrozenPaintOwnership(int hero)
         {
+            using var frozen = new FrozenPaintReplayFixture("SplooshLegacy", hero);
             var baseline=SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/SplooshGirl/LegacyPaintBaseline.json"))["records"];
             foreach(var row in baseline.Children.Where(r=>r["weapon"].AsInt==hero))
             {
                 var current=WeaponReferenceMeasurements.Capture(hero,row["charge"].AsFloat,row["scenario"].Value,60,row["shotCount"].AsInt,null,fullActions:true,
-                    options:new WeaponReferenceMeasurements.Options{Seed=(uint)row["sampleSeed"].AsLong});
+                    options:frozen.Options((uint)row["sampleSeed"].AsLong));
                 Assert.That(current.gridHash,Is.EqualTo(row["gridHash"].Value),hero+" "+row["scenario"].Value);
                 Assert.That(current.paintStamps,Is.EqualTo(row["paintStamps"].AsInt));
                 Assert.That(current.emittedProjectiles,Is.EqualTo(row["emittedProjectiles"].AsInt));

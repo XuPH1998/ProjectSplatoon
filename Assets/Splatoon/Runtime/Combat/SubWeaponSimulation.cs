@@ -66,8 +66,8 @@ namespace Splatoon.Combat
         }
         public static string FailureText(SubWeaponFailure failure) => failure switch
         {
-            SubWeaponFailure.NoInk => "墨水不足", SubWeaponFailure.Busy => "动作恢复中",
-            SubWeaponFailure.NoStandingRoom => "空间不足", SubWeaponFailure.InvalidGround => "需要可涂墨的非敌方地面",
+            SubWeaponFailure.NoInk => "材料不足", SubWeaponFailure.Busy => "动作恢复中",
+            SubWeaponFailure.NoStandingRoom => "空间不足", SubWeaponFailure.InvalidGround => "需要稳定己方积木或非敌方地面",
             SubWeaponFailure.ActiveLimit => "等待当前鱼雷结束", _ => "按住 E 瞄准，松开使用"
         };
     }

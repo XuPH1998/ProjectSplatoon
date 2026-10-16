@@ -12,6 +12,7 @@ namespace Splatoon.Combat
     {
         public const int Columns = 64, Rows = 128;
         NativeArray<byte> _mask = new(Columns * Rows, Allocator.Persistent);
+        NativeArray<ulong> _occupiedRows = new(Rows, Allocator.Persistent);
         NativeArray<Vector3> _bounds = new(2, Allocator.Persistent);
         public Bounds CaptureBounds { get { var b=new Bounds(); b.SetMinMax(_bounds[0],_bounds[1]); return b; } }
         readonly List<Vector3> _vertices = new();
@@ -19,15 +20,16 @@ namespace Splatoon.Combat
         readonly Dictionary<(int, int), int> _previous = new(), _next = new();
         public readonly List<Rect> Rects = new();
         static readonly int[] Faces = {0,2,1,0,3,2,4,5,6,4,6,7,0,1,5,0,5,4,3,7,6,3,6,2,0,4,7,0,7,3,1,2,6,1,6,5};
-        public void Dispose() { _mask.Dispose(); _bounds.Dispose(); }
+        public void Dispose() { _mask.Dispose(); _occupiedRows.Dispose(); _bounds.Dispose(); }
         public void Clear()
         {
             for (int i=0;i<_mask.Length;i++) _mask[i]=0;
+            for (int i=0;i<_occupiedRows.Length;i++) _occupiedRows[i]=0;
             _bounds[0]=Vector3.one*float.PositiveInfinity; _bounds[1]=Vector3.one*float.NegativeInfinity;
         }
         public void Add(NativeArray<Vector3> vertices, NativeArray<int> indices, Matrix4x4 toCapture, Vector3 center, float height)
         {
-            new Projection { Vertices=vertices, Indices=indices, Mask=_mask, Bounds=_bounds, ToCapture=toCapture, Center=center, Height=height }.Run();
+            new Projection { Vertices=vertices, Indices=indices, Mask=_mask, OccupiedRows=_occupiedRows, Bounds=_bounds, ToCapture=toCapture, Center=center, Height=height }.Run();
         }
         [BurstCompile(CompileSynchronously = true, FloatMode = FloatMode.Strict)]
         struct Projection : IJob
@@ -35,6 +37,7 @@ namespace Splatoon.Combat
             public NativeArray<Vector3> Vertices;
             [ReadOnly] public NativeArray<int> Indices;
             public NativeArray<byte> Mask;
+            public NativeArray<ulong> OccupiedRows;
             public NativeArray<Vector3> Bounds;
             public Matrix4x4 ToCapture;
             public Vector3 Center;
@@ -58,12 +61,21 @@ namespace Splatoon.Combat
                     int x1=Mathf.Min(Columns-1,Mathf.FloorToInt(Mathf.Max(a.x,Mathf.Max(b.x,c.x))-.5f));
                     int y0=Mathf.Max(0,Mathf.CeilToInt(Mathf.Min(a.y,Mathf.Min(b.y,c.y))-.5f));
                     int y1=Mathf.Min(Rows-1,Mathf.FloorToInt(Mathf.Max(a.y,Mathf.Max(b.y,c.y))-.5f));
-                    for (int y=y0;y<=y1;y++) for (int x=x0;x<=x1;x++)
+                    if (x0>x1 || y0>y1) continue;
+                    // Already covered pixels are a union: a later triangle cannot change them.
+                    // Columns is 64; the nonempty clipped span gives a shift in [0,63].
+                    ulong span=(ulong.MaxValue>>(Columns-(x1-x0+1)))<<x0;
+                    for (int y=y0;y<=y1;y++)
                     {
-                        if (Mask[y*Columns+x]!=0) continue;
-                        Vector2 p=new(x+.5f,y+.5f);
-                        float u=Cross(b-a,p-a)/area, v=Cross(p-a,c-a)/area;
-                        if (u>=0 && v>=0 && u+v<=1) Mask[y*Columns+x]=1;
+                        if ((OccupiedRows[y]&span)==span) continue;
+                        for (int x=x0;x<=x1;x++)
+                        {
+                            if (Mask[y*Columns+x]!=0) continue;
+                            Vector2 p=new(x+.5f,y+.5f);
+                            float u=Cross(b-a,p-a)/area, v=Cross(p-a,c-a)/area;
+                            if (u>=0 && v>=0 && u+v<=1)
+                            { Mask[y*Columns+x]=1; OccupiedRows[y]|=1UL<<x; }
+                        }
                     }
                 }
             }

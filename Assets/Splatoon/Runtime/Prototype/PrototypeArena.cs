@@ -121,8 +121,11 @@ namespace Splatoon.Prototype
         public static bool TryGetGround(Vector3 feet, out byte owner, float slopeLimit = 45)
         {
             owner = 255;
+            var blocks = Splatoon.Blocks.BlockTerrain.Current;
+            if (blocks != null && blocks.TryGetGround(feet, out var block, slopeLimit)) { owner = block.Owner; return true; }
             if (!Physics.Raycast(feet + Vector3.up * .08f, Vector3.down, out var hit, .16f,
                 PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < Mathf.Cos(slopeLimit * Mathf.Deg2Rad)) return false;
+            if (blocks != null) { owner = 0; return true; }
             var surface = hit.collider.GetComponentInParent<PaintSurface>();
             owner = surface != null && surface.QueryRegion(hit.point, hit.normal, out var contact) ? contact.Owner : (byte)0;
             return true;

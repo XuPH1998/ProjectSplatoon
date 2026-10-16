@@ -21,17 +21,47 @@ namespace Splatoon.Combat
             if (sphere != null) Object.DestroyImmediate(sphere.gameObject);
             sphere = null;
         }
-        public static Vector3 Point(Collider collider, Vector3 origin, float radius)
+        // An opt-in subweapon query recovers a sphere intersecting the back of an
+        // actual concave mesh face. Bounds choose ray origins only; they never
+        // become collision geometry, and points farther than the radius fail.
+        public static bool TryMeshSurfaceContact(MeshCollider mesh, Vector3 origin, float radius,
+            Vector3 preferredNormal, out Vector3 point, out Vector3 normal)
         {
-            if (collider is not MeshCollider mesh || mesh.convex) return collider.ClosestPoint(origin);
+            float reach = mesh.bounds.size.magnitude + radius + 1;
+            float nearest = float.PositiveInfinity;
+            Vector3 foundPoint = default, foundNormal = default;
+            for (int probe = 0; probe < 7; probe++)
+            {
+                Vector3 direction = probe == 0 ? -preferredNormal : probe == 1 ? Vector3.right :
+                    probe == 2 ? Vector3.left : probe == 3 ? Vector3.up : probe == 4 ? Vector3.down :
+                    probe == 5 ? Vector3.forward : Vector3.back;
+                if (direction.sqrMagnitude < .000001f) continue;
+                direction.Normalize();
+                if (!mesh.Raycast(new Ray(origin + direction * reach, -direction), out var hit, reach + radius)) continue;
+                float squared = (origin - hit.point).sqrMagnitude;
+                if (squared > radius * radius + .00000001f || squared >= nearest) continue;
+                nearest = squared; foundPoint = hit.point; foundNormal = hit.normal;
+            }
+            point = foundPoint; normal = foundNormal;
+            return nearest < float.PositiveInfinity;
+        }
+        public static bool TryContact(Collider collider, Vector3 origin, float radius, out Vector3 point, out Vector3 normal)
+        {
+            point = normal = default;
             if (sphere == null)
             {
                 var root = new GameObject("Floating bubble overlap query") { hideFlags = HideFlags.HideAndDontSave };
+                // Keep a live PhysX shape, as in RescueBubbleMotor. TpsAimSolver.Valid
+                // excludes this non-player trigger from its own overlap candidates.
                 sphere = root.AddComponent<SphereCollider>(); sphere.isTrigger = true;
             }
-            sphere.radius = radius;
-            return Physics.ComputePenetration(sphere, origin, Quaternion.identity, collider, collider.transform.position,
-                collider.transform.rotation, out var normal, out float depth) ? origin + normal * (depth - radius) : origin;
+            sphere.radius = Mathf.Max(.0001f, radius);
+            if (!Physics.ComputePenetration(sphere, origin, Quaternion.identity, collider, collider.transform.position,
+                collider.transform.rotation, out normal, out float depth)) return false;
+            point = origin + normal * (depth - sphere.radius);
+            // ComputePenetration tests front-faced mesh surfaces, not the bounds or
+            // the solid volume of a closed concave mesh. Voxels provide that volume.
+            return (point - origin).sqrMagnitude <= radius * radius + .00000001f;
         }
     }
 
@@ -57,6 +87,7 @@ namespace Splatoon.Combat
 
         void ResolveFloatingBubble(InkShot shot, TpsCollision contact, double age)
         {
+            if (contact.BlockQuery.IsKnown && !contact.BlockQuery.TryResolveCurrent(out _)) return;
             TpsAimSolver.UnembedFloatingContact(ref contact, shot.Configuration.CollisionRadius);
             var victim = contact.Collider.GetComponentInParent<PrototypePlayer>();
             contact.Collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(shot.Configuration,age));

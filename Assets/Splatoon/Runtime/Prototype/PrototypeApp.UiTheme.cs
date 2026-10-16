@@ -30,7 +30,23 @@ namespace Splatoon.Prototype
         static readonly Color UiWarning = new(1, .78f, .30f);
         Texture2D _uiRound, _uiFade, _uiInk, _uiIcons, _uiWing, _uiProgress;
         int _uiProgressPercent=-1;
+        Color[] _uiProgressPixels;
+        float[] _uiProgressAngles, _uiProgressAlpha;
         GUIStyle _uiText, _uiMuted, _uiStrong, _uiClock, _uiScore, _uiRingValue, _uiCenter, _uiOption, _uiWrap;
+        void UiTextStyles()
+        {
+            if (_uiText != null) return;
+            HeroStyles();
+            _uiText = HeroStyle(16, Color.white);
+            _uiMuted = HeroStyle(14, HeroMuted);
+            _uiStrong = HeroStyle(21, Color.white, true);
+            _uiClock = HeroStyle(38, Color.white, true); _uiClock.fontStyle=FontStyle.BoldAndItalic; _uiClock.alignment = TextAnchor.MiddleCenter;
+            _uiScore=HeroStyle(27,Color.white,true);_uiScore.fontStyle=FontStyle.BoldAndItalic;_uiScore.alignment=TextAnchor.MiddleCenter;
+            _uiRingValue=HeroStyle(21,Color.white,true);_uiRingValue.alignment=TextAnchor.MiddleCenter;
+            _uiCenter = HeroStyle(14, Color.white, true); _uiCenter.alignment = TextAnchor.MiddleCenter;
+            _uiOption=HeroStyle(14,Color.white,true);
+            _uiWrap = HeroStyle(14, Color.white); _uiWrap.wordWrap = true;
+        }
         void UiStyles()
         {
             if (_uiRound != null) return;
@@ -67,15 +83,7 @@ namespace Splatoon.Prototype
                 ink[y*128+x]=new Color(1,1,1,alpha);
             }
             _uiInk.SetPixels(ink);_uiInk.Apply(false,true);
-            _uiText = HeroStyle(16, Color.white);
-            _uiMuted = HeroStyle(14, HeroMuted);
-            _uiStrong = HeroStyle(21, Color.white, true);
-            _uiClock = HeroStyle(38, Color.white, true); _uiClock.fontStyle=FontStyle.BoldAndItalic; _uiClock.alignment = TextAnchor.MiddleCenter;
-            _uiScore=HeroStyle(27,Color.white,true);_uiScore.fontStyle=FontStyle.BoldAndItalic;_uiScore.alignment=TextAnchor.MiddleCenter;
-            _uiRingValue=HeroStyle(21,Color.white,true);_uiRingValue.alignment=TextAnchor.MiddleCenter;
-            _uiCenter = HeroStyle(14, Color.white, true); _uiCenter.alignment = TextAnchor.MiddleCenter;
-            _uiOption=HeroStyle(14,Color.white,true);
-            _uiWrap = HeroStyle(14, Color.white); _uiWrap.wordWrap = true;
+            UiTextStyles();
         }
         void UiPanel(Rect rect, Color color, float radius=7)
         {
@@ -87,18 +95,32 @@ namespace Splatoon.Prototype
             UiPanel(rect, UiBorder,radius);
             UiPanel(new Rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2), color,radius-1);
         }
+        void EnsureUiProgressGeometry()
+        {
+            if (_uiProgressPixels != null) return;
+            _uiProgressPixels = new Color[128*128];
+            _uiProgressAngles = new float[128*128];
+            _uiProgressAlpha = new float[128*128];
+            for(int y=0;y<128;y++)for(int x=0;x<128;x++)
+            {
+                float dx=x-63.5f,dy=y-63.5f,r=Mathf.Sqrt(dx*dx+dy*dy),angle=Mathf.Repeat(Mathf.Atan2(dx,dy),Mathf.PI*2);
+                int index=y*128+x;
+                _uiProgressAngles[index]=angle;
+                _uiProgressAlpha[index]=Mathf.Clamp01(7-Mathf.Abs(r-55));
+            }
+        }
         void UiProgressRing(Rect rect,float fraction)
         {
             int percent=Mathf.RoundToInt(Mathf.Clamp01(fraction)*100);
             if(Event.current.type==EventType.Repaint&&percent!=_uiProgressPercent)
             {
-                _uiProgressPercent=percent;var pixels=new Color[128*128];
-                for(int y=0;y<128;y++)for(int x=0;x<128;x++)
+                _uiProgressPercent=percent;
+                EnsureUiProgressGeometry();
+                for(int i=0;i<_uiProgressPixels.Length;i++)
                 {
-                    float dx=x-63.5f,dy=y-63.5f,r=Mathf.Sqrt(dx*dx+dy*dy),angle=Mathf.Repeat(Mathf.Atan2(dx,dy),Mathf.PI*2);
-                    Color c=angle<=percent*.01f*Mathf.PI*2?new Color(.18f,.85f,.96f):new Color(.13f,.18f,.24f);c.a=Mathf.Clamp01(7-Mathf.Abs(r-55));pixels[y*128+x]=c;
+                    Color c=_uiProgressAngles[i]<=percent*.01f*Mathf.PI*2?new Color(.18f,.85f,.96f):new Color(.13f,.18f,.24f);c.a=_uiProgressAlpha[i];_uiProgressPixels[i]=c;
                 }
-                _uiProgress.SetPixels(pixels);_uiProgress.Apply(false,false);
+                _uiProgress.SetPixels(_uiProgressPixels);_uiProgress.Apply(false,false);
             }
             GUI.DrawTexture(rect,_uiProgress);
         }
@@ -167,18 +189,18 @@ namespace Splatoon.Prototype
             UiCard(new Rect(410,top,460,61),HudSurface,23);
             UiWing(new Rect(416,top+5,132,51),new Color(1,.30f,.65f));
             UiWing(new Rect(738,top+5,126,51),new Color(.17f,.57f,1),true);
-            double total=System.Math.Max(.0001,state.TotalArea);
+            double total=System.Math.Max(1,(double)state.PinkBlockCount+state.BlueBlockCount);
             GUI.Label(new Rect(433,top+6,100,20),"粉队",_uiCenter);
-            GUI.Label(new Rect(433,top+24,100,30),$"{state.PinkArea/total:P1}",_uiScore);
+            GUI.Label(new Rect(421,top+24,124,30),$"{state.PinkBlockCount:N0}",_uiScore);
             GUI.Label(new Rect(752,top+6,100,20),"蓝队",_uiCenter);
-            GUI.Label(new Rect(752,top+24,100,30),$"{state.BlueArea/total:P1}",_uiScore);
+            GUI.Label(new Rect(739,top+24,124,30),$"{state.BlueBlockCount:N0}",_uiScore);
             double remaining=state.Phase==MatchPhase.Playing?System.Math.Max(0,state.EndsAt-Manager.ServerTime.Time):0;
             string clock=state.Phase==MatchPhase.Practice?"热身":state.Phase==MatchPhase.Finished?"已结束":$"{(int)remaining/60:00}:{(int)remaining%60:00}";
             GUI.Label(new Rect(557,top+2,174,53),clock,_uiClock);
             var area=new Rect(431,top+69,420,13);
             UiCard(new Rect(area.x-5,area.y-4,area.width+10,area.height+8),HudSurface);
-            UiBar(area,(float)(state.PinkArea/total),new Color(1,.30f,.65f));
-            float blue=Mathf.Clamp01((float)(state.BlueArea/total));
+            UiBar(area,(float)(state.PinkBlockCount/total),new Color(1,.30f,.65f));
+            float blue=Mathf.Clamp01((float)(state.BlueBlockCount/total));
             if(blue>0)UiPanel(new Rect(area.xMax-area.width*blue,area.y,area.width*blue,area.height),new Color(.17f,.57f,1));
 
             UiCard(new Rect(bounds.x+16,bounds.y+15,128,34),HudSurface);
@@ -203,7 +225,7 @@ namespace Splatoon.Prototype
             UiFit(new Rect(v.x+128,v.y+41,230,23),hero.WeaponTypeName,_uiText);
             GUI.Label(new Rect(v.x+128,v.y+72,73,23),$"生命 {player.Health:0}",_uiText);
             UiBar(new Rect(v.x+202,v.y+73,156,16),player.Health/hero.MaxHealth,new Color(1,.30f,.65f));
-            GUI.Label(new Rect(v.x+128,v.y+103,87,22),$"墨量 {player.Ink:0}/{hero.MaxInk:0}",_uiMuted);
+            GUI.Label(new Rect(v.x+128,v.y+103,87,22),$"材料 {player.Ink:0}/{hero.MaxInk:0}",_uiMuted);
             var ink=new Rect(v.x+222,v.y+103,136,15);UiBar(ink,player.Ink/hero.MaxInk,HeroAccent);
             if(player.SplatlingReservedInk>0)
             {
@@ -211,8 +233,8 @@ namespace Splatoon.Prototype
                 UiPanel(new Rect(ink.x+ink.width*start,ink.y,ink.width*fill,ink.height),new Color(.85f,.9f,1));
             }
             string recovery=player.SplatlingReservedInk>0?$"预留 {player.SplatlingReservedInk:0.0} · Shift 取消":
-                player.Ink<WeaponSimulation.InkCost(weapon)?weapon.FireMode==WeaponFireMode.Splatling?"墨量不足 · 可慢速蓄力":"墨量不足 · 松开射击回墨":
-                player.InkRecoverAt>player.SimulatedAt?"射击后回墨锁定":player.HasInkRecovery?"潜墨中 · 快速回墨":player.Swimming?"弦化中 · 普通回墨":"";
+                player.Ink<WeaponSimulation.InkCost(weapon)?weapon.FireMode==WeaponFireMode.Splatling?"材料不足 · 可慢速蓄力":"材料不足 · 松开射击恢复":
+                player.InkRecoverAt>player.SimulatedAt?"射击后材料恢复锁定":player.HasInkRecovery?"己方积木上 · 材料快速恢复":player.Swimming?"空中弦化 · 材料普通恢复":"";
             if(!string.IsNullOrEmpty(recovery)){UiPanel(new Rect(v.x,v.y-29,v.width,24),HudSurface);UiFit(new Rect(v.x+10,v.y-28,v.width-20,22),recovery,_uiMuted);}
             var help=new Rect(551,bounds.yMax-65,180,30);UiCard(help,HudSurface);
             UiKey(new Rect(help.x+9,help.y+5,33,20),"左键");GUI.Label(new Rect(help.x+45,help.y+3,36,24),WeaponSimulation.IsCharge(weapon)||WeaponSimulation.IsSplatling(weapon)?"蓄力":"射击",_uiCenter);

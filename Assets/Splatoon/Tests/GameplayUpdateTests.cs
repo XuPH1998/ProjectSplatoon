@@ -54,6 +54,7 @@ namespace Splatoon.Tests
         }
         [Test] public void HeldStateRoundTripReplaysIdenticalShotsHandsAndInk()
         {
+            using var historical = new HistoricalCombatContractFixture(2);
             var a = Player(); for (int t = 0; t < 16; t++) Fire(ref a, t, true);
             Assert.That(a.SemiHoldStarted, Is.True);
             using var writer = new FastBufferWriter(2048, Allocator.Temp); writer.WriteNetworkSerializable(a);
@@ -80,12 +81,21 @@ namespace Splatoon.Tests
             HeroMigrationTests.Load(rows => { rows[0]["trailRadiusMin"] = min; rows[0]["trailRadiusMax"] = max; });
             Assert.Throws<InvalidOperationException>(() => GameplayConfig.Validate());
         }
-        static List<PaintStamp> CaptureTrail(int rate, bool fixedRadius = false)
+        static List<PaintStamp> CaptureTrail(int rate, bool fixedRadius = false, bool currentAuthored = false)
         {
-            HeroMigrationTests.Load(rows => {
+            if (currentAuthored) HeroMigrationTests.Load();
+            else HeroMigrationTests.Load(rows => {
                 rows[0]["paintRadiusMin"] = rows[0]["paintRadiusMax"] = 3;
                 if (fixedRadius) rows[0]["trailRadiusMin"] = rows[0]["trailRadiusMax"] = .5f;
             });
+            using var historical = currentAuthored ? null : new HistoricalCombatContractFixture(1, a =>
+            { a.paintRadiusMin = a.paintRadiusMax = 3; if (fixedRadius) a.trailRadiusMin = a.trailRadiusMax = .5f; });
+            if (currentAuthored)
+            {
+                var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(1).WeaponConfigPath);
+                Assert.That(authored, Is.Not.Null); var w = authored.Snapshot(); WeaponConfigValidation.Validate(w);
+                Assert.That(w.ReferenceRules && w.DetailedPaint, Is.True); WeaponConfigService.Current.SetForEditor(1, w);
+            }
             var floor = new GameObject("Trail range test floor"); floor.SetActive(false);
             floor.transform.position = new Vector3(5000, 999.95f, 5000);
             floor.AddComponent<BoxCollider>().size = new Vector3(100, .1f, 100);
@@ -102,7 +112,14 @@ namespace Splatoon.Tests
                 service.PaintObserved = stamp => { if (stamp.Radius < 2) stamps.Add(stamp); };
                 var state = Player(1); state.Position = new Vector3(5000, 1000.05f, 5000); state.CurrentSpread=state.LastShotSpread=.01f;state.LastShotVerticalSpread=.01f;
                 service.Spawn(player, state, 0, 1);
+                if (currentAuthored)
+                { Assert.That(stamps.Count, Is.Zero); Assert.That(service.PendingCount, Is.GreaterThan(service.ActiveCount)); }
+                else
+                {
+                    // Legacy feet are observed at the first fixed service tick.
+                    service.Simulate(0);
                 Assert.That(stamps.Count, Is.EqualTo(1), "The initial muzzle trail also uses the range");
+                }
                 for (int frame = 1; frame <= rate * 4; frame++) service.Simulate(frame / (double)rate);
                 return stamps;
             }
@@ -126,6 +143,29 @@ namespace Splatoon.Tests
             Assert.That(a.Take(32).Select(s => InkShapeAtlas.Index(s.ShapeSeed)).Distinct().Count(), Is.EqualTo(Math.Min(a.Count, 32)));
             Assert.That(a.Select(s => s.Position), Is.EqualTo(b.Select(s => s.Position)));
         }
+        [Test] public void CurrentAuthoredAutomaticDualiesHeldStateRoundTripReplaysShotsHandsAndInk()
+        {
+            var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(2).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var w = authored.Snapshot(); WeaponConfigValidation.Validate(w); WeaponConfigService.Current.SetForEditor(2, w);
+            Assert.That(w.FireMode, Is.EqualTo(WeaponFireMode.Automatic)); Assert.That(w.StartSeconds, Is.Zero);
+            var a = Player(); for (int t = 0; t < 16; t++) Fire(ref a, t, true);
+            Assert.That(a.ShotSequence, Is.GreaterThan(1)); Assert.That(a.SemiHoldStarted, Is.False);
+            using var writer = new FastBufferWriter(2048, Allocator.Temp); writer.WriteNetworkSerializable(a);
+            using var reader = new FastBufferReader(writer, Allocator.Temp); reader.ReadNetworkSerializable(out PlayerSnapshot b);
+            for (int t = 16; t < 90; t++) Assert.That(Fire(ref a, t, true), Is.EqualTo(Fire(ref b, t, true)));
+            Assert.That(a.ShotActionId, Is.EqualTo(b.ShotActionId)); Assert.That(a.Ink, Is.EqualTo(b.Ink));
+            Assert.That(a.NextMuzzle, Is.EqualTo(b.NextMuzzle)); Assert.That(a.ShotSequence, Is.EqualTo(b.ShotSequence));
+        }
+        [Test] public void CurrentAuthoredQueuedPaintIsReproducibleAcrossSimulationCallRates()
+        {
+            var a = CaptureTrail(30, currentAuthored: true); var b = CaptureTrail(144, currentAuthored: true);
+            Assert.That(a.Count, Is.GreaterThan(0));
+            Assert.That(a.Select(stamp => stamp.Radius), Is.EqualTo(b.Select(stamp => stamp.Radius)));
+            Assert.That(a.Select(stamp => stamp.ShapeSeed), Is.EqualTo(b.Select(stamp => stamp.ShapeSeed)));
+            Assert.That(a.Select(stamp => stamp.Position), Is.EqualTo(b.Select(stamp => stamp.Position)));
+        }
+
         [Test] public void TeamSwitchSupportsEmptyOppositionAndUsesOnlyFreeSlot()
         {
             var s = Player(); var other = Player(); other.Team = 2;

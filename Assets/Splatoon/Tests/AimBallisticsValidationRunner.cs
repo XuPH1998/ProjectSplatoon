@@ -13,12 +13,10 @@ namespace Splatoon.Tests
     {
         const string DirectoryPath = "Reports/AimBallistics", RequestPath = "Temp/AimBallistics/tests.json";
         const string Running = "AimBallistics.Running";
-        static readonly TestRunnerApi Api;
         [Serializable] public class Request { public string label; public string[] names; }
         static AimBallisticsValidationRunner()
         {
-            Api = ScriptableObject.CreateInstance<TestRunnerApi>();
-            Api.RegisterCallbacks(new AimBallisticsValidationRunner());
+            TestRunnerApi.RegisterTestCallback(new AimBallisticsValidationRunner());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -42,7 +40,9 @@ namespace Splatoon.Tests
             SessionState.SetBool(Running, true);
             File.WriteAllText(DirectoryPath + "/status.txt", "RUNNING " + request.label);
             // Play fixtures explicitly enter/exit Play Mode inside UnityTests; pure checks stay in EditMode.
-            Api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = request.names }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = request.names })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         public void RunStarted(ITestAdaptor test) { }
         public void TestStarted(ITestAdaptor test) { }

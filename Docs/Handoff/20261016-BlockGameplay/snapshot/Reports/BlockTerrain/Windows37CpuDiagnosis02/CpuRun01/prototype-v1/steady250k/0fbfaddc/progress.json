@@ -1,0 +1,8 @@
+{
+  "case": "steady250k",
+  "acceptanceProfile": "prototype-v1",
+  "stage": "sampling",
+  "elapsedSeconds": 186.4,
+  "sampledSeconds": 150.0301793,
+  "blocks": 320765
+}

@@ -276,6 +276,7 @@ namespace Splatoon.Combat
 
         public static bool ShouldEmitSwimEffect(PlayerSnapshot state)
         {
+            if (Splatoon.Blocks.BlockTerrain.Current != null) return false;
             if (state.Health <= 0 || !state.HasInkRecovery) return false;
             bool wall = state.Movement == MovementMode.WallInk || state.Movement == MovementMode.Mantle;
             Vector3 normal = wall ? state.WallNormal : Vector3.up;

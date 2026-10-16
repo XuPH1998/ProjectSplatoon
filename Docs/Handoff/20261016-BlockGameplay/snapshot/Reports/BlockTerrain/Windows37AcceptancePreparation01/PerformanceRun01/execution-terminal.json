@@ -1,0 +1,57 @@
+{
+  "startedUtc": "2026-10-16T12:50:02.399001+00:00",
+  "player": "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37\\InkLan.exe",
+  "runtimeMvid": "ccd65caf-bf48-42b1-9543-3a12417940df",
+  "runtimeDllSha256": "69353fdffa928efe25245be9d1e600baa9e521a5db3354a4b545df83f6de6c3c",
+  "executionInputSha256": "419d0878505cc74bfea5c046b62ea560cbfaccab4421725fe0f93757018420dc",
+  "originalToolSha256": "6eb434fb0f8d2be6fd8ca40088a7964268ba791011e5a706e2e5722e9ea63d32",
+  "originalArguments": [
+    "D:\\XPHUNITY\\ProjectSplatoon\\Tools\\BlockTerrain\\performance_acceptance.py",
+    "--player",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Builds\\Blocks-20261016-block37\\InkLan.exe",
+    "--output",
+    "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\Windows37AcceptancePreparation01\\PerformanceRun01",
+    "--cases",
+    "steady250k",
+    "combat250k",
+    "blast8",
+    "scattered100k",
+    "--acceptance-profile",
+    "prototype-v1",
+    "--graphics-api",
+    "d3d12",
+    "--capture-main-camera",
+    "--stop-on-failure"
+  ],
+  "requiredCases": [
+    "steady250k",
+    "combat250k",
+    "blast8",
+    "scattered100k"
+  ],
+  "requiredSeconds": [
+    180,
+    300,
+    120,
+    180
+  ],
+  "graphicalHost": 1,
+  "independentHeadlessInputClients": 7,
+  "originalOraclesAndCleanupUnchanged": true,
+  "diagnosticsShortened": false,
+  "cpuProfilerEnabled": false,
+  "frameTimingDiagnosticEnabled": false,
+  "deferredCases": [
+    "tower32m",
+    "cascade20k"
+  ],
+  "goalAcceptancePassed": false,
+  "finishedUtc": "2026-10-16T12:53:41.373217+00:00",
+  "originalExitCode": 5,
+  "completedCaseCount": 1,
+  "actualCases": [
+    "steady250k"
+  ],
+  "approvedFourCasePerformancePassed": false,
+  "originalSummaryPreserved": true
+}

@@ -216,17 +216,20 @@ namespace Splatoon.Tests
         [Test] public void PredictionSnapshotSerializesEverySimulationField()
         {
             object boxed=new PlayerSnapshot();int index=1;
-            foreach(var field in typeof(PlayerSnapshot).GetFields(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance))
+            var fields=typeof(PlayerSnapshot).GetFields(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance);
+            foreach(var field in fields)
             {
-                var type=field.FieldType;object value=type==typeof(Vector2)?new Vector2(index,index+.1f):type==typeof(Vector3)?new Vector3(index,index+.1f,index+.2f):type==typeof(Quaternion)?Quaternion.Euler(index,index*2,index*3):type.IsEnum?Enum.ToObject(type,1):Convert.ChangeType(type==typeof(bool)?1:index,type);
+                var type=field.FieldType;object value=type==typeof(Vector2)?new Vector2(index,index+.1f):type==typeof(Vector3)?new Vector3(index,index+.1f,index+.2f):type==typeof(Vector3Int)?new Vector3Int(index,-index-1,index+2):type==typeof(Quaternion)?Quaternion.Euler(index,index*2,index*3):type.IsEnum?Enum.ToObject(type,1):Convert.ChangeType(type==typeof(bool)?1:index,type);
+                Assert.That(value,Is.Not.EqualTo(Activator.CreateInstance(type)),field.Name+" must exercise a non-default value");
                 field.SetValue(boxed,value);index++;
             }
             var expected=(PlayerSnapshot)boxed;
             using var writer=new Unity.Netcode.FastBufferWriter(1024,Unity.Collections.Allocator.Temp);writer.WriteNetworkSerializable(expected);
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
+            foreach(var field in fields) Assert.That(field.GetValue(actual),Is.EqualTo(field.GetValue(expected)),field.Name+" must survive network serialization");
             Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(36));
-            Assert.That(writer.Length,Is.EqualTo(827)); // Protocol 36: also includes synchronized special impulse state.
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(37));
+            Assert.That(writer.Length,Is.EqualTo(855)); // Protocol 37: 827 + support cell (12), terrain revision (4), ground normal (12).
         }
         [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {

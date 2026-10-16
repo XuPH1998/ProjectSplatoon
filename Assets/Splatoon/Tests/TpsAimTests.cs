@@ -24,12 +24,42 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             HeroMigrationTests.Load();
-            LegacyChargeFixture.Install(); // These tests retain the retired ballistic launcher; timed blaster coverage is separate.
+            InstallHistoricalAimWeapons(); // Analytic convergence uses the pre-asset-migration ballistic contract.
         }
         [TearDown] public void Cleanup()
         {
             foreach (var o in _objects) if (o != null) Object.DestroyImmediate(o);
             _objects.Clear(); LubanConfigService.Current.Reset();
+        }
+        // The archived rows are the final monolithic hero weapon inputs, captured
+        // by bf8dd19 before splitting weapons out of tbhero. Do not copy live assets:
+        // newer reference integration/weapon replacements are a separate contract.
+        static void InstallHistoricalAimWeapons(float? rifleCollisionRadius = null)
+        {
+            var rows = SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAssets/Migration-Baseline.json"));
+            foreach (var archived in rows.Children)
+            {
+                int hero = archived["id"].AsInt;
+                if (hero < 1 || hero > 5) continue;
+                var row = SimpleJSON.JSONNode.Parse(archived.ToString());
+                WeaponTimeFixture.ToSeconds(row);
+                var weapon = ScriptableObject.CreateInstance<WeaponConfigAsset>();
+                try
+                {
+                    JsonUtility.FromJsonOverwrite(row.ToString(), weapon);
+                    // Match the existing migration loader's full-precision seconds.
+                    foreach (var field in typeof(WeaponConfigAsset).GetFields())
+                        if (field.FieldType == typeof(double) && row.HasKey(field.Name))
+                            field.SetValue(weapon, row[field.Name].AsDouble);
+                    weapon.motionMode = ProjectileMotionMode.Ballistic;
+                    weapon.referenceRules = weapon.referenceSpreadEnabled = false;
+                    WeaponAlignmentFixture.DisableReconstruction(weapon);
+                    if (hero == 1 && rifleCollisionRadius.HasValue)
+                        weapon.collisionRadius = rifleCollisionRadius.Value;
+                    WeaponConfigService.Current.SetForEditor(hero, weapon.Snapshot());
+                }
+                finally { Object.DestroyImmediate(weapon); }
+            }
         }
         GameObject Root(string name) { var o = new GameObject(name); _objects.Add(o); return o; }
         BoxCollider Box(Vector3 position, Vector3 size)
@@ -249,6 +279,8 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunSpreadDoesNotReconvergeAndPreservesSeededPattern()
         {
+            // This pellet contract uses the separately frozen pre-Explosher shotgun.
+            WeaponConfigService.Current.SetForEditor(3, LegacyShotgunFixture.Create());
             var aim = Geometry(5); var w = GameplayConfig.GetWeapon(3); var points = new List<Vector3>();
             for (int pellet = 0; pellet < w.PelletCount; pellet++)
             {
@@ -267,7 +299,7 @@ namespace Splatoon.Tests
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void CollisionSweepsBothLegsWhenOneFixedStepCrossesBend(int frameRate)
         {
-            HeroMigrationTests.Load(rows => rows[0]["collisionRadius"] = .01f);
+            InstallHistoricalAimWeapons(rifleCollisionRadius: .01f);
             Box(Origin + new Vector3(1, 0, .2f), new Vector3(.06f, .2f, .06f));
             var shot = new InkShot { Id = 1, HeroId = 1, Shooter = ulong.MaxValue, Team = 1, Seed = 13,
                 Origin = Origin, Velocity = Vector3.right * 240, FirstSegmentLength = 1,

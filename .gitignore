@@ -50,3 +50,7 @@ Thumbs.db
 !/Reports/Archive/
 /Reports/Archive/*/Logs/
 /Reports/Archive/*/Temp/
+
+# Local block authoring runtime junction and Python caches.
+/Tools/BlockTerrain/node_modules/
+/Tools/BlockTerrain/__pycache__/

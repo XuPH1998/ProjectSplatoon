@@ -107,6 +107,8 @@ namespace Splatoon.Tests
                 Assert.That(SubWeaponService.FlightCollision(new TpsAimSolver(),go.transform.position+Vector3.forward*.45f,Vector3.forward,.15f,999,1,out var hit),Is.True);
                 Assert.That(hit.Collider,Is.SameAs(collider));Assert.That(hit.Point.magnitude,Is.GreaterThan(1000));
                 Assert.That(hit.Normal.sqrMagnitude,Is.GreaterThan(.9));
+                Assert.That(Vector3.Distance(hit.Point,go.transform.position+Vector3.forward*.5f),Is.LessThan(.001f),"Contact is the actual front mesh face");
+                Assert.That(SubWeaponService.FlightCollision(new TpsAimSolver(),go.transform.position+Vector3.forward*.8f,Vector3.forward*.01f,.15f,999,1,out _),Is.False,"A broadphase mesh bound cannot create a contact beyond the sphere radius");
             }
             finally{Object.DestroyImmediate(go);}
         }

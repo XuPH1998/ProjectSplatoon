@@ -80,7 +80,17 @@ namespace Splatoon.Tests
             foreach(int hz in new[]{60,144})
             {
                 var b=WeaponReferenceMeasurements.Capture(hero,hero==6?1:0,"sweep",hz,2,null,fullActions:true);
-                Assert.That(b.gridHash,Is.EqualTo(a.gridHash));Assert.That(b.emittedProjectiles,Is.EqualTo(hero==6?132:8));
+                // Current spinner full charge is 27 ticks and 22 real rounds, covered
+                // independently by MachineGunTests.ChargeBoundariesAndInclusiveLastRound.
+                if (hero == 6)
+                {
+                    var w = GameplayConfig.GetWeapon(6);
+                    Assert.That(w.ChargeSeconds, Is.EqualTo(27.0 / 60).Within(1e-8));
+                    Assert.That(w.SplatlingFullShootSeconds, Is.EqualTo(1.4).Within(1e-8));
+                    Assert.That(w.FireRate, Is.EqualTo(15));
+                }
+                Assert.That(b.gridHash,Is.EqualTo(a.gridHash));Assert.That(b.emittedProjectiles,Is.EqualTo(hero==6?2*22:2*4));
+                Assert.That(b.completedActions, Is.EqualTo(2));
                 Assert.That(b.inkSpent,Is.EqualTo(a.inkSpent));
             }
         }

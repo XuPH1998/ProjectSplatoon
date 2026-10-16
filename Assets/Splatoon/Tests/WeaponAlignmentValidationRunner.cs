@@ -14,11 +14,10 @@ namespace Splatoon.Tests
     public sealed class WeaponAlignmentValidationRunner : ICallbacks
     {
         const string Root = "Reports/WeaponAlignment", Running = "WeaponAlignment.Running", Label = "WeaponAlignment.Label";
-        static TestRunnerApi api;
         static double next;
         static WeaponAlignmentValidationRunner()
         {
-            api = ScriptableObject.CreateInstance<TestRunnerApi>(); api.RegisterCallbacks(new WeaponAlignmentValidationRunner());
+            TestRunnerApi.RegisterTestCallback(new WeaponAlignmentValidationRunner());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -47,7 +46,9 @@ namespace Splatoon.Tests
             if (lines.Length != 2 || string.IsNullOrWhiteSpace(lines[1])) throw new InvalidOperationException("Expected label and semicolon-separated test names");
             Directory.CreateDirectory(Root); SessionState.SetString(Label, lines[0]); SessionState.SetBool(Running, true);
             File.WriteAllText(Root + "/test-status.txt", "RUNNING " + lines[0] + " " + DateTime.UtcNow.ToString("O"));
-            api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         static bool ContainsAlignment(ITestResultAdaptor result) => result.Test.FullName.StartsWith("Splatoon.Tests.WeaponAlignment") || result.Children.Any(ContainsAlignment);
         public void RunStarted(ITestAdaptor tests) { }

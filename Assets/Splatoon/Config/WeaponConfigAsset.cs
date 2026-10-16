@@ -7,6 +7,10 @@ namespace Splatoon.Config
     [CreateAssetMenu(menuName = "喷墨对战/武器配置", fileName = "WeaponConfig")]
     public sealed class WeaponConfigAsset : ScriptableObject
     {
+        [Header("积木建造与拆除")]
+        [InspectorName("命中生成积木"), Tooltip("普通弹命中静态地图或己方积木后，使用本次付费攻击额度生成积木；爆炸攻击只拆除积木。")] public bool blockBuild = true;
+        [InspectorName("每次付费攻击拆敌格数"), Tooltip("本次付费攻击通过普通命中最多拆除的敌方积木格数；同次攻击的多个命中共享额度。"), Min(0)] public int blockEnemyRemoval = 8;
+        [InspectorName("普通拆除查询半径（米）"), Tooltip("普通命中以接触点为中心寻找敌方积木的范围；在本次拆除额度内优先拆除最近格子。"), Min(.01f)] public float blockRemovalRadius = .20f;
         [Header("瞄准与独立发射规则")]
         [InspectorName("瞄准几何"), Tooltip("武器参考点不随相机射线命中深度改变；引导位置使用真实中心弹道。")] public WeaponAimMode aimMode;
         [InspectorName("弹道引导时间（秒）"), Tooltip("ShotGuideFrame / 60 的项目解释，仅限制准星预测，不改变弹丸寿命。")] public double shotGuideSeconds;

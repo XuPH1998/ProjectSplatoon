@@ -113,11 +113,11 @@ namespace Splatoon.Tests
         }
         [Test] public void ShotgunPreservesFrozenPhysicsAndPaintBaseline()
         {
-            WeaponConfigService.Current.SetForEditor(3, LegacyShotgunFixture.Create());
+            using var frozen = new FrozenPaintReplayFixture("WeaponAlignment", 3);
             foreach(string scenario in new[]{"flat","high-drop","wall-middle","continuous"})
             {
                 var old=JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText($"Tools/ValidationData/WeaponAlignment/Baseline/Measurements/w3-q0-{scenario}-60.json"));
-                var current=WeaponReferenceMeasurements.Capture(3,0,scenario,60,scenario=="continuous"?20:1,null);
+                var current=WeaponReferenceMeasurements.Capture(3,0,scenario,60,scenario=="continuous"?20:1,null,options:frozen.Options());
                 Assert.That(current.gridHash,Is.EqualTo(old.gridHash),scenario);Assert.That(current.paintStamps,Is.EqualTo(old.paintStamps));
                 Assert.That(current.maxOwnedForward,Is.EqualTo(old.maxOwnedForward));
             }
@@ -137,7 +137,8 @@ namespace Splatoon.Tests
         }
         [Test, Explicit("Writes the review measurement artifacts")] public void CaptureAfter()
         {
-            const string root="Reports/WeaponAlignment/After";
+            using var historical = new HistoricalWeaponFixture("LegacyHyper", GameplayConfig.GetHero(6));
+            string root=HistoricalWeaponFixture.CaptureDirectory("CaptureAfter");
             Directory.CreateDirectory(root+"/Direct"); Directory.CreateDirectory(root+"/Actions");
             for(int hero=1;hero<=7;hero++)
             {
@@ -165,32 +166,50 @@ namespace Splatoon.Tests
         }
         [Test, Explicit("Replays frozen sources to render the old ownership grid; never overwrites baseline")] public void RenderFrozenBaseline()
         {
-            HeroMigrationTests.Load(rows=>
-            {
-                foreach(var before in SimpleJSON.JSONNode.Parse(File.ReadAllText("Tools/ValidationData/WeaponAlignment/Baseline/Values.json")).Children)
-                {
-                    var row=rows.Children.Single(r=>r["id"].AsInt==before["id"].AsInt);
-                    WeaponTimeFixture.ToReferenceFrames(before);
-                    foreach(var key in before.Keys)row[key]=before[key];
-                    row["referenceRules"]=false;row["referenceSpreadEnabled"]=false;
-                    if(!before.HasKey("motionMode"))row["motionMode"]=0;
-                }
-            });
             const string output="Reports/WeaponAlignment/BeforeReplayed";Directory.CreateDirectory(output);
-            for(int hero=1;hero<=7;hero++)foreach(string scenario in new[]{"flat","high-drop","wall-middle","continuous"})
+            for(int hero=1;hero<=7;hero++)
             {
-                var result=WeaponReferenceMeasurements.Capture(hero,hero==6?1:0,scenario,60,scenario=="continuous"?20:1,output);
-                var before=JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText($"Tools/ValidationData/WeaponAlignment/Baseline/Measurements/w{hero}-q{(hero==6?60:0)}-{scenario}-60.json"));
-                Assert.That(result.gridHash,Is.EqualTo(before.gridHash),$"{hero}/{scenario}");
+                using var frozen = new FrozenPaintReplayFixture("WeaponAlignment", hero);
+                foreach(string scenario in new[]{"flat","high-drop","wall-middle","continuous"})
+                {
+                    var result=WeaponReferenceMeasurements.Capture(hero,hero==6?1:0,scenario,60,scenario=="continuous"?20:1,output,options:frozen.Options());
+                    var before=JsonUtility.FromJson<WeaponReferenceMeasurements.Result>(File.ReadAllText($"Tools/ValidationData/WeaponAlignment/Baseline/Measurements/w{hero}-q{(hero==6?60:0)}-{scenario}-60.json"));
+                    Assert.That(result.gridHash,Is.EqualTo(before.gridHash),$"{hero}/{scenario}");
+                }
             }
         }
         [Test, Explicit("Measures three charge releases from a real 100-ink tank, including the retained slow refill rule")] public void CaptureSpinnerTank()
         {
-            const string output="Reports/WeaponAlignment/After/Actions";Directory.CreateDirectory(output);
+            using var historical = new HistoricalWeaponFixture("LegacyHyper", GameplayConfig.GetHero(6));
+            string output=HistoricalWeaponFixture.CaptureDirectory("CaptureSpinnerTank");
             var result=WeaponReferenceMeasurements.Capture(6,1,"tank",60,3,output,fullActions:true,fullTank:true);
             Assert.That(result.emittedProjectiles,Is.GreaterThan(132));Assert.That(result.impacts,Is.EqualTo(result.emittedProjectiles));
             File.WriteAllText(output+"/spinner-tank-notes.txt",$"100 initial ink, no ResourceSimulation/refill calls; 3 charge-release cycles. The existing empty-ink slow-charge rule supplies ink internally. Emitted={result.emittedProjectiles}; net tank debit={result.inkSpent:R}; generated reservation={Math.Max(0,result.emittedProjectiles*GameplayConfig.GetWeapon(6).ShotInk-result.inkSpent):R}. This is not a finite maximum-magazine claim.");
         }
+        [TestCase(0, 1)] [TestCase(1, 11)] [TestCase(2, 22)]
+        public void CurrentAuthoredMiniChargeCapturesEmitTheirConfiguredRounds(int stage, int expected)
+        {
+            var authored = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(6).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var w = authored.Snapshot(); WeaponConfigValidation.Validate(w);
+            WeaponConfigService.Current.SetForEditor(6, w);
+            float charge = stage == 0 ? HeroFlatRange.MinimumCharge(w) : stage == 1 ? (float)(w.SplatlingFirstChargeSeconds / w.ChargeSeconds) : 1;
+            var result = WeaponReferenceMeasurements.Capture(6, charge, "flat", 60, 1, null, fullActions: true);
+            Assert.That(result.emittedProjectiles, Is.EqualTo(expected));
+            Assert.That(result.impacts, Is.EqualTo(result.emittedProjectiles));
+        }
+        [Test] public void CurrentAuthoredMiniThreeResourceCyclesEmitSixtySixProjectiles()
+        {
+            var authored = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(6).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var w = authored.Snapshot(); WeaponConfigValidation.Validate(w);
+            WeaponConfigService.Current.SetForEditor(6, w);
+            var result = WeaponReferenceMeasurements.Capture(6, 1, "tank", 60, 3, null, fullActions: true, fullTank: true);
+            Assert.That(result.resourceMode, Is.EqualTo("resource-cycle"));
+            Assert.That(result.emittedProjectiles, Is.EqualTo(66));
+            Assert.That(result.impacts, Is.EqualTo(result.emittedProjectiles));
+        }
+
         [Test, Explicit("Only run before implementing a new baseline; frozen evidence must not be overwritten.")] public void CaptureBaseline()
         {
             const string output = "Reports/WeaponAlignment/Before";

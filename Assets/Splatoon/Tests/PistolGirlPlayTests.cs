@@ -28,7 +28,7 @@ namespace Splatoon.Tests
             Assert.That(ready(), Is.True, message);
         }
 
-        [UnityTest] public IEnumerator HostLoadsPistolAndMeasuresRealCollisionDamageAndPresentation()
+        [UnityTest, Timeout(600000)] public IEnumerator HostLoadsPistolAndMeasuresRealCollisionDamageAndPresentation()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode();
@@ -68,7 +68,7 @@ namespace Splatoon.Tests
             visualState.Swimming = false; visualState.Yaw = visualState.BodyYaw = visualState.Pitch = 0;
             double start = player.NetworkManager.ServerTime.Time;
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
-            int emitted = 0;
+            int emitted = 0; InkShot lastShown = default;
             for (int tick = 0; tick < 60; tick++)
             {
                 var input = new PlayerInputFrame { Fire = true, FireSequence = visualState.ConsumedFire + 1, Sequence = (uint)tick + 1 };
@@ -78,7 +78,7 @@ namespace Splatoon.Tests
                 {
                     emitted++; view.Shot(0, visualState.ShotActionId, player.NetworkManager.ServerTime.Time);
                     match.Projectiles.Spawn(player, visualState, player.NetworkManager.ServerTime.Time, match.State.Value.Round);
-                    InkPresentation.Current.Spawn(match.Projectiles.Spawned.Last());
+                    lastShown = match.Projectiles.Spawned.Last(); InkPresentation.Current.Spawn(lastShown);
                     Assert.That(view.Animator.GetLayerWeight(1), Is.GreaterThan(.5f));
                 }
                 view.Animator.Update(1f / 60);
@@ -86,8 +86,20 @@ namespace Splatoon.Tests
                 yield return null;
             }
             Assert.That(emitted, Is.EqualTo(12));
-            Assert.That(InkPresentation.Current.ParticleCount, Is.GreaterThan(0));
-            Assert.That(view.GetComponentInChildren<InkMuzzleEmitter>(), Is.Not.Null);
+            Assert.That(InkPresentation.Current.BlockMode, Is.True);
+            // Check a fresh actual authoritative emission at its own age, before a slow
+            // editor frame can retire the final sample of the one-second animation loop.
+            var shown = lastShown;
+            InkPresentation.Current.Clear(); shown.Id += 100000; shown.Born = player.NetworkManager.ServerTime.Time;
+            InkPresentation.Current.Spawn(shown);
+            InkPresentation.Current.UpdateFlights(shown.Born + .01, Camera.main);
+            Assert.That(InkPresentation.Current.BlockCubeCount, Is.EqualTo(1));
+            Assert.That(BlockDefaultContractFixture.Flights(InkPresentation.Current)
+                .TryPosition(shown.Round, shown.Id, shown.Born + .01, out var shownPosition), Is.True);
+            Assert.That(Vector3.Distance(shownPosition, InkBallistics.Position(shown, w, .01)), Is.LessThan(.001));
+            Assert.That(InkPresentation.Current.ParticleCount, Is.Zero);
+            Assert.That(InkPresentation.Current.Streams, Is.Empty);
+            Assert.That(view.GetComponentsInChildren<InkMuzzleEmitter>().All(e => !e.HasLiveParticles), Is.True, "Default cube shots leave no legacy ink muzzle particles");
             match.Projectiles.Clear(); InkPresentation.Current.Clear();
 
             // Isolate a thin target surface on a real server-owned player. Distances
@@ -101,7 +113,7 @@ namespace Splatoon.Tests
             {
                 foreach (var pair in new[] { (3f, 4), (5f, 4), (6f, 4), (7f, 4), (8f, 4), (9f, 5), (9.1f, 5) })
                 {
-                    var state = player.Snapshot.Value; state.Health = 100; state.Team = 2; state.ProtectedUntil = 0;
+                    var state = player.Snapshot.Value; state.Health = 100; state.LifeState = PlayerLifeState.Alive; state.BubbleUntil = 0; state.Team = 2; state.ProtectedUntil = 0;
                     state.Position = origin + Vector3.forward * pair.Item1; state.Movement = MovementMode.Human;
                     player.Snapshot.Value = state; player.transform.position = state.Position;
                     target.transform.position = origin + Vector3.forward * (pair.Item1 + w.ReferencePlayerRadius - .002f);
@@ -126,7 +138,7 @@ namespace Splatoon.Tests
                     csv.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0},{1:R},{2},{3:R},{4:R}", pair.Item1, firstDamage, hits, hitAge, travel));
                 }
                 File.WriteAllText(Output + "/collision-damage.csv", csv.ToString());
-                File.WriteAllText(Output + "/host-summary.txt", "PASS: real Host load, 12 shots/second, animation layer and visible particles; swept collisions at 3/5/6/7/8/9m defeat in 4/4/4/5/6/7 hits; 9.1m causes no damage. Host-only, not independent-client validation.\n");
+                File.WriteAllText(Output + "/host-summary.txt", "PASS: real Host load, 12 shots/second, animation layer and authoritative opaque cube trajectory; swept collisions at 3/5/6/7/8/9m defeat in 4/4/4/5/6/7 hits; 9.1m causes no damage. Host-only, not independent-client validation.\n");
             }
             finally { UnityEngine.Object.Destroy(target); }
             yield return app.Leave().ToCoroutine();

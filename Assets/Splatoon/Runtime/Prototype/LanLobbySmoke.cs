@@ -26,15 +26,23 @@ namespace Splatoon.Prototype
         string _error;
         [StructLayout(LayoutKind.Sequential)] struct CursorPoint { public int X,Y; }
         CursorPoint _previousCursor;
+        bool _cursorSaved;
         [DllImport("user32.dll")] static extern bool GetCursorPos(out CursorPoint point);
         [DllImport("user32.dll")] static extern bool SetCursorPos(int x,int y);
-        [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr window);
         [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")] static extern void mouse_event(uint flags,uint dx,uint dy,uint data,UIntPtr extra);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Initialize()
         {
             if(!SessionState.GetBool("RoomDiscovery.PlaySmoke",false))return;
             SessionState.SetBool("RoomDiscovery.PlaySmoke",false);
+            if (!PrototypeApp.CanCaptureSystemCursor)
+            {
+                Directory.CreateDirectory("Reports/LanDiscovery");
+                File.WriteAllText("Reports/LanDiscovery/room-lobby-playmode.txt",
+                    "passed=false\nerror=Native mouse smoke requires an interactive foreground session; background execution is blocked.");
+                Debug.LogWarning("[LAN-LOBBY] Background native mouse input is blocked.");
+                return;
+            }
             var go=new GameObject("LanLobbySmoke");DontDestroyOnLoad(go);go.AddComponent<LanLobbySmoke>();
         }
         void Check(bool value,string message){if(!value)throw new Exception(message);_checks.Add(message);}
@@ -42,6 +50,7 @@ namespace Splatoon.Prototype
         void EditorTick(){_view?.Repaint();}
         void ConfigureView()
         {
+            Check(PrototypeApp.CanCaptureSystemCursor,"foreground permission before configuring GameView");
             _view=Array.Find(Resources.FindObjectsOfTypeAll<EditorWindow>(),w=>w.GetType().Name=="GameView");
             if(_view==null)throw new Exception("GameView unavailable");
             var asm=_view.GetType().Assembly;var type=asm.GetType("UnityEditor.GameViewSizes");
@@ -67,17 +76,19 @@ namespace Splatoon.Prototype
         async UniTask Click(float x,float y)
         {
             // Native input also exercises the active Input System backend and GameView's DPI/zoom mapping.
+            Check(PrototypeApp.CanCaptureSystemCursor,"native mouse input requires interactive foreground permission");
             _view.Focus();
             var window=System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-            SetForegroundWindow(window);
             Check(GetForegroundWindow()==window,"Unity is foreground before native click");
             var target=(Rect)_view.GetType().GetProperty("targetInParent",Flags).GetValue(_view);
             float dpi=EditorGUIUtility.pixelsPerPoint;
             var position=new Vector2((_view.position.x+target.x+x*target.width/1280)*dpi,(_view.position.y+target.y+y*target.height/720)*dpi);
+            Check(PrototypeApp.CanCaptureSystemCursor,"foreground permission before cursor movement");
             SetCursorPos((int)position.x,(int)position.y);
             await UniTask.Delay(100);
+            Check(PrototypeApp.CanCaptureSystemCursor,"foreground permission before mouse down");
+            // Complete the click before yielding, so a focus change cannot strand a pressed button.
             mouse_event(2,0,0,0,UIntPtr.Zero);
-            await UniTask.Delay(100);
             mouse_event(4,0,0,0,UIntPtr.Zero);
             await UniTask.Delay(180);
         }
@@ -94,9 +105,10 @@ namespace Splatoon.Prototype
         async UniTaskVoid Start()
         {
             Directory.CreateDirectory("Reports/LanDiscovery");
-            GetCursorPos(out _previousCursor);
             try
             {
+                Check(PrototypeApp.CanCaptureSystemCursor,"native mouse smoke requires an interactive foreground session");
+                _cursorSaved=GetCursorPos(out _previousCursor);
                 await Wait(()=>PrototypeApp.Current!=null&&PrototypeApp.Current.Ready&&!PrototypeApp.Current.Busy);
                 var app=PrototypeApp.Current;ConfigureView();
                 Check(GameplayConfig.Map.Id==1&&GameplayConfig.Map.SceneAddress=="maps/TrainingGround","TbMap initialized through Addressables with unchanged map");
@@ -159,7 +171,9 @@ namespace Splatoon.Prototype
                 foreach(var host in _hosts)host.Dispose();_hosts.Clear();_observer?.Dispose();_observer=null;
                 if(PrototypeApp.Current!=null&&PrototypeApp.Current.InRoom&&!PrototypeApp.Current.Busy)await PrototypeApp.Current.Leave();
                 File.WriteAllText("Reports/LanDiscovery/room-lobby-playmode.txt","passed="+(_error==null)+"\n"+string.Join("\n",_checks)+"\nerror="+_error);
-                RestoreView();SetCursorPos(_previousCursor.X,_previousCursor.Y);EditorApplication.ExitPlaymode();
+                RestoreView();
+                if(_cursorSaved && PrototypeApp.CanCaptureSystemCursor)SetCursorPos(_previousCursor.X,_previousCursor.Y);
+                EditorApplication.ExitPlaymode();
             }
         }
         void RestoreView()

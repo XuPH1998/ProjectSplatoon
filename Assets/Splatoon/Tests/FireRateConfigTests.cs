@@ -22,6 +22,7 @@ namespace Splatoon.Tests
         public void FireRateAloneControlsTheExactCooldownBoundary(int hero, float rate)
         {
             HeroMigrationTests.Load(rows => rows[hero - 1]["fireRate"] = rate);
+            using var historical = hero == 2 ? new HistoricalWeaponFixture("LegacyDualies", GameplayConfig.GetHero(hero), a => a.fireRate = rate) : null;
             GameplayConfig.Validate();
             var w = GameplayConfig.GetWeapon(hero); var s = Player(hero);
             double startup = WeaponTimeFixture.ReferenceFrames(w.StartSeconds) / 60.0, interval = 1.0 / rate;
@@ -63,12 +64,51 @@ namespace Splatoon.Tests
         [Test] public void ZeroGravityKeepsBothBallisticPathsLevelAfterTheStraightPhase()
         {
             HeroMigrationTests.Load(rows => rows[0]["projectileGravity"] = 0);
+            using var historical = new HistoricalWeaponFixture("LegacyRifle", GameplayConfig.GetHero(1), a => a.projectileGravity = 0);
             GameplayConfig.Validate(); var w = GameplayConfig.GetWeapon(1);
             var origin = new Vector3(0, 3, 0); var velocity = new Vector3(0, 0, 30);
             Assert.That(InkBallistics.Position(origin, velocity, w, 1).y, Is.EqualTo(3));
             var shot = new InkShot { Origin = origin, Velocity = velocity, FirstSegmentLength = 2, PostCorrectionVelocity = velocity, GravityStartAge = .2f };
             Assert.That(InkBallistics.Position(shot, w, 1).y, Is.EqualTo(3));
             Assert.That(InkBallistics.Velocity(shot, w, 1).y, Is.Zero);
+        }
+
+        [Test] public void CurrentAuthoredDualiesStartsImmediatelyAndUsesTheExactCooldown()
+        {
+            var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(2).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var w = authored.Snapshot(); WeaponConfigValidation.Validate(w);
+            Assert.That(w.FireMode, Is.EqualTo(WeaponFireMode.Automatic));
+            Assert.That(w.MotionMode, Is.EqualTo(ProjectileMotionMode.DualiesNormal));
+            Assert.That(w.StartSeconds, Is.Zero);
+            var s = Player(2); var input = new PlayerInputFrame { Fire = true, FireSequence = 1 };
+            Assert.That(WeaponSimulation.Step(ref s, input, w, 0, false, true), Is.True);
+            Assert.That(s.LastShotMuzzle, Is.Zero);
+            double interval = 1.0 / w.FireRate;
+            Assert.That(s.NextShotAt, Is.EqualTo(interval).Within(1e-10));
+            Assert.That(WeaponSimulation.Step(ref s, input, w, interval - .00001, false, true), Is.False);
+            Assert.That(WeaponSimulation.Step(ref s, input, w, interval, false, true), Is.True);
+            Assert.That(s.LastShotMuzzle, Is.EqualTo(1)); Assert.That(s.ShotSequence, Is.EqualTo(2));
+        }
+
+        [Test] public void CurrentAuthoredReferenceRifleRetainsBrakeGravityWhenGeneralGravityIsZero()
+        {
+            var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(1).WeaponConfigPath);
+            Assert.That(authored, Is.Not.Null);
+            var copy = UnityEngine.Object.Instantiate(authored);
+            try
+            {
+                copy.projectileGravity = 0; var w = copy.Snapshot(); WeaponConfigValidation.Validate(w);
+                Assert.That(w.ReferenceRules, Is.True); Assert.That(w.ReferenceBrakeGravity, Is.GreaterThan(0));
+                double age = w.StraightSeconds + Math.Min(w.BrakeSeconds, 2.0 / 60);
+                var origin = new Vector3(0, 3, 0); var velocity = Vector3.forward * w.SpeedMin;
+                var shot = new InkShot { Origin = origin, Velocity = velocity, FirstSegmentLength = 2,
+                    PostCorrectionVelocity = velocity, GravityStartAge = (float)w.StraightSeconds };
+                Assert.That(InkBallistics.Position(origin, velocity, w, age).y, Is.LessThan(origin.y));
+                Assert.That(InkBallistics.Position(shot, w, age), Is.EqualTo(InkBallistics.Position(origin, velocity, w, age)));
+                Assert.That(InkBallistics.Velocity(shot, w, age).y, Is.LessThan(0));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(copy); }
         }
 
         [TestCase(-1f)] [TestCase(float.NaN)] [TestCase(float.PositiveInfinity)]

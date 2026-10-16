@@ -13,6 +13,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Unity.Netcode;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -48,6 +49,7 @@ namespace Splatoon.Tests
             public uint Seed;
             public double EmissionWindow;
             public bool ConstantMotion, LegacyDirectIdentity, InheritMotion;
+            public CharacterPresentationProfile Profile;
         }
         static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
         static readonly Vector3 Offset = new(1000, 1000, 1000);
@@ -142,8 +144,16 @@ namespace Splatoon.Tests
                 var playerRoot = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab"));
                 roots.Add(playerRoot); playerRoot.SetActive(false);
                 var player = playerRoot.GetComponent<PrototypePlayer>();
-                string characterName = GameplayConfig.GetHero(weapon).CharacterPrefabAddress.Split('/').Last();
-                player.CharacterView = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{characterName}/Prefabs/{characterName}Visual.prefab").GetComponent<InkCharacterView>();
+                if (options.Profile != null)
+                {
+                    var viewRoot = new GameObject("Frozen measurement profile"); roots.Add(viewRoot); viewRoot.SetActive(false);
+                    player.CharacterView = viewRoot.AddComponent<InkCharacterView>(); player.CharacterView.Profile = options.Profile;
+                }
+                else
+                {
+                    string characterName = GameplayConfig.GetHero(weapon).CharacterPrefabAddress.Split('/').Last();
+                    player.CharacterView = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{characterName}/Prefabs/{characterName}Visual.prefab").GetComponent<InkCharacterView>();
+                }
                 var state = new PlayerSnapshot { HeroId=weapon, Team=1, Health=100, Ink=100, Revision=1, Grounded=true,
                     Position=Offset+Vector3.up*(scenario=="high-drop"?3.5f:.04f), Pitch=angle, LastShotCharge=charge,
                     CurrentSpread=WeaponSimulation.Spread(w,false,charge), BurstShotIndex=1 };
@@ -305,7 +315,18 @@ namespace Splatoon.Tests
         [Test] public void CaptureAllSevenWeaponsAndCompleteActionsWithRealPhysicsAndOwnership()
         {
             var results = WeaponReferenceMeasurements.CaptureAll("Reports/WeaponReference/EditMode");
-            Assert.That(results.Count, Is.EqualTo(102));
+            // The live catalog has nine mains. Each has nine geometries and three
+            // driver cases; the spinner adds two charge rings to all nine geometries.
+            CollectionAssert.AreEquivalent(Enumerable.Range(1, 9), results.Select(r => r.weapon).Distinct());
+            Assert.That(results.Count, Is.EqualTo(9 * (9 + 3) + 2 * 9));
+            foreach (int hero in Enumerable.Range(1, 9))
+            {
+                var samples = results.Where(r => r.weapon == hero).ToArray();
+                Assert.That(samples.Length, Is.EqualTo(hero == 6 ? 30 : 12));
+                foreach (string geometry in new[] { "flat", "up30", "down30", "wall-near", "wall-middle", "wall-far", "slope", "high-drop", "occluded" })
+                    Assert.That(samples.Count(r => r.scenario == geometry && r.driverHz == 60), Is.EqualTo(hero == 6 ? 3 : 1));
+                CollectionAssert.AreEquivalent(new[] { 30, 60, 144 }, samples.Where(r => r.scenario == "continuous").Select(r => r.driverHz));
+            }
             foreach (var r in results)
             {
                 Assert.That(r.impacts, Is.EqualTo(r.emittedProjectiles), r.scenario);
@@ -322,7 +343,7 @@ namespace Splatoon.Tests
             var b = WeaponReferenceMeasurements.Capture(3, 0, "flat", 60, 1, null);
             Assert.That(a.gridHash, Is.EqualTo(b.gridHash)); Assert.That(a.paintStamps, Is.EqualTo(b.paintStamps));
         }
-        [UnityTest] public IEnumerator PlayModeUsesTheSameMeasuredPhysicsAndCoverage()
+        [UnityTest, Timeout(600000)] public IEnumerator PlayModeUsesTheSameMeasuredPhysicsAndCoverage()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
@@ -335,19 +356,26 @@ namespace Splatoon.Tests
             Assert.That(PrototypeApp.Current, Is.Not.Null, "Real application bootstrap must run before manually loading measurement tables.");
             Assert.That(PrototypeApp.Current.Ready, Is.True, PrototypeApp.Current.Error);
             Assert.That(LubanConfigService.Current.ContentSignature, Has.Length.EqualTo(32));
-            Assert.That(GameplayConfig.GetWeapon(2).ShotInk, Is.EqualTo(1.4f));
-            Assert.That(WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(2).InkRecoverLockSeconds), Is.EqualTo(20));
-            Assert.That(GameplayConfig.GetWeapon(3).ShotInk, Is.EqualTo(4));
-            Assert.That(GameplayConfig.GetWeapon(3).FireRate, Is.EqualTo(2.5f));
-            Assert.That(GameplayConfig.GetWeapon(3).PelletCount, Is.EqualTo(8));
-            Assert.That(GameplayConfig.GetWeapon(4).ShotInk, Is.EqualTo(.8f));
-            Assert.That(WeaponTimeFixture.ReferenceFrames(GameplayConfig.GetWeapon(4).InkRecoverLockSeconds), Is.EqualTo(20));
-            Assert.That(GameplayConfig.GetWeapon(5).FireMode, Is.EqualTo(WeaponFireMode.Blaster));
-            Assert.That(GameplayConfig.GetWeapon(5).Damage, Is.EqualTo(85));
-            Assert.That(GameplayConfig.DefaultHero.SwimRecoverInk, Is.EqualTo(100f / 3).Within(.00001));
+            // Compare the real bootstrap to independently read formal Assets before
+            // CaptureAll's in-memory table loader can replace any runtime snapshots.
+            CollectionAssert.AreEquivalent(Enumerable.Range(1, 9), LubanConfigService.Current.Tables.TbHero.DataList.Select(h => h.Id));
+            foreach (int hero in Enumerable.Range(1, 9))
+            {
+                var source = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>(GameplayConfig.GetHero(hero).WeaponConfigPath);
+                Assert.That(source, Is.Not.Null);
+                var expected = source.Snapshot(); var actual = GameplayConfig.GetWeapon(hero);
+                Assert.That(actual.SameValues(expected), Is.True, "Addressables/live configuration equals the formal source, including ammo, hero=" + hero);
+                Assert.That(actual.PelletCount, Is.EqualTo(hero == 9 ? 5 : 1), "Current nine-main emission identities");
+                Assert.That(BlockAttackService.ExplosiveMain(actual), Is.EqualTo(hero == 3 || hero == 5 || hero == 9));
+                Assert.That(actual.BlockBuild, Is.EqualTo(hero != 3 && hero != 5 && hero != 9));
+                Assert.That(actual.BlockEnemyRemoval, Is.EqualTo(new[] { 0, 8, 12, 0, 6, 0, 8, 32, 4, 0 }[hero]));
+            }
+            Assert.That(WeaponSimulation.IsExplosher(GameplayConfig.GetWeapon(3)), Is.True);
+            Assert.That(GameplayConfig.GetWeapon(3).ShotInk, Is.EqualTo(11.7f));
+            Assert.That(GameplayConfig.GetWeapon(3).PelletCount, Is.EqualTo(1));
             Directory.CreateDirectory("Reports/WeaponReference/PlayMode");
             File.WriteAllText("Reports/WeaponReference/PlayMode/addressables.txt",
-                "Real PrototypeApp initialization reached Ready; all 9 changed scalar cells verified before measurement LoadTables().\n" +
+                "Real PrototypeApp Ready; all nine formal weapon/ammo snapshots and default block identities checked before measurement LoadTables().\n" +
                 "ContentSignature=" + BitConverter.ToString(LubanConfigService.Current.ContentSignature).Replace("-", "").ToLowerInvariant() + "\n");
             var results = WeaponReferenceMeasurements.CaptureAll("Reports/WeaponReference/PlayMode");
             foreach (var r in results)

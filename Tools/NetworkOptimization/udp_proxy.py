@@ -30,6 +30,8 @@ def run(args):
                       "rtt_ms": args.rtt, "jitter_ms_per_direction": args.jitter, "loss_percent": args.loss}), flush=True)
     try:
         while not args.seconds or time.monotonic() - started < args.seconds:
+            if getattr(args, "stop_file", None) and Path(args.stop_file).exists():
+                break
             now = time.monotonic()
             while scheduled and scheduled[0][0] <= now:
                 _, _, sock, destination, payload, direction = heapq.heappop(scheduled)
@@ -87,6 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=20260915)
     parser.add_argument("--seconds", type=float, default=0)
     parser.add_argument("--output")
+    parser.add_argument("--stop-file", help="Optional cooperative stop; flushes counters before exiting")
     options = parser.parse_args()
     if not (0 <= options.loss <= 100 and options.rtt >= 0 and options.jitter >= 0):
         parser.error("Delay/jitter must be nonnegative; loss must be between 0 and 100.")

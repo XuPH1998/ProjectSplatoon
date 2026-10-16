@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -28,7 +29,7 @@ namespace Splatoon.Tests
             while (!ready() && Time.realtimeSinceStartupAsDouble < end) yield return null;
             Assert.That(ready(), Is.True, label);
         }
-        [UnityTest] public IEnumerator HostChecksDamageFriendliesPaperOcclusionPaintAndPresentation()
+        [UnityTest, Timeout(600000)] public IEnumerator HostChecksDamageFriendliesPaperOcclusionPaintAndPresentation()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");
             yield return new EnterPlayMode(); yield return Scenario(); yield return new ExitPlayMode();
@@ -41,7 +42,7 @@ namespace Splatoon.Tests
         }
         static void Place(PrototypePlayer player, Vector3 position, byte team = 2, bool paper = false)
         {
-            var s = player.Snapshot.Value; s.Health = s.Ink = 100; s.ProtectedUntil = 0; s.Position = position;
+            var s = player.Snapshot.Value; s.Health = s.Ink = 100; s.LifeState = PlayerLifeState.Alive; s.BubbleUntil = 0; s.ProtectedUntil = 0; s.Position = position;
             s.Team = team; s.Swimming = paper; s.CompactBody = false; s.Grounded = true;
             s.Movement = paper ? MovementMode.GroundInk : MovementMode.Human; s.PaperPose = PaperPose.None;
             s.PlanarVelocity = Vector3.zero; s.VerticalSpeed = 0; s.AirHumanOffset = 0;
@@ -65,6 +66,7 @@ namespace Splatoon.Tests
             var enemy = match.AddTestBot(prefab); var second = match.AddTestBot(prefab);
             yield return Wait(() => enemy?.SwimBody != null && second?.SwimBody != null, "Authoritative bot bodies");
             app.CaptureMouse(false); match.enabled = false; foreach (var p in match.Players) p.enabled = false;
+            using var blocks = new BlockDefaultContractFixture(match);
             var w = GameplayConfig.GetWeapon(9); uint id = 190000; var origin = new Vector3(20, 40, 20);
             Place(host, origin + Vector3.back * 4 - Vector3.up, 1); Place(second, origin + Vector3.right * 20);
             InkShot Make(Vector3 point, Vector3 velocity) => new() { Id = ++id, Round = match.State.Value.Round, HeroId = 9,
@@ -92,17 +94,52 @@ namespace Splatoon.Tests
             Fire(); Assert.That(second.Snapshot.Value.Health, Is.InRange(75f, 99.99f), "Exposed neighbour receives splash");
             Object.DestroyImmediate(blocker); Place(second, origin + Vector3.right * 20);
 
-            var floor = Object.FindObjectsByType<PaintSurface>(FindObjectsSortMode.None)
-                .Where(s => s.Scores && s.GetComponent<Collider>() != null && s.GetComponent<Collider>().bounds.size.y < 2)
-                .OrderByDescending(s => s.GetComponent<Collider>().bounds.size.x * s.GetComponent<Collider>().bounds.size.z).First();
-            var floorCollider = floor.GetComponent<Collider>();
-            Assert.That(floorCollider.Raycast(new Ray(floorCollider.bounds.center + Vector3.up * 20, Vector3.down), out var floorHit, 40), Is.True);
+            // Ground tile bounds centers can lie below a ramp. A world ray, not a
+            // selected collider-only ray, locates the already qualified clear lane.
+            Assert.That(Physics.Raycast(new Vector3(0, 4, -20), Vector3.down, out var floorHit, 10,
+                PlayerMotorSimulation.WorldMask & ~(1 << BlockTerrain.TerrainLayer)), Is.True);
+            Assert.That(floorHit.collider.GetComponentInParent<PaintSurface>()?.Scores, Is.True);
+            Assert.That(floorHit.normal.y, Is.GreaterThan(.99));
             var paintOrigin = floorHit.point + Vector3.up * 1.3f;
+            var seed = blocks.Empty(); var center = BlockWorld.CellAt(floorHit.point + Vector3.up * .05f);
+            for (int x = -4; x <= 4; x++)
+            {
+                Assert.That(seed.Set(center + new Vector3Int(x, 0, -3), BlockCell.Create(1, true)), Is.True);
+                Assert.That(seed.Set(center + new Vector3Int(x, 0, 3), BlockCell.Create(2, true)), Is.True);
+            }
+            yield return blocks.Seed(seed); int friendlyBefore = blocks.Terrain.PinkCount, enemyBefore = blocks.Terrain.BlueCount;
+            uint legacyBefore = match.PaintSequence; double pointsBefore = host.Snapshot.Value.SpecialPoints;
             var paints = new List<PaintStamp>(); var paintService = new InkProjectileService { PaintObserved = paints.Add };
-            var paintShot = Make(paintOrigin, Vector3.down * 18); paintService.SpawnForMeasurement(paintShot); paintService.Simulate(paintShot.Born + 4);
-            Assert.That(paints.Count, Is.GreaterThan(0)); Assert.That(paints.Max(s => s.Radius), Is.GreaterThan(2));
-            Assert.That(match.PaintSequence, Is.GreaterThan(0)); yield return null;
-            Capture(paintOrigin, "wide-paint", new Vector3(4, 8, -6));
+            var paintShot = blocks.PaidShot(host, 9, ++id, paintOrigin, Vector3.down * 18);
+            var explosivePayment = paintShot.BlockAttack; float paidInk = host.Snapshot.Value.Ink;
+            Assert.That(explosivePayment.BuildLimit, Is.Zero, "Explosive main has no construction allowance");
+            paintService.SpawnForMeasurement(paintShot); paintService.Simulate(paintShot.Born + 4);
+            Assert.That(paintService.Explosions.Count, Is.EqualTo(1));
+            Assert.That(paints, Is.Empty); Assert.That(explosivePayment.RemovedEnemy, Is.Zero, "Unpublished blast pays nothing");
+            yield return blocks.Publish(() => explosivePayment.RemovedEnemy > 0);
+            // Independently inspect all 18 prescribed targets at the actual event
+            // centre before judging deletion; blocks cannot occlude this structure blast.
+            var evt = paintService.Explosions.Single();
+            foreach (var pair in seed.Chunks) for (int i = 0; i < BlockWorld.CellsPerChunk; i++)
+            {
+                var value = pair.Value.Cells[i]; if (!value.Occupied) continue;
+                var cell = BlockWorld.CellFromIndex(pair.Key, i); var point = BlockWorld.Center(cell);
+                float radius = InkExplosionRules.Radius(w.Ammo, evt.Collision) * (value.Owner == 1 ? .5f : 1);
+                Assert.That(Vector3.Distance(point, evt.Position), Is.LessThan(radius), "Every prescribed row cell is inside its team's full blast radius");
+                var delta = point - evt.Position;
+                Assert.That(Physics.RaycastAll(evt.Position, delta.normalized, Mathf.Max(0, delta.magnitude - .01f),
+                    PlayerMotorSimulation.WorldMask & ~(1 << BlockTerrain.TerrainLayer), QueryTriggerInteraction.Ignore)
+                    .Any(h => h.collider.GetComponentInParent<PrototypePlayer>() == null), Is.False, "Clear-lane oracle rejects unintended static shielding");
+                Assert.That(blocks.Terrain.World.TryGet(cell, out _), Is.False, "The full prescribed target set is removed");
+            }
+            int enemyRemoved = enemyBefore - blocks.Terrain.BlueCount;
+            Assert.That(enemyRemoved, Is.EqualTo(9)); Assert.That(friendlyBefore - blocks.Terrain.PinkCount, Is.EqualTo(9));
+            Assert.That(explosivePayment.Added, Is.Zero, "Explosion and all trail/foot paths create no blocks");
+            Assert.That(explosivePayment.RemovedEnemy, Is.EqualTo(enemyRemoved));
+            Assert.That(host.Snapshot.Value.SpecialPoints - pointsBefore,
+                Is.EqualTo(Math.Min(BlockGameplaySettings.MainSpecialPointCap, enemyRemoved / (double)BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001));
+            Assert.That(host.Snapshot.Value.Ink, Is.EqualTo(paidInk)); Assert.That(match.PaintSequence, Is.EqualTo(legacyBefore));
+            Capture(paintOrigin, "wide-block-destruction", new Vector3(4, 8, -6));
 
             var preservedShot = Make(origin, Vector3.forward * 18);
             var preservedService = new InkProjectileService(); preservedService.SpawnForMeasurement(preservedShot);
@@ -128,8 +165,19 @@ namespace Splatoon.Tests
             double born = shown[0].Born;
             foreach (double age in new[] { .1, .3, 2.0, 3.9 })
             { presentation.UpdateFlights(born + age + BubbleFlightPresentation.RenderDelay, Camera.main); Assert.That(presentation.ActiveShots, Is.EqualTo(w.PelletCount)); Capture(origin + Vector3.up * 2 + Vector3.forward * 4, "configured-bubbles-" + age.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture), new Vector3(5, 2, -7)); }
-            var mesh = presentation.GetComponentsInChildren<Renderer>().First(r => r.gameObject.name.StartsWith("BubbleInk") && r.gameObject.activeInHierarchy);
-            Assert.That(mesh.transform.localScale.x, Is.EqualTo(w.CollisionRadius * 2).Within(.001));
+            var instances = BlockDefaultContractFixture.RenderedInstances(presentation, 1, w.PelletCount);
+            for (int i = 0; i < shown.Count; i++)
+            {
+                Assert.That(BlockDefaultContractFixture.Flights(presentation).TryPosition(shown[i].Round, shown[i].Id,
+                    born + 3.9, out var actualPosition), Is.True);
+                Assert.That(Vector3.Distance(actualPosition, InkBallistics.Position(shown[i], w, 3.9)), Is.LessThan(.001), "Actual cube instance retains each pellet's physical trajectory");
+            }
+            foreach (var instance in instances)
+            {
+                Assert.That(instance.GetColumn(0).magnitude, Is.EqualTo(Mathf.Clamp(w.CollisionRadius * 2, .12f, .45f)).Within(.001));
+                Assert.That(instance.GetColumn(1).magnitude, Is.EqualTo(instance.GetColumn(0).magnitude).Within(.001));
+                Assert.That(instance.GetColumn(2).magnitude, Is.EqualTo(instance.GetColumn(0).magnitude).Within(.001));
+            }
             var old = GameplayConfig.GetWeapon(9);
             var weaponCopy = Object.Instantiate(WeaponConfigService.Current.Source(9)); weaponCopy.speedMin = weaponCopy.speedMax = 9;
             WeaponConfigService.Current.Replace(9, weaponCopy.Snapshot());
@@ -140,9 +188,13 @@ namespace Splatoon.Tests
             Assert.That(presentation.ActiveShots, Is.EqualTo(1), "Late restore and duplicate restore");
             var explosion = new InkExplosionEvent { Round = state.Shot.Round, ShotId = state.Shot.Id, HeroId = 9, ConfigurationRevision = state.Shot.ConfigurationRevision,
                 Position = InkBallistics.Position(state.Shot, w, 4), Normal = Vector3.up, Team = 1, Seed = 77, Time = born + 4 };
+            var terrainBeforePop = blocks.Capture(); double pointsBeforePop = host.Snapshot.Value.SpecialPoints;
             presentation.Explosion(explosion); presentation.Explosion(explosion); presentation.UpdateFlights(born + 4.11, Camera.main);
             Assert.That(presentation.ActiveShots, Is.Zero, "Explosion retires bubble on the same clock");
-            Assert.That(presentation.transform.Cast<Transform>().Count(t => t.name == "Ink explosion" && t.gameObject.activeSelf), Is.EqualTo(1));
+            int expectedDebris = Mathf.Clamp(Mathf.CeilToInt(InkExplosionRules.Radius(w.Ammo, false) * 18), 16, 64);
+            Assert.That(presentation.BlockDebrisCount, Is.EqualTo(expectedDebris), "Repeated explosion ID emits exactly one configured cube burst");
+            blocks.Unchanged(terrainBeforePop, "Duplicated explosion presentation cannot build or remove terrain");
+            Assert.That(host.Snapshot.Value.SpecialPoints, Is.EqualTo(pointsBeforePop), "Cosmetic debris pays no income");
             foreach (var ps in presentation.GetComponentsInChildren<ParticleSystem>()) ps.Simulate(.06f, false, true, false);
             Capture(explosion.Position, "bubble-pop", new Vector3(4, 3, -6));
             presentation.Spawn(state.Shot); presentation.UpdateFlights(born + 4.12, Camera.main); Assert.That(presentation.ActiveShots, Is.Zero);
@@ -151,15 +203,15 @@ namespace Splatoon.Tests
             presentation.Explosion(explosion); presentation.Spawn(lateShot); presentation.RestoreBubble(new InkBubbleState { Shot = lateShot, Segment = InkBounce.Initial(lateShot) });
             presentation.UpdateFlights(lateShot.Born + .31, Camera.main);
             Assert.That(presentation.ActiveShots, Is.Zero, "Explosion arriving before spawn and restore suppresses the old bubble");
-            presentation.Clear(); presentation.Clear();
+            presentation.Clear(); presentation.Clear(); blocks.Unchanged(terrainBeforePop, "Repeated visual clearing has no gameplay effects");
             app.OpenHeroSelection(HeroSelectionOrigin.Debug);
             typeof(PrototypeApp).GetField("_previewHeroId", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(app, 9);
             typeof(PrototypeApp).GetField("_heroCardScroll", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(app, new Vector2(0, 110));
             yield return null; File.Delete(Output + "/ninth-hero-selection.png");
             ScreenCapture.CaptureScreenshot(Output + "/ninth-hero-selection.png");
             yield return Wait(() => File.Exists(Output + "/ninth-hero-selection.png"), "Selection screenshot");
-            File.WriteAllText(Output + "/host-summary.txt", "PASS: nine heroes, direct 55/two-hit defeat, allies transparent, paper hit, occluded splash, wide real-map paint, five horizontal fan meshes with vertical jitter, duplicate/out-of-order restoration/explosion, immutable shots across hero and config changes, synchronized pop and clear. Host fixture only; independent clients and target-device performance not established.\n");
-            yield return app.Leave().ToCoroutine();
+            File.WriteAllText(Output + "/host-summary.txt", "PASS: nine heroes, direct 55/two-hit defeat, allies transparent, paper hit, occluded splash, paid real-map block destruction with zero construction, five horizontal cube instances with vertical jitter, duplicate/out-of-order restoration/explosion, immutable shots across hero and config changes, synchronized pop and clear. Host fixture only; independent clients and target-device performance not established.\n");
+            blocks.Dispose(); yield return app.Leave().ToCoroutine();
         }
         static void Capture(Vector3 target, string name, Vector3 offset)
         {

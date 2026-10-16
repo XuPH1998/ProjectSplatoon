@@ -7,12 +7,18 @@ namespace Splatoon.Config
         public static void Validate(WeaponRuntimeConfig w)
         {
             if (w == null) throw new InvalidOperationException("缺少武器配置");
+            Require(w.BlockEnemyRemoval >= 0 && float.IsFinite(w.BlockRemovalRadius) && w.BlockRemovalRadius > 0, "积木拆除额度或半径无效");
             Require(Enum.IsDefined(typeof(WeaponAimMode), w.AimMode) && Enum.IsDefined(typeof(FootSequenceBasis), w.FootSequence), "瞄准模式或脚下墨计数依据无效");
             if (w.AimMode == WeaponAimMode.WeaponReference)
-                Require(w.ReferenceRules && w.PelletCount == 1 && double.IsFinite(w.ShotGuideSeconds) && w.ShotGuideSeconds > 0 && w.ShotGuideSeconds <= w.Lifetime, "武器参考点需要单颗参考弹道和有效引导时间");
+            {
+                Require(w.ReferenceRules && w.PelletCount == 1, "武器参考点需要单颗参考弹道和有效引导时间");
+                Require(double.IsFinite(w.ShotGuideSeconds) && w.ShotGuideSeconds > 0 && w.ShotGuideSeconds <= w.Lifetime,
+                    WeaponConfigLabels.Name(nameof(w.ShotGuideSeconds)) + "在武器参考点模式下必须为有限正数且不超过弹丸寿命");
+            }
             if (w.InheritsMovement) Require(float.IsFinite(w.ShooterMoveForwardRate) && w.ShooterMoveForwardRate >= 0, "移动继承倍率无效");
             if (w.AngularSpread) Require(w.ReferenceRules && (w.ReferenceSpreadEnabled || w.MotionMode == ProjectileMotionMode.DualiesNormal), "角度域散布需要逐发偏置规则");
-            Require(double.IsFinite(w.ShooterPostSeconds) && w.ShooterPostSeconds >= 0, "射后动作时间无效");
+            Require(double.IsFinite(w.ShooterPostSeconds) && w.ShooterPostSeconds >= 0,
+                WeaponConfigLabels.Name(nameof(w.ShooterPostSeconds)) + "必须为有限非负数");
             Require(w.ReferenceFootDepth > 0, "脚下墨迹纵深比例必须大于0");
             if (w.ShooterDetails)
             {
@@ -29,9 +35,18 @@ namespace Splatoon.Config
                     w.ShooterFallHeightMax > w.ShooterFallHeightMin && w.ShooterSplashHeightMax > w.ShooterSplashHeightMin &&
                     w.ShooterSplashDepthMin > 0 && w.ShooterSplashDepthMax >= w.ShooterSplashDepthMin &&
                     w.ShooterSplashForwardMax >= w.ShooterSplashForwardMin, "射手落墨节点、循环或纵深无效");
-                Require(w.ShooterWallFirstMin > 0 && w.ShooterWallFirstMax >= w.ShooterWallFirstMin && w.ShooterWallMiddle > 0 &&
-                    w.ShooterWallLastMin > 0 && w.ShooterWallLastMax >= w.ShooterWallLastMin && w.ShooterWallGravity > 0 &&
-                    w.ShooterWallFirstSpeed > 0 && w.ShooterWallShockRadius > 0 && w.WallDropSpeed > 0, "射手墙墨阶段无效");
+                Require(double.IsFinite(w.ShooterWallFirstMin) && w.ShooterWallFirstMin > 0,
+                    WeaponConfigLabels.Name(nameof(w.ShooterWallFirstMin)) + "必须为有限正数");
+                Require(double.IsFinite(w.ShooterWallFirstMax) && w.ShooterWallFirstMax >= w.ShooterWallFirstMin,
+                    WeaponConfigLabels.Name(nameof(w.ShooterWallFirstMax)) + "必须为有限数且不小于" + WeaponConfigLabels.Name(nameof(w.ShooterWallFirstMin)));
+                Require(double.IsFinite(w.ShooterWallMiddle) && w.ShooterWallMiddle > 0,
+                    WeaponConfigLabels.Name(nameof(w.ShooterWallMiddle)) + "必须为有限正数");
+                Require(double.IsFinite(w.ShooterWallLastMin) && w.ShooterWallLastMin > 0,
+                    WeaponConfigLabels.Name(nameof(w.ShooterWallLastMin)) + "必须为有限正数");
+                Require(double.IsFinite(w.ShooterWallLastMax) && w.ShooterWallLastMax >= w.ShooterWallLastMin,
+                    WeaponConfigLabels.Name(nameof(w.ShooterWallLastMax)) + "必须为有限数且不小于" + WeaponConfigLabels.Name(nameof(w.ShooterWallLastMin)));
+                Require(w.ShooterWallGravity > 0 && w.ShooterWallFirstSpeed > 0 && w.ShooterWallShockRadius > 0 &&
+                    w.WallDropSpeed > 0, "射手墙墨阶段无效");
             }
             w.Ammo.Validate();
             if (w.MotionMode == ProjectileMotionMode.FloatingBubble)

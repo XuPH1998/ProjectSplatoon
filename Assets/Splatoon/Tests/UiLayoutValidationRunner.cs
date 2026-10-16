@@ -13,11 +13,9 @@ namespace Splatoon.Tests
     {
         const string Request = "Temp/ui-layout-validation.request";
         const string Active = "Splatoon.UiLayoutValidation.Active";
-        static TestRunnerApi _api;
         static UiLayoutValidationRunner()
         {
-            _api = ScriptableObject.CreateInstance<TestRunnerApi>();
-            _api.RegisterCallbacks(new Results());
+            TestRunnerApi.RegisterTestCallback(new Results());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -39,16 +37,21 @@ namespace Splatoon.Tests
                 if(SceneManager.GetSceneAt(i).isDirty) { File.WriteAllText("Reports/UiLayout/status.txt","Blocked: save open scene changes before UI validation."); return; }
             SessionState.SetBool(Active,true);
             File.WriteAllText("Reports/UiLayout/status.txt","Running focused layout and three-resolution UI interaction tests.");
-            _api.Execute(new ExecutionSettings(new Filter {
-                testMode=TestMode.EditMode,
-                testNames=new[] {
-                    "Splatoon.Tests.HeroSelectionPresentationTests.NineHeroesHaveDistinctNamedPortraitsRegisteredForPlayers",
-                    "Splatoon.Tests.HeroSelectionPresentationTests.NineCardsStayWithinWindowAndPortraitsRemainSquare",
-                    "Splatoon.Tests.HeroSelectionPresentationTests.HudEdgesAndWorldProjectionShareScreenSpaceWithoutStretch",
-                    "Splatoon.Tests.HeroSelectionPresentationTests.EveryEquipmentOptionFitsAboveFixedFooter",
-                    "Splatoon.Tests.HeroSelectionUiPlayTests.PortraitPickerAtAllThreeResolutions"
-                }
-            }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try
+            {
+                api.Execute(new ExecutionSettings(new Filter {
+                    testMode=TestMode.EditMode,
+                    testNames=new[] {
+                        "Splatoon.Tests.HeroSelectionPresentationTests.NineHeroesHaveDistinctNamedPortraitsRegisteredForPlayers",
+                        "Splatoon.Tests.HeroSelectionPresentationTests.NineCardsStayWithinWindowAndPortraitsRemainSquare",
+                        "Splatoon.Tests.HeroSelectionPresentationTests.HudEdgesAndWorldProjectionShareScreenSpaceWithoutStretch",
+                        "Splatoon.Tests.HeroSelectionPresentationTests.EveryEquipmentOptionFitsAboveFixedFooter",
+                        "Splatoon.Tests.HeroSelectionUiPlayTests.PortraitPickerAtAllThreeResolutions"
+                    }
+                }));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         sealed class Results : ICallbacks
         {

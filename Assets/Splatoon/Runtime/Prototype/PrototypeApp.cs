@@ -92,6 +92,7 @@ namespace Splatoon.Prototype
                 Manager.OnClientConnectedCallback += ClientConnected;
                 Manager.OnClientDisconnectCallback += ClientDisconnected;
                 Session = new NgLanSessionService(Manager);
+                await PrewarmCombatTextAsync("initialize", _operation.Token);
                 Ready = true; Status = "准备就绪，可以创建或加入房间";
                 _discovery.StartBrowsing();
                 Debug.Log("[LAN] Ready. Config loaded from Luban.");
@@ -146,6 +147,7 @@ namespace Splatoon.Prototype
                 await SubWeaponConfigService.Current.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token, IsWeaponDebugRoom);
                 await SpecialWeaponConfigService.Current.InitializeAsync(_operation.Token, IsWeaponDebugRoom);
                 await Heroes.InitializeAsync(LubanConfigService.Current.Tables.TbHero.DataList, _operation.Token);
+                await PrewarmCombatTextAsync("connect", _operation.Token);
                 var bindings = _playerPrefab.Result.GetComponent<PrototypePlayer>();
                 _signature = GameplayContentSignature.Compute(LubanConfigService.Current.ContentSignature, PrototypeArena.Current.BakedTopology, bindings, Heroes.All);
                 Manager.NetworkConfig.ConnectionData = PlayerConnectionPayload.Encode(_signature, SavedUsername);
@@ -158,6 +160,11 @@ namespace Splatoon.Prototype
                     var match = Instantiate(_matchPrefab.Result).GetComponent<PrototypeMatch>();
                     match.GetComponent<NetworkObject>().Spawn(true);
                     foreach (ulong id in Manager.ConnectedClientsIds) match.AddPlayer(id, _playerPrefab.Result);
+                    // Publish a usable host room only after a real completed NGO clock frame.
+                    await UniTask.WaitUntil(() => match == null || !match.IsSpawned || Manager == null ||
+                        !Manager.IsListening || match.ServerClockReady, cancellationToken: _operation.Token);
+                    if (match == null || !match.IsSpawned || Manager == null || !Manager.IsListening || !match.ServerClockReady)
+                        throw new InvalidOperationException("房间初始化失败，请重新创建。");
                 }
                 else
                 {
@@ -223,9 +230,10 @@ namespace Splatoon.Prototype
         }
         public void CaptureMouse(bool capture)
         { _captured = capture; if (capture) { _overlay = GameplayOverlay.Game; _fireInputBlocked = true; }
-          else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu; Cursor.lockState = capture ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !capture; }
+          else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu; bool captureSystemCursor = capture && CanCaptureSystemCursor; Cursor.lockState = captureSystemCursor ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !captureSystemCursor; }
         private void Update()
         {
+            ReleaseSystemCursorIfDisallowed();
             _discovery.Tick();
 #if UNITY_EDITOR
             ObserveDebugWeaponAssets();
@@ -274,7 +282,7 @@ namespace Splatoon.Prototype
             _button = new GUIStyle(GUI.skin.button) { fontSize = 20 };
             _field = new GUIStyle(GUI.skin.textField) { fontSize = 23, padding = new RectOffset(12,12,10,10) };
             foreach (var style in new[] { _title, _label, _small, _button, _field }) style.font = _chineseFont;
-            Debug.Log($"[中文字体] {_chineseFont.name}，房间涂墨字形={_chineseFont.HasCharacter('房') && _chineseFont.HasCharacter('间') && _chineseFont.HasCharacter('涂') && _chineseFont.HasCharacter('墨')}");
+            Debug.Log($"[中文字体] {_chineseFont.name}，积木材料字形={_chineseFont.HasCharacter('积') && _chineseFont.HasCharacter('木') && _chineseFont.HasCharacter('材') && _chineseFont.HasCharacter('料')}");
         }
         private void DrawAppGUI()
         {
@@ -302,7 +310,7 @@ namespace Splatoon.Prototype
                     Panel(new Rect(570, 440, 140 * charge, 7), PrototypeArena.TeamColor(player.Team));
                     bool limited = player.WeaponPhase == Splatoon.Combat.WeaponPhase.Charging && player.Ink < weapon.ShotInk &&
                         charge >= WeaponSimulation.AffordableChargeSeconds(weapon, player.Ink) / weapon.ChargeSeconds;
-                    GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "墨量限制，松开发射" : "松开发射"), _small);
+                    GUI.Label(new Rect(505,452,330,30), $"蓄力 {charge:P0} / " + (limited ? "材料限制，松开发射" : "松开发射"), _small);
                 }
                 Vector2 reticleCenter = new(local.ReticleViewport.x * 1280, (1 - local.ReticleViewport.y) * 720);
                 if (weapon.FireMode == WeaponFireMode.Splatling) DrawSplatlingHud(player, weapon, new Vector2(640, 520));
@@ -328,7 +336,7 @@ namespace Splatoon.Prototype
                 bool practice = state.Phase == MatchPhase.Practice;
                 float top = practice ? (Manager.IsHost ? 104 : 158) : 222;
                 Panel(new Rect(430,top,420,practice ? (Manager.IsHost ? 416 : 360) : 295),new Color(.055f,.075f,.1f,.97f));
-                string winner=PrototypeRules.Winner(state.PinkArea,state.BlueArea) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};
+                string winner=PrototypeRules.Winner(state.PinkBlockCount,state.BlueBlockCount) switch {1=>"粉队获胜",2=>"蓝队获胜",_=>"平局"};
                 GUI.Label(new Rect(463,top+20,360,44),state.Phase==MatchPhase.Finished?winner:"房间菜单",_label);
                 if(state.Phase!=MatchPhase.Finished && GUI.Button(new Rect(465,top+70,350,44),"继续游戏",_button)) CaptureMouse(true);
                 float extra = practice ? (Manager.IsHost ? 112 : 56) : 0;

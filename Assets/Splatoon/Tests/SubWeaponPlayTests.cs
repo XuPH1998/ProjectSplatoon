@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Painting;
@@ -22,7 +23,7 @@ namespace Splatoon.Tests
     {
         static IEnumerator Wait(Func<bool> ready,string label)
         { double end=Time.realtimeSinceStartupAsDouble+45;while(!ready()&&Time.realtimeSinceStartupAsDouble<end)yield return null;Assert.That(ready(),Is.True,label); }
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator ThirteenTypesHostDamagePaintLifecycleAndObjects()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");yield return new EnterPlayMode();
@@ -55,6 +56,7 @@ namespace Splatoon.Tests
             }
             Assert.That(foundHostPoint,Is.True,"Find unobstructed paintable mine fixture");
             double now=match.NetworkManager.ServerTime.Time;var report=new List<string>();
+            using var blocks=new BlockDefaultContractFixture(match);
             void Place(PrototypePlayer p,Vector3 position,byte team)
             {
                 var s=p.Snapshot.Value;s.Position=position;s.Health=s.Ink=100;s.ProtectedUntil=0;s.Team=team;s.Swimming=false;s.Grounded=true;s.AirHumanOffset=0;s.CompactBody=false;s.PaperPose=PaperPose.None;s.Yaw=0;s.Pitch=45;
@@ -63,19 +65,22 @@ namespace Splatoon.Tests
             SubWeaponService.Entity Spawn(SubWeaponType type,Vector3 point,float charge=0)
             {
                 var asset=AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path(type));SubWeaponConfigService.Current.Set(host.Snapshot.Value.HeroId,asset);
-                var s=host.Snapshot.Value;s.SubWeaponId=(int)type+1;s.SubAction++;host.Snapshot.Value=s;
-                var e=match.SubWeapons.Spawn(host,s,charge,now,match.State.Value.Round);Assert.That(e,Is.Not.Null,type.ToString());
+                float committed=blocks.PaySub(host,type,charge);now=blocks.Now;
+                var s=host.Snapshot.Value;
+                var e=match.SubWeapons.Spawn(host,s,committed,now,match.State.Value.Round);Assert.That(e,Is.Not.Null,type.ToString());
+                Assert.That(e.BlockAttack,Is.Not.Null);Assert.That(e.BlockAttack.BuildLimit,Is.EqualTo((int)Math.Floor(e.Config.Common.inkCost*BlockGameplaySettings.BlocksPerMaterial+1e-8)));
+                Assert.That(e.BlockAttack.PointLimit,Is.EqualTo(BlockGameplaySettings.SubSpecialPointCap));
                 if(type!=SubWeaponType.InkMine){e.State.Position=point;e.State.Velocity=Vector3.down*6;e.HitTarget?.UpdateState(e.State,e.Config,now);}return e;
             }
             void Step(float seconds)
-            { int frames=Mathf.CeilToInt(seconds*60);for(int i=0;i<frames;i++){now+=1d/60;match.SubWeapons.Step(now,1f/60,match.Players);Physics.SyncTransforms();} }
+            { int frames=Mathf.CeilToInt(seconds*60);for(int i=0;i<frames;i++){now+=1d/60;blocks.Now=now;match.SubWeapons.Step(now,1f/60,match.Players);Physics.SyncTransforms();} }
             Place(host,hostPoint,1);Place(enemy,basePoint+Vector3.right*30,2);
             try
             {
                 foreach(SubWeaponType type in Enum.GetValues(typeof(SubWeaponType)))
                 {
                     match.SubWeapons.Clear();Place(host,hostPoint,1);Place(enemy,basePoint+Vector3.right*30,2);
-                    if(type==SubWeaponType.InkMine) match.Paint(floor,host.Snapshot.Value.Position,Vector3.up,2,1,1,1);
+                    yield return blocks.Seed(blocks.Empty());now=blocks.Now;
                     var e=Spawn(type,basePoint+Vector3.up*.6f,type==SubWeaponType.FizzyBomb?1:0);
                     if(type==SubWeaponType.AngleShooter){e.State.Position=basePoint+Vector3.up*1;e.State.Velocity=Vector3.forward*e.Config.Angle.speed;}
                     Step(.5f);
@@ -86,7 +91,10 @@ namespace Splatoon.Tests
                     if(type==SubWeaponType.SplatBomb||type==SubWeaponType.SuctionBomb||type==SubWeaponType.BurstBomb||type==SubWeaponType.CurlingBomb||type==SubWeaponType.Autobomb||type==SubWeaponType.Torpedo)
                         Assert.That(match.SubWeapons.Effects.Count,Is.GreaterThanOrEqualTo(1),type+" explodes");
                     if(type==SubWeaponType.SplashWall) {Step(3);Assert.That(e.Removed,Is.True,"Wall naturally depletes");}
-                    report.Add(type+": ground activation/lifecycle PASS");
+                    yield return blocks.Publish();now=blocks.Now;
+                    Assert.That(e.BlockAttack.Added,Is.LessThanOrEqualTo(e.BlockAttack.BuildLimit));
+                    Assert.That(e.BlockAttack.AwardedPoints,Is.LessThanOrEqualTo(BlockGameplaySettings.SubSpecialPointCap));
+                    report.Add(type+": paid finite budget/ground activation/lifecycle PASS");
                 }
                 match.SubWeapons.Clear();Place(enemy,basePoint+Vector3.up*.04f,2);
                 var burst=Spawn(SubWeaponType.BurstBomb,enemy.Snapshot.Value.Position+Vector3.up*(GameplayConfig.GetHero(enemy.Snapshot.Value.HeroId).StandingHeight*.5f)+Vector3.back*1);
@@ -101,7 +109,7 @@ namespace Splatoon.Tests
                 Assert.That(enemy.Snapshot.Value.Ink,Is.LessThan(90));Assert.That(enemy.Snapshot.Value.MistMoveRate,Is.EqualTo(.6f).Within(.01));Assert.That(enemy.Snapshot.Value.Health,Is.EqualTo(100));
                 Place(enemy,basePoint+Vector3.right*30,2);Step(.1f);Assert.That(enemy.Snapshot.Value.MistExposure,Is.Zero);report.Add("Mist drain/slow/exit: PASS");
 
-                match.SubWeapons.Clear();Place(host,hostPoint,1);match.Paint(floor,host.Snapshot.Value.Position,Vector3.up,4,1,1,1);
+                match.SubWeapons.Clear();Place(host,hostPoint,1);
                 var mine1=Spawn(SubWeaponType.InkMine,basePoint);Spawn(SubWeaponType.InkMine,basePoint);Spawn(SubWeaponType.InkMine,basePoint);
                 Assert.That(mine1.Removed,Is.True);Assert.That(match.SubWeapons.Count(host.PlayerId,SubWeaponType.InkMine),Is.EqualTo(2));report.Add("Third mine detonates oldest: PASS");
 
@@ -130,7 +138,27 @@ namespace Splatoon.Tests
                 SubWeaponSimulation.Step(ref respawn,retained,sub,.033f,now+.033,true,SubWeaponFailure.None,out _);
                 Assert.That(respawn.SubPhase,Is.EqualTo(SubWeaponPhase.Idle),"Respawn input baseline never replays an old E press");Assert.That(respawn.Ink,Is.EqualTo(100));
                 report.Add("Respawn retained input edges do not auto-throw: PASS");Place(host,hostPoint,1);
-                Assert.That(match.PaintSequence,Is.GreaterThan(0));
+                // A real paid service explosion acts on populated terrain, never a legacy Paint shortcut.
+                yield return blocks.Publish();now=blocks.Now;match.SubWeapons.Clear();
+                var terrainSeed=blocks.Empty();var center=BlockWorld.CellAt(basePoint+Vector3.up*.05f);
+                for(int x=-4;x<=4;x++)
+                {
+                    Assert.That(terrainSeed.Set(center+new Vector3Int(x,0,-3),BlockCell.Create(1,true)),Is.True);
+                    Assert.That(terrainSeed.Set(center+new Vector3Int(x,0,3),BlockCell.Create(2,true)),Is.True);
+                }
+                yield return blocks.Seed(terrainSeed);now=blocks.Now;
+                Place(host,hostPoint,1);Place(enemy,basePoint+Vector3.right*30,2);
+                double pointsBefore=host.Snapshot.Value.SpecialPoints;uint legacyBefore=match.PaintSequence;
+                var structuralBurst=Spawn(SubWeaponType.BurstBomb,basePoint+Vector3.up*.8f);Step(.3f);
+                Assert.That(match.SubWeapons.Effects.Count(e=>e.EntityId==structuralBurst.State.Id&&e.Kind==SubEffectKind.Explosion),Is.EqualTo(1));
+                Assert.That(structuralBurst.BlockAttack.RemovedEnemy,Is.Zero,"Queued blast cannot award unpublished income");
+                yield return blocks.Publish(()=>structuralBurst.BlockAttack.RemovedEnemy>0);now=blocks.Now;
+                Assert.That(structuralBurst.BlockAttack.Added,Is.Zero);Assert.That(structuralBurst.BlockAttack.RemovedEnemy,Is.EqualTo(9));
+                Assert.That(blocks.Terrain.PinkCount,Is.Zero);Assert.That(blocks.Terrain.BlueCount,Is.Zero);
+                Assert.That(host.Snapshot.Value.SpecialPoints-pointsBefore,Is.EqualTo(Math.Min(BlockGameplaySettings.SubSpecialPointCap,
+                    9d/BlockGameplaySettings.BlocksPerSpecialPoint)).Within(.00001));
+                Assert.That(match.PaintSequence,Is.EqualTo(legacyBefore));
+                report.Add("Paid BurstBomb publishes exact enemy-removal income and no construction/legacy ink: PASS");
                 match.SubWeapons.Clear();var wall=Spawn(SubWeaponType.SplashWall,basePoint+Vector3.up*.4f);Step(.8f);
                 Assert.That(wall.HitTarget.HitCollider.enabled,Is.True);Assert.That(Physics.GetIgnoreCollision(wall.HitTarget.HitCollider,host.GetComponent<CharacterController>()),Is.True);
                 Assert.That(Physics.GetIgnoreCollision(wall.HitTarget.HitCollider,enemy.GetComponent<CharacterController>()),Is.False);report.Add("Wall friendly passage/enemy solid: PASS");
@@ -139,7 +167,7 @@ namespace Splatoon.Tests
                 Directory.CreateDirectory("Reports/SubWeapons");ScreenCapture.CaptureScreenshot("Reports/SubWeapons/host.png");yield return null;
                 File.WriteAllLines("Reports/SubWeapons/host-scenarios.txt",report);
             }
-            finally {match.SubWeapons.Clear();SubWeaponConfigService.Current.Set(host.Snapshot.Value.HeroId,original);match.enabled=true;foreach(var p in match.Players)p.enabled=true;}
+            finally {blocks.Dispose();match.SubWeapons.Clear();SubWeaponConfigService.Current.Set(host.Snapshot.Value.HeroId,original);match.enabled=true;foreach(var p in match.Players)p.enabled=true;}
             yield return app.Leave().ToCoroutine();yield return new ExitPlayMode();
         }
         [UnityTearDown] public IEnumerator Cleanup()

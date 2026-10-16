@@ -137,6 +137,7 @@ namespace Splatoon.Tests
         [TestCase(.3, 3.636, .36)] [TestCase(4, 4.968, .36)]
         public void AnalyticFlightHasTheAuthoredThreePhases(double age, double distance, double speed)
         {
+            using var historical = new HistoricalBubbleContractFixture();
             var shot = Shot(); Assert.That(InkBallistics.Position(shot, W, age).z - Origin.z, Is.EqualTo(distance).Within(.00005));
             Assert.That(InkBallistics.Velocity(shot, W, age).z, Is.EqualTo(speed).Within(.00002));
             Assert.That(WeaponSimulation.Damage(W, age), Is.EqualTo(55));
@@ -144,6 +145,7 @@ namespace Splatoon.Tests
         [TestCase(30)] [TestCase(60)] [TestCase(144)]
         public void LifetimeIsFourSecondsAndExplodesExactlyOnceAcrossDriverRates(int rate)
         {
+            using var historical = new HistoricalBubbleContractFixture();
             var service = Fire(); for (int i = 1; i < 4 * rate; i++) service.Simulate(i / (double)rate);
             Assert.That(service.ActiveCount, Is.EqualTo(1)); Assert.That(service.Explosions, Is.Empty);
             service.Simulate(4); service.Simulate(8);
@@ -201,6 +203,7 @@ namespace Splatoon.Tests
         }
         [Test] public void FlatPaintEnvelopeUsesTheSphereProjection()
         {
+            using var historical = new HistoricalBubbleContractFixture();
             var range = new WeaponRangeMetrics(W);
             Assert.That(range.Flat, Is.EqualTo(4.968f).Within(.0001f));
             Assert.That(range.PaintEnvelope, Is.InRange(7.57f, 7.58f));
@@ -219,6 +222,7 @@ namespace Splatoon.Tests
         }
         [Test] public void NoPaintIsEmittedDuringFlightAndExpiryFloorFootprintIsWide()
         {
+            using var historical = new HistoricalBubbleContractFixture();
             Box(Origin + Vector3.down * 1.3f, new Vector3(20, .1f, 20), 993);
             var service = new InkProjectileService(); var stamps = new List<PaintStamp>(); service.PaintObserved = stamps.Add;
             service.SpawnForMeasurement(Shot()); service.Simulate(.5); Assert.That(stamps, Is.Empty);
@@ -300,8 +304,84 @@ namespace Splatoon.Tests
             times.Sort(); File.WriteAllText("Reports/BubbleShotgun/paint-pool-budget.txt",
                 $"Eight shooters, six volleys each, {stamps.Count} explosion stamps; visual peak {peak}, dropped {visual.Dropped}; simulation and paint-query p95 {times[(int)(times.Count*.95)]:F4} ms, max {times.Last():F4} ms. Editor fixture includes collision and paint occlusion queries; no arena upload/GPU/device claim.\n");
         }
+        // Current production assets remain independently exercised beside the old contract.
+        static double CurrentFloatingDistance(WeaponRuntimeConfig w, double age)
+        {
+            double straight = Math.Min(age, w.StraightSeconds);
+            double braking = Math.Max(0, Math.Min(age - w.StraightSeconds, w.BrakeSeconds));
+            double slow = Math.Max(0, age - w.StraightSeconds - w.BrakeSeconds);
+            double endSpeed = w.SpeedMin * w.BrakeSpeedMultiplier;
+            double slope = (endSpeed - w.SpeedMin) / w.BrakeSeconds;
+            return straight * w.SpeedMin + braking * w.SpeedMin + slope * braking * braking / 2 + slow * endSpeed;
+        }
+        [TestCase(.1)] [TestCase(.3)] [TestCase(1.25)] [TestCase(4)]
+        public void CurrentAuthoredFloatingTrajectoryUsesItsTunedBrakeAndGravity(double age)
+        {
+            Assert.That(W.MotionMode, Is.EqualTo(ProjectileMotionMode.FloatingBubble));
+            Assert.That(W.PelletCount, Is.EqualTo(5)); Assert.That(W.StraightSeconds, Is.Zero);
+            Assert.That(W.BrakeSeconds, Is.EqualTo(1.25)); Assert.That(W.BrakeSpeedMultiplier, Is.EqualTo(.1f));
+            Assert.That(W.ProjectileGravity, Is.EqualTo(1.5f)); WeaponConfigValidation.Validate(W);
+            var shot = Shot(); var position = InkBallistics.Position(shot, W, age); var velocity = InkBallistics.Velocity(shot, W, age);
+            double speed = age < W.BrakeSeconds ? W.SpeedMin + (W.SpeedMin * W.BrakeSpeedMultiplier - W.SpeedMin) * age / W.BrakeSeconds : W.SpeedMin * W.BrakeSpeedMultiplier;
+            Assert.That(position.z - Origin.z, Is.EqualTo(CurrentFloatingDistance(W, age)).Within(.00005));
+            Assert.That(velocity.z, Is.EqualTo(speed).Within(.00002));
+            Assert.That(position.y - Origin.y, Is.EqualTo(-W.ProjectileGravity * age * age / 2).Within(.00005));
+            Assert.That(velocity.y, Is.EqualTo(-W.ProjectileGravity * age).Within(.00002));
+        }
+        [TestCase(30)] [TestCase(60)] [TestCase(144)]
+        public void CurrentAuthoredLifetimeExpiresOnceAcrossDriverRates(int rate)
+        {
+            var service = Fire();
+            for (int i = 1; i < W.Lifetime * rate; i++) service.Simulate(i / (double)rate);
+            Assert.That(service.ActiveCount, Is.EqualTo(1)); Assert.That(service.Explosions, Is.Empty);
+            service.Simulate(W.Lifetime); service.Simulate(W.Lifetime + 4);
+            Assert.That(service.ActiveCount, Is.Zero); Assert.That(service.Explosions.Count, Is.EqualTo(1));
+            var explosion = service.Explosions.Single();
+            Assert.That(explosion.Time, Is.EqualTo(W.Lifetime)); Assert.That(explosion.Collision, Is.False);
+            Assert.That(service.Impacts.Single().Time, Is.EqualTo(W.Lifetime));
+            Assert.That(explosion.Position.z - Origin.z, Is.EqualTo(CurrentFloatingDistance(W, W.Lifetime)).Within(.00005));
+            Assert.That(explosion.Position.y - Origin.y, Is.EqualTo(-W.ProjectileGravity * W.Lifetime * W.Lifetime / 2).Within(.00005));
+        }
+        [Test] public void CurrentAuthoredFlatEnvelopeStopsAtItsGroundSphereContact()
+        {
+            double time = Math.Min(W.Lifetime, W.StraightSeconds + Math.Sqrt(2 * (1.4 - W.CollisionRadius) / W.ProjectileGravity));
+            double height = 1.4 - W.ProjectileGravity * Math.Pow(time - W.StraightSeconds, 2) / 2;
+            double distance = CurrentFloatingDistance(W, time);
+            double projection = Math.Sqrt(W.Ammo.ExplosionPaintRadiusMax * W.Ammo.ExplosionPaintRadiusMax - height * height);
+            var range = new WeaponRangeMetrics(W);
+            Assert.That(range.Grounded, Is.True); Assert.That(range.Flat, Is.EqualTo(distance).Within(.0001));
+            Assert.That(range.PaintEnvelope, Is.EqualTo(distance + projection).Within(.0001));
+        }
+        [Test] public void CurrentAuthoredExpiryPaintHasNoFlightStampsAndUsesItsOwnWideProjection()
+        {
+            var shot = Shot(); Vector3 end = InkBallistics.Position(shot, W, W.Lifetime);
+            Box(end - Vector3.up * (W.CollisionRadius + .15f), new Vector3(20, .1f, 20), 996);
+            var stamps = new List<PaintStamp>(); var service = new InkProjectileService { PaintObserved = stamps.Add };
+            service.SpawnForMeasurement(shot); Assert.That(stamps, Is.Empty);
+            service.Simulate(W.Lifetime - .001); Assert.That(stamps, Is.Empty); Assert.That(service.Explosions, Is.Empty);
+            service.Simulate(W.Lifetime);
+            Assert.That(service.Explosions.Count, Is.EqualTo(1)); Assert.That(service.Explosions.Single().Collision, Is.False);
+            Assert.That(stamps.Count, Is.EqualTo(1)); Assert.That(stamps.Single().SurfaceId, Is.EqualTo(996));
+            Assert.That(stamps.Single().Radius, Is.GreaterThan(2.5f)); Assert.That(stamps.Single().Radius, Is.LessThanOrEqualTo(W.Ammo.ExplosionPaintRadiusMax));
+        }
+        [Test] public void CurrentAuthoredNineCardLayoutFitsAllCardsAndKeepsEquipmentReachable()
+        {
+            var viewport = HeroSelectionLayout.CardViewport;
+            Assert.That(HeroSelectionLayout.ContentHeight(9), Is.EqualTo(viewport.height));
+            for (int i = 0; i < 9; i++)
+            {
+                var card = HeroSelectionLayout.Card(i);
+                Assert.That(card.xMin, Is.GreaterThanOrEqualTo(viewport.xMin)); Assert.That(card.xMax, Is.LessThanOrEqualTo(viewport.xMax));
+                Assert.That(card.yMin, Is.GreaterThanOrEqualTo(viewport.yMin)); Assert.That(card.yMax, Is.LessThanOrEqualTo(viewport.yMax));
+            }
+            Assert.That(HeroSelectionLayout.Confirm, Is.EqualTo(new Rect(1028, 655, 185, 36)));
+            Assert.That(HeroSelectionLayout.Confirm.yMax, Is.LessThanOrEqualTo(HeroSelectionLayout.Window.yMax));
+            Assert.That(HeroSelectionLayout.Equipment.xMin, Is.GreaterThan(viewport.xMax));
+        }
         [Test] public void NinthCardIsReachableWithoutMovingTheDetailsAndConfirm()
         {
+            // This local names the complete historical layout; production layout has separate coverage above.
+            var HeroSelectionLayout = new HistoricalHeroSelectionLayoutFixture();
             float height = HeroSelectionLayout.ContentHeight(9);
             Assert.That(height, Is.GreaterThan(HeroSelectionLayout.CardViewport.height));
             var card = HeroSelectionLayout.Card(8); card.y -= height - HeroSelectionLayout.CardViewport.height;

@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-16T13:15:31.187383+00:00",
+  "inputProfile": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\Windows37CpuDiagnosis02\\CpuRun01\\prototype-v1\\steady250k\\0fbfaddc\\host.sampling.cpu.raw",
+  "bytes": 4293000736,
+  "mtimeNs": 1792156127541570200,
+  "sha256": "986b2dc9efb9d2716eeba406a0755842647ce6ac50f767e7be90194d2f40bc20",
+  "sourceProcessExited": true,
+  "finalFlushProven": false,
+  "finalSidecarMissing": true,
+  "diagnosticOnly": true,
+  "performanceAcceptance": false
+}

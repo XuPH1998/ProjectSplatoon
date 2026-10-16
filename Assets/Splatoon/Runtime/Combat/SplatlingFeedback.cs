@@ -22,6 +22,11 @@ namespace Splatoon.Combat
             _audio.pitch=Mathf.Lerp(.6f,2.4f,WeaponSimulation.ChargeRatio(state,config));
             _audio.volume=Mathf.MoveTowards(_audio.volume,active?.2f:0,dt*2);
             if(active&&!_audio.isPlaying)_audio.Play();else if(!active&&_audio.volume<=0)_audio.Stop();
+            if (Splatoon.Blocks.BlockTerrain.Current != null)
+            {
+                if (_charge != null) { Destroy(_charge.gameObject); _charge = null; }
+                return;
+            }
             if(_charge==null&&muzzle!=null&&material!=null)
             {
                 var go=new GameObject("Charge feedback");go.transform.SetParent(muzzle,false);_charge=go.AddComponent<ParticleSystem>();

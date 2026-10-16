@@ -65,6 +65,11 @@ namespace Splatoon.Config
             Require(global.SnapshotChunkBytes >= 512 && global.SnapshotChunkBytes <= 8192 && global.ChunksPerFrame > 0 && global.ChunksPerFrame <= 32 && global.CheckpointStamps >= 32, "同步预算无效");
             Require(global.SnapshotBytesPerSecond > 0 && global.SnapshotMaxInFlightRecords >= 1 && global.SnapshotMaxInFlightRecords <= 32, "补同步速率或在途窗口无效");
             Require(global.PaintThreshold > 0 && global.PaintThreshold <= 1 && global.MaxPaintMemoryMiB > 0 && global.PaintWorldUvScale > 0 && global.PaintWorldUvScale <= 1 && global.PaintShapeNoiseScale > 0 && global.PaintShapeNoiseScale <= 512, "涂色阈值或内存预算无效");
+            Require(global.BlockBlocksPerMaterial > 0 && global.BlockMainAttackMaxBlocks > 0 &&
+                float.IsFinite(global.BlockAuxiliaryBudgetFraction) && global.BlockAuxiliaryBudgetFraction >= 0 && global.BlockAuxiliaryBudgetFraction <= 1 &&
+                float.IsFinite(global.BlockFriendlyBlastRadiusFraction) && global.BlockFriendlyBlastRadiusFraction >= 0 && global.BlockFriendlyBlastRadiusFraction <= 1 &&
+                global.BlockBlocksPerSpecialPoint > 0 && global.BlockMainSpecialPointCap >= 0 && global.BlockSubSpecialPointCap >= 0 && global.BlockNetworkBytesPerSecond >= 1024,
+                "积木攻击预算、充能或网络传输配置无效");
         }
         private static void Require(bool valid, string message) { if (!valid) throw new InvalidOperationException(message); }
     }

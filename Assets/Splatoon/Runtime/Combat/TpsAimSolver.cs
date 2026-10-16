@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Splatoon.Config;
 using Splatoon.Prototype;
+using Splatoon.Blocks;
 using UnityEngine;
 
 namespace Splatoon.Combat
@@ -11,6 +12,7 @@ namespace Splatoon.Combat
         public Collider Collider;
         public Vector3 Point, Normal, Center;
         public float Distance;
+        [NonSerialized] public BlockQueryContact BlockQuery;
     }
 
     public struct TpsAimSolution
@@ -58,7 +60,7 @@ namespace Splatoon.Combat
 
         public static void UnembedFloatingContact(ref TpsCollision contact, float radius)
         {
-            if (contact.Collider == null || contact.Collider.GetComponentInParent<PrototypePlayer>() != null ||
+            if (contact.BlockQuery.IsKnown || contact.Collider == null || contact.Collider.GetComponentInParent<PrototypePlayer>() != null ||
                 (contact.Point - contact.Center).sqrMagnitude > 1e-8f) return;
             Vector3 normal = contact.Normal.sqrMagnitude > .0001f ? contact.Normal.normalized : Vector3.back;
             float length = contact.Collider.bounds.size.magnitude + radius + 1;
@@ -125,10 +127,20 @@ namespace Splatoon.Combat
                     var h = _hits[i]; nearest = h.distance;
                     closest = new TpsCollision { Collider = h.collider, Point = h.point, Normal = h.normal, Distance = h.distance, Center = origin + direction * h.distance };
                 }
+            // Falling blocks have no locomotion collider. Their authoritative column
+            // geometry still participates in shooting, including friendly blocks.
+            if (playersOnly != true && BlockTerrain.Current != null &&
+                BlockTerrain.Current.RaycastFalling(origin, direction, distance, radius, out var falling) && falling.Distance < nearest)
+            {
+                nearest = falling.Distance;
+                closest = new TpsCollision { Collider = falling.Collider, Point = falling.Point, Normal = falling.Normal,
+                    Distance = falling.Distance, Center = origin + direction * falling.Distance,
+                    BlockQuery = BlockQueryContact.Falling(BlockTerrain.Current, falling) };
+            }
             return nearest < float.PositiveInfinity;
         }
 
-        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null, bool floatingMesh = false)
+        public bool Overlap(Vector3 origin, float radius, ulong shooter, Vector3 fallbackNormal, out TpsCollision closest, bool? playersOnly = null, byte? ignoreTeam = null, HashSet<(ulong player, uint life)> ignored = null, bool floatingMesh = false, bool embeddedMeshSurface = false)
         {
             closest = default;
             int count;
@@ -139,17 +151,34 @@ namespace Splatoon.Combat
                 Array.Resize(ref _overlaps, _overlaps.Length * 2);
             } while (true);
             float nearest = float.PositiveInfinity;
+            var terrain = BlockTerrain.Current;
             for (int i = 0; i < count; i++)
             {
                 var collider = _overlaps[i];
                 if (!Valid(collider, shooter, ignoreTeam) || Ignored(collider, ignored) || !Matches(collider,playersOnly)) continue;
+                // Chunk meshes are concave and may omit interior faces. Query their
+                // published occupied cells below, including fully embedded spheres.
+                if (terrain != null && terrain.IsStableCollider(collider)) continue;
                 var paper = collider.GetComponentInParent<SwimBody>();
-                Vector3 point = paper != null && collider == paper.HitVolume && !paper.HitVolume.convex
-                    ? paper.ClosestHitPoint(origin) : floatingMesh ? FloatingBubbleOverlap.Point(collider, origin, radius) : collider.ClosestPoint(origin);
+                Vector3 point, normal = fallbackNormal;
+                bool recoveredMeshSurface = false;
+                if (paper != null && collider == paper.HitVolume && !paper.HitVolume.convex)
+                    point = paper.ClosestHitPoint(origin);
+                else if (collider is MeshCollider mesh && !mesh.convex)
+                {
+                    // Sphere-versus-mesh penetration is supported by PhysX; ClosestPoint
+                    // is not. A failed front-face query is not a contact at the origin.
+                    if (!FloatingBubbleOverlap.TryContact(collider, origin, radius, out point, out normal))
+                    {
+                        if (!embeddedMeshSurface || !FloatingBubbleOverlap.TryMeshSurfaceContact(mesh, origin, radius, fallbackNormal, out point, out normal)) continue;
+                        recoveredMeshSurface = true;
+                    }
+                }
+                else point = collider.ClosestPoint(origin);
                 Vector3 delta = origin - point;
                 if (delta.sqrMagnitude >= nearest) continue;
                 nearest = delta.sqrMagnitude;
-                closest = new TpsCollision { Collider = collider, Point = point, Normal = nearest > Epsilon * Epsilon ? delta.normalized : fallbackNormal,
+                closest = new TpsCollision { Collider = collider, Point = point, Normal = recoveredMeshSurface ? normal : nearest > Epsilon * Epsilon ? delta.normalized : normal,
                     Distance = Mathf.Sqrt(nearest), Center = origin };
             }
             // PhysX may omit a sphere fully contained inside a non-convex mesh.
@@ -163,6 +192,24 @@ namespace Splatoon.Combat
                 nearest = squared;
                 closest = new TpsCollision { Collider = paper.HitVolume, Point = point,
                     Normal = squared > Epsilon * Epsilon ? delta.normalized : fallbackNormal, Distance = Mathf.Sqrt(squared), Center = origin };
+            }
+            if (playersOnly != true && terrain != null)
+            {
+                if (terrain.TryOverlapStable(origin, radius, fallbackNormal, out var blockCollider, out var block, out float distance)
+                    && Valid(blockCollider, shooter, ignoreTeam) && !Ignored(blockCollider, ignored)
+                    && distance * distance < nearest)
+                {
+                    nearest = distance * distance;
+                    closest = new TpsCollision { Collider = blockCollider, Point = block.Point, Normal = block.Normal,
+                        Distance = distance, Center = origin, BlockQuery = BlockQueryContact.Stable(terrain, block) };
+                }
+                Vector3 direction = fallbackNormal.sqrMagnitude > Epsilon * Epsilon ? -fallbackNormal.normalized : Vector3.down;
+                if (terrain.RaycastFalling(origin, direction, Epsilon, radius, out var falling) && falling.Distance * falling.Distance < nearest)
+                {
+                    nearest = falling.Distance * falling.Distance;
+                    closest = new TpsCollision { Collider = falling.Collider, Point = falling.Point, Normal = falling.Normal,
+                        Distance = falling.Distance, Center = origin, BlockQuery = BlockQueryContact.Falling(terrain, falling) };
+                }
             }
             return nearest < float.PositiveInfinity;
         }

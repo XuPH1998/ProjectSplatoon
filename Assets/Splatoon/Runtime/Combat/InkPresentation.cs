@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Splatoon.Config;
 using Splatoon.Prototype;
+using Splatoon.Blocks;
 
 namespace Splatoon.Combat
 {
@@ -11,6 +12,14 @@ namespace Splatoon.Combat
     {
         public static InkPresentation Current { get; private set; }
         public ParticleSystem StreamPrefab, ImpactPrefab;
+        public bool BlockMode => BlockTerrain.Current != null && BlockTerrain.Current.Initialized;
+        BlockFlightPresentation _blocks;
+        BlockFlightPresentation Blocks { get { ActivateBlockMode(); return _blocks ??= new BlockFlightPresentation(transform); } }
+        bool _blockActivated, _impactPoolPrepared;
+        public int BlockCubeCount => _blocks?.CubeCount ?? 0;
+        public int BlockDebrisCount => _blocks?.DebrisCount ?? 0;
+        public void BlockBurst(Vector3 position, Vector3 normal, byte team, uint seed, double time, float radius)
+        { if (BlockMode) Blocks.Burst(position, normal, team, seed, time, radius); }
         BubbleFlightPresentation _bubbles;
         BubbleFlightPresentation Bubbles => _bubbles ??= new BubbleFlightPresentation(transform);
         readonly List<(InkImpact impact, AmmoRuntimeConfig ammo)> _bubbleCompletions = new(384);
@@ -27,6 +36,7 @@ namespace Splatoon.Combat
         // Conservative gate for the two gameplay-owned ink layers. Unknown filters still render.
         public bool HasCompositeContent(int layerMask)
         {
+            if (BlockMode && (layerMask & ~((1 << InkFlightPresentation.Layer) | (1 << 9))) == 0) return false;
             foreach (var burst in _explosionEffects) if ((burst.layers & layerMask) != 0) return true;
             if (layerMask == 1 << InkFlightPresentation.Layer)
             {
@@ -67,16 +77,36 @@ namespace Splatoon.Combat
         readonly List<(GameObject effect, float until, GameObject prefab, int layers)> _explosionEffects = new(32);
         readonly Dictionary<GameObject, Queue<GameObject>> _explosionPool = new();
         readonly HashSet<(uint round, uint id)> _seenExplosions = new();
+        readonly Queue<(uint round, uint id)> _explosionOrder = new(8192);
         private void Awake()
         {
             Current = this;
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return;
             _camera = Camera.main;
+            if (!BlockMode) PrepareImpactPool();
+        }
+        void PrepareImpactPool()
+        {
+            if (_impactPoolPrepared || ImpactPrefab == null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return;
+            _impactPoolPrepared = true;
             for (int i = 0; ImpactPrefab != null && i < 96; i++)
             {
                 var effect = Instantiate(ImpactPrefab, transform).GetComponent<InkImpactEffect>();
                 effect.Stop(); effect.gameObject.SetActive(false); _pool.Enqueue(effect);
             }
+        }
+        void ActivateBlockMode()
+        {
+            if (_blockActivated) return;
+            _blockActivated = true;
+            _bubbles?.Dispose(); _bubbles = null;
+            foreach (var version in _flights) version.Flight.Dispose(); _flights.Clear();
+            foreach (var muzzle in _muzzles) if (muzzle != null) muzzle.Stop();
+            foreach (var pair in _effects) if (pair.effect != null) HeroViewBinder.Destroy(pair.effect.gameObject); _effects.Clear();
+            while (_pool.Count > 0) { var effect = _pool.Dequeue(); if (effect != null) HeroViewBinder.Destroy(effect.gameObject); }
+            foreach (var pair in _explosionEffects) if (pair.effect != null) HeroViewBinder.Destroy(pair.effect); _explosionEffects.Clear();
+            foreach (var pool in _explosionPool.Values) while (pool.Count > 0) { var effect = pool.Dequeue(); if (effect != null) HeroViewBinder.Destroy(effect); }
+            _explosionPool.Clear();
         }
         public void Spawn(InkShot shot)
         {
@@ -85,6 +115,12 @@ namespace Splatoon.Combat
             if (_shotAmmo.ContainsKey((shot.Round, shot.Id))) return;
             shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
             if (shot.Configuration?.Ammo != null) _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo;
+            if (BlockMode)
+            {
+                double blockNow = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : shot.Born;
+                if (Blocks.Spawn(shot, blockNow) && PrototypePlayer.ByOwner.TryGetValue(shot.Shooter, out var blockPlayer)) blockPlayer.PredictShotFeedback(shot);
+                return;
+            }
             if (WeaponSimulation.UsesBubbleMesh(shot.Configuration))
             {
                 double bubbleNow = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : shot.Born;
@@ -100,6 +136,7 @@ namespace Splatoon.Combat
         {
             if (bounce.Round < _round || bounce.Time < _cutoff || _completed.Contains((bounce.Round, bounce.Id))) return;
             BubbleBounceCount++;
+            if (BlockMode) { Blocks.Bounce(bounce); return; }
             Bubbles.Bounce(bounce);
         }
         public void RestoreExplosher(InkShot shot, double capturedAt)
@@ -108,7 +145,7 @@ namespace Splatoon.Combat
             shot.Configuration ??= WeaponConfigService.Current.ForShot(shot.HeroId, shot.ConfigurationRevision);
             if (shot.Configuration == null || !WeaponSimulation.IsExplosher(shot.Configuration)) return;
             double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : capturedAt;
-            if (ForAmmo(shot.Configuration.Ammo)?.Spawn(shot, now, true) != true) return;
+            if (BlockMode ? !Blocks.Spawn(shot, now, true) : ForAmmo(shot.Configuration.Ammo)?.Spawn(shot, now, true) != true) return;
             _round = shot.Round; _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo; ExplosherRestoredCount++;
             // Restore current flight only; never replay the old muzzle or character animation.
         }
@@ -120,13 +157,21 @@ namespace Splatoon.Combat
             if (!WeaponSimulation.UsesBubbleMesh(shot.Configuration) || _shotAmmo.ContainsKey((shot.Round, shot.Id))) return;
             _round = shot.Round; _shotAmmo[(shot.Round, shot.Id)] = shot.Configuration.Ammo;
             double now = PrototypeMatch.Current != null ? PrototypeMatch.Current.NetworkManager.ServerTime.Time : state.Segment.Time;
-            if (Bubbles.Spawn(shot, now)) BubbleRestoredCount++;
-            if (!WeaponSimulation.IsFloatingBubble(shot.Configuration) && state.Segment.Sequence > 0) Bubbles.Bounce(state.Segment, false);
+            if (BlockMode)
+            {
+                if (Blocks.Spawn(shot, now, true)) BubbleRestoredCount++;
+                if (!WeaponSimulation.IsFloatingBubble(shot.Configuration) && state.Segment.Sequence > 0) Blocks.Bounce(state.Segment);
+            }
+            else
+            {
+                if (Bubbles.Spawn(shot, now)) BubbleRestoredCount++;
+                if (!WeaponSimulation.IsFloatingBubble(shot.Configuration) && state.Segment.Sequence > 0) Bubbles.Bounce(state.Segment, false);
+            }
         }
         public void Impact(InkImpact impact)
         {
             if (impact.Damage > 0 && PrototypePlayer.ByOwner.TryGetValue(impact.Shooter, out var shooter)) shooter.ConfirmHit(impact);
-            if (impact.ContinuesProjectile) return;
+            if (impact.ContinuesProjectile) { if (BlockMode) Blocks.Impact(impact); return; }
             if (_completed.Contains((impact.Round, impact.Id))) return;
             _shotAmmo.TryGetValue((impact.Round, impact.Id), out var ammo);
             if (_completed.Add((impact.Round, impact.Id)))
@@ -134,7 +179,7 @@ namespace Splatoon.Combat
                 if (_completionOrder.Count >= 8192) _completed.Remove(_completionOrder.Dequeue());
                 _completionOrder.Enqueue((impact.Round, impact.Id));
             }
-            FindFlight(ammo)?.Complete(impact);
+            if (BlockMode && ammo?.BubblePrefab == null) Blocks.Complete(impact); else FindFlight(ammo)?.Complete(impact);
             if (ammo != null && ammo.HasExplosionVisual) { _shotAmmo.Remove((impact.Round, impact.Id)); return; }
             _shotAmmo.Remove((impact.Round, impact.Id));
             if (ammo?.BubblePrefab != null)
@@ -147,7 +192,9 @@ namespace Splatoon.Combat
         }
         void PlayImpact(InkImpact impact, AmmoRuntimeConfig ammo)
         {
+            if (BlockMode) { Blocks.Complete(impact); Blocks.Impact(impact); return; }
             _bubbles?.Complete(impact);
+            PrepareImpactPool();
             if ((!impact.Hit && ammo?.BubblePrefab == null) || _pool.Count == 0) return;
             var effect = _pool.Dequeue(); effect.gameObject.SetActive(true);
             var normal = impact.Normal.sqrMagnitude > .01f ? impact.Normal.normalized : Vector3.up;
@@ -162,13 +209,15 @@ namespace Splatoon.Combat
             { var item = _explosionEffects[i]; if (item.effect != null) { item.effect.SetActive(false); if (!_explosionPool.TryGetValue(item.prefab, out var pool)) _explosionPool[item.prefab] = pool = new Queue<GameObject>(); if (pool.Count < 16) pool.Enqueue(item.effect); else Destroy(item.effect); } _explosionEffects.RemoveAt(i); }
             if (PrototypeMatch.Current == null) return;
             double now = PrototypeMatch.Current.NetworkManager.ServerTime.Time;
-            if (_camera == null) _camera = Camera.main;
+            if (_camera == null || !_camera.isActiveAndEnabled) _camera = Camera.main;
             UpdateFlights(now, _camera);
         }
         public void Explosion(InkExplosionEvent explosion)
         {
             if (PrototypeMatch.Current == null || explosion.Round != PrototypeMatch.Current.State.Value.Round) return;
             if (explosion.Time < _cutoff || !_seenExplosions.Add((explosion.Round, explosion.ShotId))) return;
+            if (_explosionOrder.Count >= 8192) _seenExplosions.Remove(_explosionOrder.Dequeue());
+            _explosionOrder.Enqueue((explosion.Round, explosion.ShotId));
             var ammo = WeaponConfigService.Current.ForShot(explosion.HeroId, explosion.ConfigurationRevision)?.Ammo;
             if (ammo == null || !ammo.HasExplosionVisual) return;
             if (ammo.BubblePrefab != null)
@@ -188,6 +237,7 @@ namespace Splatoon.Combat
         }
         void PlayExplosion(InkExplosionEvent explosion, AmmoRuntimeConfig ammo)
         {
+            if (BlockMode) { Blocks.Explosion(explosion, InkExplosionRules.Radius(ammo, explosion.Collision)); return; }
             var rotation = explosion.Normal.sqrMagnitude > .01f ? Quaternion.LookRotation(explosion.Normal) : Quaternion.identity;
             GameObject go;
             if (_explosionPool.TryGetValue(ammo.ExplosionPrefab, out var pool) && pool.Count > 0) { go = pool.Dequeue(); go.transform.SetPositionAndRotation(explosion.Position, rotation); go.SetActive(true); }
@@ -226,11 +276,12 @@ namespace Splatoon.Combat
             foreach (var pair in _effects) { pair.effect.Stop(); pair.effect.gameObject.SetActive(false); _pool.Enqueue(pair.effect); }
             _effects.Clear();
             foreach (var pair in _explosionEffects) if (pair.effect != null) { pair.effect.SetActive(false); if (!_explosionPool.TryGetValue(pair.prefab, out var pool)) _explosionPool[pair.prefab] = pool = new Queue<GameObject>(); if (pool.Count < 16) pool.Enqueue(pair.effect); else Destroy(pair.effect); }
-            _explosionEffects.Clear(); _seenExplosions.Clear();
+            _explosionEffects.Clear(); _seenExplosions.Clear(); _explosionOrder.Clear();
         }
         public void ClearFlights(double cutoff = double.NegativeInfinity)
         {
             _cutoff = cutoff; _bubbles?.Clear(); _bubbleCompletions.Clear(); _floatingExplosions.Clear();
+            _blocks?.Clear(cutoff);
             foreach (var version in _flights) version.Flight.Clear(cutoff);
             _shotAmmo.Clear(); _completed.Clear(); _completionOrder.Clear();
             ParticleCount = ActiveGroups = ActiveShots = DroppedSamples = 0;
@@ -242,12 +293,17 @@ namespace Splatoon.Combat
                 if (now >= _floatingExplosions[i].explosion.Time + BubbleFlightPresentation.RenderDelay)
                 {
                     var item = _floatingExplosions[i]; var e = item.explosion;
-                    Bubbles.Complete(new InkImpact { Round = e.Round, Id = e.ShotId, Time = e.Time, Position = e.Position, Normal = e.Normal }, item.ammo);
+                    if (!BlockMode) Bubbles.Complete(new InkImpact { Round = e.Round, Id = e.ShotId, Time = e.Time, Position = e.Position, Normal = e.Normal }, item.ammo);
                     PlayExplosion(e, item.ammo); _floatingExplosions.RemoveAt(i);
                 }
             for (int i = _bubbleCompletions.Count - 1; i >= 0; i--)
                 if (now >= _bubbleCompletions[i].impact.Time + BubbleFlightPresentation.RenderDelay)
                 { var item = _bubbleCompletions[i]; PlayImpact(item.impact, item.ammo); _bubbleCompletions.RemoveAt(i); }
+            if (BlockMode)
+            {
+                Blocks.Update(now, camera); ActiveShots = Blocks.ActiveShots; DroppedSamples = Blocks.Dropped;
+                return;
+            }
             foreach (var version in _flights)
             {
                 version.Flight.Update(now, camera);
@@ -259,6 +315,7 @@ namespace Splatoon.Combat
         }
         public int CopyParticles(byte team, ParticleSystem.Particle[] destination)
         {
+            if (BlockMode) return 0;
             int count = 0;
             foreach (var version in _flights) count += version.Flight.CopyParticles(team, destination, count);
             return count;
@@ -287,6 +344,7 @@ namespace Splatoon.Combat
         // 在提交调参事务之前预留完整版本，容量不足时不更改当前配置。
         public bool TryPrepareAmmo(AmmoRuntimeConfig ammo, AmmoRuntimeConfig replacing = null)
         {
+            if (BlockMode) { _ = Blocks; return ammo != null; }
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return true;
             if (FindFlight(ammo) != null) return true;
             PruneFlights(replacing);
@@ -298,6 +356,7 @@ namespace Splatoon.Combat
         InkFlightPresentation ForAmmo(AmmoRuntimeConfig ammo) => TryPrepareAmmo(ammo) ? FindFlight(ammo) : null;
         public InkMuzzleEmitter CreateMuzzle(Transform nozzle, WeaponRuntimeConfig weapon)
         {
+            if (BlockMode) { ActivateBlockMode(); return null; }
             var ammo = weapon?.Ammo;
             if (nozzle == null || ammo?.MuzzlePrefab == null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return null;
             var ps = Instantiate(ammo.MuzzlePrefab, nozzle);
@@ -309,6 +368,7 @@ namespace Splatoon.Combat
         static bool MuzzleDestroyed(InkMuzzleEmitter muzzle) => muzzle == null;
         private void OnDestroy()
         {
+            _blocks?.Dispose();
             _bubbles?.Dispose();
             foreach (var version in _flights) version.Flight.Dispose();
             _flights.Clear();

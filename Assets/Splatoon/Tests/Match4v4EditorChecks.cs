@@ -13,11 +13,10 @@ namespace Splatoon.Tests
     {
         const string Output="Reports/Match4v4";
         const string Running="Match4v4.Running";
-        static readonly TestRunnerApi api;
         static double next;
         static Match4v4EditorChecks()
         {
-            api=ScriptableObject.CreateInstance<TestRunnerApi>(); api.RegisterCallbacks(new Results());
+            TestRunnerApi.RegisterTestCallback(new Results());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -43,7 +42,9 @@ namespace Splatoon.Tests
                     new[]{"Splatoon.Tests.Match4v4Tests","Splatoon.Tests.GameplayConfigTests","Splatoon.Tests.PrototypeRulesTests","Splatoon.Tests.GameplayUpdateTests",
                     "Splatoon.Tests.PaperTraversalTests","Splatoon.Tests.SwimMovementTests","Splatoon.Tests.ShooterMovementTests","Splatoon.Tests.LanDiscoveryTests"};
                 File.WriteAllText(Output+"/"+command+"-started.txt",DateTime.UtcNow.ToString("O"));
-                api.Execute(new ExecutionSettings(new Filter {testMode=TestMode.EditMode,testNames=tests}));
+                var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+                try { api.Execute(new ExecutionSettings(new Filter {testMode=TestMode.EditMode,testNames=tests})); }
+                finally { UnityEngine.Object.DestroyImmediate(api); }
             }
             catch(Exception ex) { SessionState.SetBool(Running,false); File.WriteAllText(Output+"/error.txt",ex.ToString()); Debug.LogException(ex); }
         }

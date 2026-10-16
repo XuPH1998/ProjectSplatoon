@@ -25,7 +25,13 @@ namespace Splatoon.Prototype
         }
         public bool HeroChangePending { get; private set; }
         public string HeroChangeMessage { get; private set; } = "";
-        public void RequestHeroChange(int heroId, HeroSelectionOrigin origin) => RequestLoadoutChange(PlayerLoadout.Remembered(heroId),origin);
+        public void RequestHeroChange(int heroId, HeroSelectionOrigin origin)
+        {
+            var loadout = Splatoon.Config.LubanConfigService.Current.Tables.TbHero.GetOrDefault(heroId) == null
+                ? new PlayerLoadout(heroId, 0, 0)
+                : PlayerLoadout.Remembered(heroId);
+            RequestLoadoutChange(loadout, origin);
+        }
         public void RequestLoadoutChange(PlayerLoadout loadout, HeroSelectionOrigin origin)
         {
             if (!ControlsLocalPlayer || !IsSpawned || HeroChangePending || TeamChangePending || PrototypeMatch.Current == null) return;

@@ -45,8 +45,9 @@ namespace Splatoon.Tests
         void Tick(bool fire = false) { now += Dt; motor.Step(ref state, input, Dt, now, fire); }
         void Run(int count) { for (int i = 0; i < count; i++) Tick(); }
 
-        [TestCase(0, 3, SwimSurface.Neutral)] [TestCase(1, 8, SwimSurface.Friendly)]
-        public void SurfaceChoosesSpeedRecoveryAndModel(byte team, float speed, SwimSurface source)
+        // Fixed expectations from the existing hero source table: normal 12.6/s, friendly 105/s.
+        [TestCase(0, 3, SwimSurface.Neutral, 12.6f)] [TestCase(1, 8, SwimSurface.Friendly, 105f)]
+        public void SurfaceChoosesSpeedRecoveryAndModel(byte team, float speed, SwimSurface source, float healthRate)
         {
             Paint(team); Run(90);
             Assert.That(state.Swimming, Is.True); Assert.That(state.SwimSource, Is.EqualTo(source));
@@ -54,7 +55,7 @@ namespace Splatoon.Tests
             Assert.That(state.ShowsSwimBody, Is.True); Assert.That(state.HasInkRecovery, Is.EqualTo(team == 1));
             state.Health = state.Ink = 30; state.LastDamageAt = -10;
             ResourceSimulation.Step(ref state, GameplayConfig.DefaultHero, false, false, Dt, now);
-            Assert.That(state.Health, Is.EqualTo(30 + (team == 1 ? 60 : 30) * Dt).Within(.001));
+            Assert.That(state.Health, Is.EqualTo(30 + healthRate * Dt).Within(.001));
             Assert.That(state.Ink, Is.EqualTo(30 + (team == 1 ? GameplayConfig.DefaultHero.SwimRecoverInk : 10) * Dt).Within(.001));
         }
         [Test] public void NonPaintableGroundAndFreshAirAllowNeutralSwimming()

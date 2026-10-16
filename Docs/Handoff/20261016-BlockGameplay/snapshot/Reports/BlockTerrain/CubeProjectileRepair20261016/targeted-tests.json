@@ -1,0 +1,65 @@
+{
+  "run": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\RegressionTriage\\LatestSourceFullRegression15\\Runs\\fresh-fixtures-203",
+  "testCases": 10,
+  "passed": 10,
+  "failed": 0,
+  "preservationSha256": "4ee322bbca24b1c6c82ef087d8c156aeacceec7d03af321189d5bc3cf8927332",
+  "allFilesAndPreferencesRestored": true,
+  "sourceAndMetadataUnchanged": true,
+  "buildInputsVerifiedByQueue": true,
+  "cases": [
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.AuthorityLobeTerminationEmitsOncePerContactAndCannotReplayDebris",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.CompletionClearRoundAndRestorationCannotResurrectOldCubes",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.CubesFollowTheAuthorityTrajectoryWithoutFluidObjectsOrColliders",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.DefaultPresentationRoutesEveryWeaponToCubesAndSkipsLegacyPools",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.EarlyAndOutOfOrderBounceEventsKeepTheSameAuthoritativeSegments",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.FiveSpecialPresentationsUseSolidCubesAndReplaceFluidRainAndTrails",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.FlightAndExplosionDebrisHaveHardCapsAndReleaseTheirResources",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.ProjectileResourceRetainsInstancingForPackagedRendering",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.BlockPresentationTests.RestoreUsesCubesAndNeverReplaysOldMuzzleFeedback",
+      "result": "Passed"
+    },
+    {
+      "name": "Splatoon.Tests.WeaponPresentationPlayTests.FlightInkAndShotgunGripInRealHost",
+      "result": "Passed"
+    }
+  ],
+  "xmls": [
+    {
+      "path": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\UnityTests\\20261016-120106.xml",
+      "sha256": "0a4f3e5f59ac30daf75ab3b605bc69ece098d19ffb3ad5183cfb3c142c8ff244"
+    },
+    {
+      "path": "D:\\XPHUNITY\\ProjectSplatoon\\Reports\\BlockTerrain\\UnityTests\\20261016-120625.xml",
+      "sha256": "5f641627f6419d81490ecbff028fa2de2daa524bb2b81d1164ce21e694949f43"
+    }
+  ],
+  "editorVisualCases": 18,
+  "playerVisualAcceptance": false,
+  "goalAcceptancePassed": false
+}

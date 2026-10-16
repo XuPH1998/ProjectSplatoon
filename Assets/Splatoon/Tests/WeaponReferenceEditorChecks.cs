@@ -9,12 +9,11 @@ namespace Splatoon.Tests
     [InitializeOnLoad]
     public static class WeaponReferenceEditorChecks
     {
-        static readonly TestRunnerApi Api;
         static double _nextPoll;
         const string Running = "WeaponReference.TestsRunning";
         static WeaponReferenceEditorChecks()
         {
-            Api = ScriptableObject.CreateInstance<TestRunnerApi>(); Api.RegisterCallbacks(new Results());
+            TestRunnerApi.RegisterTestCallback(new Results());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -52,7 +51,9 @@ namespace Splatoon.Tests
             Directory.CreateDirectory("Reports/WeaponReference");
             SessionState.SetString("WeaponReference.TestMode", mode); SessionState.SetBool(Running, true);
             File.WriteAllText("Reports/WeaponReference/started.txt", mode + " " + System.DateTime.UtcNow.ToString("O"));
-            Api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = names }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = names })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         sealed class Results : ICallbacks
         {

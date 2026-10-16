@@ -90,7 +90,7 @@ namespace Splatoon.Prototype
                 }
                 if (InkPresentation.Current != null && !InkPresentation.Current.TryPrepareAmmo(next.Ammo, prior.Ammo))
                 {
-                    WeaponDebugStatus = "等待旧墨弹结束 · 已保留最新修改";
+                    WeaponDebugStatus = "等待旧积木弹结束 · 已保留最新修改";
                     continue;
                 }
                 bool restart = prior.RequiresRestart(next);
@@ -102,7 +102,7 @@ namespace Splatoon.Prototype
                 foreach (var player in PrototypeMatch.Current.Players)
                     if (player != null && player.IsSpawned && player.Snapshot.Value.HeroId == pair.Key) player.RefreshWeaponConfiguration();
                 _appliedWeapons.Add(pair.Key);
-                WeaponDebugStatus = restart ? "已应用 · 旧动作已取消并退回预留墨，请松开后重新射击" : "已应用 · 后续射击使用新参数";
+                WeaponDebugStatus = restart ? "已应用 · 旧动作已取消并退回预留材料，请松开后重新射击" : "已应用 · 后续射击使用新参数";
             }
             foreach (int id in _appliedWeapons) _pendingWeapons.Remove(id);
         }

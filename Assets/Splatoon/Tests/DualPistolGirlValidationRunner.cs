@@ -14,11 +14,10 @@ namespace Splatoon.Tests
     public sealed class DualPistolGirlValidationRunner : ICallbacks
     {
         const string Root = "Reports/DualPistolGirl", Running = "DualPistolGirl.Running", Label = "DualPistolGirl.Label";
-        static TestRunnerApi api;
         static double next;
         static DualPistolGirlValidationRunner()
         {
-            api = ScriptableObject.CreateInstance<TestRunnerApi>(); api.RegisterCallbacks(new DualPistolGirlValidationRunner());
+            TestRunnerApi.RegisterTestCallback(new DualPistolGirlValidationRunner());
             EditorApplication.update += Poll;
         }
         static void Poll()
@@ -37,7 +36,9 @@ namespace Splatoon.Tests
             var lines = File.ReadAllLines(request); File.Delete(request);
             Directory.CreateDirectory(Root); SessionState.SetString(Label, lines[0]); SessionState.SetBool(Running, true);
             File.WriteAllText(Root + "/test-status.txt", "RUNNING " + lines[0] + " " + DateTime.UtcNow.ToString("O"));
-            api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') }));
+            var api = ScriptableObject.CreateInstance<TestRunnerApi>();
+            try { api.Execute(new ExecutionSettings(new Filter { testMode = TestMode.EditMode, testNames = lines[1].Split(';') })); }
+            finally { UnityEngine.Object.DestroyImmediate(api); }
         }
         static bool ContainsDualies(ITestResultAdaptor result) => result.Test.FullName.StartsWith("Splatoon.Tests.DualPistolGirl") || result.Children.Any(ContainsDualies);
         public void RunStarted(ITestAdaptor tests) { }

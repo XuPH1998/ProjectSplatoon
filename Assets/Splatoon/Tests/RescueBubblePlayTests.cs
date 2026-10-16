@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Networking;
@@ -89,6 +90,18 @@ namespace Splatoon.Tests
             app.CaptureMouse(false); match.enabled = false; foreach (var p in match.Players) p.enabled = false;
             var phase = match.State.Value; phase.Phase = MatchPhase.Playing; phase.EndsAt = match.NetworkManager.ServerTime.Time + 1000; match.State.Value = phase;
             match.CombatStats.Reset(phase.Round);
+            using var blocks = new BlockDefaultContractFixture(match);
+            Assert.That(Physics.Raycast(new Vector3(0, 3, -20), Vector3.down, out var terrainFloor, 6,
+                PlayerMotorSimulation.WorldMask & ~(1 << BlockTerrain.TerrainLayer)), Is.True);
+            var terrainSeed = blocks.Empty(); var terrainCenter = BlockWorld.CellAt(terrainFloor.point + Vector3.up * .05f);
+            for (int z = -2; z <= 2; z++)
+            {
+                Assert.That(terrainSeed.Set(terrainCenter + new Vector3Int(-6, 0, z), BlockCell.Create(1, true)), Is.True);
+                Assert.That(terrainSeed.Set(terrainCenter + new Vector3Int(6, 0, z), BlockCell.Create(2, true)), Is.True);
+            }
+            yield return blocks.Seed(terrainSeed); var rescueTerrain = blocks.Capture();
+            Assert.That(blocks.Terrain.PinkCount, Is.EqualTo(5)); Assert.That(blocks.Terrain.BlueCount, Is.EqualTo(5));
+            var rescuePoints = match.Players.Select(p => p.Snapshot.Value.SpecialPoints).ToArray();
             Place(host, new Vector3(20, 40, 20), 1); Place(friend, new Vector3(35, 40, 20), 2);
             var sizes = new List<string> { "hero,radius,height,clearance" }; uint seq = 0;
             foreach (var hero in LubanConfigService.Current.Tables.TbHero.DataList)
@@ -109,6 +122,8 @@ namespace Splatoon.Tests
                 Assert.That(rescued.ProtectedUntil, Is.Zero); Assert.That(rescued.Position, Is.EqualTo(bubble.Position)); Assert.That(rescued.Revision, Is.EqualTo(bubble.Revision + 1));
                 friend.ResolveBubbleInteraction(request, match.NetworkManager.ServerTime.Time); Assert.That(victim.Snapshot.Value.Revision, Is.EqualTo(rescued.Revision));
                 Assert.That(match.CombatStats.Get(victim.PlayerId).Deaths, Is.Zero);
+                blocks.Unchanged(rescueTerrain, "Rescue and duplicate interaction cannot build or remove existing structures");
+                CollectionAssert.AreEqual(rescuePoints, match.Players.Select(p => p.Snapshot.Value.SpecialPoints).ToArray(), "Rescue gives no free terrain income");
             }
             File.WriteAllLines(Output + "/hero-envelopes.csv", sizes);
             // Synthetic floor isolates the sphere motor from unrelated arena topology.
@@ -146,13 +161,18 @@ namespace Splatoon.Tests
             Assert.That(victim.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.Expired));
             victim.ExpireBubble(timed.BubbleUntil + 1); Assert.That(match.CombatStats.Get(host.PlayerId).Kills, Is.EqualTo(2));
             Object.Destroy(floor);
-            // Real arena paint must be replicated and cannot damage any nearby player.
-            Place(victim, PrototypeArena.Spawn(2, 0), 2); Hit(host, victim);
+            blocks.Unchanged(rescueTerrain, "Execution and timeout leave populated terrain untouched");
+            CollectionAssert.AreEqual(rescuePoints, match.Players.Select(p => p.Snapshot.Value.SpecialPoints).ToArray(), "Execution and timeout award no construction or removal income");
+            // Exercise the event beside real published mixed-team structures in an unprotected combat area.
+            Place(victim, terrainFloor.point + Vector3.up * .02f, 2); Hit(host, victim);
             var dying = victim.Snapshot.Value; Near(friend, victim, 1); float hp = friend.Snapshot.Value.Health;
             paintBefore = match.PaintSequence;
             victim.EndBubble(BubbleOutcome.Executed, match.NetworkManager.ServerTime.Time);
-            Assert.That(friend.Snapshot.Value.Health, Is.EqualTo(hp), "Pure ink blast cannot damage players");
-            Assert.That(match.PaintSequence, Is.GreaterThan(paintBefore), "Death explosion paints real arena surfaces");
+            Assert.That(friend.Snapshot.Value.Health, Is.EqualTo(hp), "Rescue execution event cannot damage nearby players");
+            Assert.That(match.PaintSequence, Is.EqualTo(paintBefore), "Rescue events emit no legacy gameplay paint");
+            blocks.Tick(); yield return null;
+            blocks.Unchanged(rescueTerrain, "Execution beside both teams' structures produces neither immediate nor deferred changes");
+            CollectionAssert.AreEqual(rescuePoints, match.Players.Select(p => p.Snapshot.Value.SpecialPoints).ToArray(), "Execution pays no free material results");
             Assert.That(victim.Snapshot.Value.BubbleInkTeam, Is.EqualTo(host.Snapshot.Value.Team));
             victim.Simulate(1f / 60, victim.Snapshot.Value.RespawnsAt, MatchPhase.Playing);
             Assert.That(victim.Snapshot.Value.IsAlive, Is.True, "Original respawn flow resumes");
@@ -171,6 +191,8 @@ namespace Splatoon.Tests
             File.WriteAllLines(Output + "/fixed-expiry.csv", traces);
             Assert.That(sawDeath, Is.True, "FixedUpdate expires bubble at its deadline " + due);
             Assert.That(sawRespawn, Is.True, "FixedUpdate returns to normal spawn");
+            blocks.Unchanged(rescueTerrain, "Actual FixedUpdate expiry and respawn preserve existing structures");
+            CollectionAssert.AreEqual(rescuePoints, match.Players.Select(p => p.Snapshot.Value.SpecialPoints).ToArray(), "Natural expiry/respawn pays no terrain credit");
             match.enabled = false;
             // Competing requests are resolved in receive order and never produce two outcomes.
             Place(host, new Vector3(20, 40, 20), 1); Place(victim, new Vector3(25, 40, 20), 2); Hit(host, victim);
@@ -189,8 +211,8 @@ namespace Splatoon.Tests
             Assert.That(victim.Snapshot.Value.IsBubble, Is.True); Assert.That(victim.Snapshot.Value.Position, Is.EqualTo(frozen.Position));
             Assert.That(match.PaintSequence, Is.EqualTo(paintBefore));
             match.ReturnToRoom(); Assert.That(victim.Snapshot.Value.IsAlive, Is.True); Assert.That(victim.Snapshot.Value.BubbleResult, Is.EqualTo(BubbleOutcome.None));
-            File.WriteAllText(Output + "/host-acceptance.txt", "PASS: all heroes enclosed; rescue, execution, timeout, duplicate input, wall occlusion, slow movement, bounce, stats, paint-only blast and respawn.");
-            yield return app.Leave().ToCoroutine();
+            File.WriteAllText(Output + "/host-acceptance.txt", "PASS: all heroes enclosed; rescue, execution, timeout, duplicate input, wall occlusion, slow movement, bounce, stats, zero terrain mutation/income on populated mixed-team structures and respawn.");
+            blocks.Dispose(); yield return app.Leave().ToCoroutine();
         }
     }
 }

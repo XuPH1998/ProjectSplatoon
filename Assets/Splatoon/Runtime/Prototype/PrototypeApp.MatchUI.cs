@@ -103,7 +103,7 @@ namespace Splatoon.Prototype
             Panel(new Rect(300, 247, 340, 8), new Color(PrototypeArena.Pink.r, PrototypeArena.Pink.g, PrototypeArena.Pink.b, alpha));
             Panel(new Rect(640, 247, 340, 8), new Color(PrototypeArena.Blue.r, PrototypeArena.Blue.g, PrototypeArena.Blue.b, alpha));
             GUI.Label(new Rect(300, 260, 680, 113), "游戏开始！", _startTitle);
-            GUI.Label(new Rect(300, 378, 680, 30), "为你的队伍涂出胜利", _centeredSmall);
+            GUI.Label(new Rect(300, 378, 680, 30), "搭建路线与掩体，拆毁敌方积木。结束时积木更多的队伍获胜", _centeredSmall);
             GUI.matrix = matrix; GUI.color = old;
         }
     }

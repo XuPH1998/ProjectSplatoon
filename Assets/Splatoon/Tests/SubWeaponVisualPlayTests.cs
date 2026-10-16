@@ -65,7 +65,7 @@ namespace Splatoon.Tests
             }
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator PreviewDeploymentAndRenderedLifecycleAtThirtySixtyAndOneTwenty()
         {
             EditorSceneManager.OpenScene("Assets/Scenes/Main/Boot.unity");yield return new EnterPlayMode();
@@ -130,13 +130,14 @@ namespace Splatoon.Tests
             SubWeaponService.Entity Spawn(SubWeaponConfigAsset asset,SubLaunchSolution launch,float charge)
             {
                 Assert.That(launch.Valid,Is.True,asset.type+" launch: "+launch.Failure);
-                SubWeaponConfigService.Current.Set(s.HeroId,asset);s.SubAction++;s.Ink=s.Health=100;host.Snapshot.Value=s;
-                var entity=match.SubWeapons.Spawn(host,s,charge,now,match.State.Value.Round,launch);Assert.That(entity,Is.Not.Null,asset.type.ToString());Flush();return entity;
+                s.SubWeaponId=SubWeaponConfigService.Id(asset.type);SubWeaponConfigService.Current.SetById(s.SubWeaponId,asset);s.SubAction++;s.Ink=s.Health=100;host.Snapshot.Value=s;
+                Assert.That(PlayerLoadout.SubWeapon(s).Type,Is.EqualTo(asset.type),"Preview and authority use this explicit loadout ID");
+                var entity=match.SubWeapons.Spawn(host,s,charge,now,match.State.Value.Round,launch);Assert.That(entity,Is.Not.Null,asset.type.ToString());Assert.That(entity.Config.ContentHash,Is.EqualTo(asset.Snapshot().ContentHash));Flush();return entity;
             }
             try
             {
                 // Exercise the real player Step ordering: commit must use this frame's new movement and look.
-                Clear();var burst=AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path(SubWeaponType.BurstBomb));SubWeaponConfigService.Current.Set(s.HeroId,burst);
+                Clear();var burst=AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path(SubWeaponType.BurstBomb));s.SubWeaponId=SubWeaponConfigService.Id(burst.type);SubWeaponConfigService.Current.SetById(s.SubWeaponId,burst);
                 s.SubPhase=SubWeaponPhase.Starting;s.SubReleaseAt=now;s.SubNeedsRelease=false;s.Yaw=0;s.Pitch=15;s.Ink=s.Health=100;
                 var input=new PlayerInputFrame{Revision=s.Revision,HeroRevision=s.HeroRevision,Look=new Vector2(90,35),Move=Vector2.up,SubPressSequence=s.SubConsumedPress,SubReleaseSequence=s.SubConsumedRelease};
                 object[] args={s,input,1f/60,now,MatchPhase.Practice};typeof(PrototypePlayer).GetMethod("Step",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(host,args);

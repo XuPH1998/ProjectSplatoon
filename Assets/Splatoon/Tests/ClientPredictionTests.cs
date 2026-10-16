@@ -87,6 +87,11 @@ namespace Splatoon.Tests
         [SetUp] public void Setup()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); HeroMigrationTests.Load();
+            SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear();
+            foreach (var row in LubanConfigService.Current.Tables.TbSubWeapon.DataList)
+                SubWeaponConfigService.Current.SetById(row.Id, AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(row.ConfigPath));
+            foreach (var row in LubanConfigService.Current.Tables.TbSpecialWeapon.DataList)
+                SpecialWeaponConfigService.Current.Set(row.Id, AssetDatabase.LoadAssetAtPath<SpecialWeaponConfigAsset>(row.ConfigPath));
             var ground = new GameObject("prediction floor");
             var box = ground.AddComponent<BoxCollider>(); box.size = new Vector3(50, 1, 50); box.center = Vector3.down * .5f;
             _floor = ground.AddComponent<PaintSurface>(); _floor.Scores = true; _floor.WalkableSize = new Vector2(50, 50); _floor.InitializeOwnership(.25f);
@@ -94,6 +99,7 @@ namespace Splatoon.Tests
             var controller = _player.GetComponent<CharacterController>();
             _motor = new PlayerMotorSimulation(controller); Set("_motor", _motor); Set("_controller", controller);
             _authority = new PlayerSnapshot { HeroId = 1, Revision = 5, Team = 1, Health = 100, Ink = 100,
+                SubWeaponId = SubWeaponConfigService.Current.DefaultId(1), SpecialWeaponId = 1,
                 Position = Vector3.up * .04f, Grounded = true, Swimming = true, SwimWasHeld = true,
                 SwimSource = SwimSurface.Neutral, Movement = MovementMode.GroundInk, RequiredPaintSequence = 100, SimulatedAt = 1 };
             _motor.Restore(_authority, false);
@@ -104,7 +110,7 @@ namespace Splatoon.Tests
         }
         [TearDown] public void Cleanup()
         {
-            PaperBodyTests.ReleaseTestBodies(); LubanConfigService.Current.Reset();
+            PaperBodyTests.ReleaseTestBodies(); SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
         void Paint(byte team) { foreach (var region in _floor.GameplayRegions) for (int i = 0; i < region.Grid.Cells.Length; i++) region.Grid.Set(i, team); }
