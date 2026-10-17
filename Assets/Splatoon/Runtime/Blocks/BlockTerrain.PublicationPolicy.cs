@@ -61,7 +61,7 @@ namespace Splatoon.Blocks
             }
         }
         static BlockPublicationOperation PublicationOperations(Command command)
-            => command.Build ? BlockPublicationOperation.OrdinaryAttack
+            => command.Spread ? BlockPublicationOperation.Gravity : command.Build ? BlockPublicationOperation.OrdinaryAttack
                 : command.OrdinaryMainAttack ? BlockPublicationOperation.OrdinaryAttack | BlockPublicationOperation.Destruction
                 : BlockPublicationOperation.Destruction;
         BlockPublicationWindow CaptureNewPublicationWindow()

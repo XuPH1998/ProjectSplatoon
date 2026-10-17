@@ -128,7 +128,7 @@ namespace Splatoon.Blocks
                     // meshes and shared gravity mutations.
                     if (!FitsBudget(_stagePublicationWindow, changed, target.Cell)) break;
                     command.TargetIndex++; next.Set(target.Cell, default);
-                    IncludeCell(changed, target.Cell); QueueGravity(target.Cell);
+                    IncludeCell(changed, target.Cell); QueueGravity(target.Cell); QueueGravityStartupRemoval(target.Cell);
                 }
                 if (target.Owner == command.Team) changes[owner].RemovedFriendly++;
                 else changes[owner].RemovedEnemy++;

@@ -20,6 +20,10 @@ public sealed partial class GlobalConfig : Luban.BeanBase
 {
     public GlobalConfig(JSONNode _buf) 
     {
+        { if(!_buf["blockWorldTopHeight"].IsNumber) { throw new SerializationException(); }  BlockWorldTopHeight = _buf["blockWorldTopHeight"]; }
+        { if(!_buf["blockSpreadInterval"].IsNumber) { throw new SerializationException(); }  BlockSpreadInterval = _buf["blockSpreadInterval"]; }
+        { if(!_buf["blockSpreadMaxStepCells"].IsNumber) { throw new SerializationException(); }  BlockSpreadMaxStepCells = _buf["blockSpreadMaxStepCells"]; }
+        { if(!_buf["blockSpreadMinStackCells"].IsNumber) { throw new SerializationException(); }  BlockSpreadMinStackCells = _buf["blockSpreadMinStackCells"]; }
         { if(!_buf["blockBlocksPerMaterial"].IsNumber) { throw new SerializationException(); }  BlockBlocksPerMaterial = _buf["blockBlocksPerMaterial"]; }
         { if(!_buf["blockMainAttackMaxBlocks"].IsNumber) { throw new SerializationException(); }  BlockMainAttackMaxBlocks = _buf["blockMainAttackMaxBlocks"]; }
         { if(!_buf["blockAuxiliaryBudgetFraction"].IsNumber) { throw new SerializationException(); }  BlockAuxiliaryBudgetFraction = _buf["blockAuxiliaryBudgetFraction"]; }
@@ -54,6 +58,22 @@ public sealed partial class GlobalConfig : Luban.BeanBase
         return new GlobalConfig(_buf);
     }
 
+    /// <summary>
+    /// 积木全局建造顶界（世界Y，米）
+    /// </summary>
+    public readonly float BlockWorldTopHeight;
+    /// <summary>
+    /// 积木守恒摊开间隔（秒）
+    /// </summary>
+    public readonly float BlockSpreadInterval;
+    /// <summary>
+    /// 积木摊开稳定邻列高差（格）
+    /// </summary>
+    public readonly int BlockSpreadMaxStepCells;
+    /// <summary>
+    /// 积木参与摊开的最少连续层数
+    /// </summary>
+    public readonly int BlockSpreadMinStackCells;
     /// <summary>
     /// 积木每点材料建造格数
     /// </summary>
@@ -173,6 +193,10 @@ public sealed partial class GlobalConfig : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
+        + "blockWorldTopHeight:" + BlockWorldTopHeight + ","
+        + "blockSpreadInterval:" + BlockSpreadInterval + ","
+        + "blockSpreadMaxStepCells:" + BlockSpreadMaxStepCells + ","
+        + "blockSpreadMinStackCells:" + BlockSpreadMinStackCells + ","
         + "blockBlocksPerMaterial:" + BlockBlocksPerMaterial + ","
         + "blockMainAttackMaxBlocks:" + BlockMainAttackMaxBlocks + ","
         + "blockAuxiliaryBudgetFraction:" + BlockAuxiliaryBudgetFraction + ","

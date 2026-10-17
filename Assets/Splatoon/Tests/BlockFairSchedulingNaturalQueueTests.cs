@@ -23,6 +23,7 @@ namespace Splatoon.Tests
     // It never writes Pending, journal, seed, window, command, proof or task state.
     public sealed class BlockFairSchedulingNaturalQueueTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
         const BindingFlags StaticFields = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
         const double Now = 10;
@@ -114,6 +115,7 @@ namespace Splatoon.Tests
             if (_workers != null) Assert.That(_workers.CurrentCount, Is.EqualTo(2));
             _observedPending.Clear(); _observedCommandTasks.Clear(); _observedMeshes.Clear(); _observedViews.Clear();
             _terrain = null; _root = null;
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
@@ -226,6 +228,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             yield return EightReservationRetirementScenario();
         }
@@ -242,8 +246,11 @@ namespace Splatoon.Tests
                 _terrain.PublishedCommit -= ObservePublication;
                 var source = _terrain.World; var sourceBytes = source.EncodeSnapshot();
                 uint revision = _terrain.Revision;
-                long restages = _terrain.FairReservationRestages, callbacksBefore = _terrain.CommandsCompleted;
+                long restages = _terrain.FairReservationRestages, completionsBefore = _terrain.CommandsCompleted,
+                    queuedBefore = _terrain.CommandsQueued;
                 int callbacks = 0;
+                var callbackCounts = new int[8];
+                var callbackOrder = new List<int>();
                 var commands = new List<object>();
                 object retainedSeed = null;
                 for (int attempt = 0; attempt < 8; attempt++)
@@ -252,10 +259,15 @@ namespace Splatoon.Tests
                     var pending = PureBackgroundPending();
                     long wallId = Read<long>(pending, "WallId");
                     Assert.That(wallId, Is.GreaterThan(0));
+                    int commandIndex = attempt;
                     _terrain.QueueDestroy(new Vector3(1000, 1, 1000), .001f, 0, 1, true, result =>
                     {
                         if (!_arm) return;
                         callbacks++;
+                        callbackCounts[commandIndex]++;
+                        callbackOrder.Add(commandIndex);
+                        Assert.That(callbackCounts[commandIndex], Is.EqualTo(1),
+                            "Each original paid reservation must receive exactly one callback.");
                         Assert.That(result.Changed, Is.Zero);
                     }, 1, 0, false);
                     commands.Add(LastQueued());
@@ -278,7 +290,17 @@ namespace Splatoon.Tests
                 // or discard cells to manufacture a completed drain.
                 yield return Pump(() => callbacks == 8 && _terrain.PendingTransactions == 0
                     && TowerFallingCells(_terrain.World) == 319, "reservation-churn-stop-and-drain");
-                Assert.That(_terrain.CommandsCompleted - callbacksBefore, Is.EqualTo(8));
+                CollectionAssert.AreEqual(Enumerable.Repeat(1, 8), callbackCounts,
+                    "All eight original paid reservations must complete exactly once.");
+                CollectionAssert.AreEqual(Enumerable.Range(0, 8), callbackOrder,
+                    "The original paid reservations must retain FIFO callback order.");
+                // Global counters include internal spread seed/search quanta,
+                // even at this fixed clock when no spread round may start.
+                long completedDelta = _terrain.CommandsCompleted - completionsBefore,
+                    queuedDelta = _terrain.CommandsQueued - queuedBefore;
+                Assert.That(completedDelta, Is.GreaterThanOrEqualTo(8));
+                Assert.That(completedDelta, Is.EqualTo(queuedDelta + queuedBefore - completionsBefore),
+                    "At the drained endpoint, every newly queued and originally outstanding command must be completed.");
                 Assert.That(commands.All(command => Read<bool>(command, "Completed")), Is.True);
                 Assert.That(commands.Distinct().Count(), Is.EqualTo(8));
                 Assert.That(_baseCallbacks, Is.EqualTo(1)); Assert.That(_mutationEvents, Is.EqualTo(1));
@@ -298,6 +320,8 @@ namespace Splatoon.Tests
             // created only after this wrapper resumes in the new Play Mode domain.
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             yield return TailOnlyBlockerScenario();
         }
@@ -318,6 +342,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             yield return NewOverlappingTailScenario();
         }
@@ -343,6 +369,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             yield return NewDisjointTailScenario();
         }
@@ -365,6 +393,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             yield return PaidForegroundCallbackClearScenario();
         }
@@ -393,6 +423,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             InitializeScenario();
             UseQuantizedNativeFloorForBoundsRetry();
             yield return PublicPolicyDowngradeScenario();

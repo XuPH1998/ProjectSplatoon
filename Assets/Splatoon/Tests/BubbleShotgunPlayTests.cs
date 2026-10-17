@@ -174,7 +174,7 @@ namespace Splatoon.Tests
             }
             foreach (var instance in instances)
             {
-                Assert.That(instance.GetColumn(0).magnitude, Is.EqualTo(Mathf.Clamp(w.CollisionRadius * 2, .12f, .45f)).Within(.001));
+                Assert.That(instance.GetColumn(0).magnitude, Is.EqualTo(1.2f).Within(.001));
                 Assert.That(instance.GetColumn(1).magnitude, Is.EqualTo(instance.GetColumn(0).magnitude).Within(.001));
                 Assert.That(instance.GetColumn(2).magnitude, Is.EqualTo(instance.GetColumn(0).magnitude).Within(.001));
             }
@@ -193,6 +193,7 @@ namespace Splatoon.Tests
             Assert.That(presentation.ActiveShots, Is.Zero, "Explosion retires bubble on the same clock");
             int expectedDebris = Mathf.Clamp(Mathf.CeilToInt(InkExplosionRules.Radius(w.Ammo, false) * 18), 16, 64);
             Assert.That(presentation.BlockDebrisCount, Is.EqualTo(expectedDebris), "Repeated explosion ID emits exactly one configured cube burst");
+            Assert.That(presentation.transform.Cast<Transform>().Count(t => t.name == "Ink explosion" && t.gameObject.activeSelf), Is.EqualTo(1), "The original bubble explosion also plays once on the delayed pop clock");
             blocks.Unchanged(terrainBeforePop, "Duplicated explosion presentation cannot build or remove terrain");
             Assert.That(host.Snapshot.Value.SpecialPoints, Is.EqualTo(pointsBeforePop), "Cosmetic debris pays no income");
             foreach (var ps in presentation.GetComponentsInChildren<ParticleSystem>()) ps.Simulate(.06f, false, true, false);

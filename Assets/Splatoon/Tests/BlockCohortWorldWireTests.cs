@@ -13,6 +13,10 @@ namespace Splatoon.Tests
     /// <summary>Pure world/wire contracts. No Editor, Player, mesh or timing acceptance is implied.</summary>
     public sealed class BlockCohortWorldWireTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
         static BlockWorld Seed(Vector3Int bottom, int count)
         {
             var world = new BlockWorld(new Vector2(8, 8), 7);

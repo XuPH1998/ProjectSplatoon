@@ -19,6 +19,7 @@ namespace Splatoon.Tests
     // This is a functional contract, not the 20k/32m Player timing acceptance.
     public sealed class BlockGravityDefaultWindowTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const int Height = 256;
         GameObject _root;
         BlockTerrain _terrain;
@@ -35,6 +36,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Default gravity window public contract");
             var layout = new GameObject("Inactive registered map layout");
             layout.transform.SetParent(_root.transform, false); layout.SetActive(false);
@@ -61,6 +64,7 @@ namespace Splatoon.Tests
         {
             if (_terrain != null) _terrain.PublishedCommit -= ObserveCommit;
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }

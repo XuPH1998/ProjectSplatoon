@@ -49,7 +49,28 @@ namespace Splatoon.Prototype
         static readonly string Case = Arg("-blockBenchmark", "");
         static readonly string InputMode = Arg("-blockBenchmarkInput", "");
         static readonly string AcceptanceProfile = Arg("-blockAcceptanceProfile", "strict");
-        static bool PrototypeProfile => AcceptanceProfile == "prototype-v1";
+        const string Prototype45ProfileName = "prototype-v2-45fps";
+        static bool Prototype45Profile => AcceptanceProfile == Prototype45ProfileName;
+        static bool PrototypeProfile => AcceptanceProfile == "prototype-v1" || Prototype45Profile;
+        static readonly string[] HistoricalScenarios = { "steady250k", "combat250k", "tower32m", "blast8", "cascade20k", "scattered100k" };
+        static readonly string[] Prototype45Scenarios = { "steady250k", "combat250k", "blast8", "scattered100k" };
+        static readonly string[] Prototype45DeferredScenarios = { "tower32m", "cascade20k" };
+        static string[] RequiredScenariosForProfile(string profile)
+            => profile == Prototype45ProfileName ? Prototype45Scenarios : HistoricalScenarios;
+        static double RequiredSecondsForProfile(string profile, string scenario)
+            => profile == Prototype45ProfileName && Array.IndexOf(Prototype45Scenarios, scenario) < 0 ? 0 : scenario switch
+            {
+                "steady250k" => profile == "prototype-v1" || profile == Prototype45ProfileName ? 180 : 600,
+                "combat250k" => 300, "tower32m" => 60, "blast8" => 120, "cascade20k" => 120, "scattered100k" => 180, _ => 0
+            };
+        static double RequiredSamplingSecondsForProfile(string profile)
+        {
+            double seconds = 0;
+            foreach (string scenario in RequiredScenariosForProfile(profile)) seconds += RequiredSecondsForProfile(profile, scenario);
+            return seconds;
+        }
+        static double FrameP95LimitForProfile(string profile) => profile == Prototype45ProfileName ? 22.2 : 15.5;
+        static double FrameP99LimitForProfile(string profile) => profile == Prototype45ProfileName ? 33.3 : 16.67;
         public static readonly bool Requested = Array.IndexOf(Environment.GetCommandLineArgs(), "-blockBenchmark") >= 0;
         static BlockTerrainBenchmark _instance;
 
@@ -96,7 +117,9 @@ namespace Splatoon.Prototype
             public string scenario, role, stage, unity, device, cpu, reason, environment, qualityName, graphicsApi, operatingSystem;
             public string renderingThreadingMode, renderTimingSource, mainCameraCapture;
             public string acceptanceProfile, acceptanceScope;
-            public double ordinaryPublishP95LimitMs, blastCompletionLimitMs;
+            public double ordinaryPublishP95LimitMs, blastCompletionLimitMs, frameP95LimitMs, frameP99LimitMs;
+            public string[] requiredScenarios, deferredScenarios;
+            public double requiredSamplingSeconds;
             public bool frameSpikeBlocking, supportQueueClearBlocking, strictPerformancePassed;
             public int qualityLevel, vSyncCount, targetFrameRate, cpuCores, systemMemoryMb, graphicsMemoryMb;
             public int screenWidth, screenHeight, displayWidth, displayHeight;
@@ -290,17 +313,21 @@ namespace Splatoon.Prototype
         void Awake()
         {
             _instance = this; _boot = Time.realtimeSinceStartupAsDouble;
-            _requiredDuration = Case switch { "steady250k" => PrototypeProfile ? 180 : 600, "combat250k" => 300, "tower32m" => 60,
-                "blast8" => 120, "cascade20k" => 120, "scattered100k" => 180, _ => 0 };
+            _requiredDuration = RequiredSecondsForProfile(AcceptanceProfile, Case);
             _duration = Number("-blockBenchmarkDuration", _requiredDuration > 0 ? _requiredDuration : 1);
             _timeout = Number("-blockBenchmarkTimeout", 300); _warmup = Number("-blockBenchmarkWarmup", 10);
             _target = Case == "scattered100k" ? 100000 : Case == "combat250k" || Case == "steady250k" || Case == "blast8" ? 250000 : 0;
             _output = Path.GetFullPath(Arg("-blockBenchmarkOutput", "Reports/BlockTerrain/Performance/" + Case + "-" + System.Diagnostics.Process.GetCurrentProcess().Id + ".json"));
             _result = new Result { scenario = Case, stage = "waiting", unity = Application.unityVersion,
                 acceptanceProfile = AcceptanceProfile,
-                acceptanceScope = PrototypeProfile ? "First playable release: full workloads and frame percentiles; rare full-frame spikes and extreme support-clear latency remain recorded risks. This is not strict stable-60 acceptance."
+                acceptanceScope = Prototype45Profile ? "45 FPS prototype: four complete workloads, 780 sampled seconds, frame P95 <= 22.2 ms and P99 <= 33.3 ms. tower32m and cascade20k remain deferred and unaccepted; all spikes remain recorded risks."
+                    : PrototypeProfile ? "First playable release: full workloads and frame percentiles; rare full-frame spikes and extreme support-clear latency remain recorded risks. This is not strict stable-60 acceptance."
                     : "Original strict performance gates, including the full-frame spike and extreme support-clear limits.",
                 ordinaryPublishP95LimitMs = PrototypeProfile ? 200 : 80, blastCompletionLimitMs = PrototypeProfile ? 2000 : 250,
+                frameP95LimitMs = FrameP95LimitForProfile(AcceptanceProfile), frameP99LimitMs = FrameP99LimitForProfile(AcceptanceProfile),
+                requiredScenarios = RequiredScenariosForProfile(AcceptanceProfile),
+                deferredScenarios = Prototype45Profile ? Prototype45DeferredScenarios : Array.Empty<string>(),
+                requiredSamplingSeconds = RequiredSamplingSecondsForProfile(AcceptanceProfile),
                 frameSpikeBlocking = !PrototypeProfile, supportQueueClearBlocking = !PrototypeProfile,
                 device = SystemInfo.graphicsDeviceName, cpu = SystemInfo.processorType,
                 graphics = SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null, requiredSeconds = _requiredDuration,
@@ -337,7 +364,9 @@ namespace Splatoon.Prototype
             _backbufferObservation = BlockBackbufferObservation.CreateIfRequested(_output, Case);
             Screen.SetResolution(1920, 1080, FullScreenMode.Windowed);
             WriteReport(false);
-            if (AcceptanceProfile != "strict" && !PrototypeProfile) Finish(false, "Unknown acceptance profile. Use strict or prototype-v1.");
+            if (AcceptanceProfile != "strict" && !PrototypeProfile) Finish(false, "Unknown acceptance profile. Use strict, prototype-v1, or prototype-v2-45fps.");
+            if (Prototype45Profile && Array.IndexOf(Prototype45Scenarios, Case) < 0)
+                Finish(false, "prototype-v2-45fps requires steady250k, combat250k, blast8, or scattered100k; tower32m and cascade20k remain deferred and cannot validate this profile.");
             if (_requiredDuration == 0) Finish(false, "Unknown case. Use steady250k, combat250k, tower32m, blast8, cascade20k, or scattered100k.");
         }
         Series AddRecorder(string name, ProfilerCategory category, string marker, double scale = .000001)
@@ -1129,7 +1158,10 @@ namespace Splatoon.Prototype
                 if (final) VerifyFinalSettledColliders();
                 var gates = new List<Gate>();
                 gates.Add(Check("acceptanceProfile", true, AcceptanceProfile == "strict" || PrototypeProfile,
-                    "The named profile must be recognized; prototype-v1 is distinct from strict and short-duration diagnostics."));
+                    "The named profile must be recognized; each prototype profile is distinct from strict and short-duration diagnostics."));
+                if (Prototype45Profile)
+                    gates.Add(Check("requiredScenario", true, Array.IndexOf(Prototype45Scenarios, Case) >= 0,
+                        "This profile requires four workloads and 780 sampled seconds; historical tower32m and cascade20k remain deferred and unaccepted."));
                 gates.Add(Check("completeDuration", true, final && _result.complete && _result.seconds >= _requiredDuration,
                     "Short CLI durations produce diagnostics only.", _result.seconds, _requiredDuration));
                 gates.Add(Check("developmentPlayer", true, !Application.isEditor, "Editor frames are not Player performance evidence."));
@@ -1143,10 +1175,10 @@ namespace Splatoon.Prototype
                     _result.mainTimingCoverage >= .8 && _result.renderTimingCoverage >= .8,
                     "Each thread must have positive finite timings in at least 80% of sampled frames.", Math.Min(_result.mainTimingCoverage, _result.renderTimingCoverage), .8));
                 var frame = _result.metrics[0];
-                gates.Add(Check("frameP95", final && frame.samples > 0, frame.p95 <= 15.5, "Approved frame-time threshold.", frame.p95, 15.5));
-                gates.Add(Check("frameP99", final && frame.samples > 0, frame.p99 <= 16.67, "Approved frame-time threshold.", frame.p99, 16.67));
+                gates.Add(Check("frameP95", final && frame.samples > 0, frame.p95 <= _result.frameP95LimitMs, "Approved profile frame-time threshold.", frame.p95, _result.frameP95LimitMs));
+                gates.Add(Check("frameP99", final && frame.samples > 0, frame.p99 <= _result.frameP99LimitMs, "Approved profile frame-time threshold.", frame.p99, _result.frameP99LimitMs));
                 gates.Add(Check("no33msSpikes", final && frame.samples > 0, _result.longFrames33 == 0,
-                    "Every spike is retained in this conservative full-frame record; prototype-v1 reports the risk without declaring strict acceptance.", frame.max, 33.333, diagnosticOnly: PrototypeProfile));
+                    "Every spike is retained in this conservative full-frame record; prototype profiles report the risk without declaring strict acceptance.", frame.max, 33.333, diagnosticOnly: PrototypeProfile));
                 gates.Add(Check("terrainTransactions", true, _result.errors == 0 && _result.failedTransactions == 0, "Errors or failed transactions invalidate a run."));
                 gates.Add(Check("workload", _result.fixtureReady, _target == 0 || _result.minimumBlocks >= _target,
                     "Surviving blocks include falling blocks; no reduced fixture count.", _result.minimumBlocks, _target));

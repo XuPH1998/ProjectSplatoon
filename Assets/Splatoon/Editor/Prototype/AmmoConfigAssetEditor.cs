@@ -22,6 +22,7 @@ namespace Splatoon.Editor
             Draw("bubblePopAudio", "破裂声音");
             EditorGUILayout.Space(); EditorGUILayout.LabelField("飞行墨水", EditorStyles.boldLabel);
             Draw("flightPrefab", "飞行墨弹预制体");
+            Draw("blockProjectileSize", "积木弹整体尺寸（米，零为自动）");
             Draw("burstInterval", "飞行发射间隔（秒）");
             Draw("particlesPerBurst", "每次发射粒子数");
             Draw("visualLifetime", "飞行显示寿命（秒）");

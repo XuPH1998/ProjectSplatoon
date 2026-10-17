@@ -33,6 +33,7 @@ namespace Splatoon.Blocks
 
         void AbortPrivatePreparation()
         {
+            CancelBuildOverlapRepairPreparation(_activePrivateGravityRequest ?? _privateGravityRequest);
             _gravityRetryPublicationWindow = null;
             AbortDependentEditPreparation();
             AbortHeadPreparation();
@@ -129,8 +130,8 @@ namespace Splatoon.Blocks
             // retain their published Source/SourceTime. This finite transaction
             // serializes mutations while its private snapshot is being built.
             bool commandWork = _commands.Count > 0;
-            int maximum = commandWork ? 1024 : MaxChecks, checks = 0;
-            double milliseconds = commandWork ? .25 : .75;
+            int maximum = commandWork ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone, checks = 0;
+            double milliseconds = commandWork ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             var timer = Stopwatch.StartNew(); long before = GravityWorkChecks;
             AuthorityStageCount++; PrivatePreparationStages++; LastCommandStageMilliseconds = 0;
             try
@@ -237,6 +238,7 @@ namespace Splatoon.Blocks
                 if (!SpendGravity(ref checks, 16, maximum, timer, milliseconds)) return true;
                 var final = _privateGravityNext; var journal = _privateGravityJournal;
                 final.Seal(Revision + 1, Array.Empty<Vector3Int>());
+                CompleteBuildOverlapRepairPreparation(request, journal, true);
                 BeginWindowTransaction(final, new HashSet<Vector3Int>(), false, null, journal.Window);
                 _pending.Gravity = journal; _pending.PrivateGravity = true; _pending.StaticProofs = _privateGravityStaticProofs;
                 _pending.PrivateSource = prepare.SourceWorld; _pending.PrivateSourceRevision = prepare.SourceRevision;
@@ -253,6 +255,8 @@ namespace Splatoon.Blocks
                 bool historical = exception is HistoricalRecoveryRequired;
                 if (!historical)
                 { UnityEngine.Debug.LogWarning("[BLOCK] Private gravity preparation rejected: " + exception.Message); FailedTransactions++; }
+                if (exception is HistoricalRecoveryRequired repairRecovery)
+                    TransferBuildOverlapRepairPreparation(_activePrivateGravityRequest, repairRecovery.Request);
                 AbortPrivatePreparation();
                 if (_pending != null && _pending.PrivateGravity) AbortPendingCore(PreserveFairSeedForPreparation(_pending));
                 if (exception is HistoricalRecoveryRequired recovery) _historicalRecoveryRequest = recovery.Request;

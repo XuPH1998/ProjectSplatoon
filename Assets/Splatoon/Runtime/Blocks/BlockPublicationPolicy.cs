@@ -26,9 +26,9 @@ namespace Splatoon.Blocks
         // Existing stage accounting and real wall/upload limits stay unchanged.
         public const int MaximumChecks = 4096;
         public const int CommandChecksWithGravity = 3072;
-        public const int GravityChecksWithCommands = 1024;
+        public const int GravityChecksWithCommands = 4096, GravityChecksAlone = 8192;
         public const double CommandMillisecondsAlone = .75, CommandMillisecondsWithGravity = .5;
-        public const double GravityMillisecondsAlone = .75, GravityMillisecondsWithCommands = .25;
+        public const double GravityMillisecondsAlone = 1.5, GravityMillisecondsWithCommands = 1.0;
         public const double UploadMilliseconds = 1;
 
         public BlockPublicationPolicy(int version, int ordinaryAttackKeys, int destructionKeys,

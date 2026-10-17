@@ -17,6 +17,7 @@ namespace Splatoon.Tests
     // Deliberately requires the frozen cohort activation-barrier design.
     public sealed class BlockGravityBatchContractTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         GameObject _root;
         BlockTerrain _terrain;
         BoxCollider _floor;
@@ -38,6 +39,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Gravity batch original-scale contract");
             _terrain = _root.AddComponent<BlockTerrain>(); _terrain.PublicationPolicy = BlockPublicationPolicy.CompatibilityEight(); _terrain.Initialize(null);
             var floor = new GameObject("Physical registered static floor at 3 metres");
@@ -54,6 +57,7 @@ namespace Splatoon.Tests
         {
             if (_terrain != null) _terrain.PublishedCommit -= Observe;
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }

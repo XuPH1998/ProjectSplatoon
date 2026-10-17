@@ -105,10 +105,12 @@ namespace Splatoon.Blocks
                 MovingBuild = _stageHasMovingBuild, MovingColumns = _stageMovingBuildColumns, OriginalChanged = any };
             _gravityJournal = null; _stageCommandCheckpoints = null; _stageAddedBuildSlots = null;
             _stageCommandCheckpoint = null; _stageHasMovingBuild = false; _stageMovingBuildColumns = null;
+            BindBuildOverlapRepairPreparation(request, journal);
             DependentEditPreparationStarts++; return true;
         }
         void AbortDependentEditPreparation()
         {
+            CancelBuildOverlapRepairPreparation(_dependentEditPreparation?.Request);
             _dependentPublicationContext = null;
             var owner = _dependentEditPreparation; _dependentEditPreparation = null;
             if (owner == null) return;
@@ -162,8 +164,8 @@ namespace Splatoon.Blocks
                 return false;
             }
             bool commandWork = _commands.Count != 0;
-            int maximum = commandWork ? 1024 : MaxChecks, checks = 0;
-            double milliseconds = commandWork ? .25 : .75;
+            int maximum = commandWork ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone, checks = 0;
+            double milliseconds = commandWork ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             var timer = Stopwatch.StartNew(); long before = GravityWorkChecks; bool finalize = false;
             AuthorityStageCount++; DependentEditPreparationStages++; LastCommandStageMilliseconds = 0;
             try
@@ -261,6 +263,7 @@ namespace Splatoon.Blocks
             owner.Builder?.Dispose(); _dependentEditPreparation = null;
             var context = owner.Context;
             _gravityJournal = context.Journal; _gravityJournal.DependentEditRequest = null;
+            CompleteBuildOverlapRepairPreparation(owner.Request, _gravityJournal, true);
             _stagePublicationWindow = context.Window; _stagePureAuthorityBackground = context.PureBackground;
             _stageCommandCheckpoints = context.Checkpoints; _stageAddedBuildSlots = owner.Slots;
             _stageHasMovingBuild = owner.MovingBuild; _stageMovingBuildColumns = owner.MovingColumns;
@@ -268,9 +271,13 @@ namespace Splatoon.Blocks
             {
                 if (!owner.OriginalChanged && !owner.Edited)
                 {
-                    CommitGravityJournal(_gravityJournal); _gravityJournal = null;
+                    bool repairTurn = RefreshBuildOverlapRepair() && ReferenceEquals(context.Window, _buildOverlapRepair.Window)
+                        && owner.Results.Count == 0 && (context.Checkpoints?.Count ?? 0) == 0;
+                    CommitGravityJournal(_gravityJournal);
+                    if (repairTurn) CommitBuildOverlapRepairNoChange(_gravityJournal);
+                    _gravityJournal = null;
                     FairTerminalNoPublication(owner.Results);
-                    if (context.PureBackground) FairBackgroundStageDidNotPublish();
+                    if (context.PureBackground && !repairTurn) FairBackgroundStageDidNotPublish();
                     foreach (var pair in owner.Results) if (pair.Item1.Done) Complete(pair.Item1, pair.Item1.Total);
                     return;
                 }

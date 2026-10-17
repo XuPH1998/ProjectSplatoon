@@ -28,9 +28,11 @@ namespace Splatoon.Tests
         PlayerInputFrame input;
         double now;
 
-        [SetUp] public void Setup()
+        [UnitySetUp] public IEnumerator Setup()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            yield return new EnterPlayMode(); // Publication budgets require real advancing Unity frames.
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
             HeroMigrationTests.Load();
             SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear();
             foreach (var row in LubanConfigService.Current.Tables.TbSubWeapon.DataList)
@@ -50,9 +52,10 @@ namespace Splatoon.Tests
             input = new PlayerInputFrame { Swim = true };
             motor.Restore(state);
         }
-        [TearDown] public void Cleanup()
+        [UnityTearDown] public IEnumerator Cleanup()
         {
             PaperBodyTests.ReleaseTestBodies(); SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
+            yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
         void Tick() { now += Dt; motor.Step(ref state, input, Dt, now, false); }
@@ -76,6 +79,18 @@ namespace Splatoon.Tests
                 world.Set(new Vector3Int(x, baseHeight + Mathf.FloorToInt(x / 2f), z), BlockCell.Create(1, true));
             return world;
         }
+        static BoxCollider MapBox(string name, Vector3 center, Vector3 size)
+        {
+            var root = new GameObject(name); root.transform.position = center;
+            var box = root.AddComponent<BoxCollider>(); box.size = size;
+            Physics.SyncTransforms(); return box;
+        }
+        void AssertNeutralContact()
+        {
+            Assert.That(state.Swimming, Is.True); Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
+            Assert.That(state.FriendlyInkContact, Is.False); Assert.That(state.HasInkRecovery, Is.False);
+            Assert.That(state.SupportTerrainRevision, Is.Zero);
+        }
         IEnumerator Publish(BlockWorld world, params Vector3Int[] changedChunks)
         {
             uint revision = terrain.World.Revision + 1;
@@ -84,7 +99,12 @@ namespace Splatoon.Tests
             Assert.That(terrain.ApplyRemoteSnapshot(world.EncodeSnapshot()), Is.True);
             for (int tick = 0; tick < 1000 && (terrain.PendingTransactions != 0 || terrain.World.Revision != revision); tick++)
             {
-                terrain.Tick(false, now, Dt); yield return null;
+                terrain.Tick(false, now, Dt);
+                int frame = Time.frameCount;
+                double deadline = Time.realtimeSinceStartupAsDouble + 3;
+                do { yield return null; }
+                while (Time.frameCount == frame && Time.realtimeSinceStartupAsDouble < deadline);
+                Assert.That(Time.frameCount, Is.Not.EqualTo(frame), "Publication retries require a new native frame, rather than another Editor test-runner update");
             }
             Assert.That(terrain.PendingTransactions, Is.Zero, "terrain publication must finish before contact queries");
             Assert.That(terrain.World.Revision, Is.EqualTo(revision)); Physics.SyncTransforms();
@@ -98,6 +118,13 @@ namespace Splatoon.Tests
         PrototypePlayer PredictedOwner(PlayerSnapshot authority, int frames = 12)
         {
             controller.enabled = false;
+            // Play Mode replay enters the production presentation path. Supply
+            // the authored assets rather than relying on its Edit Mode bypass.
+            var hero = GameplayConfig.GetHero(authority.HeroId);
+            Assert.That(hero.Id, Is.EqualTo(1), "These replay fixtures use the authored RifleGirl assets");
+            PrototypeApp.Current.Heroes.Replace(new HeroContent(hero,
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Characters/RifleGirl/Prefabs/RifleGirlVisual.prefab"),
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Weapons/RifleGirl/Prefabs/RifleGirlRifle.prefab")));
             var player = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab")).GetComponent<PrototypePlayer>();
             var capsule = player.GetComponent<CharacterController>(); var ownerMotor = new PlayerMotorSimulation(capsule);
             Set(player, "_motor", ownerMotor); Set(player, "_controller", capsule); Set(player, "_predicted", authority);
@@ -166,7 +193,7 @@ namespace Splatoon.Tests
             Assert.That(Prediction(player).Movement, Is.EqualTo(MovementMode.Air));
         }
 
-        [UnityTest] public IEnumerator OnlyFriendlyStableGroundAllowsTraversalAndEnemyGroundDoesNotDealDamage()
+        [UnityTest] public IEnumerator OnlyFriendlyStableBlockGroundAllowsTraversalAndEnemyGroundDoesNotDealDamage()
         {
             yield return Publish(Floor(1)); ResetAt(new Vector3(.05f, .14f, .05f));
             for (int tick = 0; tick < 4; tick++) Tick();
@@ -183,21 +210,158 @@ namespace Splatoon.Tests
             }
         }
 
-        [UnityTest] public IEnumerator PaintedStaticMapDoesNotSubstituteForFriendlyBlocks()
+        [UnityTest] public IEnumerator BareMapGroundIgnoresLegacyPaintAndUsesNeutralSpeedAndOrdinaryRecovery()
         {
-            var ground = new GameObject("Legacy painted static floor");
-            var box = ground.AddComponent<BoxCollider>(); box.size = new Vector3(6, 1, 6); box.center = Vector3.down * .5f;
-            var paint = ground.AddComponent<PaintSurface>(); paint.Scores = true; paint.WalkableSize = new Vector2(6, 6);
+            var box = MapBox("Bare map floor", Vector3.down * .5f, new Vector3(12, 1, 12));
+            // This oracle requires CPU ownership and a real collider, not legacy
+            // GPU paint. Configure the disabled component before any OnEnable.
+            box.gameObject.SetActive(false);
+            var paint = box.gameObject.AddComponent<PaintSurface>(); paint.enabled = false;
+            paint.Scores = true; paint.WalkableSize = new Vector2(12, 12);
             paint.InitializeOwnership(.125f);
-            for (int i = 0; i < paint.Ownership.Cells.Length; i++) paint.Ownership.Set(i, 1);
+            box.gameObject.SetActive(true); Physics.SyncTransforms();
+            yield return Publish(new BlockWorld(new Vector2(32, 64)));
+            foreach (byte owner in new byte[] { 0, 1, 2 })
+            {
+                for (int i = 0; i < paint.Ownership.Cells.Length; i++) paint.Ownership.Set(i, owner);
+                ResetAt(new Vector3(.05f, .04f, .05f)); input.Move = Vector2.right;
+                for (int tick = 0; tick < 60; tick++) Tick();
+                Assert.That(state.Grounded, Is.True); Assert.That(state.Movement, Is.EqualTo(MovementMode.GroundInk));
+                AssertNeutralContact();
+                Assert.That(state.PlanarVelocity.magnitude, Is.EqualTo(3).Within(.002f));
+                state.Ink = 20;
+                ResourceSimulation.Step(ref state, GameplayConfig.DefaultHero, false, false, 1, now);
+                Assert.That(state.Ink, Is.EqualTo(30).Within(.001f), "Bare map contact must not inherit old friendly paint benefits");
+            }
+        }
+
+        [UnityTest] public IEnumerator NeutralMapGroundPredictionHasNoBlockDependencyAndReplaysMovement()
+        {
+            MapBox("Neutral prediction floor", Vector3.down * .5f, new Vector3(12, 1, 12));
             yield return Publish(new BlockWorld(new Vector2(32, 64)));
             ResetAt(new Vector3(.05f, .04f, .05f));
-            input.Swim = false;
             for (int tick = 0; tick < 4; tick++) Tick();
-            Assert.That(state.Grounded, Is.True, "Establish human contact before requesting traversal on the painted map");
-            input.Swim = true; Tick();
-            Assert.That(state.Grounded, Is.True); Assert.That(state.Swimming, Is.False);
-            Assert.That(state.HasInkRecovery, Is.False); Assert.That(state.SupportTerrainRevision, Is.Zero);
+            AssertNeutralContact();
+            var authority = state; authority.SimulatedAt = 1;
+            var player = PredictedOwner(authority);
+            Invoke(player, "ReconcilePrediction", authority, false, true, (uint)0, MatchPhase.Practice);
+            Assert.That(player.TerrainReplayPending, Is.False); Assert.That(player.LastReplaySteps, Is.EqualTo(12));
+            var predicted = Prediction(player);
+            Assert.That(predicted.Movement, Is.EqualTo(MovementMode.GroundInk));
+            Assert.That(predicted.SwimSource, Is.EqualTo(SwimSurface.Neutral));
+            Assert.That(predicted.SupportTerrainRevision, Is.Zero); Assert.That(predicted.HasInkRecovery, Is.False);
+            Assert.That(predicted.Position.z, Is.GreaterThan(authority.Position.z));
+        }
+
+        [UnityTest] public IEnumerator BareMapWallSupportsNeutralMovementReplayJumpAndCompleteMantle()
+        {
+            var floor = MapBox("Bare map floor", Vector3.down * .5f, new Vector3(12, 1, 12));
+            MapBox("Bare map wall and top", new Vector3(0, 1, 3), new Vector3(6, 2, 2));
+            yield return Publish(new BlockWorld(new Vector2(32, 64)));
+            var traversalTrace = new List<string>(); bool complete = false;
+            System.Action<PlayerMotorSimulation, PlayerMotorSimulation.MotorBranchObservation> observe = (observed, row) =>
+            {
+                if (!ReferenceEquals(observed, motor)) return;
+                traversalTrace.Add("branch=" + row.Branch + " invocation=" + row.Invocation
+                    + " controller=" + row.ControllerPosition.ToString("F5") + " nativeGround=" + row.ControllerGrounded
+                    + " probe=" + row.ProbeEvaluated + "/" + row.ProbeSucceeded + " collisions=" + row.Collisions
+                    + " requested=" + row.RequestedMove.ToString("F5") + " rebase=" + row.RebaseHeight.ToString("F5")
+                    + " contact=" + row.Contact.Owner + "/" + row.Contact.IsBlock + "/" + row.Contact.Stable + "/" + row.Contact.Climbable
+                    + "/" + row.Contact.Point.ToString("F5") + "/" + row.Contact.Normal.ToString("F5")
+                    + " before=" + JsonUtility.ToJson(row.Before) + " after=" + JsonUtility.ToJson(row.After));
+            };
+            PlayerMotorSimulation.MotorBranchObserved += observe;
+            try
+            {
+                ResetAt(new Vector3(.05f, .04f, .8f));
+                input.Swim = false; input.Move = Vector2.zero;
+                for (int tick = 0; tick < 12; tick++)
+                {
+                    Tick();
+                    if (state.Grounded && controller.isGrounded) break;
+                }
+                Assert.That(state.Grounded && controller.isGrounded && !state.Swimming, Is.True,
+                    "Bare-wall fixture must first land as human through the real controller: " + JsonUtility.ToJson(state));
+                Assert.That(PlayerMotorSimulation.TryGetGround(state.Position, out var ground, controller.slopeLimit, controller.radius), Is.True);
+                Assert.That(ground.Stable && !ground.IsBlock && ground.Owner == 0, Is.True);
+                Assert.That(Physics.Raycast(state.Position + Vector3.up * .08f, Vector3.down, out var floorHit, .16f,
+                    PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore), Is.True);
+                Assert.That(floorHit.collider, Is.SameAs(floor));
+                input.Swim = true; input.Move = Vector2.up;
+                for (int tick = 0; tick < 90 && state.Movement != MovementMode.WallInk; tick++) Tick();
+                Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk)); AssertNeutralContact();
+                var start = state.Position;
+                for (int tick = 0; tick < 12; tick++) Tick();
+                Assert.That(state.Position.y - start.y, Is.EqualTo(.6f).Within(.015f));
+                Assert.That(Vector3.ProjectOnPlane(state.Velocity, state.WallNormal).magnitude, Is.EqualTo(3).Within(.01f));
+                AssertNeutralContact(); state.Ink = 20;
+                ResourceSimulation.Step(ref state, GameplayConfig.DefaultHero, false, false, 1, now);
+                Assert.That(state.Ink, Is.EqualTo(30).Within(.001f));
+
+                var wall = state; double wallTime = now; input.Move = Vector2.right;
+                for (int tick = 0; tick < 8; tick++) Tick();
+                var expected = state;
+                state = wall; now = wallTime; motor.Restore(state);
+                for (int tick = 0; tick < 8; tick++) Tick();
+                Assert.That(Vector3.Distance(state.Position, expected.Position), Is.LessThan(.001f));
+                Assert.That(state.SwimSource, Is.EqualTo(expected.SwimSource));
+                Assert.That(state.SupportTerrainRevision, Is.Zero);
+
+                input.JumpSequence++; Tick();
+                Assert.That(state.Movement, Is.EqualTo(MovementMode.Air)); Assert.That(state.Grounded, Is.False);
+                Assert.That(state.AirSwimSource, Is.EqualTo(SwimSurface.Neutral)); Assert.That(state.HasInkRecovery, Is.False);
+                state = wall; now = wallTime; motor.Restore(state);
+                input.JumpSequence = state.ConsumedJump; input.Move = Vector2.up;
+                bool mantle = false, landed = false;
+                for (int tick = 0; tick < 240; tick++)
+                {
+                    Tick(); mantle |= state.Movement == MovementMode.Mantle;
+                    Assert.That(state.HasInkRecovery, Is.False); Assert.That(state.SupportTerrainRevision, Is.Zero);
+                    if (mantle && state.Grounded && state.Movement == MovementMode.GroundInk && state.Position.y > 1.9f)
+                    { landed = true; break; }
+                }
+                Assert.That(mantle, Is.True); Assert.That(landed, Is.True); AssertNeutralContact();
+                complete = true;
+            }
+            finally
+            {
+                PlayerMotorSimulation.MotorBranchObserved -= observe;
+                if (!complete)
+                {
+                    const string output = "Reports/BlockGameplay20261017/NeutralWallFailures";
+                    System.IO.Directory.CreateDirectory(output);
+                    System.IO.File.WriteAllLines(output + "/" + System.DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".jsonl", traversalTrace);
+                }
+            }
+        }
+
+        [UnityTest] public IEnumerator RemovingTheNeutralMapMantleDestinationCancelsOnTheNextMotorTick()
+        {
+            MapBox("Bare map floor", Vector3.down * .5f, new Vector3(12, 1, 12));
+            var wall = MapBox("Removable map wall and top", new Vector3(0, 1, 3), new Vector3(6, 2, 2));
+            yield return Publish(new BlockWorld(new Vector2(32, 64)));
+            ResetAt(new Vector3(.05f, .04f, .8f)); input.Move = Vector2.up;
+            for (int tick = 0; tick < 240 && state.Movement != MovementMode.Mantle; tick++) Tick();
+            Assert.That(state.Movement, Is.EqualTo(MovementMode.Mantle));
+            wall.enabled = false; Physics.SyncTransforms(); Tick();
+            Assert.That(state.Movement, Is.EqualTo(MovementMode.Air)); Assert.That(state.HasInkRecovery, Is.False);
+            Assert.That(state.SupportTerrainRevision, Is.Zero);
+        }
+
+        [UnityTest] public IEnumerator BareCeilingsAndUnpublishedTerrainGeometryCannotBecomeClimbableMapFaces()
+        {
+            MapBox("Ceiling underside", new Vector3(0, 3, 0), new Vector3(6, .2f, 6));
+            var unbound = MapBox("Unpublished terrain-owned face", new Vector3(0, 1, 3), new Vector3(6, 2, .2f));
+            unbound.transform.SetParent(terrain.transform, true);
+            yield return Publish(new BlockWorld(new Vector2(32, 64)));
+            Assert.That(PlayerMotorSimulation.Query(Vector3.up, Vector3.up, 3, out var ceiling), Is.True);
+            Assert.That(PlayerMotorSimulation.CanClimb(ceiling, 1), Is.False);
+            Assert.That(PlayerMotorSimulation.Query(Vector3.up, Vector3.forward, 4, out _), Is.False,
+                "A missing voxel contact in a terrain-owned collider cannot fall back to neutral geometry");
+            Assert.That(PlayerMotorSimulation.TryGetGround(new Vector3(0, 2.04f, 3), out _, 45, 0), Is.False);
+            var falling = new PlayerMotorSimulation.TraversalContact(new BlockContact
+                { Owner = 1, Stable = false, Climbable = true, Normal = Vector3.back });
+            Assert.That(PlayerMotorSimulation.CanClimb(falling, 1), Is.False);
         }
 
         [UnityTest] public IEnumerator RemovingPlatformEndsContactOnTheNextSimulationTick()
@@ -213,7 +377,7 @@ namespace Splatoon.Tests
             Assert.That(state.VerticalSpeed, Is.LessThan(0));
         }
 
-        [UnityTest] public IEnumerator WallAttachmentCannotUseMapWallsOrBridgeADestroyedBlockHole()
+        [UnityTest] public IEnumerator WallAttachmentCannotBridgeADestroyedBlockHoleWithoutBackingGeometry()
         {
             var world = Floor(1);
             for (int y = 0; y < 40; y++) for (int x = -10; x <= 10; x++)
@@ -230,11 +394,21 @@ namespace Splatoon.Tests
             Assert.That(state.Movement, Is.Not.EqualTo(MovementMode.WallInk)); Assert.That(state.HasInkRecovery, Is.False);
             Assert.That(state.SupportTerrainRevision, Is.Zero);
 
-            var mapWall = new GameObject("Neutral map wall"); var collider = mapWall.AddComponent<BoxCollider>();
-            collider.size = new Vector3(6, 4, .2f); mapWall.transform.position = new Vector3(0, 2, 3);
-            yield return Publish(Floor(1)); ResetAt(new Vector3(.05f, .14f, 2.4f));
-            for (int tick = 0; tick < 45; tick++) Tick();
-            Assert.That(state.Movement, Is.Not.EqualTo(MovementMode.WallInk));
+        }
+
+        [UnityTest] public IEnumerator RemovingBlockWallRevealsAnActualBackingMapWallAsNeutralContact()
+        {
+            MapBox("Actual backing map wall", new Vector3(0, 2, 2.2f), new Vector3(6, 4, .2f));
+            var world = Floor(1);
+            for (int y = 0; y < 40; y++) for (int x = -10; x <= 10; x++)
+                world.Set(new Vector3Int(x, y, 20), BlockCell.Create(1, true));
+            yield return Publish(world); ResetAt(new Vector3(.05f, .14f, 1)); input.Move = Vector2.up;
+            for (int tick = 0; tick < 90 && state.Movement != MovementMode.WallInk; tick++) Tick();
+            Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk)); Assert.That(state.HasInkRecovery, Is.True);
+            for (int tick = 0; tick < 8; tick++) Tick();
+            yield return Publish(Floor(1)); Tick();
+            Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk)); AssertNeutralContact();
+            Assert.That(state.WallPoint.z, Is.EqualTo(2.1f).Within(.005f));
         }
 
         [UnityTest] public IEnumerator StaircasePoseAndReplayUseTheSameSupportFrame()

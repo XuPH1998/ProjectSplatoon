@@ -167,6 +167,7 @@ namespace Splatoon.Tests
         }
         [UnityTest] public IEnumerator ProtectedVerticalColumnsRejectHighConstructionAndAllowTheAdjacentRotatedCorner()
         {
+            using var historicalHeight = new HistoricalBlockWorldHeightScope();
             Zone(new Vector3(.15f, 1, .15f), new Vector3(.2f, 2, .2f), Quaternion.Euler(0, 45, 0), new Vector3(2, 1, 1));
             var protectedCell = new Vector3Int(3, 310, 1); var adjacentCell = new Vector3Int(3, 310, 3);
             Assert.That(Excluded(protectedCell), Is.True, "Protection extends above the original four-metre volume to the top of the world");

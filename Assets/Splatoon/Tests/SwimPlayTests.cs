@@ -104,7 +104,7 @@ namespace Splatoon.Tests
             Assert.That(Physics.Raycast(spawn + Vector3.up * .2f, Vector3.down, out var floor, 2, PlayerMotorSimulation.WorldMask), Is.True);
             using var blocks = new BlockDefaultContractFixture(match);
             var landingWorld = blocks.Empty(); AddFloor(landingWorld, floor.point, 1, 30, 30);
-            yield return blocks.Seed(landingWorld);
+            yield return SeedWhenIdle(blocks, landingWorld);
             var landingPoint = FloorTop(floor.point);
             using var report = new StreamWriter(Output + "/air-paper-landing.csv");
             report.WriteLine("hero,lastAirHeight,landedHeight,landingSnap,ticks");
@@ -157,7 +157,7 @@ namespace Splatoon.Tests
             Assert.That(Physics.Raycast(spawn + Vector3.up * .2f, Vector3.down, out var hit, 1, PlayerMotorSimulation.WorldMask), Is.True);
             using var blocks = new BlockDefaultContractFixture(match);
             var recoveryWorld = blocks.Empty(); AddFloor(recoveryWorld, hit.point, 1, 60, 60);
-            yield return blocks.Seed(recoveryWorld);
+            yield return SeedWhenIdle(blocks, recoveryWorld);
             Vector3 recoveryTop = FloorTop(hit.point);
             var rows = new List<string>();
             var w = GameplayConfig.GetHero(1);
@@ -215,6 +215,88 @@ namespace Splatoon.Tests
         {
             if (Application.isPlaying) yield return new ExitPlayMode();
         }
+        static IEnumerator NextNativeFrame(string label)
+        {
+            int frame = Time.frameCount;
+            double deadline = Time.realtimeSinceStartupAsDouble + 3;
+            do { yield return null; }
+            while (Time.frameCount == frame && Time.realtimeSinceStartupAsDouble < deadline);
+            Assert.That(Time.frameCount, Is.Not.EqualTo(frame), label + ": requires an advancing native frame");
+        }
+        // Preserve the strict shared fixture assertions while ensuring its nested
+        // publication iterator cannot exhaust a frame-owned budget in one frame.
+        static IEnumerator OnNativeFrames(IEnumerator routine, string label)
+        {
+            try
+            {
+                while (routine.MoveNext())
+                {
+                    int frame = Time.frameCount;
+                    if (routine.Current is IEnumerator nested) yield return OnNativeFrames(nested, label);
+                    else yield return routine.Current;
+                    if (Time.frameCount == frame) yield return NextNativeFrame(label);
+                }
+            }
+            finally { (routine as IDisposable)?.Dispose(); }
+        }
+        static string SeedDiagnostic(BlockDefaultContractFixture blocks, string label)
+        {
+            var match = blocks.Match; var terrain = blocks.Terrain;
+            return label + " fixtureTime=" + blocks.Now.ToString("F6") + " terrainTime=" + terrain.SimulationTime.ToString("F6")
+                + " serverTime=" + match.NetworkManager.ServerTime.Time.ToString("F6")
+                + " nativeFrame=" + Time.frameCount + " projectiles=" + match.Projectiles.PendingCount
+                + " terrainPending=" + terrain.PendingTransactions + " queued=" + terrain.CommandsQueued
+                + " completed=" + terrain.CommandsCompleted + " spreadRounds=" + terrain.SpreadRounds + " spreadMoves=" + terrain.SpreadMoves
+                + " head=" + JsonUtility.ToJson(terrain.InspectCommandHead())
+                + " publication=" + JsonUtility.ToJson(terrain.InspectPendingTransaction())
+                + " players=" + string.Join(";", match.Players.Select(p => "hero=" + p.Snapshot.Value.HeroId
+                    + ",time=" + p.Snapshot.Value.SimulatedAt.ToString("F6") + ",shots=" + p.Snapshot.Value.ShotSequence
+                    + ",ink=" + p.Snapshot.Value.Ink.ToString("F4")));
+        }
+        static void AlignFixtureClock(BlockDefaultContractFixture blocks)
+        {
+            blocks.Now = Math.Max(blocks.Now, Math.Max(blocks.Terrain.SimulationTime, blocks.Match.NetworkManager.ServerTime.Time));
+            foreach (var current in blocks.Match.Players) blocks.Now = Math.Max(blocks.Now, current.Snapshot.Value.SimulatedAt);
+        }
+        static IEnumerator SeedWhenIdle(BlockDefaultContractFixture blocks, BlockWorld world,
+            [System.Runtime.CompilerServices.CallerLineNumber] int sourceLine = 0)
+        {
+            string label = "Swim Seed at line " + sourceLine;
+            Assert.That(blocks.Match.enabled, Is.False, label + ": automatic match simulation must be paused");
+            // A hero-selection wait may have let FixedUpdate accept background
+            // work. Finish it through the normal authority path before seeding.
+            yield return NextNativeFrame(label);
+            double deadline = Time.realtimeSinceStartupAsDouble + 90;
+            int frames = 0;
+            while ((blocks.Match.Projectiles.PendingCount > 0 || blocks.Terrain.PendingTransactions > 0)
+                && frames++ < 1800 && Time.realtimeSinceStartupAsDouble < deadline)
+            {
+                AlignFixtureClock(blocks);
+                blocks.Tick(); blocks.Match.Projectiles.Simulate(blocks.Now);
+                yield return NextNativeFrame(label);
+            }
+            string diagnostic = SeedDiagnostic(blocks, label);
+            if (blocks.Match.Projectiles.PendingCount != 0 || blocks.Terrain.PendingTransactions != 0)
+            {
+                const string output = "Reports/BlockGameplay20261017/SwimSeedFailures";
+                Directory.CreateDirectory(output);
+                File.WriteAllText(output + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + "-line" + sourceLine + ".txt", diagnostic);
+            }
+            Assert.That(blocks.Match.Projectiles.PendingCount, Is.Zero, diagnostic);
+            Assert.That(blocks.Terrain.PendingTransactions, Is.Zero, diagnostic);
+            AlignFixtureClock(blocks);
+            yield return OnNativeFrames(blocks.Publish(), label);
+            // Keep the existing no-cancellation and no-income assertions intact.
+            yield return OnNativeFrames(blocks.Seed(world), label);
+        }
+        static string WallEntryObservation(PlayerMotorSimulation.MotorBranchObservation row)
+            => "branch=" + row.Branch + " invocation=" + row.Invocation + " realtime=" + row.Realtime.ToString("F6")
+                + " nativeGround=" + row.ControllerGrounded + " controller=" + row.ControllerPosition.ToString("F5")
+                + " probe=" + row.ProbeEvaluated + "/" + row.ProbeSucceeded + " collisions=" + row.Collisions
+                + " requested=" + row.RequestedMove.ToString("F5") + " rebase=" + row.RebaseHeight.ToString("F5")
+                + " contact=" + row.Contact.Owner + "/" + row.Contact.IsBlock + "/" + row.Contact.Stable + "/" + row.Contact.Climbable
+                + "/" + row.Contact.Point.ToString("F5") + "/" + row.Contact.Normal.ToString("F5")
+                + " before=" + JsonUtility.ToJson(row.Before) + " after=" + JsonUtility.ToJson(row.After);
         static PlayerMotorSimulation Motor(PrototypePlayer player) => (PlayerMotorSimulation)typeof(PrototypePlayer).GetField("_motor", Private).GetValue(player);
         static void Tick(PrototypePlayer player, bool swim, uint jump = 0, Vector2 move = default, float yaw = 0, bool fire = false)
         {
@@ -266,6 +348,9 @@ namespace Splatoon.Tests
         {
             Directory.CreateDirectory(Output);
             yield return Wait(()=>PrototypeApp.Current!=null && PrototypeApp.Current.Ready,"Bootstrap ready");
+            // This existing mantle fixture reaches 9.5m; preserve its historical
+            // geometry without changing the shipped 8m construction limit.
+            using var historicalHeight = new HistoricalBlockWorldHeightScope();
             ushort port; using(var socket=new UdpClient(new IPEndPoint(IPAddress.Loopback,0))) port=(ushort)((IPEndPoint)socket.Client.LocalEndPoint).Port;
             yield return PrototypeApp.Current.Connect(true,"127.0.0.1",port).ToCoroutine();
             yield return Wait(()=>PrototypePlayer.Local!=null && PrototypePlayer.Local.SwimBody!=null,"Addressables paper host");
@@ -319,8 +404,11 @@ namespace Splatoon.Tests
                     Is.True, "Stable neutral static support is the precondition for this traversal oracle");
                 neutralPhase = "neutral-swim-held";
                 for(int i=0;i<12;i++) Tick(player,true,move:Vector2.up);
-                Assert.That(player.Snapshot.Value.Grounded && !player.Snapshot.Value.Swimming,Is.True,"Neutral static ground cannot grant block traversal");
-                Assert.That(player.Snapshot.Value.HasInkRecovery,Is.False);
+                var neutralSwimming = player.Snapshot.Value;
+                Assert.That(neutralSwimming.Grounded && neutralSwimming.Swimming,Is.True,"Bare map ground allows neutral traversal");
+                Assert.That(neutralSwimming.SwimSource,Is.EqualTo(SwimSurface.Neutral));
+                Assert.That(neutralSwimming.PlanarVelocity.magnitude,Is.EqualTo(3).Within(.01f));
+                Assert.That(neutralSwimming.HasInkRecovery,Is.False); Assert.That(neutralSwimming.SupportTerrainRevision,Is.Zero);
             }
             finally
             {
@@ -334,7 +422,7 @@ namespace Splatoon.Tests
                 match.enabled=false;
                 foreach(byte team in new byte[]{1,2})
                 {
-                    yield return blocks.Seed(PaperPlatform(blocks,team));
+                    yield return SeedWhenIdle(blocks, PaperPlatform(blocks,team));
                     Reset(player,feet,team); for(int i=0;i<12;i++) Tick(player,true,move:Vector2.up);
                     var s=player.Snapshot.Value; Present(player);
                     Assert.That(s.SwimSource,Is.EqualTo(SwimSurface.Friendly)); Assert.That(s.PlanarVelocity.magnitude,Is.EqualTo(GameplayConfig.GetHero(hero).SwimSpeed).Within(.002));
@@ -370,7 +458,7 @@ namespace Splatoon.Tests
             var spawn=new Vector3(0,0,-20);
             Assert.That(Physics.Raycast(spawn+Vector3.up*.2f,Vector3.down,out var ground,1,PlayerMotorSimulation.WorldMask),Is.True);
             var mapWorld=blocks.Empty(); AddFloor(mapWorld,ground.point,1,30,30);
-            yield return blocks.Seed(mapWorld);
+            yield return SeedWhenIdle(blocks, mapWorld);
             Reset(player,FloorTop(ground.point)+Vector3.up*.04f,1);
             for(int i=0;i<8;i++) { Tick(player,true,move:Vector2.up); Present(player); yield return null; }
             Assert.That(player.Snapshot.Value.SwimSource,Is.EqualTo(SwimSurface.Friendly));
@@ -391,10 +479,35 @@ namespace Splatoon.Tests
             {
                 match.enabled=true; player.RequestHeroChange(hero,HeroSelectionOrigin.Warmup);
                 yield return Wait(()=>!player.HeroChangePending && player.Snapshot.Value.HeroId==hero,"Wall hero "+hero);
-                match.enabled=false; yield return blocks.Seed(PaperPlatform(blocks,1,1)); Reset(player,new Vector3(0,5.64f,1.5f),1);
-                for(int i=0;i<160 && player.Snapshot.Value.Movement!=MovementMode.WallInk;i++) Tick(player,true,move:Vector2.up);
+                match.enabled=false; yield return SeedWhenIdle(blocks, PaperPlatform(blocks,1,1)); Reset(player,new Vector3(0,5.64f,1.5f),1);
+                var wallEntryTrace = new List<string>();
+                var wallEntryMotor = Motor(player);
+                Action<PlayerMotorSimulation, PlayerMotorSimulation.MotorBranchObservation> observeWallEntry = (observed, row) =>
+                {
+                    if (ReferenceEquals(observed, wallEntryMotor)) wallEntryTrace.Add(WallEntryObservation(row));
+                };
+                PlayerMotorSimulation.MotorBranchObserved += observeWallEntry;
+                try
+                {
+                    for(int i=0;i<160 && player.Snapshot.Value.Movement!=MovementMode.WallInk;i++)
+                    {
+                        Tick(player,true,move:Vector2.up);
+                        wallEntryTrace.Add("snapshot=" + i + ":" + JsonUtility.ToJson(player.Snapshot.Value));
+                    }
+                }
+                finally
+                {
+                    PlayerMotorSimulation.MotorBranchObserved -= observeWallEntry;
+                    if (player.Snapshot.Value.Movement != MovementMode.WallInk)
+                    {
+                        const string wallEntryRoot = "Reports/BlockGameplay20261017/SwimWallEntries";
+                        Directory.CreateDirectory(wallEntryRoot);
+                        File.WriteAllLines(wallEntryRoot + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + "-hero" + hero + ".jsonl", wallEntryTrace);
+                    }
+                }
                 Present(player);
-                Assert.That(player.Snapshot.Value.Movement,Is.EqualTo(MovementMode.WallInk),"wall entry hero "+hero);
+                Assert.That(player.Snapshot.Value.Movement,Is.EqualTo(MovementMode.WallInk),"wall entry hero "+hero
+                    + " top=" + BlockWorld.Top + " profile=" + player.SwimBody.Profile.name + " state=" + JsonUtility.ToJson(player.Snapshot.Value));
                 var attached=player.Snapshot.Value;
                 Assert.That(Vector3.Dot(attached.PaperRotation*Vector3.forward,Vector3.back),Is.GreaterThan(.999));
                 Assert.That(Mathf.Abs(attached.PaperCenter.z-(3.9f-player.SwimBody.Profile.SurfaceOffset)),Is.LessThan(.002));
@@ -404,11 +517,11 @@ namespace Splatoon.Tests
                 Tick(player,true,1); Assert.That(player.Snapshot.Value.PaperPose,Is.EqualTo(PaperPose.Air));
                 Assert.That(Vector3.Dot(player.Snapshot.Value.PaperRotation*Vector3.forward,Vector3.up),Is.GreaterThan(.999f));
                 Motor(player).Restore(attached); player.Snapshot.Value=attached;
-                yield return blocks.Seed(PaperPlatform(blocks,1,2));
+                yield return SeedWhenIdle(blocks, PaperPlatform(blocks,1,2));
                 Tick(player,true,move:Vector2.up);
                 Assert.That(player.Snapshot.Value.Movement,Is.Not.EqualTo(MovementMode.WallInk),"enemy block ownership detaches paper; at the foot it may land immediately");
                 Assert.That(player.Snapshot.Value.HasInkRecovery,Is.False);
-                yield return blocks.Seed(PaperPlatform(blocks,1,1));
+                yield return SeedWhenIdle(blocks, PaperPlatform(blocks,1,1));
                 Motor(player).Restore(attached); player.Snapshot.Value=attached;
                 bool mantle=false;
                 for(int i=0;i<180;i++) { Tick(player,true,move:Vector2.up); mantle|=player.Snapshot.Value.Movement==MovementMode.Mantle; if(mantle&&player.Snapshot.Value.Grounded) break; }
@@ -417,9 +530,13 @@ namespace Splatoon.Tests
             }
             foreach(byte owner in new byte[]{0,2})
             {
-                yield return blocks.Seed(PaperPlatform(blocks,1,owner));
+                yield return SeedWhenIdle(blocks, PaperPlatform(blocks,1,owner));
                 Reset(player,new Vector3(0,5.64f,3.55f),1); Tick(player,true,move:Vector2.up);
-                Assert.That(player.Snapshot.Value.Movement==MovementMode.WallInk,Is.False,"neutral/enemy wall cannot grant traversal");
+                var contact = player.Snapshot.Value;
+                Assert.That(contact.Movement==MovementMode.WallInk,Is.EqualTo(owner==0),"Bare map walls allow neutral traversal; enemy blocks still obstruct attachment");
+                Assert.That(contact.HasInkRecovery,Is.False);
+                if(owner==0)
+                { Assert.That(contact.SwimSource,Is.EqualTo(SwimSurface.Neutral)); Assert.That(contact.SupportTerrainRevision,Is.Zero); }
             }
             // The raised fixture overlaps the authored platform's standing space.
             // Natural traversal must run against the map's own geometry only.
@@ -427,7 +544,7 @@ namespace Splatoon.Tests
             yield return NaturalTrainingGroundTraversal(player,match,blocks);
             yield return AirSwitchingInTrainingGround(player,match,blocks);
             platform.SetActive(true); wall.SetActive(true); Physics.SyncTransforms();
-            yield return blocks.Seed(PaperPlatform(blocks,1)); Reset(player,feet,1); Tick(player,true);
+            yield return SeedWhenIdle(blocks, PaperPlatform(blocks,1)); Reset(player,feet,1); Tick(player,true);
             var ceiling=GameObject.CreatePrimitive(PrimitiveType.Cube); ceiling.name="Paper low ceiling";
             ceiling.transform.position=new Vector3(0,6.5f,0); ceiling.transform.localScale=new Vector3(3,.3f,3); Physics.SyncTransforms();
             Tick(player,false); Present(player);
@@ -450,7 +567,7 @@ namespace Splatoon.Tests
             }
             player.ReceiveDamage(2,1000); Present(player); Assert.That(player.SwimBody.UsesHitProxy||player.SwimBody.BodyRenderer.enabled,Is.False);
             player.Respawn(); Present(player); Assert.That(player.Snapshot.Value.PaperPose,Is.EqualTo(PaperPose.None));
-            File.WriteAllText(Output+"/result.txt","PASS: actual Boot/Addressables/NGO host; five heroes and both teams; ground/wall/air/mantle; stable friendly blocks and neutral/enemy rejection; authoritative projectile damage; remote snapshot hit placement; death/respawn. Independent client and physical LAN are not asserted by this test.\n");
+            File.WriteAllText(Output+"/result.txt","PASS: actual Boot/Addressables/NGO host; five heroes and both teams; ground/wall/air/mantle; stable friendly block benefits, neutral map traversal and enemy block rejection; authoritative projectile damage; remote snapshot hit placement; death/respawn. Independent client and physical LAN are not asserted by this test.\n");
         }
         static IEnumerator NaturalTrainingGroundTraversal(PrototypePlayer player, PrototypeMatch match, BlockDefaultContractFixture blocks)
         {
@@ -466,19 +583,97 @@ namespace Splatoon.Tests
                 match.enabled=false;
                 foreach(byte owner in new byte[]{0,1}) foreach(float diagonal in new[]{0f,.4f})
                 {
-                    yield return blocks.Seed(NaturalPlatform(blocks,owner));
+                    yield return SeedWhenIdle(blocks, NaturalPlatform(blocks,owner));
                     Reset(player,new Vector3(15.5f,owner==1?.14f:.04f,0),1);
+                    var settleTrace = new List<string>(); var settleMotor = Motor(player);
+                    Action<PlayerMotorSimulation, PlayerMotorSimulation.MotorBranchObservation> observeSettle = (source,row) =>
+                    { if (ReferenceEquals(source,settleMotor)) settleTrace.Add(WallEntryObservation(row)); };
+                    PlayerMotorSimulation.MotorBranchObserved += observeSettle;
+                    try
+                    {
+                        for (int settle = 0; settle < 12; settle++)
+                        {
+                            Tick(player,false,yaw:270);
+                            if (player.Snapshot.Value.Grounded && player.GetComponent<CharacterController>().isGrounded) break;
+                        }
+                    }
+                    finally
+                    {
+                        PlayerMotorSimulation.MotorBranchObserved -= observeSettle;
+                        if (!player.Snapshot.Value.Grounded || !player.GetComponent<CharacterController>().isGrounded)
+                        {
+                            const string root = "Reports/BlockGameplay20261017/NaturalWallEntries";
+                            Directory.CreateDirectory(root);
+                            var feet = player.Snapshot.Value.Position;
+                            foreach (var offset in new[] { Vector3.zero, Vector3.forward * .28f, Vector3.back * .28f,
+                                Vector3.right * .28f, Vector3.left * .28f })
+                            {
+                                var hits = Physics.RaycastAll(feet + offset + Vector3.up * .08f,Vector3.down,.16f,
+                                    PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore);
+                                foreach (var hit in hits) settleTrace.Add("raw-ray offset=" + offset + " collider=" + hit.collider.name
+                                    + " layer=" + hit.collider.gameObject.layer + " point=" + hit.point.ToString("F5")
+                                    + " normal=" + hit.normal.ToString("F5") + " terrain=" + (hit.collider.GetComponentInParent<BlockTerrain>() != null));
+                                if (hits.Length == 0) settleTrace.Add("raw-ray offset=" + offset + " no-hit");
+                            }
+                            File.WriteAllLines(root + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")
+                                + "-settle-hero" + hero + "-ground" + owner + "-diagonal" + diagonal + ".jsonl",settleTrace);
+                        }
+                    }
+                    Assert.That(player.Snapshot.Value.Grounded && player.GetComponent<CharacterController>().isGrounded,
+                        Is.True,"Natural traversal starts from an actual human landing: " + JsonUtility.ToJson(player.Snapshot.Value));
                     Vector2 move=new Vector2(diagonal,1).normalized; int ticks=0;
-                    for(;ticks<160 && player.Snapshot.Value.Movement!=MovementMode.WallInk;ticks++) Tick(player,true,move:move,yaw:270);
+                    var entryTrace = new List<string>(); var entryMotor = Motor(player);
+                    Action<PlayerMotorSimulation, PlayerMotorSimulation.MotorBranchObservation> observeEntry = (source,row) =>
+                    { if (ReferenceEquals(source,entryMotor)) entryTrace.Add(WallEntryObservation(row)); };
+                    PlayerMotorSimulation.MotorBranchObserved += observeEntry;
+                    try
+                    {
+                        for(;ticks<160 && player.Snapshot.Value.Movement!=MovementMode.WallInk;ticks++) Tick(player,true,move:move,yaw:270);
+                    }
+                    finally
+                    {
+                        PlayerMotorSimulation.MotorBranchObserved -= observeEntry;
+                        if (player.Snapshot.Value.Movement != MovementMode.WallInk)
+                        {
+                            const string root = "Reports/BlockGameplay20261017/NaturalWallEntries";
+                            Directory.CreateDirectory(root);
+                            File.WriteAllLines(root + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")
+                                + "-hero" + hero + "-ground" + owner + "-diagonal" + diagonal + ".jsonl",entryTrace);
+                        }
+                    }
                     Assert.That(player.Snapshot.Value.Movement,Is.EqualTo(MovementMode.WallInk),$"natural entry hero {hero}, ground {owner}, diagonal {diagonal}");
                     float y=player.Snapshot.Value.Position.y;
                     for(int i=0;i<15;i++) Tick(player,true,move:Vector2.up,yaw:270+i*17);
                     float climbed=player.Snapshot.Value.Position.y-y;
                     Assert.That(climbed,Is.EqualTo(GameplayConfig.GetHero(hero).WallSwimSpeed*15*Dt).Within(.02f));
-                    for(int i=0;i<50 && !player.Snapshot.Value.Grounded;i++) Tick(player,true,move:Vector2.down,yaw:270);
-                    Assert.That(player.Snapshot.Value.Grounded,Is.True,"wall to ground");
-                    Assert.That(player.Snapshot.Value.SwimSource,Is.EqualTo(owner==1 ? SwimSurface.Friendly : SwimSurface.None));
-                    Tick(player,true,move:Vector2.up,yaw:270);
+                    var descentTrace = new List<string>();
+                    Action<PlayerMotorSimulation, PlayerMotorSimulation.MotorBranchObservation> observeDescent = (source,row) =>
+                    { if (ReferenceEquals(source,entryMotor)) descentTrace.Add(WallEntryObservation(row)); };
+                    PlayerMotorSimulation.MotorBranchObserved += observeDescent;
+                    try
+                    {
+                        // At the wall foot, a horizontal sheet can require the
+                        // production safe-air conversion before its final landing.
+                        // Release descent once it leaves the wall, then let the
+                        // real glide finish without driving into the arena edge.
+                        for(int i=0;i<120 && !player.Snapshot.Value.Grounded;i++)
+                            Tick(player,true,move:player.Snapshot.Value.Movement==MovementMode.WallInk ? Vector2.down : Vector2.zero,yaw:270);
+                    }
+                    finally
+                    {
+                        PlayerMotorSimulation.MotorBranchObserved -= observeDescent;
+                        if (!player.Snapshot.Value.Grounded)
+                        {
+                            const string root = "Reports/BlockGameplay20261017/NaturalWallEntries";
+                            Directory.CreateDirectory(root);
+                            File.WriteAllLines(root + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")
+                                + "-descent-hero" + hero + "-ground" + owner + "-diagonal" + diagonal + ".jsonl",descentTrace);
+                        }
+                    }
+                    Assert.That(player.Snapshot.Value.Grounded,Is.True,"wall to ground: " + JsonUtility.ToJson(player.Snapshot.Value));
+                    Assert.That(player.Snapshot.Value.SwimSource,Is.EqualTo(owner==1 ? SwimSurface.Friendly : SwimSurface.Neutral));
+                    for(int i=0;i<160 && player.Snapshot.Value.Movement!=MovementMode.WallInk;i++)
+                        Tick(player,true,move:Vector2.up,yaw:270);
                     Assert.That(player.Snapshot.Value.Movement,Is.EqualTo(MovementMode.WallInk),"reenter after descending");
                     if(diagonal==0)
                     {
@@ -525,7 +720,7 @@ namespace Splatoon.Tests
                     var start=new Vector3(14.5f,.04f,12);
                     var airWorld=blocks.Empty();
                     if(kind==2) AddFloor(airWorld,new Vector3(14.5f,0,12),1,10,10);
-                    yield return blocks.Seed(airWorld);
+                    yield return SeedWhenIdle(blocks, airWorld);
                     Reset(player,kind==3 ? new Vector3(12.5f,3.04f,0) : kind==2 ? start+Vector3.up*.1f : start,1);
                     uint jump=kind==3 ? 0u : 1u;
                     if(kind==3)
@@ -600,8 +795,9 @@ namespace Splatoon.Tests
                 blocks.Now = Math.Max(blocks.Now, Math.Max(blocks.Terrain.SimulationTime, player.Snapshot.Value.SimulatedAt));
                 for (int frame = 0; frame < 1800 && (match.Projectiles.PendingCount > 0 || blocks.Terrain.PendingTransactions > 0); frame++)
                 {
+                    AlignFixtureClock(blocks);
                     blocks.Tick(); match.Projectiles.Simulate(blocks.Now);
-                    yield return null;
+                    yield return NextNativeFrame("Accepted air shot hero " + hero);
                 }
                 Assert.That(match.Projectiles.PendingCount, Is.Zero, "Every accepted air shot and deferred drop finishes naturally before the next Seed");
                 Assert.That(blocks.Terrain.PendingTransactions, Is.Zero, "Every accepted air-shot terrain result commits before the next Seed");

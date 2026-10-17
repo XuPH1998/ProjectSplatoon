@@ -17,6 +17,7 @@ namespace Splatoon.Tests
     // A later activation publication cannot repair a failed first-publication assertion.
     public sealed class BlockGravityCohortPublicationEpochTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double Started = 10, CapturedAt = 10.1, PublicationAt = 10.3;
         static readonly Vector3Int Bottom = new(2, 80, 2);
         GameObject _root;
@@ -27,6 +28,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Cohort first regroup publication epoch contract");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.PublicationPolicy = BlockPublicationPolicy.CompatibilityEight(); _terrain.Initialize(null);
@@ -36,6 +39,7 @@ namespace Splatoon.Tests
         public IEnumerator Teardown()
         {
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }

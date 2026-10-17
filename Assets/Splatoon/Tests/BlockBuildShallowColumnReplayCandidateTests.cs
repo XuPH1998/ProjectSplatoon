@@ -24,6 +24,7 @@ namespace Splatoon.Tests
     // actual Terrain path. Reflection only observes owners and registers the map.
     public sealed class BlockBuildShallowColumnReplayCandidateTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double Epoch = 10;
         const int ChainLength = 84, BottomY = 16, PumpLimit = 2000;
         // An isolated two-address replay that still has no terminal after eight
@@ -62,6 +63,7 @@ namespace Splatoon.Tests
             _admissions = null; _workers = null; _largestObservedColumnQuery = 0;
             yield return WaitForBootstrapInitialization();
             HeroMigrationTests.Load(); BlockAttackService.Clear();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Two real moving-build rejections under one published source");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.PublicationPolicy = BlockPublicationPolicy.CandidateDefault(3801);
@@ -127,6 +129,7 @@ namespace Splatoon.Tests
             _observedPending.Clear(); _observedCommandTasks.Clear(); _observedMeshes.Clear();
             _observedViews.Clear(); _observedMaterials.Clear(); _terrain = null; _root = _floor = null;
             BlockAttackService.Clear(); LubanConfigService.Current.Reset();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
         }
 
         void RememberActualPending(BlockTerrain terrain)
@@ -632,6 +635,14 @@ namespace Splatoon.Tests
             yield return RunControlledReplay(seed.EncodeSnapshot(), Epoch, false, false);
         }
 
+        [UnityTest, Timeout(600000)]
+        public IEnumerator RealOverlapCommitsGravityBeforeTheOriginalPaidFifoHeadCompletes()
+        {
+            // Public snapshot + public attacks: no pending/proof/token is transplanted.
+            var seed = MakeShallowCappedColumns();
+            yield return RunControlledReplay(seed.EncodeSnapshot(), Epoch, false, false, true);
+        }
+
         IEnumerator RunRecordedP2ControlledReplay(bool destroyFirst)
         {
             string snapshot = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, "..",
@@ -644,7 +655,7 @@ namespace Splatoon.Tests
             yield return RunControlledReplay(wire, 94.3034790405553, true, destroyFirst);
         }
 
-        IEnumerator RunControlledReplay(byte[] wire, double firstNow, bool recorded, bool destroyFirst)
+        IEnumerator RunControlledReplay(byte[] wire, double firstNow, bool recorded, bool destroyFirst, bool requireIndependentGravity = false)
         {
             var decoded = BlockWorld.DecodeSnapshot(wire);
             uint installedRevision = decoded.Revision;
@@ -731,6 +742,18 @@ namespace Splatoon.Tests
             RememberLastCommand();
 
             int overlapAborts = 0, unchangedRevisionAborts = 0, maximumUnchangedRevisionAborts = 0;
+            int originalMovingOwners = originalSource.Falling.Count;
+            bool independentGravityCommitted = false;
+            Action<BlockTerrainCommit> gravityCommit = _ =>
+            {
+                if (overlapAborts == 0 || callbacks[buildIndex] != 0 || _terrain.PinkCount != initialPink) return;
+                // PublishedCommit runs AFTER paid callbacks. Real old payload must
+                // already have moved from falling ownership into stable World cells.
+                if (!ReferenceEquals(_terrain.World, originalSource)
+                    && _terrain.World.Falling.Count < originalMovingOwners
+                    && ShallowColumns.Any(at => _terrain.World.TryGet(new Vector3Int(at.x, 1, at.y), out var stable) && stable.Owner == 2))
+                    independentGravityCommitted = true;
+            };
             uint abortRevision = _terrain.Revision;
             long failures = _terrain.FailedTransactions, gravityChecks = _terrain.GravityWorkChecks;
             int largestShallowQuery = 0;
@@ -747,6 +770,7 @@ namespace Splatoon.Tests
                 maximumUnchangedRevisionAborts = Math.Max(maximumUnchangedRevisionAborts, unchangedRevisionAborts);
             };
             _terrain.PendingTransactionFinished += observer;
+            _terrain.PublishedCommit += gravityCommit;
             int frames = 0;
             try
             {
@@ -775,7 +799,7 @@ namespace Splatoon.Tests
                     yield return null;
                 }
             }
-            finally { _terrain.PendingTransactionFinished -= observer; }
+            finally { _terrain.PendingTransactionFinished -= observer; _terrain.PublishedCommit -= gravityCommit; }
             string diagnostic = $"recorded={recorded} destroyFirst={destroyFirst} frames={frames} "
                 + $"overlapAborts={overlapAborts} unchangedRevisionAborts={maximumUnchangedRevisionAborts} "
                 + $"callbacks={string.Join("/", callbacks)} revision={_terrain.Revision} "
@@ -785,6 +809,8 @@ namespace Splatoon.Tests
             Debug.Log("[BLOCK_CONTROLLED_REPLAY_CANDIDATE] " + diagnostic);
             Assert.That(overlapAborts, Is.GreaterThanOrEqualTo(1),
                 "A candidate without a real publication overlap rejection is inconclusive, not evidence of repair. " + diagnostic);
+            if (requireIndependentGravity) Assert.That(independentGravityCommitted, Is.True,
+                "After an actual BuildMovingOverlap, old payload must settle in a real atomic gravity publication while the original unpaid-completion head still waits. " + diagnostic);
             Assert.That(largestShallowQuery, Is.LessThanOrEqualTo(3072),
                 "This candidate must remain below the ordinary inline allowance; it is not the 84-dependency fixture. " + diagnostic);
             Assert.That(callbacks.All(value => value == 1), Is.True,

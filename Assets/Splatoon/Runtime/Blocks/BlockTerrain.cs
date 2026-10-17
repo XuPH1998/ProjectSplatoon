@@ -407,6 +407,7 @@ namespace Splatoon.Blocks
         }
         void RecordPendingTerminal(Pending pending, PendingWallOutcome outcome)
         {
+            if (outcome != PendingWallOutcome.Published) RejectBuildOverlapRepair(pending);
             if (!pending.TrackWall || pending.WallReported) return;
             pending.WallReported = true;
             pending.WallOutcome = outcome;
@@ -453,6 +454,7 @@ namespace Splatoon.Blocks
             public bool PrivateGravity;
             public LinkedList<GravityStaticProof> StaticProofs;
             public BuildOccupancyPreparation BuildGuard;
+            public BuildOverlapRepair BuildOverlapRepair;
             public HistoricalRecoveryPreparation RecoveryGuard;
             public LinkedList<CommandCheckpoint> CommandCheckpoints;
             public BlockWorld PrivateSource;
@@ -512,7 +514,8 @@ namespace Splatoon.Blocks
             public byte Team;
             public int Count, MaxEnemy, MaxFriendly;
             public float Radius, FriendlyRadius;
-            public bool Build, Anchor, EnemyOnly, Done, Completed, OrdinaryMainAttack;
+            public bool Build, Anchor, EnemyOnly, Done, Completed, OrdinaryMainAttack, Spread, SpreadStaged;
+            public uint SpreadGeneration;
             public double CreatedAt;
             public Action<BlockMutationResult> Callback;
             public IEnumerator<Vector3Int> Cells;
@@ -542,11 +545,17 @@ namespace Splatoon.Blocks
             transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity); transform.localScale = Vector3.one;
             World = new BlockWorld(arena != null ? arena.Dimensions : new Vector2(32, 64));
             if (arena != null) foreach (var collider in arena.GetComponentsInChildren<Collider>(true)) if (!collider.isTrigger) _staticColliders.Add(collider);
-            var shader = Resources.Load<Shader>("BlockTerrain");
-            if (shader == null) shader = Shader.Find("Splatoon/Blocks");
-            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
-            _material = new Material(shader) { name = "Runtime Block Terrain", enableInstancing = true };
+            // The serialized template retains the falling instancing variants in Players.
+            var template = Resources.Load<Material>("BlockTerrainInstanced");
+            if (template != null) _material = new Material(template) { name = "Runtime Block Terrain", enableInstancing = true };
+            else
+            {
+                var shader = Resources.Load<Shader>("BlockTerrain");
+                if (shader == null) shader = Shader.Find("Splatoon/Blocks");
+                if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
+                if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
+                _material = new Material(shader) { name = "Runtime Block Terrain", enableInstancing = true };
+            }
             var cubeWorld = new BlockWorld(Vector2.one); cubeWorld.Set(Vector3Int.zero, BlockCell.Create(1));
             _fallMesh = BlockMeshBuilder.Build(cubeWorld, Vector3Int.zero, false).Upload("Block falling cube");
             var vertices = _fallMesh.vertices; for (int i = 0; i < vertices.Length; i++) vertices[i] = vertices[i] / BlockWorld.CellSize - Vector3.one * .5f;
@@ -599,6 +608,7 @@ namespace Splatoon.Blocks
             _epoch++; AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
             _gravityColumns.Clear(); _gravityCursor.Clear(); _landingGeneration.Clear(); _landingChecked.Clear();
             ResetGravityCohorts();
+            ResetBlockSpread();
             var next = seed.Clone(); next.Seal(revision, changed); _remoteQueued = new RemoteInstall { Next = next, Full = true }; return true;
         }
         public void QueueBuild(Vector3 point, Vector3 normal, byte team, int count, float radius, bool anchorToMap, Action<BlockMutationResult> callback = null, bool ordinaryMainAttack = false)
@@ -624,6 +634,7 @@ namespace Splatoon.Blocks
             if (double.IsFinite(frozenAt)) _now = Math.Max(0, frozenAt);
             if (!_accepting) return;
             _accepting = false; _epoch++;
+            ResetBlockSpread();
             AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
             _gravityColumns.Clear(); _gravityCursor.Clear(); ObserveRemoteInstallDiscarded(_remoteQueued, "DiscardedFinishRound"); _remoteQueued = null; ResetGravityCohorts();
         }
@@ -631,6 +642,7 @@ namespace Splatoon.Blocks
         {
             using var publicationTiming = MeasurePublicationWork();
             _epoch++; AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
+            ResetBlockSpread();
             ObserveRemoteInstallDiscarded(_remoteQueued, "DiscardedClear");
             _remoteQueued = null; _gravityColumns.Clear(); _gravityCursor.Clear(); _landingGeneration.Clear(); _landingChecked.Clear(); ResetGravityCohorts();
             ClearSafetyState();
@@ -644,11 +656,14 @@ namespace Splatoon.Blocks
             using var marker = TickCpu.Auto();
             using var publicationTiming = MeasurePublicationWork();
             if (!Initialized || _destroying) return;
-            if (authority && !_cohortAuthorityInitialized) { ResetGravityCohorts(true); _cohortAuthorityInitialized = true; }
-            if (!authority) { _cohortAuthorityInitialized = false; AbortPrivatePreparation(); if (_pending != null && _pending.BuildGuard != null) CancelPendingBuildPublication(_pending);
+            if (authority && !_cohortAuthorityInitialized) { ResetGravityCohorts(true); ResetBlockSpread(true); _cohortAuthorityInitialized = true; }
+            if (!authority && _pending?.BuildOverlapRepair != null) AbortPending();
+            if (!authority) { if (_cohortAuthorityInitialized) ResetBlockSpread(); _cohortAuthorityInitialized = false; AbortPrivatePreparation(); if (_pending != null && _pending.BuildGuard != null) CancelPendingBuildPublication(_pending);
                 else if (_pending != null && (_pending.PrivateGravity || _pending.RecoveryGuard != null)) AbortPending(); }
+            if (!authority && _pending?.Gravity?.SpreadMoves.Count > 0) AbortPending();
             _authority = authority; if (_accepting) _now = now;
             RefreshFairSchedulingContext();
+            RefreshBuildOverlapRepair();
             if (authority && _accepting) CaptureSafetyPlayers();
             if (_budgetFrame != Time.frameCount) { _budgetFrame = Time.frameCount; _publishedThisFrame = 0; }
             CleanupRetired(); TryYieldBackgroundPublication(); AdvancePending(true);
@@ -667,6 +682,7 @@ namespace Splatoon.Blocks
                 BeginTransaction(install.Next, changed, true, null); ObserveRemoteInstallStaged(install); return;
             }
             if (!authority || !_accepting) return;
+            ScheduleSpreadWork();
             StageAuthority();
         }
         void Update() { using var publicationTiming = MeasurePublicationWork(); if (Initialized) { CleanupRetired(); AdvancePending(false); } }
@@ -807,11 +823,15 @@ namespace Splatoon.Blocks
             if (AdvancePrivatePreparation()) return;
             if (PrepareFairAuthorityStage(out var fairNext)) return;
             _stageCommandCheckpoints = null; _stageAddedBuildSlots = null; _stageCommandCheckpoint = null; _stageHasMovingBuild = false; _stageMovingBuildColumns = null;
-            bool commandWork = _commands.Count > 0 && CanRunPublicationCommand(_commands.Peek()),
+            _stageBuildOverlapRepair = SelectBuildOverlapRepair();
+            bool commandWork = _stageBuildOverlapRepair == null && _commands.Count > 0 && CanRunPublicationCommand(_commands.Peek()),
                 gravityWork = FairAllowsGravity && (_gravityColumns.Count > 0 || FallingReady()) && _stagePublicationWindow.Includes(BlockPublicationOperation.Gravity);
+            bool spreadStage = commandWork && _commands.Peek().Spread;
+            if (spreadStage) gravityWork = false;
             _stagePureAuthorityBackground = !commandWork && gravityWork;
             if (!commandWork && !gravityWork)
             {
+                ReleaseBuildOverlapRepairNoReady();
                 // A retry with no remaining work releases its lease before
                 // a later attack is admitted under the current policy.
                 if (ReferenceEquals(_gravityRetryPublicationWindow, _stagePublicationWindow)) _gravityRetryPublicationWindow = null;
@@ -826,27 +846,31 @@ namespace Splatoon.Blocks
             LastCommandStageMilliseconds = LastGravityStageMilliseconds = 0;
             // Internal complete-burst throughput; ordinary attack budgets remain unchanged.
             bool coalescedBlast = !FairForegroundStage && commandWork && HasCoalescedBlastWork();
-            double commandBudget = coalescedBlast ? 4 : gravityWork ? .5 : .75, gravityBudget = commandWork ? .25 : .75;
-            int commandChecks = coalescedBlast ? 32768 : gravityWork ? 3072 : MaxChecks, gravityChecks = commandWork ? 1024 : MaxChecks;
+            double commandBudget = coalescedBlast ? 4 : !spreadStage && commandWork ? .5 : .75, gravityBudget = _commands.Count != 0 ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
+            int commandChecks = coalescedBlast ? 32768 : !spreadStage && commandWork ? 3072 : MaxChecks, gravityChecks = _commands.Count != 0 ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone;
             if (FairForegroundStage)
             {
                 commandBudget = .5; commandChecks = 3072;
                 if (commandWork && _commands.Peek().Build && _cohortIndexPending)
                 {
                     var indexTimer = System.Diagnostics.Stopwatch.StartNew(); int indexChecks = 0;
-                    IndexGravityWork(next, ref indexChecks, indexTimer, .25, 1024);
+                    IndexGravityWork(next, ref indexChecks, indexTimer, BlockPublicationPolicy.GravityMillisecondsWithCommands, BlockPublicationPolicy.GravityChecksWithCommands);
                     LastGravityStageMilliseconds = indexTimer.Elapsed.TotalMilliseconds;
                 }
             }
-            bool gravityChanged = false;
+            bool gravityChanged = false, gravityPhaseRan = false;
+            bool CanRunGravityPhase() => !spreadStage && FairAllowsGravity && _stagePublicationWindow.Includes(BlockPublicationOperation.Gravity)
+                && (ColumnCount > 0 || MotionCount > 0 || _cohortIndexPending);
             // Separate clocks guarantee work even when the other phase overruns. Alternating
             // the first phase also shares the bounded chunk slots under sustained load.
             for (int phase = 0; phase < 2; phase++)
             {
                 bool gravity = _gravityFirst ? phase == 0 : phase == 1;
-                if (gravity && gravityWork)
+                if (gravity && CanRunGravityPhase())
                 {
+                    gravityPhaseRan = true;
                     var timer = System.Diagnostics.Stopwatch.StartNew(); int checks = 0;
+                    _spreadOwesGravity = false;
                     gravityChanged = StageGravity(next, changed, ref checks, timer, gravityBudget, gravityChecks);
                     LastGravityStageMilliseconds = timer.Elapsed.TotalMilliseconds;
                     if (gravityChanged) GravityProgressStages++;
@@ -859,6 +883,16 @@ namespace Splatoon.Blocks
                     if (CommandWorkChecks != before) CommandProgressStages++;
                 }
             }
+            // A command may remove the first support after the gravity-first
+            // slot was empty. Spend its already reserved slot once this stage.
+            if (!gravityPhaseRan && CanRunGravityPhase())
+            {
+                var timer = System.Diagnostics.Stopwatch.StartNew(); int checks = 0;
+                _spreadOwesGravity = false;
+                gravityChanged = StageGravity(next, changed, ref checks, timer, gravityBudget, gravityChecks);
+                LastGravityStageMilliseconds = timer.Elapsed.TotalMilliseconds;
+                if (gravityChanged) GravityProgressStages++;
+            }
             _stageTransformsSynced = false;
             _gravityFirst = !_gravityFirst;
             bool any = gravityChanged || changed.Count > 0 || results.Any(r => r.Item2.Changed > 0) || next.Falling.Count != World.Falling.Count;
@@ -867,15 +901,16 @@ namespace Splatoon.Blocks
             if (BeginDependentEditPreparation(next, changed, results, _stagePublicationWindow, any)) return;
             if (!any)
             {
-                CommitGravityJournal(_gravityJournal); _gravityJournal = null;
+                CommitGravityJournal(_gravityJournal);
+                CommitBuildOverlapRepairNoChange(_gravityJournal); _gravityJournal = null;
                 FairTerminalNoPublication(results);
-                if (_stagePureAuthorityBackground) FairBackgroundStageDidNotPublish();
+                if (_stagePureAuthorityBackground && _stageBuildOverlapRepair == null) FairBackgroundStageDidNotPublish();
                 foreach (var pair in results) if (pair.Item1.Done) Complete(pair.Item1, pair.Item1.Total);
                 return;
             }
             next.Seal(Revision + 1, changed); BeginWindowTransaction(next, changed, false, results, _stagePublicationWindow);
             }
-            finally { _stageTransformsSynced = false; _gravityJournal = null; _stagePublicationWindow = null; _stagePublicationReplayOnly = false; _stagePureAuthorityBackground = false; }
+            finally { _stageBuildOverlapRepair = null; _stageTransformsSynced = false; _gravityJournal = null; _stagePublicationWindow = null; _stagePublicationReplayOnly = false; _stagePureAuthorityBackground = false; }
         }
         static bool HasStageBudget(int checks, int maxChecks, System.Diagnostics.Stopwatch timer, double milliseconds)
             => checks < maxChecks && (checks == 0 || timer.Elapsed.TotalMilliseconds < milliseconds);
@@ -900,6 +935,11 @@ namespace Splatoon.Blocks
             {
                 var command = _commands.Peek();
                 if (!CanRunPublicationCommand(command)) break;
+                if (command.Spread)
+                {
+                    if (results.Count != 0 || changed.Count != 0) break;
+                    StageSpread(command, next, changed, results, ref checks, timer, milliseconds, maxChecks); return;
+                }
                 if (!FairForegroundStage && TryStageUnboundedBlastBatch(next, changed, results, ref checks, timer, milliseconds, maxChecks)) return;
                 if (command.Build && _cohortIndexPending) break;
                 var checkpoint = CheckpointCommand(command);
@@ -917,6 +957,7 @@ namespace Splatoon.Blocks
                 var result = new BlockMutationResult(); bool limited = false;
                 while (HasStageBudget(checks, maxChecks, timer, milliseconds))
                 {
+                    if (command.Build && checks + StaticWallAnchorMaxQueryChecks + 1 > maxChecks) { limited = true; break; }
                     checks++; CommandWorkChecks++;
                     if (command.Build && command.Total.Added + result.Added >= command.Count || !command.Build && command.Total.RemovedEnemy + result.RemovedEnemy >= command.MaxEnemy && (command.EnemyOnly || command.Total.RemovedFriendly + result.RemovedFriendly >= command.MaxFriendly)) { command.Done = true; break; }
                     if (command.Build)
@@ -932,8 +973,9 @@ namespace Splatoon.Blocks
                         { checkpoint.Visited.RemoveLast(); command.Cells = Prepend(cell, command.Cells).GetEnumerator(); limited = true; break; }
                         if (movingOccupied) { BuildMovingOccupied++; continue; }
                         if (!FitsBudget(_stagePublicationWindow, changed, cell)) { BuildDeferredByChunkBudget++; checkpoint.Visited.RemoveLast(); command.Cells = Prepend(cell, command.Cells).GetEnumerator(); limited = true; break; }
-                        var value = BlockCell.Create(command.Team, command.Anchor && StaticAnchor(cell, command.Normal));
-                        if (next.Set(cell, value)) { result.Added++; IncludeCell(changed, cell); QueueGravity(cell); RecordAddedBuildSlot(command, cell); }
+                        checks += StaticWallAnchorMaxQueryChecks; CommandWorkChecks += StaticWallAnchorMaxQueryChecks;
+                        var value = BlockCell.Create(command.Team, StaticMapWallAnchor(cell));
+                        if (next.Set(cell, value)) { result.Added++; IncludeCell(changed, cell); QueueGravity(cell); QueueGravityStartupAddition(cell); RecordAddedBuildSlot(command, cell); }
                     }
                     else
                     {
@@ -963,7 +1005,7 @@ namespace Splatoon.Blocks
                             if (!next.TryGet(target.Cell, out var own) || own.Owner != target.Owner) { command.TargetIndex++; continue; }
                             var key = BlockWorld.ChunkAt(target.Cell);
                             if (!FitsBudget(_stagePublicationWindow, changed, target.Cell)) { limited = true; break; }
-                            command.TargetIndex++; next.Set(target.Cell, default); IncludeCell(changed, target.Cell); QueueGravity(target.Cell);
+                            command.TargetIndex++; next.Set(target.Cell, default); IncludeCell(changed, target.Cell); QueueGravity(target.Cell); QueueGravityStartupRemoval(target.Cell);
                         }
                         if (friendly) result.RemovedFriendly++; else result.RemovedEnemy++;
                     }
@@ -1241,6 +1283,7 @@ namespace Splatoon.Blocks
             pending.ForegroundWork = remote || pending.Results.Count != 0 || (pending.CommandCheckpoints?.Count ?? 0) != 0;
             TagFairPending(pending);
             ApplyDependentPublicationContext(pending);
+            ProtectBuildOverlapRepairPending(pending);
             var keys = pending.Changed;
             // Headless peers still publish the same collision world and scores.
             // Their null graphics device has no consumer for render geometry.
@@ -1297,6 +1340,7 @@ namespace Splatoon.Blocks
         void AdvancePending(bool allowPublication)
         {
             var pending = _pending; if (pending == null) return;
+            ProtectBuildOverlapRepairPending(pending);
             if (pending.Epoch != _epoch) { pending.AbortReason = PendingAbortReason.EpochChanged; AbortPending(); return; }
             if (!ValidateFairPending(pending)) return;
             if (pending.PrivateGravity && (_remoteQueued != null || !ReferenceEquals(World, pending.PrivateSource)
@@ -1401,6 +1445,7 @@ namespace Splatoon.Blocks
             if (pending.TrackWall) pending.PublishEnterWallStamp = PendingWallNow();
             // Revalidate the exact static support query before any visible swap.
             // The locked source still supplies all stable-cell facts.
+            if (!ValidateSpreadPublication(pending)) { RetrySpreadPublication(pending); return; }
             if (!ValidateOwnActivationProofs(pending)) { RetryOwnActivationPublication(pending); return; }
             if (!ValidateStaticProofs(pending.StaticProofs))
             { StaticProofInvalidations++; Fail(pending, new InvalidOperationException("Static support changed after private landing proof.")); return; }
@@ -1438,7 +1483,7 @@ namespace Splatoon.Blocks
             var oldWorld = World;
             World = pending.Next;
             ResetBuildOccupancyQueryCache();
-            if (pending.Remote) ResetGravityCohorts(); else CommitGravityJournal(pending.Gravity);
+            if (pending.Remote) { ResetGravityCohorts(); ResetBlockSpread(_authority && _accepting); } else CommitGravityJournal(pending.Gravity);
             foreach (var piece in pending.Pieces)
             {
                 if (_views.Remove(piece.Key, out var prior)) { _colliderChunks.Remove(prior.Collider); Dispose(prior); }
@@ -1448,6 +1493,7 @@ namespace Splatoon.Blocks
             Physics.SyncTransforms(); _pending = null; _publishedThisFrame += pending.Changed.Length; PublishedChunks += pending.Changed.Length;
             // Native work may overrun; charge it once without a new post-swap rejection.
             reservation.Commit();
+            CommitBuildOverlapRepair(pending);
             // Retain a successful paid partial before any completion callback
             // can clear the round and release all queued command leases.
             foreach (var pair in pending.Results)
@@ -1473,6 +1519,7 @@ namespace Splatoon.Blocks
         void Complete(Command command, BlockMutationResult result)
         {
             if (command.Completed) return; command.Completed = true; command.RetryWindow = null;
+            CompleteSpread(command);
             CommandsCompleted++;
             bool removedReservation = _destructionReservations.Remove(command);
             if (removedReservation) { UnregisterReservation(command); _reservedColumns.Clear(); }
@@ -1495,6 +1542,7 @@ namespace Splatoon.Blocks
         void AbortPending() => AbortPendingCore(false);
         void AbortPendingCore(bool preserveFairSeed)
         {
+            CancelBuildOverlapRepair();
             if (!preserveFairSeed) CancelFairScheduling();
             AbortPrivatePreparation();
             if (_pending == null) return;
@@ -1536,6 +1584,15 @@ namespace Splatoon.Blocks
             DestroyOwnedObject(view.Object); DestroyOwnedObject(view.RenderMesh); DestroyOwnedObject(view.CollisionMesh);
         }
 
+        internal static bool IsBlockGeometry(Collider collider)
+        {
+            if (collider == null) return false;
+            var owner = collider.GetComponentInParent<BlockTerrain>();
+            // Production attaches this component to the arena root, which also
+            // contains authored map colliders. Only the registered static map
+            // is exempt; unknown/unpublished block descendants remain blocked.
+            return owner != null && !owner._staticColliders.Contains(collider);
+        }
         public bool TryContact(RaycastHit hit, out BlockContact contact) => TryContact(hit.collider, hit.point, hit.normal, out contact);
         public bool TryContact(Collider collider, Vector3 point, Vector3 normal, out BlockContact contact)
         {
@@ -1620,20 +1677,24 @@ namespace Splatoon.Blocks
         {
             if (!Initialized || _material == null || World.Falling.Count == 0 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null || !SystemInfo.supportsInstancing) return;
             using var marker = FallingRenderCpu.Auto();
+            BeginGravityStartupPresentation();
             int count = 0;
             foreach (var run in World.Falling.Values)
             {
                 float offset = run.Offset(_now);
+                bool queuedStartupPresentation = false;
                 for (int i = 0; i < run.Cells.Length; i++)
                 {
                     byte team = run.Cells[i].Owner; if (team == 0) continue;
                     var p = BlockWorld.Center(run.Bottom + Vector3Int.up * i) - Vector3.up * offset;
                     _fallMatrices[count] = Matrix4x4.TRS(p, Quaternion.identity, Vector3.one * BlockWorld.CellSize);
                     _fallColors[count] = team == 1 ? PrototypeArena.Pink : PrototypeArena.Blue; count++;
+                    if (!queuedStartupPresentation) { QueueGravityStartupPresentation(run, offset); queuedStartupPresentation = true; }
                     if (count == _fallMatrices.Length) { DrawFalling(count); count = 0; }
                 }
             }
             if (count > 0) DrawFalling(count);
+            CommitGravityStartupPresentation(_now);
         }
         void DrawFalling(int count)
         {
@@ -1645,6 +1706,7 @@ namespace Splatoon.Blocks
             ClearSafetyState();
             ResetBuildQueriesCache();
             ResetBuildOccupancyQueryCache();
+            ResetBlockSpread();
             _destroying = true; _epoch++; AbortPending(); _blastBatch = null;
             ObserveRemoteInstallDiscarded(_remoteQueued, "DiscardedDestroy");
             while (_commands.Count > 0) Complete(_commands.Dequeue(), default);

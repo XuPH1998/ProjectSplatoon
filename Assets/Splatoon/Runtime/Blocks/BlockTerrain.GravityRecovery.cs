@@ -13,6 +13,9 @@ namespace Splatoon.Blocks
         public long HistoricalRecoveryStarts, HistoricalRecoveryStages, HistoricalRecoveryWork, HistoricalRecoveryCount, HistoricalRecoveryNoCapacity;
         public long LastHistoricalPublicationWork;
         public long HistoricalRecoveryPublicationConflicts;
+        // Lifetime O(1) path counters; compare deltas from the same observation window.
+        public long HistoricalNoLongerInvalidMissingTarget, HistoricalNoLongerInvalidInactivePhase;
+        public long HistoricalNoLongerInvalidClassifiedValid, HistoricalNoLongerInvalidWitnessGone, HistoricalOwnedCloneStarts;
         const int HistoricalPublicationRetryLimit = 8;
         public ulong HistoricalRecoveryProgressVersion { get; private set; }
         sealed class HistoricalRecoveryRequest
@@ -36,7 +39,7 @@ namespace Splatoon.Blocks
             public BuildSourceMotion Target;
             public double SourceTime;
             public int Phase, Candidate, CandidateScan, SourceBottom, Span, FirstOccupied, Landing, LandingScan, MaximumTop, PhysicalMaximumTop;
-            public bool Invalid, Saturated;
+            public bool Invalid, Saturated, OwnedForMutation;
             public BuildOccupiedCell Witness;
             public BuildOccupiedCell WitnessOther;
             public LinkedListNode<BuildOccupiedCell> CellCursor;
@@ -100,6 +103,7 @@ namespace Splatoon.Blocks
         }
         void AbortHistoricalRecovery()
         {
+            CancelBuildOverlapRepairPreparation(_historicalRecoveryPreparation?.Request ?? _historicalRecoveryRequest);
             _historicalRecoveryRequest = null;
             var preparation = _historicalRecoveryPreparation; _historicalRecoveryPreparation = null;
             if (preparation == null) return;
@@ -112,6 +116,7 @@ namespace Splatoon.Blocks
             var preparation = _historicalRecoveryPreparation;
             if (terminal && preparation != null)
                 SetHistoricalTerminal(preparation.Request, outcome);
+            CompleteBuildOverlapRepairPreparation(preparation?.Request, null, outcome == HistoricalRecoveryOutcome.NoLongerInvalid);
             AbortHistoricalRecovery(); LastHistoricalRecoveryOutcome = outcome;
         }
         bool SpendHistoricalRecovery(ref int checks, int cost, int maximum, Stopwatch timer, double milliseconds)
@@ -152,8 +157,8 @@ namespace Splatoon.Blocks
         {
             if (!HasHistoricalRecovery) return false;
             bool commands = _commands.Count != 0;
-            int maximum = commands ? 1024 : MaxChecks, checks = 0;
-            double milliseconds = commands ? .25 : .75;
+            int maximum = commands ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone, checks = 0;
+            double milliseconds = commands ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             var timer = Stopwatch.StartNew(); long before = GravityWorkChecks;
             AuthorityStageCount++; HistoricalRecoveryStages++; LastCommandStageMilliseconds = 0;
             try
@@ -168,38 +173,25 @@ namespace Splatoon.Blocks
                     var column = new BuildColumnProof { Column = request.Column, Minimum = minimum, Length = length,
                         Added = new bool[length], AddedBelow = new int[length], Heads = _cohortHeads.TryGetValue(request.Column, out var heads) ? heads.GetEnumerator() : null };
                     var scratch = new BuildOccupancyPreparation { Source = World, Draft = World, Window = request.Window, Epoch = _epoch, Revision = Revision, Round = Round,
-                        Mutation = World.MutationGeneration, Clone = World.BeginBudgetedOwnedClone(),
-                        Journal = new GravityJournal { Window = request.Window, ColumnCursor = _cohortColumnCursor, MotionCursor = _cohortMotionCursor } };
+                        // Classification only reads the published source. It does not
+                        // need independent writable metadata until a real repair.
+                        Mutation = World.MutationGeneration, Next = World,
+                        Journal = new GravityJournal { Next = World, Window = request.Window, ColumnCursor = _cohortColumnCursor, MotionCursor = _cohortMotionCursor } };
                     scratch.ColumnOrder.AddLast(column); scratch.Columns.Add(request.Column, column);
-                    _historicalRecoveryPreparation = new HistoricalRecoveryPreparation { Request = request, Scratch = scratch, Column = column, SourceTime = _now, FirstOccupied = int.MaxValue };
+                    _historicalRecoveryPreparation = new HistoricalRecoveryPreparation { Request = request, Scratch = scratch, Column = column, SourceTime = _now, FirstOccupied = int.MaxValue, Phase = 1 };
                     HistoricalRecoveryStarts++; LastHistoricalRecoveryOutcome = HistoricalRecoveryOutcome.Preparing;
                 }
                 var preparation = _historicalRecoveryPreparation;
                 if (!preparation.SourceValid(this)) { FinishHistoricalRecovery(HistoricalRecoveryOutcome.Cancelled, false); return true; }
                 Physics.SyncTransforms();
-                if (preparation.Phase == 0)
-                {
-                    while (!preparation.Scratch.Clone.Ready && HasStageBudget(checks, maximum, timer, milliseconds))
-                    {
-                        int cost = preparation.Scratch.Clone.EstimateNextStepWork();
-                        if (!SpendHistoricalRecovery(ref checks, cost, maximum, timer, milliseconds)) return true;
-                        ulong version = preparation.Scratch.Clone.ProgressVersion;
-                        preparation.Scratch.Clone.Step(preparation.Source, cost, out int actual);
-                        if (actual > cost || preparation.Scratch.Clone.Failed || preparation.Scratch.Clone.ProgressVersion == version)
-                            throw new InvalidOperationException("Historical owned clone failed an admitted step.");
-                    }
-                    if (!preparation.Scratch.Clone.Ready || !SpendHistoricalRecovery(ref checks, 8, maximum, timer, milliseconds)) return true;
-                    preparation.Scratch.Next = preparation.Scratch.Clone.TakeWorld(); preparation.Scratch.Clone = null;
-                    preparation.Scratch.Journal.Next = preparation.Next; preparation.Phase = 1;
-                }
                 if (preparation.Phase == 1)
                 {
                     if (!AdvanceBuildColumn(preparation.Scratch, preparation.Column, ref checks, maximum, timer, milliseconds)) return true;
                     if (!preparation.Column.Motions.TryGetValue(preparation.Request.Motion, out preparation.Target))
-                    { FinishHistoricalRecovery(HistoricalRecoveryOutcome.NoLongerInvalid, false); return true; }
+                    { HistoricalNoLongerInvalidMissingTarget++; FinishHistoricalRecovery(HistoricalRecoveryOutcome.NoLongerInvalid, false); return true; }
                     var target = preparation.Target;
                     if (target.Group != null && target.Group.Phase != FallingCohortPhase.Falling && target.Group.Phase != FallingCohortPhase.Settling)
-                    { FinishHistoricalRecovery(HistoricalRecoveryOutcome.NoLongerInvalid, false); return true; }
+                    { HistoricalNoLongerInvalidInactivePhase++; FinishHistoricalRecovery(HistoricalRecoveryOutcome.NoLongerInvalid, false); return true; }
                     preparation.SourceBottom = target.Group != null ? target.Group.Bottom.y : target.Legacy.Bottom.y;
                     preparation.Span = target.Group != null ? target.Group.TopExclusive - target.Group.Bottom.y : target.Legacy.Cells.Length;
                     if (preparation.Span <= 0 || preparation.Span > BlockWorld.MaxCohortCells) throw new InvalidOperationException("Historical recovery cannot discard an invalid source span.");
@@ -266,7 +258,10 @@ namespace Splatoon.Blocks
                 {
                     if (!preparation.Invalid && preparation.DynamicTargetCursor != null) return true;
                     if (!preparation.Invalid)
-                    { FinishHistoricalRecovery(preparation.Saturated ? HistoricalRecoveryOutcome.UncertifiedStaticQuery : HistoricalRecoveryOutcome.NoLongerInvalid, preparation.Saturated); return true; }
+                    {
+                        if (!preparation.Saturated) HistoricalNoLongerInvalidClassifiedValid++;
+                        FinishHistoricalRecovery(preparation.Saturated ? HistoricalRecoveryOutcome.UncertifiedStaticQuery : HistoricalRecoveryOutcome.NoLongerInvalid, preparation.Saturated); return true;
+                    }
                     preparation.Candidate = Math.Max(preparation.Column.Minimum, Mathf.CeilToInt(preparation.SourceBottom - preparation.Target.Sample.Offset / BlockWorld.CellSize - .00001f));
                     preparation.CandidateScan = 0;
                     if (preparation.Target.Group != null && preparation.Next._upperSupports.TryGetValue(preparation.Target.Group.Id, out var uppers)) preparation.UpperCursor = uppers.GetEnumerator();
@@ -383,6 +378,31 @@ namespace Splatoon.Blocks
                     // it to bind an older cohort that ordinary selection replaces.
                     preparation.SupportCursor.Dispose(); preparation.SupportCursor = null; preparation.Phase = 8;
                 }
+                if (preparation.Phase == 8 && !preparation.OwnedForMutation)
+                {
+                    // All preceding phases only inspected Source/Next. Never
+                    // perform the first pose write through that read-only alias.
+                    if (preparation.Scratch.Clone == null)
+                    {
+                        // Keep the original initial admission; this additional
+                        // fixed admission covers constructing the delayed owner.
+                        if (!SpendHistoricalRecovery(ref checks, 16, maximum, timer, milliseconds)) return true;
+                        preparation.Scratch.Clone = preparation.Source.BeginBudgetedOwnedClone();
+                        HistoricalOwnedCloneStarts++;
+                    }
+                    while (!preparation.Scratch.Clone.Ready && HasStageBudget(checks, maximum, timer, milliseconds))
+                    {
+                        int cost = preparation.Scratch.Clone.EstimateNextStepWork();
+                        if (!SpendHistoricalRecovery(ref checks, cost, maximum, timer, milliseconds)) return true;
+                        ulong version = preparation.Scratch.Clone.ProgressVersion;
+                        preparation.Scratch.Clone.Step(preparation.Source, cost, out int actual);
+                        if (actual > cost || preparation.Scratch.Clone.Failed || preparation.Scratch.Clone.ProgressVersion == version)
+                            throw new InvalidOperationException("Historical owned clone failed an admitted step.");
+                    }
+                    if (!preparation.Scratch.Clone.Ready || !SpendHistoricalRecovery(ref checks, 8, maximum, timer, milliseconds)) return true;
+                    preparation.Scratch.Next = preparation.Scratch.Clone.TakeWorld(); preparation.Scratch.Clone = null;
+                    preparation.Scratch.Journal.Next = preparation.Next; preparation.OwnedForMutation = true;
+                }
                 if (preparation.Phase == 8)
                 {
                     int supportWork = preparation.SupportLower == null ? 0
@@ -457,6 +477,7 @@ namespace Splatoon.Blocks
                 if (preparation.PreparedHeads != null) preparation.Scratch.Journal.Heads[preparation.Request.Column] = preparation.PreparedHeads;
                 preparation.Next.Seal(Revision + 1, Array.Empty<Vector3Int>());
                 _gravityJournal = preparation.Scratch.Journal;
+                CompleteBuildOverlapRepairPreparation(preparation.Request, _gravityJournal, true);
                 BeginWindowTransaction(preparation.Next, new HashSet<Vector3Int>(), false, null, preparation.Request.Window);
                 _pending.RecoveryGuard = preparation; _pending.StaticProofs = preparation.StaticProofs;
                 _historicalRecoveryPreparation = null; _gravityJournal = null; return true;
@@ -539,7 +560,7 @@ namespace Splatoon.Blocks
             if (pending.RecoveryGuard.SourceLost)
             { LastHistoricalRecoveryOutcome = HistoricalRecoveryOutcome.Cancelled; return; }
             if (pending.RecoveryGuard.WitnessGone)
-            { LastHistoricalRecoveryOutcome = HistoricalRecoveryOutcome.NoLongerInvalid; return; }
+            { HistoricalNoLongerInvalidWitnessGone++; LastHistoricalRecoveryOutcome = HistoricalRecoveryOutcome.NoLongerInvalid; return; }
             var request = pending.RecoveryGuard.Request;
             if (++request.PublicationAttempts >= HistoricalPublicationRetryLimit)
             {

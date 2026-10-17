@@ -234,7 +234,9 @@ namespace Splatoon.Prototype
             }
             string recovery=player.SplatlingReservedInk>0?$"预留 {player.SplatlingReservedInk:0.0} · Shift 取消":
                 player.Ink<WeaponSimulation.InkCost(weapon)?weapon.FireMode==WeaponFireMode.Splatling?"材料不足 · 可慢速蓄力":"材料不足 · 松开射击恢复":
-                player.InkRecoverAt>player.SimulatedAt?"射击后材料恢复锁定":player.HasInkRecovery?"己方积木上 · 材料快速恢复":player.Swimming?"空中弦化 · 材料普通恢复":"";
+                player.InkRecoverAt>player.SimulatedAt?"射击后材料恢复锁定":player.HasInkRecovery?"己方积木上 · 材料快速恢复":player.Swimming?
+                player.Movement switch { MovementMode.GroundInk=>"地面弦化 · 材料普通恢复", MovementMode.WallInk=>"墙面弦化 · 材料普通恢复",
+                    MovementMode.Mantle=>"翻越中 · 材料普通恢复", _=>"空中弦化 · 材料普通恢复" }:"";
             if(!string.IsNullOrEmpty(recovery)){UiPanel(new Rect(v.x,v.y-29,v.width,24),HudSurface);UiFit(new Rect(v.x+10,v.y-28,v.width-20,22),recovery,_uiMuted);}
             var help=new Rect(551,bounds.yMax-65,180,30);UiCard(help,HudSurface);
             UiKey(new Rect(help.x+9,help.y+5,33,20),"左键");GUI.Label(new Rect(help.x+45,help.y+3,36,24),WeaponSimulation.IsCharge(weapon)||WeaponSimulation.IsSplatling(weapon)?"蓄力":"射击",_uiCenter);

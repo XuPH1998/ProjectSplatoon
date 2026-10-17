@@ -19,6 +19,7 @@ MonoBehaviour:
   bubblePopAudio: {fileID: 0}
   flightMigrationVersion: 1
   flightPrefab: {fileID: 949289641, guid: 67a80872a4b23974e8cc39d79465f467, type: 3}
+  blockProjectileSize: {x: 1.05, y: 1.05, z: 1.05}
   muzzlePrefab: {fileID: 276323219, guid: 494a0ec8689349b4be7fa147f89f9781, type: 3}
   burstInterval: 0.02
   particlesPerBurst: 1

@@ -20,11 +20,11 @@ namespace Splatoon.Tests
             Assert.That(BlockWorld.CellSize, Is.EqualTo(.10f)); Assert.That(BlockWorld.ChunkSize, Is.EqualTo(16));
         }
         [Test]
-        public void TopBoundaryAllowsLastCellButRejectsAbove32Metres()
+        public void TopBoundaryAllowsLastCellButRejectsAbove8Metres()
         {
             var world = new BlockWorld(new Vector2(32, 64));
-            Assert.That(world.Set(new Vector3Int(0, 319, 0), BlockCell.Create(1)), Is.True);
-            Assert.That(world.Set(new Vector3Int(0, 320, 0), BlockCell.Create(1)), Is.False);
+            Assert.That(world.Set(new Vector3Int(0, 79, 0), BlockCell.Create(1)), Is.True);
+            Assert.That(world.Set(new Vector3Int(0, 80, 0), BlockCell.Create(1)), Is.False);
             Assert.That(world.Set(new Vector3Int(160, 0, 0), BlockCell.Create(1)), Is.False);
             Assert.That(world.PinkCount, Is.EqualTo(1));
         }

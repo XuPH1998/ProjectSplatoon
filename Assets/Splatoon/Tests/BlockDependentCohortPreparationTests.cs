@@ -10,6 +10,10 @@ namespace Splatoon.Tests
 {
     public sealed class BlockDependentCohortPreparationTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
         const double Epoch = 10;
         const int Maximum = 1024;
 

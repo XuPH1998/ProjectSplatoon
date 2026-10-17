@@ -15,6 +15,8 @@ namespace Splatoon.Prototype
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         const int FallFixtureCells = 32;
         const float FallFixtureRadius = .3f;
+        const int FallFixtureHeadroomCells = 1;
+        const float FallFixtureMinimumClearance = 1f;
         const double DrainQuietSeconds = 1;
 
         [Serializable] public sealed class DrainInputSample
@@ -31,6 +33,10 @@ namespace Splatoon.Prototype
             public Vector3 lane, point;
             public Vector3Int firstCell;
             public float radius;
+            public string placementRule = "world-top-reserved-32-v1";
+            public float worldTop, worldBottom, cellSize, minimumFallClearance, supportHeight;
+            public int topCellExclusive, seedFirstY, reservedLayers, headroomCells;
+            public bool worldBoundsClear, staticVolumeClear;
             public int requested, callbackCount, added, removedEnemy, removedFriendly;
             public long queuedOrdinal;
             public double queuedRealtime, queuedServerTime, completedRealtime, completedServerTime;
@@ -58,8 +64,8 @@ namespace Splatoon.Prototype
         }
         [Serializable] sealed class FallCoverageReport
         {
-            public int schema = 1, command, expectedPlayers, errors;
-            public string scope = "one finite 32-cell 22m build per participant after an intact quiet drain; actual published new run cells, unchanged canonical finish and exact peer checkpoints";
+            public int schema = 2, command, expectedPlayers, errors;
+            public string scope = "one finite 32-cell world-top-bounded build per participant after an intact quiet drain; actual published new run cells, unchanged canonical finish and exact peer checkpoints";
             public bool drainAccepted, allCommandsCompleted, allCellsWitnessed, finishEligible, finishRequested;
             public uint round, baselineRevision, finishRequestRevision;
             public ulong baselineNextRunId;
@@ -160,6 +166,40 @@ namespace Splatoon.Prototype
             return true;
         }
 
+        static bool FixtureSiteClear(BlockWorld world, FallCommandSample fixture)
+        {
+            int extent = Mathf.CeilToInt(fixture.radius / BlockWorld.CellSize);
+            fixture.worldBoundsClear = true;
+            for (int y = 0; y < fixture.requested; y++)
+                for (int x = -extent; x <= extent; x++)
+                    for (int z = -extent; z <= extent; z++)
+                    {
+                        var cell = fixture.firstCell + new Vector3Int(x, y, z);
+                        if (InFixtureVolume(fixture, cell) && !world.InBounds(cell)) fixture.worldBoundsClear = false;
+                    }
+            float seedBottom = fixture.firstCell.y * BlockWorld.CellSize;
+            int staticMask = PlayerMotorSimulation.WorldMask & ~(1 << BlockTerrain.TerrainLayer);
+            Vector3 center = BlockWorld.Center(fixture.firstCell) + Vector3.up * ((fixture.requested - 1) * BlockWorld.CellSize * .5f);
+            Vector3 half = new((extent + .5f) * BlockWorld.CellSize, fixture.requested * BlockWorld.CellSize * .5f,
+                (extent + .5f) * BlockWorld.CellSize);
+            fixture.staticVolumeClear = !Physics.CheckBox(center, half, Quaternion.identity, staticMask, QueryTriggerInteraction.Ignore);
+            fixture.supportHeight = world.Bottom;
+            for (int x = -extent; x <= extent; x++)
+                for (int z = -extent; z <= extent; z++)
+                {
+                    var column = fixture.firstCell + new Vector3Int(x, 0, z);
+                    if (!InFixtureVolume(fixture, column)) continue;
+                    Vector3 origin = BlockWorld.Center(column); origin.y = seedBottom;
+                    if (Physics.Raycast(origin, Vector3.down, out var hit, Mathf.Max(0, seedBottom - world.Bottom) + BlockWorld.CellSize,
+                        staticMask, QueryTriggerInteraction.Ignore)) fixture.supportHeight = Mathf.Max(fixture.supportHeight, hit.point.y);
+                    for (int y = Mathf.FloorToInt(world.Bottom / BlockWorld.CellSize); y < fixture.firstCell.y; y++)
+                        if (world.TryGet(new Vector3Int(column.x, y, column.z), out _))
+                            fixture.supportHeight = Mathf.Max(fixture.supportHeight, (y + 1) * BlockWorld.CellSize);
+                }
+            return fixture.worldBoundsClear && fixture.staticVolumeClear
+                && seedBottom - Mathf.Max(fixture.lane.y, fixture.supportHeight) >= fixture.minimumFallClearance - .0001f;
+        }
+
         void QueueFiniteFallFixture(PrototypeMatch match, double now)
         {
             var coverage = _report.fallCoverage;
@@ -180,22 +220,33 @@ namespace Splatoon.Prototype
             var players = match.Players.Where(p => p != null && p.IsSpawned).OrderBy(p => p.PlayerId).ToArray();
             if (players.Length != coverage.expectedPlayers || players.Any(p => !_lanes.ContainsKey(p.PlayerId)))
             { FallCoverageFailure("Finite fall fixture lacks all configured, seeded participants"); return; }
+            float worldTop = BlockWorld.Top, cellSize = BlockWorld.CellSize;
+            int topCellExclusive = Mathf.FloorToInt(worldTop / cellSize);
+            int seedFirstY = topCellExclusive - FallFixtureCells - FallFixtureHeadroomCells;
             // Capture every intended site before submitting any command. No repeating pulse or ordinary fire is enabled here.
             foreach (var player in players)
             {
-                var point = _lanes[player.PlayerId] + new Vector3(2, 22, 0);
+                var point = _lanes[player.PlayerId] + Vector3.right * 2;
+                // Reserve even the worst-case full 32 candidate layers below the
+                // real top. A quarter-cell point avoids a CellAt boundary tie.
+                point.y = (seedFirstY + .25f) * cellSize;
                 var fixture = new FallCommandSample
                 {
                     id = coverage.round + ":" + coverage.command + ":" + player.PlayerId,
                     owner = player.PlayerId, team = player.Snapshot.Value.Team, round = coverage.round,
                     baselineRevision = coverage.baselineRevision, lane = _lanes[player.PlayerId], point = point, radius = FallFixtureRadius,
-                    firstCell = BlockWorld.CellAt(point + Vector3.up * (BlockWorld.CellSize * .51f)), requested = FallFixtureCells
+                    firstCell = BlockWorld.CellAt(point + Vector3.up * (BlockWorld.CellSize * .51f)), requested = FallFixtureCells,
+                    worldTop = worldTop, worldBottom = match.Blocks.World.Bottom, cellSize = cellSize,
+                    topCellExclusive = topCellExclusive, seedFirstY = seedFirstY, reservedLayers = FallFixtureCells,
+                    headroomCells = FallFixtureHeadroomCells, minimumFallClearance = FallFixtureMinimumClearance
                 };
                 fixture.baselineEmpty = FixtureVolumeEmpty(match.Blocks.World, fixture);
                 coverage.commands.Add(fixture); _fallWitnessedCells.Add(fixture.id, new HashSet<Vector3Int>());
+                if (!FixtureSiteClear(match.Blocks.World, fixture))
+                { FallCoverageFailure("World-top falling fixture lacks in-bounds static clearance or one metre above its lane/support: " + fixture.id); return; }
             }
             if (coverage.commands.Any(c => !c.baselineEmpty))
-            { FallCoverageFailure("A requested 22m site is occupied by pre-existing stable cells"); return; }
+            { FallCoverageFailure("A requested world-top falling site is occupied by pre-existing stable cells"); return; }
             for (int a = 0; a < coverage.commands.Count; a++)
                 for (int b = a + 1; b < coverage.commands.Count; b++)
                 {
@@ -203,7 +254,7 @@ namespace Splatoon.Prototype
                     var delta = first.firstCell - second.firstCell;
                     float horizontal = Mathf.Sqrt(delta.x * delta.x + delta.z * delta.z) * BlockWorld.CellSize;
                     if (horizontal <= first.radius + second.radius)
-                    { FallCoverageFailure("Two 22m fixture footprints overlap; provenance would be ambiguous"); return; }
+                    { FallCoverageFailure("Two world-top falling fixture footprints overlap; provenance would be ambiguous"); return; }
                 }
             foreach (var fixture in coverage.commands)
             {

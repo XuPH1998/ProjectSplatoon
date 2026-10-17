@@ -32,6 +32,7 @@ namespace Splatoon.Blocks
 
         void AbortHeadPreparation()
         {
+            CancelBuildOverlapRepairHeadPreparation();
             if (HasHeadPreparation) HeadPreparationAborts++;
             _headCopyIterator?.Dispose(); _headCopyIterator = null;
             _headCopySource = null; _headCopyRequest = null; _headCopyWindow = null; _headCopyOriginal = _headCopyPrepared = null;
@@ -76,8 +77,8 @@ namespace Splatoon.Blocks
         {
             if (!HasHeadPreparation) return false;
             bool commandWork = _commands.Count > 0;
-            int maximum = commandWork ? 1024 : MaxChecks, checks = 0;
-            double milliseconds = commandWork ? .25 : .75;
+            int maximum = commandWork ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone, checks = 0;
+            double milliseconds = commandWork ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             var timer = Stopwatch.StartNew(); long before = GravityWorkChecks;
             AuthorityStageCount++; HeadPreparationStages++; LastCommandStageMilliseconds = 0;
             try

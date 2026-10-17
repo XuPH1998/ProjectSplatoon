@@ -24,6 +24,7 @@ namespace Splatoon.Tests
     // production entry points. Reflection only reads real queue/checkpoint state.
     public sealed class BlockBlastBatchPaidCreditTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const float Dt = 1f / 60;
         const int PumpLimit = 4000;
         const BindingFlags Fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -55,6 +56,7 @@ namespace Splatoon.Tests
             yield return new EnterPlayMode();
             yield return Scenario();
             yield return Leave();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
         }
 
@@ -63,6 +65,7 @@ namespace Splatoon.Tests
             // Captured accounting locals belong to this post-EnterPlay iterator;
             // the test framework does not preserve its display class across reload.
             yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Boot ready");
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _app = PrototypeApp.Current; yield return _app.StartWeaponDebugRoom().ToCoroutine();
             yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current?.Blocks != null, "Real block host");
             _match = PrototypeMatch.Current; _host = PrototypePlayer.Local; _terrain = _match.Blocks;
@@ -423,7 +426,9 @@ namespace Splatoon.Tests
         [UnityTearDown] public IEnumerator Cleanup()
         {
             if (!Application.isPlaying) yield break;
-            yield return Leave(); yield return new ExitPlayMode();
+            yield return Leave();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
+            yield return new ExitPlayMode();
         }
     }
 }

@@ -12,15 +12,15 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 11; // Paired coverage/visual checkpoint and deterministic stamp detail.
-        public const int WeaponSimulationVersion = 33; // Paid block attacks and shared terrain collision.
+        public const int WeaponSimulationVersion = 39; // Target the actual moving-build blocker while retaining ordinary gravity service.
         public const int BlockProtocolVersion = Splatoon.Blocks.BlockWorld.ProtocolVersion;
-        public const int PaperTraversalSimulationVersion = 8; // Final motor contour and post-special impulse transactions.
+        public const int PaperTraversalSimulationVersion = 11; // Validated contour wall entry and neutral authored geometry under the shared arena root.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             w.Write(WeaponSimulationVersion);
-            w.Write(BlockProtocolVersion); w.Write(.10f); w.Write(16); w.Write(32f);
+            w.Write(BlockProtocolVersion); w.Write(Splatoon.Blocks.BlockWorld.CellSize); w.Write(Splatoon.Blocks.BlockWorld.ChunkSize); w.Write(Splatoon.Blocks.BlockWorld.Top);
             w.Write(InkAppearanceProfile.AccumulationVersion); w.Write(InkAppearanceProfile.ContentHash);
             foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.OrderBy(h => h.Id))
             { w.Write(hero.Id); w.Write(Splatoon.Config.GameplayConfig.GetSubWeapon(hero.Id).ContentHash); }

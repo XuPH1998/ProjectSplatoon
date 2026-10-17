@@ -200,6 +200,11 @@ namespace Splatoon.Blocks
         }
         sealed class GravityJournal
         {
+            // Only successful work admitted while this exact journal is active.
+            public long AdmittedWork;
+            public bool BuildRepairSelectionAttempted, BuildRepairDebtTracked;
+            public long BuildRepairPriorityDebt;
+            public BuildRepairVisit BuildRepair;
             public BlockPublicationWindow Window;
             public BlockWorld Next;
             public int ColumnCursor, MotionCursor;
@@ -229,6 +234,8 @@ namespace Splatoon.Blocks
             public GravityDependentEditRequest DependentEditRequest;
             public bool DependentEditDeferred;
             public Vector2Int? HeadPreparationColumn;
+            public GravityStartupJournal Startup;
+            public readonly List<BlockSpreadMove> SpreadMoves = new();
         }
         readonly Dictionary<Vector2Int, GravityColumnWork> _cohortColumnWork = new();
         readonly List<Vector2Int> _cohortColumnOrder = new();
@@ -248,7 +255,9 @@ namespace Splatoon.Blocks
 
         void ResetGravityCohorts(bool keepQueuedColumns = false)
         {
+            CancelBuildOverlapRepair(); _buildRepairPriorityDebt = 0;
             ObserveFairGravityWorkMutation();
+            ResetGravityStartup();
             AbortPrivatePreparation();
             ResetBuildGravityBarriers();
             ResetBuildOccupancyQueryCache();
@@ -268,7 +277,8 @@ namespace Splatoon.Blocks
             => StartWindowGravityJournal(next, _stagePublicationWindow ?? _publicationPolicy.Capture(BlockPublicationOperation.Gravity));
         void StartWindowGravityJournal(BlockWorld next, BlockPublicationWindow window)
         {
-            _gravityJournal = new GravityJournal { Next = next, Window = window, ColumnCursor = _cohortColumnCursor, MotionCursor = _cohortMotionCursor };
+            _gravityJournal = new GravityJournal { Next = next, Window = window, ColumnCursor = _cohortColumnCursor, MotionCursor = _cohortMotionCursor,
+                Startup = NewGravityStartupJournal() };
         }
         GravityColumnWork EditColumn(Vector2Int column)
         {
@@ -383,6 +393,7 @@ namespace Splatoon.Blocks
         void CommitGravityJournal(GravityJournal journal)
         {
             if (journal == null) return;
+            if (journal.BuildRepairDebtTracked) _buildRepairPriorityDebt = journal.BuildRepairPriorityDebt;
             ObserveFairGravityWorkMutation();
             RefreshRejectedBindingSource();
             foreach (var column in journal.NewBuildGravityBarriers)
@@ -411,12 +422,15 @@ namespace Splatoon.Blocks
             if (journal.HeadPreparationColumn.HasValue) RequestWindowHeadPreparation(journal.HeadPreparationColumn.Value, journal.Window);
             _cohortColumnCursor = _cohortColumnOrder.Count == 0 ? 0 : journal.ColumnCursor % _cohortColumnOrder.Count;
             _cohortMotionCursor = _cohortMotionOrder.Count == 0 ? 0 : journal.MotionCursor % _cohortMotionOrder.Count;
+            CommitGravityStartup(journal);
+            OnSpreadGravityCommitted(journal);
         }
         bool SpendGravity(ref int checks, int count, int maxChecks, Stopwatch timer, double milliseconds)
         {
             if (count < 0) return false;
-            if (checks + count > maxChecks || !HasStageBudget(checks, maxChecks, timer, milliseconds))
+            if (checks + count > maxChecks || !HasStageBudget(checks, maxChecks, timer, milliseconds) || !TrySpendGravityFrameWork(count))
             {
+                ObserveGravityStartupVisitDeferred();
                 // A bounded motion operation that fits a fresh stage has not
                 // received its turn when only this stage's remainder rejects it.
                 // Oversized operations keep their existing preparation/skip path.
@@ -424,7 +438,9 @@ namespace Splatoon.Blocks
                     _gravityJournal.MotionVisitBudgetDeferred = true;
                 return false;
             }
-            checks += count; GravityWorkChecks += count; return true;
+            checks += count; GravityWorkChecks += count;
+            if (_gravityJournal != null) _gravityJournal.AdmittedWork += count;
+            ChargeGravityStartupWork(count); return true;
         }
         void IndexGravityWork(BlockWorld next, ref int checks, Stopwatch timer, double milliseconds, int maxChecks)
         {
@@ -505,9 +521,13 @@ namespace Splatoon.Blocks
             // Fair rounds: one bounded row proof or one <=16 storage piece per column visit.
             // The first accepted source+halo window stays fixed in a detach round.
             int visits = 0, readyPass = 0;
-            bool detachedThisPass = false;
+            bool detachedThisPass = false, startupVisit = false, startupVisitPending = false;
+            int startupVisitCursor = 0;
             bool FinishColumnVisit(int total, bool skipped = false)
             {
+                startupVisitPending = false;
+                EndGravityStartupVisit();
+                if (startupVisit) return false;
                 // Advance only after an admitted visit; an unfinished row proof
                 // resumes on this column when the next stage obtains its budget.
                 _gravityJournal.ColumnCursor++;
@@ -518,7 +538,12 @@ namespace Splatoon.Blocks
             }
             while (HasStageBudget(checks, maxChecks, timer, milliseconds) && ColumnCount != 0)
             {
-                int total = ColumnCount; int slot = _gravityJournal.ColumnCursor % total; var column = ColumnAt(slot);
+                int total = ColumnCount;
+                startupVisitCursor = CurrentGravityStartup().ColumnCursor;
+                startupVisit = TrySelectStartupColumn(ref checks, maxChecks, timer, milliseconds, out var column);
+                startupVisitPending = startupVisit;
+                if (!startupVisit) column = ColumnAt(_gravityJournal.ColumnCursor % total);
+                BeginGravityStartupVisit(false, startupVisit);
                 // A terminal entry stays in this journal until publication. Only
                 // a real cell change may reopen it through QueueGravityCohortCell.
                 if (_gravityJournal.Columns.TryGetValue(column, out var terminal) && terminal == null)
@@ -534,9 +559,13 @@ namespace Splatoon.Blocks
                 if (work.Cohort != 0 && !next.Cohorts.ContainsKey(work.Cohort)) { work.Cohort = 0; work.Ready = work.Proving = false; }
                 if (work.Cohort == 0 && DeferNewBuildCohort(next, column, ref checks, maxChecks, timer, milliseconds))
                 { if (FinishColumnVisit(total, true)) break; continue; }
+                ObserveGravityStartupCheck(column);
+                bool actualColumnWork = false;
                 if (work.Ready)
                 {
+                    int beforeDetachChecks = checks;
                     mutation |= TryDetachCohortPiece(next, changed, column, work, ref checks, timer, milliseconds, maxChecks, out bool detached);
+                    actualColumnWork = checks > beforeDetachChecks;
                     detachedThisPass |= detached;
                     readyPass++;
                 }
@@ -551,6 +580,7 @@ namespace Splatoon.Blocks
                     else
                     {
                         var cell = new Vector3Int(column.x, work.Scan, column.y);
+                        actualColumnWork = true;
                         if (work.Proving)
                         {
                             // The bitmap is read afresh from this draft, including later
@@ -584,10 +614,15 @@ namespace Splatoon.Blocks
                         }
                     }
                 }
+                if (actualColumnWork) ObserveGravityStartupColumnServed(column);
                 // Each column got its fair visit, including skipped terminal peers.
                 // Only real detachment enables reuse of the same exact key window.
                 if (FinishColumnVisit(total)) break;
             }
+            // A selected urgent column whose bounded proof did not fit keeps
+            // the same fresh-stage turn, just like the ordinary column cursor.
+            EndGravityStartupVisit();
+            if (startupVisitPending) { _gravityJournal.Startup.ColumnCursor = startupVisitCursor; _gravityJournal.Startup.ColumnTurn = true; }
             return mutation;
         }
         bool TryDetachCohortPiece(BlockWorld next, HashSet<Vector3Int> changed, Vector2Int column, GravityColumnWork work,
@@ -652,6 +687,7 @@ namespace Splatoon.Blocks
             {
                 group = next.BeginCohort(bottom, top - cursor); work.Cohort = group.Id;
                 QueueMotion(new GravityMotionId(group.Id, true), column, group.Bottom.y, group.TopExclusive);
+                QueueGravityStartupMotion(new GravityMotionId(group.Id, true), column);
                 if (length == top - cursor) return true; // Metadata first: admit landing proof before the only detach publication.
             }
             bool finalPiece = length == group.TopExclusive - group.DetachCursor;
@@ -683,11 +719,20 @@ namespace Splatoon.Blocks
             IndexGravityWork(next, ref checks, timer, milliseconds, maxChecks);
             if (_cohortIndexPending) return false;
             bool mutation = false; int visits = MotionCount;
-            while (visits-- > 0 && MotionCount != 0 && !_gravityJournal.MotionVisitBudgetDeferred
+            while (visits > 0 && MotionCount != 0 && !_gravityJournal.MotionVisitBudgetDeferred
                 && HasStageBudget(checks, maxChecks, timer, milliseconds))
             {
-                int visitCursor = _gravityJournal.MotionCursor;
-                int slot = _gravityJournal.MotionCursor++ % MotionCount; var id = MotionAt(slot);
+                int visitCursor = _gravityJournal.MotionCursor, startupCursor = CurrentGravityStartup().MotionCursor;
+                int repairSelectionChecks = checks;
+                bool repairVisit = TrySelectBuildOverlapRepairMotion(ref checks, maxChecks, timer, milliseconds, out var id);
+                // Only a successfully selected repair repeats this fixed prefix.
+                // Failed selection and prior indexing remain transient frame work.
+                int repairSelectionCost = repairVisit ? checks - repairSelectionChecks : 0;
+                bool startupVisit = !repairVisit && TrySelectStartupMotion(ref checks, maxChecks, timer, milliseconds, out id);
+                if (!repairVisit && !startupVisit) { id = MotionAt(_gravityJournal.MotionCursor++ % MotionCount); visits--; }
+                BeginGravityStartupVisit(true, repairVisit || startupVisit);
+                int actualMotionChecks = checks, repairVisitChecks = checks; bool startupMotionEligible = false;
+                BuildRepairProgress repairProgress = default;
                 var dependentBefore = _gravityJournal.DependentEditRequest;
                 var privateBefore = _gravityJournal.PrivateRequest;
                 var recoveryBefore = _gravityJournal.RecoveryRequest;
@@ -698,13 +743,19 @@ namespace Splatoon.Blocks
                     var terminalWork = _gravityJournal.Motions.TryGetValue(id, out var stagedWork) ? stagedWork
                         : _cohortMotionWork.TryGetValue(id, out var committedWork) ? committedWork : null;
                     if (terminalWork != null && HistoricalRecoveryTerminal(terminalWork.Column))
-                    { if (!SpendGravity(ref checks, 1, maxChecks, timer, milliseconds)) break; continue; }
+                    {
+                        if (!SpendGravity(ref checks, 1, maxChecks, timer, milliseconds)) break;
+                        continue;
+                    }
                     // Capture only this motion's required fresh-journal entry. Other
                     // motions/indexing spent earlier in this frame are transient and
                     // must not turn an otherwise admissible edit into preparation.
                     int visitCost = 1 + EstimateMotionEditWork(id);
+                    int freshVisitCost = visitCost + repairSelectionCost;
                     if (!SpendGravity(ref checks, visitCost, maxChecks, timer, milliseconds)) break;
                     var work = EditMotion(id); if (work == null) continue;
+                    if (repairVisit) repairProgress = new BuildRepairProgress(work, next);
+                    actualMotionChecks = checks;
                     FallingCohort group = null; FallingRun legacy = null;
                     if (id.Cohort) next.Cohorts.TryGetValue(id.Id, out group); else next.Falling.TryGetValue(id.Id, out legacy);
                     if (group == null && legacy == null)
@@ -713,9 +764,10 @@ namespace Splatoon.Blocks
                         RemoveMotion(id, work); continue;
                     }
                     if (ReservedColumn(work.Column)) continue;
+                    startupMotionEligible = true;
                     bool supportChanged = false; int bindingCost = 0;
                     if (group != null && !TryBindLowerSupport(next, id, group, work, out supportChanged, out bindingCost,
-                        ref checks, timer, milliseconds, maxChecks, false, visitCost)) continue;
+                        ref checks, timer, milliseconds, maxChecks, false, freshVisitCost)) continue;
                     if (group != null)
                     {
                         mutation |= supportChanged; group = next.Cohorts[id.Id];
@@ -728,7 +780,7 @@ namespace Splatoon.Blocks
                     if (group != null && group.Phase == FallingCohortPhase.Detaching)
                     {
                         mutation |= StageMotionLandingAndSettle(next, changed, id, group, null, work,
-                            ref checks, timer, milliseconds, maxChecks, false, visitCost + bindingCost);
+                            ref checks, timer, milliseconds, maxChecks, false, freshVisitCost + bindingCost);
                         group = next.Cohorts[id.Id];
                         // Every detaching child has its own motion entry; one column
                         // proof slot cannot overwrite or strand its siblings.
@@ -737,11 +789,15 @@ namespace Splatoon.Blocks
                         continue;
                     }
                     mutation |= StageMotionLandingAndSettle(next, changed, id, group, legacy, work,
-                        ref checks, timer, milliseconds, maxChecks, false, visitCost + bindingCost);
+                        ref checks, timer, milliseconds, maxChecks, false, freshVisitCost + bindingCost);
                 }
                 finally
                 {
                     _gravityJournal.MotionVisitActive = false;
+                    ObserveBuildOverlapRepairVisit(id, repairVisit, startupVisit, startupMotionEligible, repairVisitChecks, actualMotionChecks, checks, repairProgress,
+                        dependentBefore, privateBefore, recoveryBefore, headBefore);
+                    if (startupMotionEligible && checks > actualMotionChecks) ObserveGravityStartupMotionServed(id);
+                    EndGravityStartupVisit();
                     if (_gravityJournal.MotionVisitBudgetDeferred)
                     {
                         // An explicitly requested finite owner runs before the
@@ -751,7 +807,9 @@ namespace Splatoon.Blocks
                             || !ReferenceEquals(recoveryBefore, _gravityJournal.RecoveryRequest)
                             || headBefore != _gravityJournal.HeadPreparationColumn;
                         if (preparation) _gravityJournal.MotionVisitBudgetDeferred = false;
-                        else _gravityJournal.MotionCursor = visitCursor;
+                        else if (startupVisit)
+                        { _gravityJournal.Startup.MotionCursor = startupCursor; _gravityJournal.Startup.MotionTurn = true; }
+                        else if (!repairVisit) { _gravityJournal.MotionCursor = visitCursor; _gravityJournal.Startup.MotionTurn = false; }
                     }
                 }
             }
@@ -869,16 +927,9 @@ namespace Splatoon.Blocks
                 {
                     if (!SpendGravity(ref checks, 1, maxChecks, timer, milliseconds)) return mutation;
                     if (work.Scan < work.Minimum) { work.Phase = 2; work.Validate = 0; break; }
-                    var at = new Vector3Int(work.Column.x, work.Scan, work.Column.y);
-                    // Undetached cells of this exact source span are the body
-                    // being proved, not stable support for that same body.
-                    bool ownAt = group != null && group.Phase == FallingCohortPhase.Detaching
-                        && at.y >= group.DetachCursor && at.y < group.TopExclusive;
-                    bool ownBelow = group != null && group.Phase == FallingCohortPhase.Detaching
-                        && at.y - 1 >= group.DetachCursor && at.y - 1 < group.TopExclusive;
-                    if (!ownAt && next.TryGet(at, out _)) { work.Landing = work.Scan + 1; work.Phase = 2; work.Validate = 0; break; }
-                    if (!ownBelow && next.TryGet(at + Vector3Int.down, out _)) { work.Landing = work.Scan; work.Phase = 2; work.Validate = 0; break; }
-                    work.Scan--;
+                    if (TryGravityLandingRow(next, work.Column, work.Scan, work.Minimum, group, out int support, out int nextScan))
+                    { work.Landing = support + 1; work.Phase = 2; work.Validate = 0; break; }
+                    work.Scan = nextScan;
                 }
                 int span = group != null ? group.TopExclusive - group.Bottom.y : legacy.Cells.Length - first;
                 while (work.Phase == 2 && work.Validate < span && HasStageBudget(checks, maxChecks, timer, milliseconds))
@@ -954,6 +1005,7 @@ namespace Splatoon.Blocks
                     legacy = next.EditFalling(id.Id); legacy.LandingKnown = true; legacy.LandingOffset = clamp;
                 }
                 work.ProofKnown = true; work.Generation = generation; mutation = true;
+                ObserveGravityStartupProof(id);
                 RetainGravityStaticProof(work.NativeProof);
             }
             // The private owner completes only the originally requested cap.

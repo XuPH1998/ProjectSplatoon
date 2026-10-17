@@ -3,10 +3,11 @@ import copy
 import struct
 import unittest
 
-from network_acceptance import CHECKPOINTS, checkpoint_evidence, drain_ready, unity_first_cell, validate_fall_fixture
+from network_acceptance import (CHECKPOINTS, checkpoint_evidence, drain_ready, unity_float32,
+                                unity_first_cell, validate_fall_fixture, world_top_fall_seed)
 
 
-def sample_reports(players=2):
+def sample_reports(players=2, world_top=8):
     reports = {"host" if owner == 0 else f"client-{owner}":
                dict(initialSyncComplete=True, drainInputObserved=True, drainInputOwner=owner,
                     drainInputLife=2, drainInputSequence=60) for owner in range(players)}
@@ -22,13 +23,18 @@ def sample_reports(players=2):
         report["current"] = copy.deepcopy(state)
         report["states"] = [copy.deepcopy(state)]
     commands, publications = [], []
+    top_exclusive, seed_y, point_y = {8: (80, 47, 4.725), 12: (120, 87, 8.725), 32: (320, 287, 28.725)}[world_top]
     for owner in range(players):
-        point = dict(x=2 + owner * 4, y=22, z=4)
-        first = dict(x=point["x"] * 10, y=220, z=40)
+        point = dict(x=2 + owner * 4, y=unity_float32(point_y), z=4)
+        first = dict(x=point["x"] * 10, y=seed_y, z=40)
         command = dict(id=f"7:9:{owner}", owner=owner, team=owner % 2 + 1, round=7, baselineRevision=10,
                        requested=32, added=32, callbackCount=1, baselineEmpty=True, removedEnemy=0, removedFriendly=0,
                        completedRevision=11, completedWorldRevision=11, queuedOrdinal=51 + owner,
                        firstCell=first, point=point, lane=dict(x=owner * 4, y=0, z=4), radius=.3,
+                       placementRule="world-top-reserved-32-v1", worldTop=world_top, worldBottom=-.1,
+                       cellSize=unity_float32(.1), topCellExclusive=top_exclusive, seedFirstY=seed_y,
+                       reservedLayers=32, headroomCells=1, minimumFallClearance=1, supportHeight=0,
+                       worldBoundsClear=True, staticVolumeClear=True,
                        queuedRealtime=10, queuedServerTime=10, completedRealtime=11, completedServerTime=11,
                        queuedHeadAgeMs=0, completedHeadAgeMs=0)
         commands.append(command)
@@ -41,7 +47,7 @@ def sample_reports(players=2):
         publications.append(dict(fixtureId=command["id"], owner=owner, team=command["team"], round=7, revision=12,
                                  serverTime=12, terrainTime=12, realtime=12, headAgeMs=0,
                                  liveCount=32, newlyWitnessedCount=32, pending=0, cells=cells))
-    reports["host"]["fallCoverage"] = dict(schema=1, command=9, expectedPlayers=players, errors=0, drainAccepted=True,
+    reports["host"]["fallCoverage"] = dict(schema=2, command=9, expectedPlayers=players, errors=0, drainAccepted=True,
         allCommandsCompleted=True, allCellsWitnessed=True, finishRequested=True, round=7, baselineRevision=10,
         finishRequestRevision=12, baselineNextRunId=1000, baselinePink=128, baselineBlue=128, baselineTotal=256,
         requestedRealtime=10.1, finishRequestRealtime=12,
@@ -57,7 +63,7 @@ def relocated_fixture(reports, point, first):
     previous = command["firstCell"]
     delta = {axis: first[axis] - previous[axis] for axis in ("x", "y", "z")}
     command["point"] = point
-    command["lane"] = {axis: point[axis] - value for axis, value in (("x", 2), ("y", 22), ("z", 0))}
+    command["lane"] = dict(x=point["x"] - 2, y=0, z=point["z"])
     command["firstCell"] = first
     for publication in coverage["publications"]:
         if publication["fixtureId"] != command["id"]:
@@ -86,6 +92,35 @@ class FiniteFallFixtureEvidenceTests(unittest.TestCase):
         reports["host"].pop("fallCoverage")
         reports["host"]["current"].update(stage="fall", fallingCells=500)
         self.assert_invalid(reports)
+
+    def test_current_top_reserves_all_32_layers_and_rejects_relabelled_legacy_evidence(self):
+        for top, expected_y in ((8, 47), (12, 87), (32, 287)):
+            with self.subTest(top=top):
+                reports = sample_reports(8, top)
+                self.assertEqual(world_top_fall_seed(top)["seedFirstY"], expected_y)
+                self.assertEqual(validate_fall_fixture(reports, 8)[1], [])
+                self.assertLess((expected_y + 32) * .1, top)
+        reports = sample_reports(); reports["host"]["fallCoverage"]["schema"] = 1
+        self.assert_invalid(reports)
+        reports = sample_reports()
+        relocated_fixture(reports, dict(x=2, y=22, z=4), dict(x=20, y=220, z=40))
+        self.assert_invalid(reports)
+
+    def test_missing_forged_or_unsafe_world_configuration_cannot_authorize_the_fixture(self):
+        values = (("placementRule", "legacy22m"), ("worldTop", 32), ("worldBottom", 5),
+                  ("cellSize", .2), ("topCellExclusive", 320), ("seedFirstY", 48),
+                  ("reservedLayers", 31), ("headroomCells", 0), ("minimumFallClearance", .1),
+                  ("supportHeight", 4.5), ("worldBoundsClear", False), ("staticVolumeClear", False))
+        for field, value in values:
+            with self.subTest(field=field):
+                reports = sample_reports(); reports["host"]["fallCoverage"]["commands"][0][field] = value
+                self.assert_invalid(reports)
+                reports = sample_reports(); del reports["host"]["fallCoverage"]["commands"][0][field]
+                self.assert_invalid(reports)
+        reports = sample_reports(); reports["host"]["fallCoverage"]["commands"][0]["lane"]["y"] = 4
+        self.assert_invalid(reports)
+        for top in (None, True, float("inf"), float("nan"), 3, 1e39):
+            self.assertIsNone(world_top_fall_seed(top))
 
     def test_added_callbacks_without_published_falling_cells_are_insufficient(self):
         reports = sample_reports(); reports["host"]["fallCoverage"]["publications"] = []
@@ -141,6 +176,18 @@ class FiniteFallFixtureEvidenceTests(unittest.TestCase):
         reports["client-1"]["current"]["chunkHash"] = "f" * 64
         reports["client-1"]["states"][0]["chunkHash"] = "f" * 64
         self.assertFalse(drain_ready(reports, 2)); self.assert_invalid(reports)
+
+    def test_site_integer_metadata_rejects_boolean_and_float_substitutes(self):
+        for field, values in (("schema", (True, 2.0)), ("reservedLayers", (True, 32.0)),
+                              ("headroomCells", (True, 1.0))):
+            for value in values:
+                reports = sample_reports()
+                coverage = reports["host"]["fallCoverage"]
+                if field == "schema":
+                    coverage[field] = value
+                else:
+                    coverage["commands"][0][field] = value
+                self.assert_invalid(reports)
 
     def test_original_late_freeze_reconnect_clear_rebuild_hash_gates_are_still_strict(self):
         for players in (2, 8):
@@ -198,7 +245,11 @@ class FiniteFallFixtureEvidenceTests(unittest.TestCase):
             with self.subTest(point=point):
                 self.assertEqual(unity_first_cell(point), expected)
                 reports = sample_reports()
-                relocated_fixture(reports, point, expected)
+                # Arbitrary Y neighbours above check CellAt independently. A
+                # schema-2 fixture must retain the real top-derived Y as well.
+                site = {**point, "y": unity_float32(4.725)}
+                site_first = {**expected, "y": 47}
+                relocated_fixture(reports, site, site_first)
                 self.assertEqual(validate_fall_fixture(reports, 2)[1], [])
                 for axis in ("x", "y", "z"):
                     changed = copy.deepcopy(reports)

@@ -302,7 +302,7 @@ namespace Splatoon.Combat
             var source=e.Kind==SubEffectKind.Destroyed?c.Visuals.endPrefab:c.Visuals.impactPrefab;
             bool blocks = Splatoon.Blocks.BlockTerrain.Current != null;
             if (blocks) InkPresentation.Current?.BlockBurst(e.Position,e.Normal,e.Team,e.Sequence,now,e.Radius);
-            var fx=blocks?null:Pool.Rent(source,transform);
+            var fx=blocks&&e.Kind!=SubEffectKind.Explosion?null:Pool.Rent(source,transform);
             if(fx!=null)
             {
                 fx.transform.position=e.Position;fx.transform.localScale=Vector3.one*Mathf.Max(.4f,e.Radius*.35f);

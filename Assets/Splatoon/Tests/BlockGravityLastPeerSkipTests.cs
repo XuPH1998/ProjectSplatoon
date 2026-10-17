@@ -23,6 +23,7 @@ namespace Splatoon.Tests
     // This functional fixture does not replace formal100-column/20k/32m benchmarks.
     public sealed class BlockGravityLastPeerSkipTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const int Height = 319, PeerShots = 64;
         const BindingFlags Fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         static readonly Vector2Int Main = new(-145, -287), Peer = new(145, 285);
@@ -210,6 +211,7 @@ namespace Splatoon.Tests
             if (_workers != null) Assert.That(_workers.CurrentCount, Is.EqualTo(2), "Return exactly the original two permits.");
             _observedPending.Clear(); _observedCommandTasks.Clear(); _observedMeshes.Clear(); _observedViews.Clear();
             _terrain = null; _root = null;
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
@@ -329,6 +331,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             yield return InitializeScenario();
             yield return Run(false);
         }
@@ -338,6 +342,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             yield return InitializeScenario();
             yield return Run(true);
         }
@@ -347,6 +353,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             yield return InitializeScenario();
             yield return Run(false, false);
         }
@@ -356,6 +364,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             yield return InitializeScenario();
             yield return Run(true, false);
         }

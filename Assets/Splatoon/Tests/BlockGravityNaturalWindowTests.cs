@@ -19,6 +19,7 @@ namespace Splatoon.Tests
     // Missing a real target window fails; these are not Player timing tests.
     public sealed class BlockGravityNaturalWindowTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         GameObject _root;
         BlockTerrain _terrain;
         Vector2Int _column;
@@ -57,6 +58,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Natural gravity window public command contract");
             var layout = new GameObject("Inactive layout used only for normal collider registration");
             layout.transform.SetParent(_root.transform, false);
@@ -90,6 +93,7 @@ namespace Splatoon.Tests
                 _terrain.MutationCompleted -= ObserveMutation;
             }
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }

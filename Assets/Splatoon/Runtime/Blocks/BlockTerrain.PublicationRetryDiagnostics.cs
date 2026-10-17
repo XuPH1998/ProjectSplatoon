@@ -21,6 +21,14 @@ namespace Splatoon.Blocks
         [Serializable] public struct PublicationRetryDiagnostics
         {
             public long trackedAborts, lastAbortId;
+            public long[] abortsByReason;
+            public long buildRepairArmed, buildRepairPublished, buildRepairNoChange, buildRepairNoReady, buildRepairCancelled, buildRepairRejected, buildRepairFairDeclined;
+            public bool buildRepairActive;
+            public long buildRepairTargetSelected, buildRepairDependencySelected, buildRepairTargetServed;
+            public long buildRepairTargetBudgetDeferred, buildRepairTargetBlocked, buildRepairUnrelatedPublished, buildRepairPreparationHandoffs, buildRepairPriorityDebt;
+            public ulong buildRepairTargetMotion, buildRepairServiceMotion;
+            public bool buildRepairTargetCohort, buildRepairServiceCohort, buildRepairWaitingPreparation;
+            public int buildRepairColumnX, buildRepairColumnZ;
             public uint lastAbortRevision;
             public double lastAbortSimulationTime;
             public PendingAbortReason lastAbortReason;
@@ -37,6 +45,8 @@ namespace Splatoon.Blocks
             public long privatePreparationStarts, privatePreparationStages, privatePreparationWork, privatePreparationAborts;
             public ulong privatePreparationProgress;
             public long historicalStarts, historicalStages, historicalWork, historicalRecovered, historicalConflicts;
+            public long historicalNoLongerInvalidMissingTarget, historicalNoLongerInvalidInactivePhase;
+            public long historicalNoLongerInvalidClassifiedValid, historicalNoLongerInvalidWitnessGone, historicalOwnedCloneStarts;
             public ulong historicalProgress;
             public HistoricalRecoveryOutcome historicalOutcome;
             public long fairYields, fairRebuilds, fairReservationRestages, fairContextInvalidations;
@@ -49,6 +59,7 @@ namespace Splatoon.Blocks
             public ulong fairInputVersion, fairReservationVersion, fairWorkVersion;
             public long cpuDeferrals, lastBuildPublicationWork, lastBindingPublicationWork;
         }
+        readonly long[] _publicationAbortsByReason = new long[(int)PendingAbortReason.HistoricalRecoveryWitnessGone + 1];
         long _publicationTrackedAborts, _publicationLastAbortId;
         uint _publicationLastAbortRevision;
         double _publicationLastAbortSimulationTime;
@@ -58,6 +69,7 @@ namespace Splatoon.Blocks
             // Called once inside the existing tracked terminal boundary after
             // WallReported is set, never per cell, worker or frame poll.
             _publicationTrackedAborts++;
+            _publicationAbortsByReason[(int)pending.AbortReason]++;
             _publicationLastAbortId = pending.WallId;
             _publicationLastAbortRevision = Revision;
             _publicationLastAbortSimulationTime = _now;
@@ -68,6 +80,20 @@ namespace Splatoon.Blocks
         public PublicationRetryDiagnostics InspectPublicationRetry() => new()
         {
             trackedAborts = _publicationTrackedAborts, lastAbortId = _publicationLastAbortId,
+            abortsByReason = (long[])_publicationAbortsByReason.Clone(),
+            buildRepairArmed = _buildRepairArmed, buildRepairPublished = _buildRepairPublished,
+            buildRepairNoChange = _buildRepairNoChange, buildRepairNoReady = _buildRepairNoReady,
+            buildRepairCancelled = _buildRepairCancelled, buildRepairRejected = _buildRepairRejected,
+            buildRepairFairDeclined = _buildRepairFairDeclined,
+            buildRepairActive = _buildOverlapRepair != null,
+            buildRepairTargetSelected = _buildRepairTargetSelected, buildRepairDependencySelected = _buildRepairDependencySelected,
+            buildRepairTargetServed = _buildRepairTargetServed, buildRepairTargetBudgetDeferred = _buildRepairTargetBudgetDeferred,
+            buildRepairTargetBlocked = _buildRepairTargetBlocked, buildRepairUnrelatedPublished = _buildRepairUnrelatedPublished,
+            buildRepairPreparationHandoffs = _buildRepairPreparationHandoffs, buildRepairPriorityDebt = _buildRepairPriorityDebt,
+            buildRepairTargetMotion = _buildOverlapRepair?.Motion.Id ?? 0, buildRepairTargetCohort = _buildOverlapRepair?.Motion.Cohort ?? false,
+            buildRepairServiceMotion = _buildOverlapRepair?.ServiceMotion.Id ?? 0, buildRepairServiceCohort = _buildOverlapRepair?.ServiceMotion.Cohort ?? false,
+            buildRepairWaitingPreparation = _buildOverlapRepair?.Preparation != null,
+            buildRepairColumnX = _buildOverlapRepair?.Column.x ?? 0, buildRepairColumnZ = _buildOverlapRepair?.Column.y ?? 0,
             lastAbortRevision = _publicationLastAbortRevision, lastAbortSimulationTime = _publicationLastAbortSimulationTime,
             lastAbortReason = _publicationLastAbortReason,
             ownActivationDeferrals = OwnLandingPublicationDeferrals, staticProofInvalidations = StaticProofInvalidations,
@@ -87,6 +113,10 @@ namespace Splatoon.Blocks
             privatePreparationProgress = PrivatePreparationProgressVersion,
             historicalStarts = HistoricalRecoveryStarts, historicalStages = HistoricalRecoveryStages, historicalWork = HistoricalRecoveryWork,
             historicalRecovered = HistoricalRecoveryCount, historicalConflicts = HistoricalRecoveryPublicationConflicts,
+            historicalNoLongerInvalidMissingTarget = HistoricalNoLongerInvalidMissingTarget,
+            historicalNoLongerInvalidInactivePhase = HistoricalNoLongerInvalidInactivePhase,
+            historicalNoLongerInvalidClassifiedValid = HistoricalNoLongerInvalidClassifiedValid,
+            historicalNoLongerInvalidWitnessGone = HistoricalNoLongerInvalidWitnessGone, historicalOwnedCloneStarts = HistoricalOwnedCloneStarts,
             historicalProgress = HistoricalRecoveryProgressVersion, historicalOutcome = LastHistoricalRecoveryOutcome,
             fairYields = FairBackgroundYields, fairRebuilds = FairBackgroundRebuilds, fairReservationRestages = FairReservationRestages,
             fairContextInvalidations = FairContextInvalidations, fairForegroundPublications = FairForegroundAtomicPublications,

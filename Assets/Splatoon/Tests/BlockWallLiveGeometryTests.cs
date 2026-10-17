@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Splatoon.Blocks;
 using Splatoon.Combat;
@@ -33,9 +34,11 @@ namespace Splatoon.Tests
         readonly List<PlayerMotorSimulation.MotorBranchObservation> events = new();
         SwimBody Body => player.SwimBody;
 
-        [SetUp] public void Setup()
+        [UnitySetUp] public IEnumerator Setup()
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            yield return new EnterPlayMode(); // Exercise repeated native publications on real frames.
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
             HeroMigrationTests.Load();
             terrain = new GameObject("Real silhouette wall terrain").AddComponent<BlockTerrain>(); terrain.Initialize(null);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
@@ -47,10 +50,11 @@ namespace Splatoon.Tests
             motor = new PlayerMotorSimulation(controller);
             PlayerMotorSimulation.MotorBranchObserved += Observe;
         }
-        [TearDown] public void Cleanup()
+        [UnityTearDown] public IEnumerator Cleanup()
         {
             PlayerMotorSimulation.MotorBranchObserved -= Observe;
             PaperBodyTests.ReleaseTestBodies(); LubanConfigService.Current.Reset();
+            yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
         void Observe(PlayerMotorSimulation source, PlayerMotorSimulation.MotorBranchObservation observation)
@@ -138,14 +142,15 @@ namespace Splatoon.Tests
             return Physics.CheckCapsule(center - Vector3.up * segment, center + Vector3.up * segment,
                 shape.Radius - Mathf.Max(.005f, shape.SkinWidth), PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
         }
-        void Attached()
+        void Attached(bool neutralMap = false)
         {
             Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk));
             Assert.That(state.Swimming, Is.True); Assert.That(state.Grounded, Is.False); Assert.That(state.AirHumanOffset, Is.Zero);
             Assert.That(PlayerMotorSimulation.Query(state.Position + Vector3.up * (controller.height * .5f),
                 -state.WallNormal, controller.radius + .065f, out var contact), Is.True);
-            Assert.That(contact.IsBlock && contact.Stable && contact.Climbable, Is.True);
-            Assert.That(contact.Owner, Is.EqualTo(state.Team)); Assert.That(contact.Revision, Is.EqualTo(terrain.Revision));
+            Assert.That(contact.Stable && contact.Climbable, Is.True); Assert.That(contact.IsBlock, Is.EqualTo(!neutralMap));
+            Assert.That(contact.Owner, Is.EqualTo(neutralMap ? (byte)0 : state.Team));
+            Assert.That(contact.Revision, Is.EqualTo(neutralMap ? 0u : terrain.Revision));
             Assert.That(state.SupportTerrainRevision, Is.EqualTo(contact.Revision)); Assert.That(state.SupportCell, Is.EqualTo(contact.Cell));
             Assert.That(player.transform.position, Is.EqualTo(state.Position));
             Assert.That(CapsuleOverlaps(state), Is.False); Assert.That(PaperOverlaps(state), Is.False);
@@ -618,7 +623,7 @@ namespace Splatoon.Tests
             return result.ToArray();
         }
 
-        IEnumerator FindFinalFrameExpansion(bool held, bool stationary)
+        IEnumerator FindFinalFrameExpansion(bool held, bool stationary, bool neutralMap = false)
         {
             finalFrameCase = null;
             var origin = state; var originalInput = input;
@@ -705,7 +710,7 @@ namespace Splatoon.Tests
                 Assert.That(query.PaperRotation.Equals(trial.PreAnimation.PaperRotation), Is.True);
                 Assert.That(query.PaperAnimationTime, Is.EqualTo(trial.PreAnimation.PaperAnimationTime));
                 Assert.That(query.PaperMove.Equals(trial.PreAnimation.PaperMove), Is.True);
-                Assert.That(state.SupportTerrainRevision, Is.EqualTo(terrain.Revision));
+                Assert.That(state.SupportTerrainRevision, Is.EqualTo(neutralMap ? 0u : terrain.Revision));
                 var initialContour = FinalFrameSample(oracle, trial.Initial, contourCache); trial.InitialRects = initialContour.Rects;
                 var preContour = FinalFrameSample(oracle, trial.PreAnimation, contourCache); trial.PreAnimationRects = preContour.Rects;
                 var finalContour = FinalFrameSample(oracle, trial.Final, contourCache); trial.FinalRects = finalContour.Rects;
@@ -759,8 +764,11 @@ namespace Splatoon.Tests
             yield return Publish(Wall()); Air(); Step(true); Attached(); yield return FindFinalFrameExpansion(true, false);
             var trial = finalFrameCase;
             var authority = RunFinalFrameCase(trial, trial.Initial, true);
+            var authorityTrace = events.ToArray();
             var replay = RunFinalFrameCase(trial, trial.Final, false);
-            Assert.That(replay.Equals(authority), Is.True);
+            Assert.That(replay.Equals(authority), Is.True, SnapshotDifference(authority, replay)
+                + "\nauthority trace=" + string.Join(" | ", authorityTrace.Select(TraceValue))
+                + "\nreplay trace=" + string.Join(" | ", events.Select(TraceValue)));
             Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk)); Assert.That(state.PaperPose, Is.EqualTo(PaperPose.Wall));
             Assert.That(state.Position.Equals(trial.Initial.Position), Is.True); Assert.That(state.PaperCenter.Equals(trial.Initial.PaperCenter), Is.True);
             Assert.That(state.PaperRotation.Equals(trial.Initial.PaperRotation), Is.True);
@@ -769,6 +777,46 @@ namespace Splatoon.Tests
             Assert.That(state.Yaw, Is.Not.EqualTo(trial.Initial.Yaw)); Assert.That(state.Pitch, Is.Not.EqualTo(trial.Initial.Pitch));
             Assert.That(state.SupportTerrainRevision, Is.EqualTo(terrain.Revision)); Assert.That(state.FriendlyInkContact, Is.True);
             AssertFinalFramePublication();
+        }
+
+        static string SnapshotDifference(PlayerSnapshot authority, PlayerSnapshot replay) => string.Join(" | ",
+            typeof(PlayerSnapshot).GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Where(f => !object.Equals(f.GetValue(authority), f.GetValue(replay)))
+                .Select(f => f.Name + ": authority=" + Raw(f.GetValue(authority)) + "; replay=" + Raw(f.GetValue(replay))));
+        static string TraceValue(PlayerMotorSimulation.MotorBranchObservation row) => row.Branch
+            + ":probe=" + row.ProbeSucceeded + ",controller=" + Raw(row.ControllerPosition)
+            + ",before=" + Raw(row.Before.Position) + ",after=" + Raw(row.After.Position);
+        static string Raw(object value)
+        {
+            if (value is float f) return f.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+            if (value is double d) return d.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+            if (value is Vector2 v2) return "(" + Raw(v2.x) + "," + Raw(v2.y) + ")";
+            if (value is Vector3 v3) return "(" + Raw(v3.x) + "," + Raw(v3.y) + "," + Raw(v3.z) + ")";
+            if (value is Quaternion q) return "(" + Raw(q.x) + "," + Raw(q.y) + "," + Raw(q.z) + "," + Raw(q.w) + ")";
+            return Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        [UnityTest] public IEnumerator NeutralMapWallRetainsItsSafeFinalContourWithoutFriendlyRecoveryOrTerrainDependency()
+        {
+            yield return Publish(new BlockWorld(new Vector2(32, 64)));
+            var map = new GameObject("Bare wall for actual final contour rollback");
+            var wall = map.AddComponent<BoxCollider>(); wall.size = new Vector3(1.7f, 5, .1f);
+            map.transform.position = new Vector3(.05f, 2.5f, 1.05f); Physics.SyncTransforms();
+            Air(); Step(true); Attached(true);
+            Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
+            yield return FindFinalFrameExpansion(true, false, true);
+            var trial = finalFrameCase;
+            var authority = RunFinalFrameCase(trial, trial.Initial, true);
+            var replay = RunFinalFrameCase(trial, trial.Final, false);
+            Assert.That(replay.Equals(authority), Is.True);
+            Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk));
+            Assert.That(state.Position.Equals(trial.Initial.Position), Is.True);
+            Assert.That(state.PaperCenter.Equals(trial.Initial.PaperCenter), Is.True);
+            Assert.That(state.PaperRotation.Equals(trial.Initial.PaperRotation), Is.True);
+            Assert.That(state.PaperAnimationTime, Is.EqualTo(trial.Initial.PaperAnimationTime));
+            Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
+            Assert.That(state.SupportTerrainRevision, Is.Zero); Assert.That(state.FriendlyInkContact, Is.False);
+            Assert.That(state.HasInkRecovery, Is.False); AssertFinalFramePublication();
         }
 
         [UnityTest] public IEnumerator FinalKeyStationaryWallRejectsOnlyTheBlockedAnimationTransactionWhileTimeAdvances()
@@ -806,8 +854,11 @@ namespace Splatoon.Tests
             Assert.That(terrain.PublishedTraversalPoseFits(player, trial.Initial), Is.False, "The old frame is invalid in the actual newly published collider");
             Assert.That(CapsuleOverlaps(trial.Initial), Is.False);
             var authority = RunFinalFrameCase(trial, trial.Initial, true);
+            var authorityTrace = events.ToArray();
             var replay = RunFinalFrameCase(trial, trial.Final, false);
-            Assert.That(replay.Equals(authority), Is.True);
+            Assert.That(replay.Equals(authority), Is.True, SnapshotDifference(authority, replay)
+                + "\nauthority trace=" + string.Join(" | ", authorityTrace.Select(TraceValue))
+                + "\nreplay trace=" + string.Join(" | ", events.Select(TraceValue)));
             Assert.That(state.Movement, Is.EqualTo(MovementMode.Air)); Assert.That(state.SupportTerrainRevision, Is.Zero);
             Assert.That(state.FriendlyInkContact, Is.False); Assert.That(state.HasInkRecovery, Is.False);
             AssertFinalFramePublication();

@@ -70,6 +70,10 @@
   </bean>
   <table name="TbMap" value="MapConfig" input="TbMap.xlsx" mode="map" index="id" />
   <bean name="GlobalConfig" comment="Global 强类型配置">
+    <var name="blockWorldTopHeight" type="float" comment="积木全局建造顶界（世界Y，米）" />
+    <var name="blockSpreadInterval" type="float" comment="积木守恒摊开间隔（秒）" />
+    <var name="blockSpreadMaxStepCells" type="int" comment="积木摊开稳定邻列高差（格）" />
+    <var name="blockSpreadMinStackCells" type="int" comment="积木参与摊开的最少连续层数" />
     <var name="blockBlocksPerMaterial" type="int" comment="积木每点材料建造格数" />
     <var name="blockMainAttackMaxBlocks" type="int" comment="积木主攻击整组建造上限" />
     <var name="blockAuxiliaryBudgetFraction" type="float" comment="积木沿途与脚下预算比例" />

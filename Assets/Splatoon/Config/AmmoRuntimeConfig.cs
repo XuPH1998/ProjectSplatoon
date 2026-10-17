@@ -12,6 +12,7 @@ namespace Splatoon.Config
         public readonly GameObject BubblePrefab;
         public readonly AudioClip BubbleShotAudio, BubbleBounceAudio, BubblePopAudio;
         public readonly ParticleSystem FlightPrefab, MuzzlePrefab;
+        public readonly Vector3 BlockProjectileSize;
         public readonly GameObject ExplosionPrefab;
         public readonly float BurstInterval, VisualLifetime, MuzzleInterval, MaxRibbonGap, SatelliteSpread;
         public readonly int ParticlesPerBurst, MuzzleBurstCount;
@@ -30,6 +31,7 @@ namespace Splatoon.Config
             Source = source; AmmoId = source.ammoId;
             BubblePrefab = source.bubblePrefab; BubbleShotAudio = source.bubbleShotAudio; BubbleBounceAudio = source.bubbleBounceAudio; BubblePopAudio = source.bubblePopAudio;
             FlightPrefab = source.flightPrefab; MuzzlePrefab = source.muzzlePrefab; ExplosionPrefab = source.explosionPrefab;
+            BlockProjectileSize = source.blockProjectileSize;
             BurstInterval = source.burstInterval; ParticlesPerBurst = source.particlesPerBurst; VisualLifetime = source.visualLifetime;
             MuzzleInterval = source.muzzleInterval; MuzzleBurstCount = source.muzzleBurstCount;
             MaxRibbonGap = source.maxRibbonGap; SatelliteSpread = source.satelliteSpread;
@@ -42,6 +44,7 @@ namespace Splatoon.Config
         }
         public bool SameValues(AmmoRuntimeConfig other) => other != null &&
             ReferenceEquals(Source, other.Source) && AmmoId == other.AmmoId &&
+            BlockProjectileSize.Equals(other.BlockProjectileSize) &&
             BubblePrefab == other.BubblePrefab && BubbleShotAudio == other.BubbleShotAudio && BubbleBounceAudio == other.BubbleBounceAudio && BubblePopAudio == other.BubblePopAudio && FlightPrefab == other.FlightPrefab && MuzzlePrefab == other.MuzzlePrefab && ExplosionPrefab == other.ExplosionPrefab &&
             BurstInterval == other.BurstInterval && ParticlesPerBurst == other.ParticlesPerBurst && VisualLifetime == other.VisualLifetime &&
             MuzzleInterval == other.MuzzleInterval && MuzzleBurstCount == other.MuzzleBurstCount && MaxRibbonGap == other.MaxRibbonGap && SatelliteSpread == other.SatelliteSpread &&
@@ -56,6 +59,8 @@ namespace Splatoon.Config
         {
             Require(Source != null && AmmoId > 0, "必须绑定有效弹药配置及非零弹药编号");
             Require(FlightPrefab != null && MuzzlePrefab != null, "必须绑定飞行墨弹和枪口喷溅预制体");
+            Require(BlockProjectileSize.Equals(Vector3.zero) || Finite(BlockProjectileSize.x) && Finite(BlockProjectileSize.y) && Finite(BlockProjectileSize.z) && BlockProjectileSize.x > 0 && BlockProjectileSize.y > 0 && BlockProjectileSize.z > 0,
+                "积木弹整体尺寸须全为零（自动），或三轴均为有限正数");
             Require(Finite(BurstInterval) && BurstInterval >= .001f, "飞行发射间隔必须为至少 0.001 秒的有限数值");
             Require(ParticlesPerBurst >= 1 && ParticlesPerBurst <= 16, "每次发射粒子数必须为 1 至 16");
             Require(Finite(VisualLifetime) && VisualLifetime >= .01f, "飞行显示寿命必须为至少 0.01 秒的有限数值");
@@ -75,6 +80,7 @@ namespace Splatoon.Config
             writer.Write(BubblePrefab != null ? BubblePrefab.name : "");
             writer.Write(BubbleShotAudio != null ? BubbleShotAudio.name : ""); writer.Write(BubbleBounceAudio != null ? BubbleBounceAudio.name : ""); writer.Write(BubblePopAudio != null ? BubblePopAudio.name : "");
             writer.Write(FlightPrefab != null ? FlightPrefab.name : ""); writer.Write(MuzzlePrefab != null ? MuzzlePrefab.name : "");
+            writer.Write(BlockProjectileSize.x); writer.Write(BlockProjectileSize.y); writer.Write(BlockProjectileSize.z);
             writer.Write(ExplosionPrefab != null ? ExplosionPrefab.name : "");
             writer.Write(BurstInterval); writer.Write(ParticlesPerBurst); writer.Write(VisualLifetime);
             writer.Write(MuzzleInterval); writer.Write(MuzzleBurstCount); writer.Write(MaxRibbonGap); writer.Write(SatelliteSpread);

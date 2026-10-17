@@ -238,6 +238,7 @@ namespace Splatoon.Blocks
         {
             public Vector3Int SourceCell;
             public ulong SourceRun;
+            public GravityMotionId SourceMotion;
             public int SourceIndex;
             public BuildMotionSample Sample;
             public FallingRun PreparedRun;
@@ -289,7 +290,10 @@ namespace Splatoon.Blocks
             public LinkedListNode<BuildColumnProof> ColumnCursor;
             public readonly Dictionary<GravityMotionId, BuildLandingCap> Caps = new();
             public int Phase;
-            public bool Ready, Retry;
+            public bool Ready, Retry, RepairAfterRetry;
+            public BuildOccupiedCell OverlapCell;
+            public Vector2Int OverlapColumn;
+            public Vector3Int OverlapDestination;
             public LinkedListNode<CommandCheckpoint> RetryCursor;
             public bool SourceValid(BlockTerrain terrain)
                 => Epoch == terrain._epoch && ReferenceEquals(Source, terrain.World) && Revision == terrain.Revision
@@ -522,7 +526,7 @@ namespace Splatoon.Blocks
                 if (!motion.Run.Cells[index].Occupied) continue;
                 var sourceCell = motion.Run.Bottom + Vector3Int.up * index;
                 column.Cells.AddLast(new BuildOccupiedCell { SourceCell = sourceCell,
-                    SourceRun = motion.Run.Id, SourceIndex = index, Sample = motion.Sample });
+                    SourceRun = motion.Run.Id, SourceMotion = motion.Id, SourceIndex = index, Sample = motion.Sample });
                 column.Query.Cells.AddLast(new BuildQueryCell(sourceCell, motion.Sample.Query));
                 column.QueryWork += 4;
                 if (column.Cells.Count > BlockWorld.MaxCohortCells) throw new InvalidOperationException("Build occupancy source column contains duplicate or out-of-range occupied cells.");
@@ -622,8 +626,8 @@ namespace Splatoon.Blocks
             var preparation = _buildOccupancyPreparation;
             if (preparation == null) return false;
             bool commandWork = _commands.Count != 0;
-            int maximum = commandWork ? 1024 : MaxChecks, checks = 0;
-            double milliseconds = commandWork ? .25 : .75;
+            int maximum = commandWork ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone, checks = 0;
+            double milliseconds = commandWork ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             var timer = Stopwatch.StartNew(); long before = GravityWorkChecks;
             AuthorityStageCount++; BuildOccupancyPreparationStages++; LastCommandStageMilliseconds = 0;
             try
@@ -637,7 +641,8 @@ namespace Splatoon.Blocks
                     }
                     if (preparation.RetryCursor != null) return true;
                     _gravityRetryPublicationWindow = preparation.Window;
-                    _buildOccupancyPreparation = null; return true;
+                    _buildOccupancyPreparation = null;
+                    ArmBuildOverlapRepair(preparation); return true;
                 }
                 if (!preparation.SourceValid(this)) { AbortBuildOccupancyPreparation(); return true; }
                 if (preparation.Phase == 0)
@@ -755,6 +760,8 @@ namespace Splatoon.Blocks
                         if (y >= column.Minimum && y < column.Minimum + column.Length && column.Added[y - column.Minimum])
                         {
                             pending.AbortReason = PendingAbortReason.BuildMovingOverlap;
+                            preparation.OverlapCell = cell; preparation.OverlapColumn = column.Column;
+                            preparation.OverlapDestination = new Vector3Int(column.Column.x, y, column.Column.y);
                             RecordBuildOverlapWitness(column, cell, new Vector3Int(column.Column.x, y, column.Column.y));
                             BuildMovingOccupied++; return false;
                         }
@@ -832,6 +839,7 @@ namespace Splatoon.Blocks
             var preparation = pending.BuildGuard;
             RecordPendingTerminal(pending, PendingWallOutcome.Aborted);
             _retired.Enqueue(new Retired { Pending = pending }); _pending = null;
+            preparation.RepairAfterRetry = pending.AbortReason == PendingAbortReason.BuildMovingOverlap;
             preparation.Retry = true; preparation.RetryCursor = preparation.Checkpoints?.Last;
             _buildOccupancyPreparation = preparation; BuildPublicationRetries++;
         }

@@ -338,6 +338,52 @@ namespace Splatoon.Blocks
                 return !PaperOverlapsWorld(actor, rect, displacement);
             }
         }
+        /// <summary>Find the forward wall that already obstructs this candidate's
+        /// actual animated contour. Query range is bounded by that contour; the
+        /// ordinary motor probe remains unchanged. Does not move or publish a player.</summary>
+        public bool TryQueryObstructingTraversalWall(PrototypePlayer player, PlayerSnapshot candidate,
+            Vector3 origin, Vector3 direction, float baseDistance, float skin,
+            out PlayerMotorSimulation.TraversalContact contact)
+        {
+            contact = default;
+            if (!Initialized || World == null || player == null || player.SwimBody == null ||
+                player.SwimBody.Profile == null || !candidate.ShowsSwimBody || direction.sqrMagnitude < .000001f) return false;
+            var rects = player.SwimBody.QueryTraversalRects(candidate);
+            if (rects == null || rects.Count == 0) return false;
+            direction.Normalize();
+            Quaternion rotation = candidate.PaperRotation;
+            float thickness = player.SwimBody.Profile.Thickness;
+            float xProjection = Mathf.Abs(Vector3.Dot(rotation * Vector3.right, direction));
+            float yProjection = Mathf.Abs(Vector3.Dot(rotation * Vector3.up, direction));
+            float zProjection = Mathf.Abs(Vector3.Dot(rotation * Vector3.forward, direction));
+            float reach = 0;
+            foreach (var rect in rects)
+            {
+                Vector3 center = candidate.PaperCenter + rotation * new Vector3(rect.center.x, rect.center.y, 0);
+                float radius = xProjection * rect.width * .5f + yProjection * rect.height * .5f + zProjection * thickness * .5f;
+                reach = Mathf.Max(reach, Vector3.Dot(center - origin, direction) + radius);
+            }
+            float distance = Mathf.Max(baseDistance, reach + Mathf.Max(0, skin));
+            if (!Physics.Raycast(origin, direction, out var hit, distance, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) ||
+                !PlayerMotorSimulation.TryBlockTraversalContact(hit, out var wall)) return false;
+
+            foreach (var rect in rects)
+            {
+                Vector3 center = candidate.PaperCenter + rotation * new Vector3(rect.center.x, rect.center.y, 0);
+                // Match embedded detection's contact tolerance. A chunk overlap
+                // elsewhere cannot prove that this exact raycast voxel blocks us.
+                Vector3 half = new(Mathf.Max(.001f, rect.width * .5f - .001f),
+                    Mathf.Max(.001f, rect.height * .5f - .001f), Mathf.Max(.001f, thickness * .5f - .001f));
+                if (wall.IsBlock && !CellIntersectsBox(BlockWorld.Center(wall.Cell), BlockWorld.CellSize * .5f,
+                    center, half, rotation)) continue;
+                int count = Physics.OverlapBoxNonAlloc(center, half, _overlaps, rotation,
+                    PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
+                for (int i = 0; i < count; i++)
+                    if (_overlaps[i] == hit.collider) { contact = wall; return true; }
+            }
+            return false;
+        }
+
         /// <summary>Query the published world using this candidate's capsule and immutable
         /// authored contour. Does not relocate state or change live capture/hit publication.</summary>
         public bool PublishedTraversalPoseFits(PrototypePlayer player, PlayerSnapshot state)

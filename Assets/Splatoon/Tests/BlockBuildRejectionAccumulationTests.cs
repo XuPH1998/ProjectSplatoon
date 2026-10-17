@@ -19,13 +19,14 @@ using Object = UnityEngine.Object;
 namespace Splatoon.Tests
 {
     // Regression for moving-build retry convergence and source/time invalidation.
-    // The 84-cell source is constructed through BlockWorld's public snapshot API.
+    // The 96-cell source is constructed through BlockWorld's public snapshot API.
     // All attacks, replay, collision publication, budgets and callbacks use the
     // actual Terrain path. Reflection only observes owners and registers the map.
     public sealed class BlockBuildRejectionAccumulationTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double Epoch = 10;
-        const int ChainLength = 84, BottomY = 16, PumpLimit = 2000;
+        const int ChainLength = 96, BottomY = 16, PumpLimit = 2000;
         // An isolated two-address replay that still has no terminal after eight
         // publication rejections is a failing liveness oracle, not a production limit.
         const long RejectionFailureLimit = 8;
@@ -56,6 +57,7 @@ namespace Splatoon.Tests
             _admissions = null; _workers = null; _largestObservedColumnQuery = 0;
             yield return WaitForBootstrapInitialization();
             HeroMigrationTests.Load(); BlockAttackService.Clear();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Two real moving-build rejections under one published source");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.PublicationPolicy = BlockPublicationPolicy.CandidateDefault(3801);
@@ -113,6 +115,7 @@ namespace Splatoon.Tests
             _observedPending.Clear(); _observedCommandTasks.Clear(); _observedMeshes.Clear();
             _observedViews.Clear(); _observedMaterials.Clear(); _terrain = null; _root = _floor = null;
             BlockAttackService.Clear(); LubanConfigService.Current.Reset();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
@@ -327,8 +330,10 @@ namespace Splatoon.Tests
         [UnityTest, Timeout(600000)]
         public IEnumerator ARealRejectedPaymentCanBuildBothFormerlyOccupiedCellsAfterTimeAdvances()
         {
-            var first = new Vector3Int(2, 90, 2);
-            var second = new Vector3Int(2, 91, 2);
+            // Keep both addresses inside the initial moving source and above
+            // the complete landed chain after the unchanged two-second advance.
+            var first = new Vector3Int(2, ChainLength + 6, 2);
+            var second = first + Vector3Int.up;
             var seed = MakePublishedChain();
             uint installedRevision = _terrain.Revision + 1;
             seed.Seal(installedRevision, seed.RevisionKeys.ToArray());

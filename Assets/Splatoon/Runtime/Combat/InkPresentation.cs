@@ -104,9 +104,6 @@ namespace Splatoon.Combat
             foreach (var muzzle in _muzzles) if (muzzle != null) muzzle.Stop();
             foreach (var pair in _effects) if (pair.effect != null) HeroViewBinder.Destroy(pair.effect.gameObject); _effects.Clear();
             while (_pool.Count > 0) { var effect = _pool.Dequeue(); if (effect != null) HeroViewBinder.Destroy(effect.gameObject); }
-            foreach (var pair in _explosionEffects) if (pair.effect != null) HeroViewBinder.Destroy(pair.effect); _explosionEffects.Clear();
-            foreach (var pool in _explosionPool.Values) while (pool.Count > 0) { var effect = pool.Dequeue(); if (effect != null) HeroViewBinder.Destroy(effect); }
-            _explosionPool.Clear();
         }
         public void Spawn(InkShot shot)
         {
@@ -237,7 +234,7 @@ namespace Splatoon.Combat
         }
         void PlayExplosion(InkExplosionEvent explosion, AmmoRuntimeConfig ammo)
         {
-            if (BlockMode) { Blocks.Explosion(explosion, InkExplosionRules.Radius(ammo, explosion.Collision)); return; }
+            if (BlockMode) Blocks.Explosion(explosion, InkExplosionRules.Radius(ammo, explosion.Collision));
             var rotation = explosion.Normal.sqrMagnitude > .01f ? Quaternion.LookRotation(explosion.Normal) : Quaternion.identity;
             GameObject go;
             if (_explosionPool.TryGetValue(ammo.ExplosionPrefab, out var pool) && pool.Count > 0) { go = pool.Dequeue(); go.transform.SetPositionAndRotation(explosion.Position, rotation); go.SetActive(true); }
@@ -373,8 +370,8 @@ namespace Splatoon.Combat
             foreach (var version in _flights) version.Flight.Dispose();
             _flights.Clear();
             foreach (var muzzle in _muzzles) if (muzzle != null) HeroViewBinder.Destroy(muzzle.gameObject);
-            foreach (var e in _explosionEffects) if (e.effect != null) Destroy(e.effect);
-            foreach (var pool in _explosionPool.Values) while (pool.Count > 0) { var go = pool.Dequeue(); if (go != null) Destroy(go); }
+            foreach (var e in _explosionEffects) if (e.effect != null) HeroViewBinder.Destroy(e.effect);
+            foreach (var pool in _explosionPool.Values) while (pool.Count > 0) { var go = pool.Dequeue(); if (go != null) HeroViewBinder.Destroy(go); }
             if (Current == this) Current = null;
         }
     }

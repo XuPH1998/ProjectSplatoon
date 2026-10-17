@@ -12,7 +12,11 @@ namespace Splatoon.Tests
     // an Assets test assembly. These tests are not Player timing evidence.
     public sealed class BlockPublicationPolicyContractTests
     {
-        [Test] public void CompatibilityKeepsEightKeysAndExistingWorkLimits()
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
+        [Test] public void CompatibilityKeepsEightKeysWhileApprovedGravityWorkLimitsIncrease()
         {
             var policy = BlockPublicationPolicy.CompatibilityEight();
             foreach (var operation in new[] { BlockPublicationOperation.OrdinaryAttack,
@@ -21,11 +25,12 @@ namespace Splatoon.Tests
             Assert.That(policy.FrameKeys, Is.EqualTo(8));
             Assert.That(BlockPublicationPolicy.MaximumChecks, Is.EqualTo(4096));
             Assert.That(BlockPublicationPolicy.CommandChecksWithGravity, Is.EqualTo(3072));
-            Assert.That(BlockPublicationPolicy.GravityChecksWithCommands, Is.EqualTo(1024));
+            Assert.That(BlockPublicationPolicy.GravityChecksWithCommands, Is.EqualTo(4096));
+            Assert.That(BlockPublicationPolicy.GravityChecksAlone, Is.EqualTo(8192));
             Assert.That(BlockPublicationPolicy.CommandMillisecondsAlone, Is.EqualTo(.75));
             Assert.That(BlockPublicationPolicy.CommandMillisecondsWithGravity, Is.EqualTo(.5));
-            Assert.That(BlockPublicationPolicy.GravityMillisecondsAlone, Is.EqualTo(.75));
-            Assert.That(BlockPublicationPolicy.GravityMillisecondsWithCommands, Is.EqualTo(.25));
+            Assert.That(BlockPublicationPolicy.GravityMillisecondsAlone, Is.EqualTo(1.5));
+            Assert.That(BlockPublicationPolicy.GravityMillisecondsWithCommands, Is.EqualTo(1.0));
             Assert.That(BlockPublicationPolicy.UploadMilliseconds, Is.EqualTo(1));
         }
 

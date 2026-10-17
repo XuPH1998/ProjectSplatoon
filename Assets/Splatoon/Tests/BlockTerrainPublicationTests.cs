@@ -13,10 +13,14 @@ namespace Splatoon.Tests
 {
     public sealed class BlockTerrainPublicationTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         [UnitySetUp] public IEnumerator Setup()
-        { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); yield return new EnterPlayMode(); }
+        { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope(); }
         [UnityTearDown] public IEnumerator Teardown()
-        { yield return new ExitPlayMode(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
+        { _historicalHeight?.Dispose(); _historicalHeight = null;
+            yield return new ExitPlayMode(); EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
         [UnityTest]
         public IEnumerator RemovingBoundaryCellPublishesTheAdjacentChunkNewlyExposedCollisionFace()
         {

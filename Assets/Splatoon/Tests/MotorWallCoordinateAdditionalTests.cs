@@ -29,9 +29,12 @@ namespace Splatoon.Tests
         PlayerInputFrame input;
         readonly List<PlayerMotorSimulation.MotorBranchObservation> events = new();
 
-        [SetUp] public void Setup()
+        [UnitySetUp] public IEnumerator Setup()
         {
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); HeroMigrationTests.Load();
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            HeroMigrationTests.Load();
             terrain = new GameObject("Published wall coordinate fixture").AddComponent<BlockTerrain>(); terrain.Initialize(null);
             var root = new GameObject("Real airborne wall attachment motor") { layer = 8 };
             controller = root.AddComponent<CharacterController>();
@@ -39,9 +42,10 @@ namespace Splatoon.Tests
             recorder = root.AddComponent<MotorGroundContactRecorder>(); motor = new PlayerMotorSimulation(controller);
             PlayerMotorSimulation.MotorBranchObserved += Observe;
         }
-        [TearDown] public void Cleanup()
+        [UnityTearDown] public IEnumerator Cleanup()
         {
             PlayerMotorSimulation.MotorBranchObserved -= Observe; PaperBodyTests.ReleaseTestBodies(); LubanConfigService.Current.Reset();
+            yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
         void Observe(PlayerMotorSimulation source, PlayerMotorSimulation.MotorBranchObservation observation)
@@ -294,7 +298,7 @@ namespace Splatoon.Tests
             Step(); Save("additional-natural-ground-air-wall", before, rootBefore, nativeBefore); AssertCenterPreserved(before);
         }
 
-        [UnityTest] public IEnumerator ConvertedHeightEnemyNeutralAndEmptyContactsRejectAndRestoreFrame()
+        [UnityTest] public IEnumerator ConvertedHeightRejectsEnemyAndEmptyContactsButRebindsToNeutralMapWall()
         {
             foreach (string lower in new[] { "enemy", "neutral", "empty" })
             {
@@ -304,16 +308,39 @@ namespace Splatoon.Tests
                 Assert.That(upper.Cell.y, Is.GreaterThanOrEqualTo(30)); Assert.That(InnerCapsuleEmbedded(ConvertedFeet()), Is.False);
                 bool lowerFound = WallAt(ConvertedFeet(), out var atLower);
                 if (lower == "enemy") { Assert.That(lowerFound, Is.True); Assert.That(atLower.Owner, Is.EqualTo(2)); }
+                else if (lower == "neutral")
+                {
+                    Assert.That(lowerFound, Is.True);
+                    Assert.That(atLower.IsBlock, Is.False); Assert.That(atLower.Owner, Is.Zero);
+                    Assert.That(atLower.Stable && atLower.Climbable, Is.True); Assert.That(atLower.Revision, Is.Zero);
+                    Assert.That(PlayerMotorSimulation.CanClimb(atLower, state.Team), Is.True);
+                }
                 else
                 {
                     Assert.That(lowerFound, Is.False);
-                    bool rawHit = Physics.Raycast(ConvertedFeet() + Vector3.up * .35f, Vector3.forward, out var raw,
+                    bool rawHit = Physics.Raycast(ConvertedFeet() + Vector3.up * .35f, Vector3.forward, out _,
                         .6f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
-                    Assert.That(rawHit, Is.EqualTo(lower == "neutral"));
-                    if (rawHit) Assert.That(raw.collider.gameObject, Is.EqualTo(neutral));
+                    Assert.That(rawHit, Is.False);
                 }
                 var before = state; var rootBefore = controller.transform.position; bool nativeBefore = controller.isGrounded;
-                Step(); Save("additional-converted-height-" + lower, before, rootBefore, nativeBefore); AssertRejectedFrame(before, true);
+                Step(); Save("additional-converted-height-" + lower, before, rootBefore, nativeBefore);
+                if (lower == "neutral")
+                {
+                    Assert.That(state.Movement, Is.EqualTo(MovementMode.WallInk));
+                    Assert.That(state.Swimming && !state.Grounded, Is.True); Assert.That(state.AirHumanOffset, Is.Zero);
+                    Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
+                    Assert.That(state.FriendlyInkContact || state.HasInkRecovery, Is.False);
+                    Assert.That(state.SupportTerrainRevision, Is.Zero);
+                    Assert.That(state.PaperCenter.y, Is.EqualTo(before.PaperCenter.y).Within(.005f));
+                    Assert.That(state.Position.y, Is.EqualTo(before.PaperCenter.y - .9f).Within(.005f));
+                    Assert.That(controller.transform.position, Is.EqualTo(state.Position));
+                    Assert.That(FreshWall(out var fresh), Is.True); Assert.That(fresh.IsBlock, Is.False);
+                    Assert.That(fresh.Owner, Is.Zero); Assert.That(fresh.Revision, Is.Zero);
+                    var resolved = events.Single(e => e.Branch == PlayerMotorSimulation.MotorTraceBranch.WallAttachResolved);
+                    Assert.That(resolved.ProbeSucceeded, Is.True); Assert.That(resolved.Contact.IsBlock, Is.False);
+                    Assert.That(resolved.Contact.Owner, Is.Zero); Assert.That(resolved.Contact.Revision, Is.Zero);
+                }
+                else AssertRejectedFrame(before, true);
                 if (lower == "enemy")
                     Assert.That(recorder.Contacts.Any(c => c.BlockCollider && c.Normal.z < -.9f && c.Point.y < 3), Is.True);
                 if (neutral != null) UnityEngine.Object.DestroyImmediate(neutral);

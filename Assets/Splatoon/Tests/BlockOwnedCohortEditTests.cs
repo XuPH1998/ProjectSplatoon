@@ -12,6 +12,10 @@ namespace Splatoon.Tests
     // preparation lease, native collision, throughput, or the network V2 cause.
     public sealed class BlockOwnedCohortEditTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
         const double Epoch = 10;
         const int CommandGravityChecks = 1024;
         const int LandingTail = BlockWorld.MaxCohortCells + 4;

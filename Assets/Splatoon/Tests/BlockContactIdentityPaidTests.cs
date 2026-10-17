@@ -24,6 +24,7 @@ namespace Splatoon.Tests
     // This is not an InputSystem, ordinary aim or gameplay-built-structure gate.
     public sealed class BlockContactIdentityPaidTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const float Dt = 1f / 60;
         const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         const int PumpLimit = 1800;
@@ -45,6 +46,7 @@ namespace Splatoon.Tests
             // Captures and case locals live inside this post-reload iterator.
             yield return PostEnterScenario();
             yield return Leave();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
         }
 
@@ -82,6 +84,7 @@ namespace Splatoon.Tests
         IEnumerator SetupHost()
         {
             yield return Wait(() => PrototypeApp.Current != null && PrototypeApp.Current.Ready, "Boot ready");
+            _historicalHeight ??= new HistoricalBlockWorldHeightScope();
             _app = PrototypeApp.Current;
             yield return _app.StartWeaponDebugRoom().ToCoroutine();
             yield return Wait(() => PrototypePlayer.Local != null && PrototypeMatch.Current?.Blocks != null, "Real block host");
@@ -488,6 +491,7 @@ namespace Splatoon.Tests
         {
             if (!Application.isPlaying) yield break;
             yield return Leave();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
         }
     }

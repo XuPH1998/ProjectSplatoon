@@ -19,6 +19,7 @@ namespace Splatoon.Tests
     // journal, Window, proof, falling body, command checkpoint, or synthetic task.
     public sealed class BlockGravitySupportRetryWindowTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
         const double Now = 10;
         static readonly Vector3Int FloorCell = new(-150, 0, 2);
@@ -34,6 +35,8 @@ namespace Splatoon.Tests
             _paidCallbacks = _mutationEvents = 0; _baseResult = default;
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Native support retry immutable lease contract");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.PublicationPolicy = BlockPublicationPolicy.CandidateDefault(60);
@@ -49,6 +52,7 @@ namespace Splatoon.Tests
         {
             if (_terrain != null) _terrain.MutationCompleted -= OnMutation;
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
@@ -234,7 +238,10 @@ namespace Splatoon.Tests
                 Assert.That(_terrain.BlueCount, Is.EqualTo(318)); Assert.That(_terrain.PinkCount, Is.Zero);
                 Assert.That(_paidCallbacks, Is.EqualTo(1)); Assert.That(_mutationEvents, Is.EqualTo(2));
             }, 1, 0, true);
-            lateCommand = ((IEnumerable)Read<object>(_terrain, "_commands")).Cast<object>().Single();
+            // Automatic spread may already have a background quantum in FIFO.
+            // The queued paid command must still be the unique non-spread item.
+            lateCommand = ((IEnumerable)Read<object>(_terrain, "_commands")).Cast<object>()
+                .Single(command => !Read<bool>(command, "Spread"));
             Assert.That(Read<bool>(lateCommand, "OrdinaryMainAttack"), Is.True);
             Assert.That(Read<bool>(lateCommand, "Build"), Is.False);
             Assert.That(Read<BlockWorld>(lateCommand, "Source"), Is.SameAs(source));

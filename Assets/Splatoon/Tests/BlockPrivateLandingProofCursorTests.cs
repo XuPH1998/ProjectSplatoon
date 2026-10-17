@@ -17,6 +17,7 @@ namespace Splatoon.Tests
     // full authority publication, Player contact, LAN or performance acceptance.
     public sealed class BlockPrivateLandingProofCursorTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double SourceTime = 10.1;
         static readonly Vector3Int FirstBottom = new(2, 80, 2), SecondBottom = new(4, 80, 2);
         static readonly MethodInfo AdvanceProof = typeof(BlockTerrain).GetMethod("AdvancePrivateLandingProof", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -29,6 +30,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Independent private landing proof cursor contract");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.Initialize(null);
@@ -40,6 +43,7 @@ namespace Splatoon.Tests
         public IEnumerator Teardown()
         {
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }

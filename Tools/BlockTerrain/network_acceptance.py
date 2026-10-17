@@ -268,6 +268,47 @@ def unity_first_cell(point):
     return result
 
 
+def world_top_fall_seed(world_top):
+    """Independent binary32 reproduction of the schema-2 reserved 32-layer site."""
+    top, cell_size = unity_float32(world_top), unity_float32(.1)
+    if top is None:
+        return None
+    quotient = unity_float32(top / cell_size)
+    if quotient is None or not 33 <= quotient < (1 << 31):
+        return None
+    top_exclusive = math.floor(quotient)
+    first_y = top_exclusive - 32 - 1
+    point_y = unity_float32(unity_float32(first_y + .25) * cell_size)
+    return dict(topCellExclusive=top_exclusive, seedFirstY=first_y, pointY=point_y)
+
+
+def fall_site_configuration_failures(command):
+    failures = []
+    if (command.get("placementRule") != "world-top-reserved-32-v1"
+            or not int_field(command.get("reservedLayers"), 32) or command["reservedLayers"] != 32
+            or not int_field(command.get("headroomCells"), 1) or command["headroomCells"] != 1
+            or command.get("worldBoundsClear") is not True or command.get("staticVolumeClear") is not True
+            or any(not finite_number(command.get(key)) for key in
+                   ("worldTop", "worldBottom", "cellSize", "minimumFallClearance", "supportHeight"))):
+        return ["missing schema-2 world/top/seed/clearance configuration or site proof"]
+    top, bottom, size = command["worldTop"], command["worldBottom"], command["cellSize"]
+    expected = world_top_fall_seed(top)
+    if (expected is None or top <= bottom or abs(size - unity_float32(.1)) > 1e-8
+            or abs(command["minimumFallClearance"] - 1) > 1e-6
+            or any(not int_field(command.get(key)) or command[key] != expected[key]
+                   for key in ("topCellExclusive", "seedFirstY"))):
+        return ["world top or reserved 32-layer seed differs from the independent placement rule"]
+    if (abs(command["point"]["y"] - expected["pointY"]) > 1e-5
+            or command["firstCell"]["y"] != expected["seedFirstY"]):
+        failures.append("requested site does not match its current world-top-derived seed")
+    seed_bottom = expected["seedFirstY"] * size
+    if (seed_bottom < bottom or (expected["seedFirstY"] + 32) * size > top + 1e-5
+            or command["supportHeight"] < bottom - 1e-5
+            or seed_bottom - max(command["lane"]["y"], command["supportHeight"]) < 1 - .0001):
+        failures.append("the complete candidate volume is out of bounds or lacks one metre of real fall clearance")
+    return failures
+
+
 def drain_input_failures(reports, players, authority_inputs):
     failures = []
     if not isinstance(authority_inputs, list) or len(authority_inputs) != players:
@@ -312,8 +353,8 @@ def drain_ready(reports, players):
 def validate_fall_fixture(reports, players):
     """Independent cell evidence; Added and old fallingCells alone never satisfy the new fixture."""
     coverage = reports.get("host", {}).get("fallCoverage")
-    if not isinstance(coverage, dict) or coverage.get("schema") != 1:
-        return None, ["Missing the finite current-round 22m published falling fixture evidence"]
+    if not isinstance(coverage, dict) or not int_field(coverage.get("schema"), 2) or coverage["schema"] != 2:
+        return None, ["Missing schema-2 current-world-top published falling fixture evidence; legacy reports cannot prove this run"]
     failures = []
     required_ints = ("round", "baselineRevision", "finishRequestRevision", "baselineNextRunId", "baselinePink",
                      "baselineBlue", "baselineTotal", "baselineQueued", "baselineCompleted", "activeFixtureFallingCells", "command")
@@ -365,6 +406,7 @@ def validate_fall_fixture(reports, players):
     active_at_finish, pink_added, blue_added = 0, 0, 0
     summaries = []
     ordinals = []
+    world_configuration = None
     for row in commands:
         item = row["id"]
         if (row.get("team") not in (1, 2) or row.get("round") != coverage["round"]
@@ -383,9 +425,15 @@ def validate_fall_fixture(reports, players):
         expected_first = unity_first_cell(row["point"])
         if expected_first is None or row["firstCell"] != expected_first:
             failures.append(f"{item}: firstCell does not match the independent Unity float32 build point")
+        failures.extend(f"{item}: {reason}" for reason in fall_site_configuration_failures(row))
+        configuration = tuple(row.get(key) for key in ("worldTop", "worldBottom", "cellSize"))
+        if world_configuration is None:
+            world_configuration = configuration
+        elif configuration != world_configuration:
+            failures.append(f"{item}: participants report different current world configuration")
         if any(abs(row["point"][axis] - row["lane"][axis] - value) > 1e-5
-               for axis, value in (("x", 2), ("y", 22), ("z", 0))):
-            failures.append(f"{item}: requested site is not 22m above its seeded lane")
+               for axis, value in (("x", 2), ("z", 0))):
+            failures.append(f"{item}: requested site is not two metres beside its seeded lane")
         for key in ("queuedRealtime", "queuedServerTime", "completedRealtime", "completedServerTime", "queuedHeadAgeMs", "completedHeadAgeMs"):
             if not finite_number(row.get(key)) or row[key] < 0:
                 failures.append(f"{item}: missing command timing/head age {key}")
@@ -461,6 +509,9 @@ def validate_fall_fixture(reports, players):
             failures.append(f"{item}: expected 32 actual newly published falling cells; witnessed {len(witnessed[item])}")
         summaries.append({"id": item, "owner": command.get("owner"), "team": command.get("team"),
                           "point": command.get("point"), "added": command.get("added"),
+                          "siteConfiguration": {key: command.get(key) for key in ("placementRule", "worldTop", "worldBottom",
+                              "cellSize", "topCellExclusive", "seedFirstY", "reservedLayers", "headroomCells",
+                              "minimumFallClearance", "supportHeight", "worldBoundsClear", "staticVolumeClear")},
                           "callbackCount": command.get("callbackCount"), "completedRevision": command.get("completedRevision"),
                           "uniquePublishedFallingCells": len(witnessed[item])})
     if active_at_finish <= 0 or active_at_finish != coverage["activeFixtureFallingCells"]:
@@ -818,7 +869,7 @@ def run_case(exe, directory, players, rtt, loss, timeout=420, traversal_seconds=
              "traversal input acknowledgements and intact queue/projectile/falling drain")
         stage("fall")
         wait(lambda: not validate_fall_fixture({name: report for name, report in zip(labels(players), reports(labels(players)))}, players)[1],
-             "all finite 22m commands complete with actual newly published falling cells")
+             "all finite world-top commands complete with actual newly published falling cells")
         stage("finish")
         wait(lambda: reports(["host"])[0].get("current", {}).get("phase") == "Finished", "canonical round freeze")
         stage("frozen")

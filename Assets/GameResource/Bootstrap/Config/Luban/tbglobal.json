@@ -1,5 +1,9 @@
 [
   {
+    "blockWorldTopHeight": 8,
+    "blockSpreadInterval": 0.25,
+    "blockSpreadMaxStepCells": 1,
+    "blockSpreadMinStackCells": 2,
     "blockBlocksPerMaterial": 32,
     "blockMainAttackMaxBlocks": 512,
     "blockAuxiliaryBudgetFraction": 0.25,

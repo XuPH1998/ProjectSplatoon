@@ -10,6 +10,10 @@ namespace Splatoon.Tests
     // Pure world contracts: no Play Mode, physics or performance substitutions.
     public sealed class BlockBulkDetachContractTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
         static BlockWorld Seed(Vector3Int bottom, int count)
         {
             var world = new BlockWorld(new Vector2(16, 16), 39);

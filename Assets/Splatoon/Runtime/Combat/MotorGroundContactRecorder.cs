@@ -21,7 +21,7 @@ namespace Splatoon.Combat
                 InputSequence = inputSequence; Point = hit.point; Normal = hit.normal;
                 MoveDirection = hit.moveDirection; MoveLength = hit.moveLength;
                 ColliderId = hit.collider.GetInstanceID(); Layer = hit.collider.gameObject.layer;
-                Bounds = hit.collider.bounds; BlockCollider = hit.collider.GetComponentInParent<BlockTerrain>() != null;
+                Bounds = hit.collider.bounds; BlockCollider = BlockTerrain.IsBlockGeometry(hit.collider);
             }
         }
         public readonly List<ContactObservation> Contacts = new();

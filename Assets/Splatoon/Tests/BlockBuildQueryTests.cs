@@ -98,6 +98,7 @@ namespace Splatoon.Tests
 
         [Test] public void CachedDisksAndAxisClippingPreserveEveryValidCandidateAndItsOrder()
         {
+            using var historicalHeight = new HistoricalBlockWorldHeightScope();
             var world = new BlockWorld(new Vector2(2.3f, 3.7f), bottom: -.2f);
             var points = new[] { new Vector3(-1.15f, -.21f, 1.84f), new Vector3(1.2f, 31.91f, -1.9f), Vector3.zero };
             var radii = new[] { 0f, .2f, .200001f, 1.1023006f, 1.4452718f };
@@ -126,6 +127,7 @@ namespace Splatoon.Tests
 
         [Test] public void FiniteHugeRadiusCannotOverflowTheBoundedDiskCache()
         {
+            using var historicalHeight = new HistoricalBlockWorldHeightScope();
             var world = new BlockWorld(Vector2.one, bottom: 31);
             Assert.That(Optimized(world, new Vector3(0, 31.1f, 0), Vector3Int.up, 1, float.MaxValue).Count(), Is.EqualTo(441));
         }

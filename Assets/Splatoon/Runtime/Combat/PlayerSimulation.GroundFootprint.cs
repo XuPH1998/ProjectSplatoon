@@ -65,8 +65,8 @@ namespace Splatoon.Combat
                 {
                     // A stale/unpublished/falling terrain collider is not a
                     // neutral map face. Ordinary authored map geometry remains
-                    // physically valid but never grants block swimming.
-                    if (face.collider.GetComponentInParent<BlockTerrain>() != null) continue;
+                    // eligible for neutral swimming without friendly benefits.
+                    if (BlockTerrain.IsBlockGeometry(face.collider)) continue;
                     candidate = new TraversalContact(face);
                 }
                 float pointDistance = (face.point - feet).sqrMagnitude;

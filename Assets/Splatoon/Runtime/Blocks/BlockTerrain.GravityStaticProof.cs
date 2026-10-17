@@ -115,7 +115,10 @@ namespace Splatoon.Blocks
         {
             // Reuse the original definition of eligible static support. Native
             // synchronization/query cost remains subject to real CPU/wall gates.
-            Physics.SyncTransforms();
+            // StageAuthority already synchronized this uninterrupted synchronous
+            // phase. Publication preflight and calls outside that phase still
+            // synchronize before observing native geometry.
+            if (!_stageTransformsSynced) Physics.SyncTransforms();
             minimum = Mathf.CeilToInt(bottom / BlockWorld.CellSize);
             int hits = Physics.RaycastNonAlloc(position, Vector3.down, _rayHits,
                 Mathf.Max(0, position.y - bottom + BlockWorld.CellSize), Splatoon.Combat.PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);

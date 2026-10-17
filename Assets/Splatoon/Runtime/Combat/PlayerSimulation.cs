@@ -58,9 +58,10 @@ namespace Splatoon.Combat
                 Climbable = contact.Stable && contact.Climbable; IsBlock = true; Stable = contact.Stable;
                 SurfaceId = RegionId = 0; Cell = contact.Cell; Revision = contact.Revision;
             }
-            public TraversalContact(RaycastHit hit)
+            public TraversalContact(RaycastHit hit, bool allowWall = false)
             {
-                Owner = 0; Point = hit.point; Normal = hit.normal; Climbable = IsBlock = false; Stable = true;
+                Owner = 0; Point = hit.point; Normal = hit.normal;
+                Climbable = allowWall && Mathf.Abs(hit.normal.y) < .7f; IsBlock = false; Stable = true;
                 SurfaceId = RegionId = 0; Cell = default; Revision = 0;
             }
         }
@@ -117,16 +118,22 @@ namespace Splatoon.Combat
             if (Physics.Raycast(origin, direction, out var hit, distance, WorldMask, QueryTriggerInteraction.Ignore))
             {
                 if (BlockTraversalEnabled)
-                {
-                    if (BlockTerrain.Current.TryContact(hit, out var block))
-                    { contact = new TraversalContact(block); return true; }
-                    contact = default; return false;
-                }
+                    return TryBlockTraversalContact(hit, out contact);
                 var surface = hit.collider.GetComponentInParent<PaintSurface>();
                 if (surface != null && surface.QueryRegion(hit.point, hit.normal, out var ink))
                 { contact = new TraversalContact(ink); return true; }
             }
             contact = default; return false;
+        }
+        internal static bool TryBlockTraversalContact(RaycastHit hit, out TraversalContact contact)
+        {
+            if (BlockTerrain.Current.TryContact(hit, out var block))
+            { contact = new TraversalContact(block); return true; }
+            // A failed voxel lookup is not bare map geometry. In particular, an
+            // empty cell in a published terrain collider cannot grant attachment.
+            if (BlockTerrain.IsBlockGeometry(hit.collider))
+            { contact = default; return false; }
+            contact = new TraversalContact(hit, true); return true;
         }
         public static bool TryGetGround(Vector3 feet, out TraversalContact contact, float slopeLimit = 45, float footprint = .35f)
             => TryGetGround(feet, out contact, out _, slopeLimit, footprint);
@@ -145,7 +152,7 @@ namespace Splatoon.Combat
             }
             else details.Winner = GroundWinner.Center;
             if (blocks)
-            { contact = BlockTerrain.Current.TryContact(hit, out var block) ? new TraversalContact(block) : new TraversalContact(hit); return true; }
+                return TryBlockTraversalContact(hit, out contact);
             var surface = hit.collider.GetComponentInParent<PaintSurface>();
             contact = surface != null && surface.QueryRegion(hit.point, hit.normal, out var ink)
                 ? new TraversalContact(ink) : new TraversalContact(hit);
@@ -169,9 +176,11 @@ namespace Splatoon.Combat
         }
         public static bool IsEnemy(byte owner, byte team) => owner != 0 && owner != 255 && owner != team;
         public static bool CanClimb(TraversalContact contact, byte team) => contact.Climbable &&
-            (BlockTraversalEnabled ? contact.IsBlock && contact.Stable && contact.Owner == team : contact.Owner == 0 || contact.Owner == team);
+            (BlockTraversalEnabled ? CanUseBlockTraversalSurface(contact, team) : contact.Owner == 0 || contact.Owner == team);
+        static bool CanUseBlockTraversalSurface(TraversalContact contact, byte team) => contact.Stable &&
+            (contact.IsBlock ? contact.Owner == team && team != 0 && team != 255 : contact.Owner == 0);
         static bool CanSwimOnGround(TraversalContact contact, byte team) => BlockTraversalEnabled
-            ? contact.IsBlock && contact.Stable && contact.Owner == team && team != 0 && team != 255 : !IsEnemy(contact.Owner, team);
+            ? CanUseBlockTraversalSurface(contact, team) : !IsEnemy(contact.Owner, team);
         static float WallSpeed(SwimSurface source, cfg.HeroConfig hero) => source == SwimSurface.Neutral ? hero.NeutralSwimSpeed : hero.WallSwimSpeed;
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
@@ -207,6 +216,7 @@ namespace Splatoon.Combat
             // Animation, pose and physical motion form one transaction. A blocked
             // final contour cannot be committed merely because its earlier key fit.
             if (TryRetainSafeWallFrame(ref s, previous, input, dt, now, wantsFire)) return;
+            if (TryAttachCompletedHorizontalFrame(ref s, previous, input, dt, now, wantsFire)) return;
 
             // Undo the entire provisional movement/origin conversion and execute
             // the ordinary unattached path once from the exact motor entry. The
@@ -230,6 +240,47 @@ namespace Splatoon.Combat
             Restore(s, false); // Exactly the verified snapshot; no second animation advance.
         }
 
+        bool TryAttachCompletedHorizontalFrame(ref PlayerSnapshot s, PlayerSnapshot previous, PlayerInputFrame input,
+            float dt, double now, bool wantsFire)
+        {
+            var profile = PaperProfile;
+            // Called only after this completed horizontal candidate failed full
+            // geometry validation. Keep ordinary probe range and same-tick wall
+            // detach/mantle cancellation semantics unchanged.
+            if (profile == null || !input.Swim || wantsFire || input.Move.y <= 0 ||
+                input.JumpSequence != previous.ConsumedJump ||
+                previous.Movement == MovementMode.WallInk || previous.Movement == MovementMode.Mantle ||
+                (s.PaperPose != PaperPose.Ground && s.PaperPose != PaperPose.Air) ||
+                Vector3.Dot(s.PaperRotation * Vector3.forward, Vector3.up) < .65f) return false;
+
+            var player = _root.GetComponent<PrototypePlayer>();
+            Vector3 forward = Quaternion.Euler(0, s.Yaw, 0) * Vector3.forward;
+            if (!BlockTerrain.Current.TryQueryObstructingTraversalWall(player, s,
+                s.PaperCenter, forward,
+                GameplayConfig.GetHero(s.HeroId).WallProbeDistance, _shape.SkinWidth, out var wall) ||
+                !CanClimb(wall, s.Team)) return false;
+
+            var completed = s; Vector3 rootBefore = _root.position;
+            bool hasFootSupport = s.VerticalSpeed <= 0 && TryGetGround(s.Position, out _, _controller.slopeLimit, _controller.radius);
+            var candidate = s;
+            if (!TryAttach(ref candidate, wall, dt, hasFootSupport))
+            {
+                RollbackWallMove(ref s, completed, rootBefore); return false;
+            }
+            candidate.WallSeenAt = now; candidate.Movement = MovementMode.WallInk;
+            candidate.Swimming = true; candidate.Grounded = false; candidate.VerticalSpeed = 0; candidate.PlanarVelocity = Vector3.zero;
+            candidate.CompactBody = false; candidate.AirHumanOffset = 0;
+            // Re-derive pose and animation from the same original motor input.
+            // The provisional completed frame's animation increment is replaced,
+            // never added twice; resources/weapons have not run here.
+            CompleteTraversalFrame(ref candidate, previous, dt, now);
+            if (!WallGeometryFits(candidate))
+            {
+                RollbackWallMove(ref s, completed, rootBefore); return false;
+            }
+            s = candidate; return true;
+        }
+
         bool TryRetainSafeWallFrame(ref PlayerSnapshot s, PlayerSnapshot previous, PlayerInputFrame input,
             float dt, double now, bool wantsFire)
         {
@@ -251,7 +302,7 @@ namespace Splatoon.Combat
             BindWall(ref retained, wall);
             ResolveSupport(ref retained, previous, dt);
             retained.FriendlyInkContact = HasFriendlyInkContact(retained);
-            if (!retained.FriendlyInkContact || retained.SupportTerrainRevision == 0 || !WallGeometryFits(retained)) return false;
+            if ((wall.IsBlock && (!retained.FriendlyInkContact || retained.SupportTerrainRevision == 0)) || !WallGeometryFits(retained)) return false;
             s = retained;
             Restore(s, false);
             return true;
@@ -264,7 +315,8 @@ namespace Splatoon.Combat
             if (s.Movement == MovementMode.WallInk && Query(s.Position + Vector3.up * CompactCenterY,
                 -s.WallNormal, _controller.radius + .065f, out var wall) && CanClimb(wall, s.Team))
             {
-                s.SupportCell = wall.Cell; s.SupportTerrainRevision = wall.Revision; s.GroundNormal = wall.Normal;
+                if (wall.IsBlock) { s.SupportCell = wall.Cell; s.SupportTerrainRevision = wall.Revision; }
+                s.GroundNormal = wall.Normal;
                 return;
             }
             if (!s.Grounded || !TryGetGround(s.Position, out var ground, _controller.slopeLimit, _controller.radius) || !ground.IsBlock || !ground.Stable) return;
@@ -312,7 +364,7 @@ namespace Splatoon.Combat
             if (s.Movement == MovementMode.Mantle)
             {
                 bool lostTarget = BlockTraversalEnabled && (!TryGetGround(s.MantleTo, out var mantleGround, _controller.slopeLimit, 0) ||
-                    !mantleGround.IsBlock || !mantleGround.Stable || mantleGround.Owner != s.Team);
+                    !CanSwimOnGround(mantleGround, s.Team));
                 if (!allowWallTraversal || !input.Swim || wantsFire || jump || lostTarget) s.Movement = MovementMode.Air;
                 else
                 {
@@ -620,7 +672,7 @@ namespace Splatoon.Combat
             if (!Physics.Raycast(probe, Vector3.down, out var hit, 1.05f, WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < .65f) return false;
             if (hit.point.y < s.Position.y + .1f || hit.point.y > s.Position.y + .95f) return false;
             Vector3 target = hit.point + Vector3.up * .025f;
-            if (BlockTraversalEnabled && (!BlockTerrain.Current.TryContact(hit, out var block) || !block.Stable || block.Owner != s.Team)) return false;
+            if (BlockTraversalEnabled && (!TryBlockTraversalContact(hit, out var ground) || !CanSwimOnGround(ground, s.Team))) return false;
             if (!CanStand(target) || Mathf.Abs(target.x) > 15.8f || Mathf.Abs(target.z) > 31.8f) return false;
             var apex = new Vector3(s.Position.x, target.y + .15f, s.Position.z);
             if (!InkPathClear(s.Position, apex) || !InkPathClear(apex, target)) return false;

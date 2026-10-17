@@ -205,6 +205,14 @@ namespace Splatoon.Combat
             if (WeaponSimulation.IsCharge(w)) return Mathf.Lerp(.065f, .11f, Mathf.Clamp01(shot.Charge));
             return w.PelletCount > 1 ? .065f : .09f;
         }
+        static Vector3 ShotScale(InkShot shot, int cubes)
+        {
+            var size = shot.Configuration.Ammo?.BlockProjectileSize ?? Vector3.zero;
+            if (size.Equals(Vector3.zero)) return Vector3.one * ShotSize(shot);
+            // Sizes describe the whole group in its trajectory frame, including the existing gaps.
+            if (cubes == 4) return new Vector3(size.x / 2.05f, size.y / 2.05f, size.z);
+            return new Vector3(size.x, size.y, size.z / (1 + (cubes - 1) * 1.08f));
+        }
         public void Update(double now, Camera camera)
         {
             if (_disposed) return;
@@ -220,11 +228,11 @@ namespace Splatoon.Combat
                 var forward = velocity.sqrMagnitude > .0001f ? velocity.normalized : Vector3.forward;
                 var rotation = Quaternion.LookRotation(forward, Mathf.Abs(forward.y) > .95f ? Vector3.forward : Vector3.up);
                 if (WeaponSimulation.IsExplosher(w) || WeaponSimulation.UsesBubbleMesh(w)) rotation *= Quaternion.Euler((float)(time - shot.Born) * 100, 0, shot.Seed % 90);
-                float size = ShotSize(shot); int cubes = CubesPerShot(w);
+                int cubes = CubesPerShot(w); var scale = ShotScale(shot, cubes);
                 for (int cube = 0; cube < cubes; cube++)
                 {
-                    var offset = cubes == 4 ? new Vector3((cube % 2 - .5f) * size * 1.05f, (cube / 2 - .5f) * size * 1.05f, 0) : new Vector3(0, 0, (cube - (cubes - 1) * .5f) * size * 1.08f);
-                    Add(shot.Team, position + rotation * offset, rotation, size);
+                    var offset = cubes == 4 ? new Vector3((cube % 2 - .5f) * scale.x * 1.05f, (cube / 2 - .5f) * scale.y * 1.05f, 0) : new Vector3(0, 0, (cube - (cubes - 1) * .5f) * scale.z * 1.08f);
+                    Add(shot.Team, position + rotation * offset, rotation, scale);
                 }
             }
             for (int i = _fragmentCount - 1; i >= 0; i--)
@@ -234,13 +242,13 @@ namespace Splatoon.Combat
                 if (age < 0) continue;
                 var position = InkBallistics.Position(fragment.Origin, fragment.Velocity, 9.81f, age);
                 float shrink = Mathf.Clamp01((fragment.Lifetime - age) / .1f);
-                Add(fragment.Team, position, fragment.Rotation * Quaternion.Euler(fragment.Spin * age), fragment.Size * shrink);
+                Add(fragment.Team, position, fragment.Rotation * Quaternion.Euler(fragment.Spin * age), Vector3.one * (fragment.Size * shrink));
             }
             Flush(0); Flush(1);
         }
-        void Add(byte team, Vector3 position, Quaternion rotation, float size)
+        void Add(byte team, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            int at = team - 1; _matrices[at][_counts[at]++] = Matrix4x4.TRS(position, rotation, Vector3.one * size); CubeCount++;
+            int at = team - 1; _matrices[at][_counts[at]++] = Matrix4x4.TRS(position, rotation, scale); CubeCount++;
             if (_counts[at] == InstanceBatch) Flush(at);
         }
         void Flush(int team)

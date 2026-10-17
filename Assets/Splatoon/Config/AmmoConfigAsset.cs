@@ -13,6 +13,8 @@ namespace Splatoon.Config
         [InspectorName("泡泡破裂音效")] public AudioClip bubblePopAudio;
         [HideInInspector] public int flightMigrationVersion;
         [InspectorName("飞行墨弹预制体")] public ParticleSystem flightPrefab;
+        [InspectorName("积木弹整体尺寸（米，零为自动）"), Tooltip("弹道局部坐标的宽、高、长；整组积木的外包尺寸。全零沿用默认，或三轴均为正数。")]
+        public Vector3 blockProjectileSize;
         [InspectorName("枪口喷溅预制体")] public ParticleSystem muzzlePrefab;
         [InspectorName("飞行发射间隔（秒）")] public float burstInterval = .03f;
         [InspectorName("每次发射粒子数")] public int particlesPerBurst = 2;

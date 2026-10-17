@@ -36,7 +36,7 @@ namespace Splatoon.Tests
         }
 
         [Test]
-        public void ChangesToEveryAmmoScalarAreFrozenAndDetectedWithoutRestartingWeaponActions()
+        public void ChangesToEveryAmmoValueAreFrozenAndDetectedWithoutRestartingWeaponActions()
         {
             var source = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>("Assets/GameResource/Weapons/RifleGirl/RifleGirlWeaponConfig.asset");
             var weapon = UnityEngine.Object.Instantiate(source);
@@ -51,6 +51,7 @@ namespace Splatoon.Tests
                     else if (field.FieldType == typeof(int)) field.SetValue(ammo, (int)value + 1);
                     else if (field.FieldType == typeof(ushort)) field.SetValue(ammo, (ushort)((ushort)value + 1));
                     else if (field.FieldType == typeof(bool)) field.SetValue(ammo, !(bool)value);
+                    else if (field.FieldType == typeof(Vector3)) field.SetValue(ammo, (Vector3)value + Vector3.one * .001f);
                     var next = weapon.Snapshot();
                     Assert.That(prior.SameValues(next), Is.False, field.Name);
                     Assert.That(prior.RequiresRestart(next), Is.False, field.Name + " must not cancel charge/burst");
@@ -99,6 +100,21 @@ namespace Splatoon.Tests
             finally { UnityEngine.Object.DestroyImmediate(ammo); }
         }
 
+        [TestCase(0, 1, 1)]
+        [TestCase(-1, 1, 1)]
+        [TestCase(float.NaN, 1, 1)]
+        [TestCase(1, float.PositiveInfinity, 1)]
+        public void BlockProjectileSizeRejectsPartialZeroAndNonpositiveOrNonfiniteAxes(float x, float y, float z)
+        {
+            var ammo = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<AmmoConfigAsset>("Assets/GameResource/Weapons/RifleGirl/RifleGirlAmmoConfig.asset"));
+            try
+            {
+                ammo.blockProjectileSize = new Vector3(x, y, z);
+                Assert.Throws<InvalidOperationException>(() => new AmmoRuntimeConfig(ammo).Validate());
+            }
+            finally { UnityEngine.Object.DestroyImmediate(ammo); }
+        }
+
         [Test]
         public void SerializedInspectorUndoRedoRestoresMergedParameters()
         {
@@ -109,10 +125,12 @@ namespace Splatoon.Tests
                 var serialized = new SerializedObject(ammo);
                 serialized.FindProperty("muzzleBurstCount").intValue = 31;
                 serialized.FindProperty("visualLifetime").floatValue = .73f;
+                serialized.FindProperty("blockProjectileSize").vector3Value = new Vector3(.3f, .3f, .42f);
                 serialized.ApplyModifiedProperties(); Undo.FlushUndoRecordObjects();
                 Assert.That(ammo.muzzleBurstCount, Is.EqualTo(31));
                 Undo.PerformUndo(); Assert.That(original.SameValues(new AmmoRuntimeConfig(ammo)), Is.True);
                 Undo.PerformRedo(); Assert.That(ammo.visualLifetime, Is.EqualTo(.73f));
+                Assert.That(ammo.blockProjectileSize, Is.EqualTo(new Vector3(.3f, .3f, .42f)));
             }
             finally { Undo.ClearUndo(ammo); UnityEngine.Object.DestroyImmediate(ammo); }
         }
@@ -147,6 +165,7 @@ namespace Splatoon.Tests
             {
                 ammo.burstInterval = .073f; ammo.particlesPerBurst = 7; ammo.visualLifetime = .85f;
                 ammo.muzzleInterval = .12f; ammo.muzzleBurstCount = 27; ammo.maxRibbonGap = 1.1f; ammo.satelliteSpread = .04f;
+                ammo.blockProjectileSize = new Vector3(.3f, .3f, .42f);
                 AssetDatabase.CreateAsset(ammo, path); AssetDatabase.SaveAssets();
                 string saved = EditorJsonUtility.ToJson(ammo);
                 Resources.UnloadAsset(ammo); ammo = AssetDatabase.LoadAssetAtPath<AmmoConfigAsset>(path);

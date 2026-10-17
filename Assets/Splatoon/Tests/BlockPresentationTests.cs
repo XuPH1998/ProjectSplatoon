@@ -34,7 +34,7 @@ namespace Splatoon.Tests
         }
         [TearDown] public void Cleanup()
         {
-            flight?.Dispose(); Object.DestroyImmediate(root); SpecialWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
+            flight?.Dispose(); Object.DestroyImmediate(root); SpecialWeaponConfigService.Current.Clear(); SubWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
         InkShot Shot(uint id = 1, WeaponRuntimeConfig weapon = null) => new() { Id = id, Round = 1, Team = 1, Born = 10, Seed = id + 17,
@@ -110,6 +110,100 @@ namespace Splatoon.Tests
             presentation.UpdateFlights(10.11, null); Assert.That(presentation.BlockDebrisCount, Is.EqualTo(8));
             Assert.That(root.GetComponentsInChildren<ParticleSystem>(true), Is.Empty); Assert.That(root.GetComponentsInChildren<InkImpactEffect>(true), Is.Empty);
             presentation.Clear(); Assert.That(presentation.BlockCubeCount + presentation.BlockDebrisCount, Is.Zero);
+        }
+        [TestCase("RocketLauncherGirl", .3f, .3f, .42f, 1)]
+        [TestCase("ShotgunGirl", 1.05f, 1.05f, 1.05f, 4)]
+        [TestCase("BubbleShotgunGirl", 1.2f, 1.2f, 1.2f, 1)]
+        [TestCase("BubbleGirl", .45f, .45f, .45f, 1)]
+        [TestCase("RifleGirl", .09f, .09f, .09f, 1)]
+        public void RenderedWholeProjectileMatchesConfiguredSizeAndOtherWeaponsKeepDefaults(string weapon, float x, float y, float z, int count)
+        {
+            var config = AssetDatabase.LoadAssetAtPath<WeaponConfigAsset>($"Assets/GameResource/Weapons/{weapon}/{weapon}WeaponConfig.asset").Snapshot();
+            var presentation = root.AddComponent<InkPresentation>(); var shot = Shot(1, config);
+            presentation.Spawn(shot);
+            double time = shot.Born + (WeaponSimulation.UsesBubbleMesh(config) ? BubbleFlightPresentation.RenderDelay : 0);
+            presentation.UpdateFlights(time, null);
+            var instances = BlockDefaultContractFixture.RenderedInstances(presentation, 1, count);
+            // Inspect actual submitted vertices in the trajectory frame, rather than the sizing helper.
+            var frame = Matrix4x4.TRS(shot.Origin, instances[0].rotation, Vector3.one).inverse;
+            var bounds = new Bounds(); bool first = true;
+            foreach (var instance in instances) for (int corner = 0; corner < 8; corner++)
+            {
+                var local = new Vector3((corner & 1) == 0 ? -.5f : .5f, (corner & 2) == 0 ? -.5f : .5f, (corner & 4) == 0 ? -.5f : .5f);
+                var point = frame.MultiplyPoint3x4(instance.MultiplyPoint3x4(local));
+                if (first) { bounds = new Bounds(point, Vector3.zero); first = false; } else bounds.Encapsulate(point);
+            }
+            Assert.That(bounds.size.x, Is.EqualTo(x).Within(.0001));
+            Assert.That(bounds.size.y, Is.EqualTo(y).Within(.0001));
+            Assert.That(bounds.size.z, Is.EqualTo(z).Within(.0001));
+            Assert.That(presentation.VersionPoolCount + presentation.ParticleCount, Is.Zero);
+            Assert.That(root.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
+        }
+        [TestCase(3)]
+        [TestCase(5)]
+        [TestCase(9)]
+        public void ExplosiveMainWeaponsKeepOriginalPooledBurstsAlongsideCubes(int hero)
+        {
+            var presentation = root.AddComponent<InkPresentation>();
+            var match = root.AddComponent<PrototypeMatch>(); match.enabled = false;
+            var current = typeof(PrototypeMatch).GetField("<Current>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+            var oldMatch = current.GetValue(null); var config = GameplayConfig.GetWeapon(hero); int previousInstance = 0; uint id = 100;
+            try
+            {
+                foreach (bool collision in new[] { false, true }) foreach (byte team in new byte[] { 1, 2 })
+                {
+                    presentation.Clear();
+                    var explosion = new InkExplosionEvent { ShotId = ++id, HeroId = hero, ConfigurationRevision = WeaponConfigService.Current.Revision(hero),
+                        Round = match.State.Value.Round, Team = team, Position = Vector3.up * 2, Normal = Vector3.up, Seed = id, Time = 10, Collision = collision };
+                    current.SetValue(null, match);
+                    try { presentation.Explosion(explosion); presentation.Explosion(explosion); }
+                    finally { current.SetValue(null, oldMatch); }
+                    if (config.Ammo.BubblePrefab != null)
+                    {
+                        presentation.UpdateFlights(10 + BubbleFlightPresentation.RenderDelay - .001, null);
+                        Assert.That(presentation.transform.Cast<Transform>().Any(t => t.name == "Ink explosion" && t.gameObject.activeSelf), Is.False);
+                    }
+                    presentation.UpdateFlights(10.001 + (config.Ammo.BubblePrefab != null ? BubbleFlightPresentation.RenderDelay : 0), null);
+                    var burst = presentation.transform.Cast<Transform>().Single(t => t.name == "Ink explosion" && t.gameObject.activeSelf);
+                    if (previousInstance != 0) Assert.That(burst.GetInstanceID(), Is.EqualTo(previousInstance), "Clear reuses the original burst across colors and blast radii");
+                    previousInstance = burst.GetInstanceID();
+                    Assert.That(burst.localScale.x, Is.EqualTo(InkExplosionRules.Radius(config.Ammo, collision)).Within(.0001));
+                    var systems = burst.GetComponentsInChildren<ParticleSystem>();
+                    Assert.That(systems.Length, Is.EqualTo(config.Ammo.ExplosionPrefab.GetComponentsInChildren<ParticleSystem>(true).Length));
+                    Assert.That(systems.All(ps => ps.main.startColor.color == PrototypeArena.TeamColor(team)), Is.True);
+                    Assert.That(systems.Select(ps => ps.randomSeed).Distinct().Count(), Is.EqualTo(systems.Length));
+                    Assert.That(presentation.BlockDebrisCount, Is.EqualTo(Mathf.Clamp(Mathf.CeilToInt(InkExplosionRules.Radius(config.Ammo, collision) * 18), 16, 64)), "Duplicate event cannot emit another fragment burst");
+                    Assert.That(presentation.VersionPoolCount, Is.Zero); Assert.That(presentation.Streams, Is.Empty);
+                    presentation.Clear(); Assert.That(burst.gameObject.activeSelf, Is.False);
+                }
+            }
+            finally { current.SetValue(null, oldMatch); }
+        }
+        [Test] public void ExplosiveSubEffectsRestoreOriginalImpactAndRecycleWithoutRestoringOtherEffectKinds()
+        {
+            var ink = root.AddComponent<InkPresentation>();
+            typeof(InkPresentation).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ink, null);
+            var presentation = root.AddComponent<SubWeaponPresentation>();
+            var asset = AssetDatabase.LoadAssetAtPath<SubWeaponConfigAsset>(SubWeaponDefaults.Path(SubWeaponType.BurstBomb));
+            int id = SubWeaponConfigService.Id(asset.type); SubWeaponConfigService.Current.SetById(id, asset);
+            var e = new SubEffectEvent { Sequence = 1, SubWeaponId = id, ConfigRevision = SubWeaponConfigService.Current.RevisionById(id),
+                Kind = SubEffectKind.Explosion, Team = 1, At = 10, Position = Vector3.up, Normal = Vector3.up, Radius = 2 };
+            presentation.Effect(e); presentation.Effect(e); presentation.PresentAt(10.2, 1f / 60);
+            var particles = presentation.GetComponentsInChildren<ParticleSystem>();
+            Assert.That(particles.Length, Is.EqualTo(asset.visuals.impactPrefab.GetComponentsInChildren<ParticleSystem>(true).Length));
+            Assert.That(particles.Length, Is.GreaterThan(0));
+            Assert.That(particles.All(ps => ps.main.startColor.color == PrototypeArena.TeamColor(1)), Is.True);
+            var original = particles[0].gameObject;
+            presentation.PresentAt(12, 1f / 60); Assert.That(original.activeInHierarchy, Is.False);
+            e.Sequence++; e.Team = 2; e.At = 12;
+            presentation.Effect(e); presentation.PresentAt(12.2, 1f / 60);
+            Assert.That(original.activeInHierarchy, Is.True, "Sub explosions reuse the existing pool");
+            Assert.That(presentation.GetComponentsInChildren<ParticleSystem>().All(ps => ps.main.startColor.color == PrototypeArena.TeamColor(2)), Is.True);
+            presentation.PresentAt(14, 1f / 60);
+            e.Sequence++; e.Kind = SubEffectKind.Hit; e.At = 14;
+            presentation.Effect(e); presentation.PresentAt(14.2, 1f / 60);
+            Assert.That(presentation.GetComponentsInChildren<ParticleSystem>(), Is.Empty, "Non-explosion events keep the existing block presentation");
+            presentation.Clear(); Assert.That(presentation.GetComponentsInChildren<ParticleSystem>(), Is.Empty);
         }
         [Test] public void RestoreUsesCubesAndNeverReplaysOldMuzzleFeedback()
         {

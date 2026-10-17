@@ -20,24 +20,36 @@ from network_acceptance import (ROOT, background_player_environment, free_port, 
 
 CASES = ("steady250k", "combat250k", "tower32m", "blast8", "cascade20k", "scattered100k")
 DURATIONS = dict(zip(CASES, (600, 300, 60, 120, 120, 180)))
-PROFILES = ("strict", "prototype-v1")
+PROTOTYPE_45_PROFILE = "prototype-v2-45fps"
+PROFILES = ("strict", "prototype-v1", PROTOTYPE_45_PROFILE)
+PROTOTYPE_45_CASES = ("steady250k", "combat250k", "blast8", "scattered100k")
+PROTOTYPE_45_DEFERRED_CASES = ("tower32m", "cascade20k")
 PROTOTYPE_DIAGNOSTIC_GATES = frozenset(("no33msSpikes", "supportQueueClear"))
 
 
-def profile_durations(profile):
+def profile_cases(profile):
     if profile not in PROFILES:
         raise ValueError(f"Unknown acceptance profile: {profile}")
-    durations = dict(DURATIONS)
-    if profile == "prototype-v1":
+    return PROTOTYPE_45_CASES if profile == PROTOTYPE_45_PROFILE else CASES
+
+
+def prototype_profile(profile):
+    return profile in ("prototype-v1", PROTOTYPE_45_PROFILE)
+
+
+def profile_durations(profile):
+    durations = {case: DURATIONS[case] for case in profile_cases(profile)}
+    if prototype_profile(profile):
         durations["steady250k"] = 180
     return durations
 
 
 def profile_targets(profile):
     return {"requiredSeconds": profile_durations(profile),
-            "ordinaryPublishP95Ms": 200 if profile == "prototype-v1" else 80,
-            "eightBlastCompletionMs": 2000 if profile == "prototype-v1" else 250,
-            "frameP95Ms": 15.5, "frameP99Ms": 16.67,
+            "ordinaryPublishP95Ms": 200 if prototype_profile(profile) else 80,
+            "eightBlastCompletionMs": 2000 if prototype_profile(profile) else 250,
+            "frameP95Ms": 22.2 if profile == PROTOTYPE_45_PROFILE else 15.5,
+            "frameP99Ms": 33.3 if profile == PROTOTYPE_45_PROFILE else 16.67,
             "frameSpikeBlocking": profile == "strict",
             "supportQueueClearBlocking": profile == "strict",
             "supportQueueClearDiagnosticMs": 500}
@@ -46,10 +58,77 @@ def profile_targets(profile):
 def gate_satisfied(gate, profile):
     if not isinstance(gate, dict):
         return False
-    if (profile == "prototype-v1" and gate.get("name") in PROTOTYPE_DIAGNOSTIC_GATES
+    if (prototype_profile(profile) and gate.get("name") in PROTOTYPE_DIAGNOSTIC_GATES
             and gate.get("diagnosticOnly") is True):
         return gate.get("status") in ("pass", "fail", "unverified")
     return gate.get("status") == "pass"
+
+
+def report_profile_matches(report, profile, case):
+    durations = profile_durations(profile)
+    if case not in durations or report.get("acceptanceProfile", "strict") != profile:
+        return False
+    if not prototype_profile(profile):
+        return True
+    targets = profile_targets(profile)
+    if not (report.get("requiredSeconds") == durations[case]
+            and report.get("ordinaryPublishP95LimitMs") == targets["ordinaryPublishP95Ms"]
+            and report.get("blastCompletionLimitMs") == targets["eightBlastCompletionMs"]
+            and report.get("frameSpikeBlocking") is False
+            and report.get("supportQueueClearBlocking") is False):
+        return False
+    if profile != PROTOTYPE_45_PROFILE:
+        return True
+    # The explicit new report contract rejects an old Player, a relabelled v1
+    # report and an invocation that still runs the deferred 32-metre fixtures.
+    if not (report.get("frameP95LimitMs") == targets["frameP95Ms"]
+            and report.get("frameP99LimitMs") == targets["frameP99Ms"]
+            and report.get("requiredScenarios") == list(PROTOTYPE_45_CASES)
+            and report.get("deferredScenarios") == list(PROTOTYPE_45_DEFERRED_CASES)
+            and report.get("requiredSamplingSeconds") == sum(durations.values())):
+        return False
+    gates = report.get("gates")
+    if not isinstance(gates, list) or any(not isinstance(gate, dict) for gate in gates):
+        return False
+    names = [gate.get("name") for gate in gates]
+    if any(not isinstance(name, str) for name in names) or len(names) != len(set(names)):
+        return False
+    by_name = {gate.get("name"): gate for gate in gates}
+    if by_name.get("requiredScenario", {}).get("status") != "pass":
+        return False
+    required_limits = {"frameP95": targets["frameP95Ms"], "frameP99": targets["frameP99Ms"],
+                       "completeDuration": durations[case]}
+    if case in ("steady250k", "combat250k"):
+        required_limits["ordinaryPublishLatency"] = targets["ordinaryPublishP95Ms"]
+    if case == "blast8":
+        required_limits["eightSimultaneousBlasts"] = targets["eightBlastCompletionMs"]
+    return all(by_name.get(name, {}).get("limit") == limit
+               and by_name[name].get("diagnosticOnly") is False
+               for name, limit in required_limits.items())
+
+
+def summarize_results(package, results, requested_cases, profile, graphics_api,
+                      diagnostic_seconds=None, frame_timing_observation=False):
+    required = profile_cases(profile)
+    durations = profile_durations(profile)
+    scenarios = [result.get("scenario") for result in results]
+    complete = (len(requested_cases) == len(required) and set(requested_cases) == set(required)
+                and len(scenarios) == len(required) and set(scenarios) == set(required))
+    profiles_match = bool(results) and all(result.get("acceptanceProfile") == profile
+                                         and result.get("profileMatched") is True for result in results)
+    passed = (complete and profiles_match and diagnostic_seconds is None and not frame_timing_observation
+              and all(result.get("passed") is True for result in results))
+    return {"package": package, "cases": results, "requestedGraphicsApi": graphics_api,
+            "acceptanceProfile": profile, "acceptanceTargets": profile_targets(profile),
+            "requiredScenarios": list(required),
+            "deferredScenarios": list(PROTOTYPE_45_DEFERRED_CASES) if profile == PROTOTYPE_45_PROFILE else [],
+            "requiredSamplingSeconds": sum(durations.values()),
+            "strictPerformancePassed": passed and profile == "strict",
+            "requiredWorkloadsComplete": complete, "caseProfilesMatch": profiles_match,
+            "performancePassed": passed, "fullAcceptancePassed": False,
+            "remainingGates": ("core functional and six-case independent 2/8 Player impairment matrix; latest Windows package and report"
+                               if prototype_profile(profile) else
+                               "functional and full independent 2/8 Player impairment matrix; physical multi-machine and manual feel remain separate")}
 
 
 def digest(path):
@@ -93,7 +172,7 @@ def approved_frame_spike_gate(report, acceptance_profile="strict"):
     gate = {"name": "approvedFrameSpikeLimit", "status": "unverified", "limitMs": 33.3,
             "maximumMs": None, "samples": 0,
             "scope": "Conservative full-frame maximum; no terrain attribution waiver.",
-            "diagnosticOnly": acceptance_profile == "prototype-v1"}
+            "diagnosticOnly": prototype_profile(acceptance_profile)}
     metrics = report.get("metrics")
     if not isinstance(metrics, list):
         return gate
@@ -115,6 +194,8 @@ def approved_frame_spike_gate(report, acceptance_profile="strict"):
 def run_case(exe, directory, case, diagnostic_seconds=None, capture_main_camera=False, frame_timing_observation=False,
              acceptance_profile="strict", graphics_api="d3d11"):
     durations = profile_durations(acceptance_profile)
+    if case not in durations:
+        raise ValueError(f"{case} is outside {acceptance_profile}; deferred workloads cannot validate this profile")
     require_background_player_desktop()
     directory.mkdir(parents=True, exist_ok=True)
     duration = diagnostic_seconds if diagnostic_seconds is not None else durations[case]
@@ -201,18 +282,12 @@ def run_case(exe, directory, case, diagnostic_seconds=None, capture_main_camera=
                                                    and log["nativeCrashHeaders"] == 0 for log in client_logs.values())
     gates = report.get("gates", [])
     approved_spike_gate = approved_frame_spike_gate(report, acceptance_profile)
-    profile_matches = report.get("acceptanceProfile", "strict") == acceptance_profile
-    if acceptance_profile == "prototype-v1":
-        profile_matches = (profile_matches and report.get("requiredSeconds") == durations[case]
-                           and report.get("ordinaryPublishP95LimitMs") == 200
-                           and report.get("blastCompletionLimitMs") == 2000
-                           and report.get("frameSpikeBlocking") is False
-                           and report.get("supportQueueClearBlocking") is False)
+    profile_matches = report_profile_matches(report, acceptance_profile, case)
     passed = (diagnostic_seconds is None and not frame_timing_observation and error is None and host_exit == 0 and client_logs_clean and report.get("complete") is True
               and report.get("passed") is True and report.get("scenario") == case
               and report.get("role") == "host" and len(gates) >= 10
               and profile_matches and all(gate_satisfied(gate, acceptance_profile) for gate in gates)
-              and (approved_spike_gate["status"] == "pass" or acceptance_profile == "prototype-v1"
+              and (approved_spike_gate["status"] == "pass" or prototype_profile(acceptance_profile)
                    and approved_spike_gate["status"] == "fail")
               and report.get("seconds", 0) >= durations[case])
     risks = [gate for gate in gates if isinstance(gate, dict) and gate.get("diagnosticOnly") is True
@@ -239,9 +314,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--player", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=ROOT / "Reports/BlockTerrain/Performance")
-    parser.add_argument("--cases", nargs="+", choices=CASES, default=list(CASES))
+    parser.add_argument("--cases", nargs="+", choices=CASES,
+                        help="Defaults to the selected profile's complete workloads; v2 excludes deferred tower/cascade cases")
     parser.add_argument("--acceptance-profile", choices=PROFILES, default="strict",
-                        help="prototype-v1 uses the approved first playable release gates; strict retains the original gates")
+                        help="strict and prototype-v1 retain their historical gates; prototype-v2-45fps requires four workloads at P95 22.2/P99 33.3 ms")
     parser.add_argument("--graphics-api", choices=("d3d11", "d3d12"), default="d3d11",
                         help="Graphics API forced for the normal 1080p host camera")
     parser.add_argument("--diagnostic-seconds", type=float)
@@ -249,6 +325,13 @@ def main():
     parser.add_argument("--frame-timing-observation", action="store_true", help="Record a separate bounded raw timing sidecar; this run remains diagnostic only")
     parser.add_argument("--stop-on-failure", action="store_true")
     args = parser.parse_args()
+    required_cases = profile_cases(args.acceptance_profile)
+    if args.cases is None:
+        args.cases = list(required_cases)
+    if len(args.cases) != len(set(args.cases)):
+        parser.error("Each workload may only be requested once")
+    if any(case not in required_cases for case in args.cases):
+        parser.error("prototype-v2-45fps defers tower32m and cascade20k; select only its four required workloads")
     if args.diagnostic_seconds is not None and (not math.isfinite(args.diagnostic_seconds) or args.diagnostic_seconds <= 0):
         parser.error("Diagnostic duration must be positive")
     exe = args.player.resolve(strict=True)
@@ -262,19 +345,8 @@ def main():
     for case in args.cases:
         results.append(run_case(exe, output / case / uuid.uuid4().hex[:8], case, args.diagnostic_seconds,
                                 args.capture_main_camera, args.frame_timing_observation, args.acceptance_profile, args.graphics_api))
-        write_json(output / "summary.json", {"package": package, "cases": results,
-                   "requestedGraphicsApi": args.graphics_api,
-                   "acceptanceProfile": args.acceptance_profile, "acceptanceTargets": profile_targets(args.acceptance_profile),
-                   "strictPerformancePassed": args.acceptance_profile == "strict" and args.diagnostic_seconds is None
-                       and not args.frame_timing_observation and len(results) == len(CASES)
-                       and set(args.cases) == set(CASES) and all(result["passed"] for result in results),
-                   "requiredWorkloadsComplete": set(args.cases) == set(CASES) and len(results) == len(CASES),
-                   "performancePassed": args.diagnostic_seconds is None and not args.frame_timing_observation and len(results) == len(CASES)
-                       and set(args.cases) == set(CASES) and all(result["passed"] for result in results),
-                   "fullAcceptancePassed": False,
-                   "remainingGates": ("core functional and six-case independent 2/8 Player impairment matrix; latest Windows package and report"
-                                      if args.acceptance_profile == "prototype-v1" else
-                                      "functional and full independent 2/8 Player impairment matrix; physical multi-machine and manual feel remain separate")})
+        write_json(output / "summary.json", summarize_results(package, results, args.cases, args.acceptance_profile,
+                   args.graphics_api, args.diagnostic_seconds, args.frame_timing_observation))
         if args.stop_on_failure and not results[-1]["passed"]:
             break
     return 0 if all(result["passed"] for result in results) else 5

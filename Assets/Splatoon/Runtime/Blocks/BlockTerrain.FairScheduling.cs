@@ -185,6 +185,7 @@ namespace Splatoon.Blocks
         }
         void TryYieldBackgroundPublication()
         {
+            if (ProtectBuildOverlapRepairPending(_pending)) return;
             if (_fairSeed != null || !_authority || !_accepting || _remoteQueued != null || FairPreparationLocked
                 || _blastBatch != null || _commands.Count == 0) return;
             var pending = _pending; var head = _commands.Peek();

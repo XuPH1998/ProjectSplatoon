@@ -3,8 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using Cysharp.Threading.Tasks;
 using Splatoon.Combat;
 using Splatoon.Config;
@@ -29,13 +31,33 @@ namespace Splatoon.Prototype
         }
         [Serializable] sealed class Result
         {
-            public string scope = "GPU display only: real weapon configurations -> synthetic InkShot -> InkPresentation.Spawn -> automatic LateUpdate -> actual main-camera backbuffer. No paid firing, authority collision or RPC acceptance.";
+            public int schema = 2;
+            public string scope = "GPU display only: real configurations -> synthetic InkShot/InkExplosionEvent/SubEffectEvent -> production Spawn/Explosion/Effect -> normal Update/LateUpdate -> actual main-camera backbuffer. No paid firing, authority collision, damage or RPC acceptance.";
             public string runtimeMvid, runtimeAssembly, unityVersion, gpu, graphicsApi, finishedUtc, error;
             public double timeoutSeconds = TimeoutSeconds, elapsedSeconds;
             public int oldCameraId, mainCameraId;
             public bool passed, editor, oldCameraStillExistsAndDisabled, mainCameraChanged, noRenderTexture, prototypeGuiSuppressed;
             public List<CaseResult> cases = new();
+            public List<ExplosionResult> explosionCases = new();
+            public int expectedMainExplosionCases = 12, expectedSubExplosionCases = 16;
+            public bool explosionsPassed;
             public List<string> errors = new();
+        }
+        [Serializable] sealed class ExplosionResult
+        {
+            public string kind, label, originalPrefab, controlImage, sampleImage;
+            public int hero, subWeaponId, team, cameraId, cullingMask, effectInstanceId, originalPrefabId;
+            public int activeOriginalInstances, totalOriginalInstances, prefabParticleSystems, instanceParticleSystems;
+            public int rendererCount, liveParticles, changedPixels, teamPixels, otherTeamPixels, eventCalls;
+            public bool collision, originalPrefabReference, teamColorsMatch, scaleMatches, duplicateSuppressed;
+            public bool naturalRecycle, returnedToOriginalPool, poolReuseRequired, poolReused, passed;
+            public bool normalMainCamera, onlyOriginalPrefabPixels;
+            public Vector3 expectedScale, actualScale, cameraPosition, cameraForward;
+            public Color expectedTeamColor;
+            public float sampledAge, recycleWaitSeconds;
+            public int observedFrame, observedLiveParticles, sampledFrame;
+            public float observedDeltaTime, observedParticleTime, sampledDeltaTime, sampledParticleTime;
+            public double controlCaptureWallSeconds;
         }
         sealed class Frame
         {
@@ -49,6 +71,7 @@ namespace Splatoon.Prototype
         bool _finished, _oldEnabled, _ownsOutput, _appEnabled;
         Camera _oldCamera, _camera;
         InkPresentation _presentation;
+        SubWeaponPresentation _subPresentation;
         PrototypeApp _app;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -169,6 +192,192 @@ namespace Splatoon.Prototype
                 row.passed = row.changedPixels > 25 && row.teamPixels > 25 && row.teamPixels > row.otherTeamPixels * 2;
                 WriteNew(row.sampleImage, best.Png); _result.cases.Add(row);
             }
+            // This explicit fixture alone observes pooled originals. Ordinary game flow is unchanged.
+            var explosions = RunExplosions();
+            while (explosions.MoveNext()) yield return explosions.Current;
+        }
+
+        // Diagnostic reads only; production event methods remain the sole creators/recyclers.
+        static object Read(object instance, string name)
+        {
+            var field = instance.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Need(field != null, "Presentation diagnostic schema changed: " + name);
+            return field.GetValue(instance);
+        }
+        List<(GameObject effect, float until, GameObject prefab, int layers)> MainEffects() =>
+            (List<(GameObject effect, float until, GameObject prefab, int layers)>)Read(_presentation, "_explosionEffects");
+        Dictionary<GameObject, Queue<GameObject>> MainPool() =>
+            (Dictionary<GameObject, Queue<GameObject>>)Read(_presentation, "_explosionPool");
+        List<GameObject> SubEffects() => ((IEnumerable)Read(_subPresentation, "_effects")).Cast<object>()
+            .Where(item => (bool)Read(item, "Pooled")).Select(item => (GameObject)Read(item, "Object")).ToList();
+        IDictionary SubPoolItems() => (IDictionary)Read(Read(_subPresentation, "_pool"), "_all");
+        int SubInstances(GameObject prefab) => SubPoolItems().Values.Cast<object>().Count(item => (GameObject)Read(item, "Source") == prefab);
+        bool SubReturned(GameObject prefab, GameObject instance)
+        {
+            var free = (IDictionary)Read(Read(_subPresentation, "_pool"), "_free");
+            return instance != null && !instance.activeSelf && free.Contains(prefab)
+                && ((IEnumerable)free[prefab]).Cast<object>().Any(item => (GameObject)Read(item, "Object") == instance);
+        }
+        static int EffectLayers(GameObject prefab)
+        {
+            int mask = 0;
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true)) mask |= 1 << renderer.gameObject.layer;
+            Need(mask != 0, "Original explosion prefab has no Renderer");
+            return mask;
+        }
+        static void Inspect(ExplosionResult row, GameObject instance, GameObject prefab, byte team, float scale)
+        {
+            var systems = instance.GetComponentsInChildren<ParticleSystem>(true);
+            row.effectInstanceId = instance.GetInstanceID(); row.originalPrefabId = prefab.GetInstanceID();
+            row.originalPrefab = prefab.name; row.expectedTeamColor = PrototypeArena.TeamColor(team);
+            row.prefabParticleSystems = prefab.GetComponentsInChildren<ParticleSystem>(true).Length;
+            row.instanceParticleSystems = systems.Length; row.rendererCount = instance.GetComponentsInChildren<Renderer>(true).Length;
+            row.teamColorsMatch = systems.Length > 0 && systems.All(ps =>
+                ps.main.startColor.mode == ParticleSystemGradientMode.Color && ColorDistance(ps.main.startColor.color, row.expectedTeamColor) < .001f);
+            row.expectedScale = Vector3.one * scale; row.actualScale = instance.transform.localScale;
+            row.scaleMatches = Vector3.Distance(row.expectedScale, row.actualScale) < .0001f;
+            row.observedFrame = Time.frameCount; row.observedDeltaTime = Time.deltaTime;
+            row.observedLiveParticles = systems.Sum(ps => ps.particleCount);
+            row.observedParticleTime = systems.Length > 0 ? systems.Max(ps => ps.time) : 0;
+        }
+        static float ColorDistance(Color a, Color b) => Mathf.Abs(a.r - b.r) + Mathf.Abs(a.g - b.g) + Mathf.Abs(a.b - b.b) + Mathf.Abs(a.a - b.a);
+        ExplosionResult ExplosionRow(string kind, string label, int hero, int subId, byte team, bool collision)
+        {
+            return new ExplosionResult { kind = kind, label = label, hero = hero, subWeaponId = subId, team = team,
+                collision = collision, cameraId = _camera.GetInstanceID(), cullingMask = _camera.cullingMask,
+                cameraPosition = _camera.transform.position, cameraForward = _camera.transform.forward,
+                normalMainCamera = Camera.main == _camera && _camera.targetTexture == null,
+                controlImage = label + "-control.png", sampleImage = label + ".png", eventCalls = 2 };
+        }
+        IEnumerator SampleExplosion(ExplosionResult row, Frame control, GameObject instance, double born)
+        {
+            Frame best = null;
+            // Natural particle advancement only. Never Simulate/Emit a replacement effect.
+            double until = Time.realtimeSinceStartupAsDouble + .22;
+            do
+            {
+                yield return null; yield return new WaitForEndOfFrame();
+                var frame = Capture(); var observed = Compare(control, frame, (byte)row.team);
+                if (best == null || observed.teamPixels > row.teamPixels)
+                {
+                    best = frame; row.changedPixels = observed.changedPixels; row.teamPixels = observed.teamPixels;
+                    row.otherTeamPixels = observed.otherTeamPixels;
+                    row.sampledAge = (float)(Time.realtimeSinceStartupAsDouble - born);
+                    var systems = instance.GetComponentsInChildren<ParticleSystem>(true);
+                    row.liveParticles = systems.Sum(ps => ps.particleCount);
+                    row.sampledFrame = Time.frameCount; row.sampledDeltaTime = Time.deltaTime;
+                    row.sampledParticleTime = systems.Length > 0 ? systems.Max(ps => ps.time) : 0;
+                }
+            } while (Time.realtimeSinceStartupAsDouble < until && instance != null && instance.activeInHierarchy);
+            Need(best != null, "No explosion backbuffer sample"); WriteNew(row.sampleImage, best.Png);
+        }
+        static void CompleteExplosion(ExplosionResult row)
+        {
+            row.passed = row.normalMainCamera && row.onlyOriginalPrefabPixels && row.originalPrefabReference
+                && row.activeOriginalInstances == 1 && row.totalOriginalInstances == 1
+                && row.prefabParticleSystems > 0 && row.instanceParticleSystems == row.prefabParticleSystems
+                && row.teamColorsMatch && row.scaleMatches && row.duplicateSuppressed
+                && row.naturalRecycle && row.returnedToOriginalPool && row.poolReused
+                && row.liveParticles > 0 && row.changedPixels > 25 && row.teamPixels > 25
+                && row.teamPixels > row.otherTeamPixels * 2;
+        }
+        IEnumerator RunExplosions()
+        {
+            _presentation.Clear(); _subPresentation = PrototypeMatch.Current.SubPresentation;
+            Need(_subPresentation != null, "Production sub-weapon presentation missing"); _subPresentation.Clear();
+            // Common explosion pose across all main and sub cases; retain authored effect layers.
+            _camera.transform.SetPositionAndRotation(Fixture + Vector3.back * 12, Quaternion.identity);
+            var mainInstances = new Dictionary<GameObject, int>(); uint eventId = 0x71000000;
+            foreach (int hero in new[] { 3, 5, 9 }) foreach (bool collision in new[] { false, true })
+            foreach (byte team in new byte[] { 1, 2 })
+            {
+                var config = GameplayConfig.GetWeapon(hero); var ammo = config.Ammo;
+                Need(ammo.HasExplosionVisual, "Main weapon original explosion missing: " + hero);
+                var prefab = ammo.ExplosionPrefab; _camera.cullingMask = EffectLayers(prefab);
+                _presentation.ClearFlights();
+                yield return null; yield return new WaitForEndOfFrame();
+                var row = ExplosionRow("main", "main-explosion-hero-" + hero + "-collision-" + collision + "-team-" + team, hero, 0, team, collision);
+                double controlCaptureStarted = Time.realtimeSinceStartupAsDouble;
+                var control = Capture(); WriteNew(row.controlImage, control.Png);
+                row.controlCaptureWallSeconds = Time.realtimeSinceStartupAsDouble - controlCaptureStarted;
+                // Fixture preparation: finish the control GPU readback/PNG write frame before queuing a new effect.
+                // Particle playback and sampling keep their ordinary natural simulation.
+                yield return null;
+                double at = PrototypeMatch.Current.NetworkManager.ServerTime.Time, born = Time.realtimeSinceStartupAsDouble;
+                var e = new InkExplosionEvent { Round = PrototypeMatch.Current.State.Value.Round, ShotId = ++eventId,
+                    HeroId = hero, ConfigurationRevision = WeaponConfigService.Current.Revision(hero), Team = team,
+                    Position = Fixture, Normal = Vector3.forward, Seed = eventId, Time = at, Collision = collision, Shooter = ulong.MaxValue };
+                _presentation.Explosion(e); _presentation.Explosion(e);
+                double deadline = Time.realtimeSinceStartupAsDouble + 2;
+                while (!MainEffects().Any(item => item.prefab == prefab) && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
+                var effects = MainEffects().Where(item => item.prefab == prefab).ToList();
+                Need(effects.Count == 1, "One original main explosion required after duplicate event");
+                var effect = effects[0]; var instance = effect.effect;
+                row.originalPrefabReference = effect.prefab == prefab; row.activeOriginalInstances = effects.Count;
+                row.totalOriginalInstances = effects.Count + (MainPool().TryGetValue(prefab, out var existing) ? existing.Count : 0);
+                Inspect(row, instance, prefab, team, InkExplosionRules.Radius(ammo, collision));
+                row.poolReuseRequired = mainInstances.TryGetValue(prefab, out int previous);
+                row.poolReused = !row.poolReuseRequired || previous == instance.GetInstanceID(); mainInstances[prefab] = instance.GetInstanceID();
+                row.duplicateSuppressed = effects.Count == 1;
+                // Clear only the generated block flights/fragments; retain the production original burst.
+                _presentation.ClearFlights(); row.onlyOriginalPrefabPixels = _presentation.BlockDebrisCount == 0;
+                var sample = SampleExplosion(row, control, instance, born); while (sample.MoveNext()) yield return sample.Current;
+                float recycleStarted = Time.realtimeSinceStartup;
+                while (MainEffects().Any(item => item.effect == instance) && Time.time <= effect.until + .5f) yield return null;
+                row.recycleWaitSeconds = Time.realtimeSinceStartup - recycleStarted;
+                row.naturalRecycle = !MainEffects().Any(item => item.effect == instance) && instance != null && !instance.activeSelf;
+                row.returnedToOriginalPool = MainPool().TryGetValue(prefab, out var pooled) && pooled.Contains(instance);
+                CompleteExplosion(row); _result.explosionCases.Add(row);
+            }
+            var subInstances = new Dictionary<GameObject, int>();
+            foreach (var type in new[] { SubWeaponType.SplatBomb, SubWeaponType.SuctionBomb, SubWeaponType.BurstBomb,
+                SubWeaponType.CurlingBomb, SubWeaponType.Autobomb, SubWeaponType.FizzyBomb, SubWeaponType.Torpedo, SubWeaponType.InkMine })
+            foreach (byte team in new byte[] { 1, 2 })
+            {
+                int subId = SubWeaponConfigService.Id(type); var config = SubWeaponConfigService.Current.GetById(subId);
+                var prefab = config.Visuals.impactPrefab; Need(prefab != null, "Explosive sub-weapon original impact missing: " + type);
+                _camera.cullingMask = EffectLayers(prefab); _presentation.ClearFlights();
+                yield return null; yield return new WaitForEndOfFrame();
+                var row = ExplosionRow("sub", "sub-explosion-" + type + "-team-" + team, 1, subId, team, false);
+                double controlCaptureStarted = Time.realtimeSinceStartupAsDouble;
+                var control = Capture(); WriteNew(row.controlImage, control.Png);
+                row.controlCaptureWallSeconds = Time.realtimeSinceStartupAsDouble - controlCaptureStarted;
+                // Fixture preparation: finish the control GPU readback/PNG write frame before queuing a new effect.
+                // Particle playback and sampling keep their ordinary natural simulation.
+                yield return null;
+                double at = PrototypeMatch.Current.NetworkManager.ServerTime.Time, born = Time.realtimeSinceStartupAsDouble;
+                var e = new SubEffectEvent { Sequence = ++eventId, Round = PrototypeMatch.Current.State.Value.Round,
+                    EntityId = eventId, SubWeaponId = subId, ConfigRevision = SubWeaponConfigService.Current.RevisionById(subId),
+                    Kind = SubEffectKind.Explosion, Hero = 1, Team = team, At = at, Position = Fixture, Normal = Vector3.forward, Radius = config.Blast.outerRadius };
+                _subPresentation.Effect(e); _subPresentation.Effect(e);
+                double deadline = Time.realtimeSinceStartupAsDouble + 2;
+                while (SubEffects().Count == 0 && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
+                var effects = SubEffects(); Need(effects.Count == 1, "One original sub explosion required after duplicate event");
+                var instance = effects[0]; var item = SubPoolItems()[instance];
+                row.originalPrefabReference = item != null && (GameObject)Read(item, "Source") == prefab;
+                row.activeOriginalInstances = effects.Count; row.totalOriginalInstances = SubInstances(prefab);
+                Inspect(row, instance, prefab, team, Mathf.Max(.4f, e.Radius * .35f));
+                row.poolReuseRequired = subInstances.TryGetValue(prefab, out int previous);
+                row.poolReused = !row.poolReuseRequired || previous == instance.GetInstanceID(); subInstances[prefab] = instance.GetInstanceID();
+                row.duplicateSuppressed = effects.Count == 1;
+                // The diagnostic excludes the generic ring and fragments from original-prefab pixel proof.
+                var lines = _subPresentation.GetComponentsInChildren<LineRenderer>().Where(line => line.enabled && !line.transform.IsChildOf(instance.transform)).ToArray();
+                foreach (var line in lines) line.enabled = false;
+                try
+                {
+                    _presentation.ClearFlights(); row.onlyOriginalPrefabPixels = _presentation.BlockDebrisCount == 0 && lines.All(line => line == null || !line.enabled);
+                    var sample = SampleExplosion(row, control, instance, born); while (sample.MoveNext()) yield return sample.Current;
+                    float recycleStarted = Time.realtimeSinceStartup;
+                    double end = at + Math.Max(.3, config.Visuals.impactLifetime) + .6;
+                    while (SubEffects().Contains(instance) && PrototypeMatch.Current.NetworkManager.ServerTime.Time < end) yield return null;
+                    row.recycleWaitSeconds = Time.realtimeSinceStartup - recycleStarted;
+                    row.naturalRecycle = !SubEffects().Contains(instance) && instance != null && !instance.activeSelf;
+                    row.returnedToOriginalPool = SubReturned(prefab, instance);
+                }
+                finally { foreach (var line in lines) if (line != null) line.enabled = true; }
+                CompleteExplosion(row); _result.explosionCases.Add(row);
+            }
+            _result.explosionsPassed = _result.explosionCases.Count == 28 && _result.explosionCases.TrueForAll(row => row.passed);
         }
         Frame Capture()
         {
@@ -221,7 +430,7 @@ namespace Splatoon.Prototype
             _result.error = error; _result.elapsedSeconds = Time.realtimeSinceStartupAsDouble - _started;
             _result.finishedUtc = DateTime.UtcNow.ToString("O");
             _result.passed = error == null && _result.errors.Count == 0 && _result.cases.Count == 18
-                && _result.cases.TrueForAll(row => row.passed) && _result.mainCameraChanged && _result.oldCameraStillExistsAndDisabled;
+                && _result.cases.TrueForAll(row => row.passed) && _result.explosionsPassed && _result.mainCameraChanged && _result.oldCameraStillExistsAndDisabled;
             try
             {
                 if (_ownsOutput) WriteNew("summary.json", System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(_result, true)));
@@ -229,6 +438,7 @@ namespace Splatoon.Prototype
             }
             catch (Exception writeError) { _result.passed = false; Debug.LogError("Visual probe report failed: " + writeError.Message); }
             _presentation?.ClearFlights();
+            _presentation?.Clear(); _subPresentation?.Clear();
             if (_camera != null) { _camera.enabled = false; Destroy(_camera.gameObject); }
             if (_oldCamera != null) _oldCamera.enabled = _oldEnabled;
             if (_app != null) _app.enabled = _appEnabled;

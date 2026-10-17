@@ -10,6 +10,10 @@ namespace Splatoon.Tests
     // Reports-only candidate: not compiled or executed, and no terrain integration.
     public sealed class BlockBuildMetadataOwnershipPreparationTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
+        [SetUp] public void UseHistoricalWorldHeight() => _historicalHeight = new HistoricalBlockWorldHeightScope();
+        [TearDown] public void RestoreWorldHeight() { _historicalHeight?.Dispose(); _historicalHeight = null; }
+
         const double Epoch = 10, Publication = 10.1;
         const int Budget = 1024;
 

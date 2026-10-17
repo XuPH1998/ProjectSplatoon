@@ -902,7 +902,8 @@ namespace Splatoon.Blocks
     /// <summary>Sparse lattice state. Mutable copies are private to a terrain transaction.</summary>
     public sealed class BlockWorld
     {
-        public const float CellSize = .10f, Top = 32f, Gravity = 9.81f;
+        public const float CellSize = .10f, Gravity = 9.81f;
+        public static float Top => Splatoon.Config.BlockGameplaySettings.WorldTopHeight;
         public const int ChunkSize = 16, CellsPerChunk = ChunkSize * ChunkSize * ChunkSize;
         public const int ProtocolVersion = 3, MaxCohortCells = 400, MaxCohortPieceCells = 16;
         const uint Magic = 0x334B4C42, DeltaMagic = 0x33444C42; // BLK3 / BLD3: explicit shared-motion wire version.

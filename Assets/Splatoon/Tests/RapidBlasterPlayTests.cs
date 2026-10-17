@@ -177,7 +177,7 @@ namespace Splatoon.Tests
             Assert.That(Vector3.Distance(center, paperPoint), Is.LessThan(w.Ammo.ExplosionRadius));
             Fire(origin); Assert.That(enemy.Snapshot.Value.Health, Is.EqualTo(65), "Paper takes one blast using its current mesh");
 
-            // Default blast cosmetics are bounded opaque fragments. Retain both
+            // Original blast cosmetics play alongside bounded opaque fragments. Retain both
             // teams, normal/early collision radii, duplicate and stale event rejection,
             // real-camera pixels, wall depth occlusion and complete natural retirement.
             using var blocks = new BlockDefaultContractFixture(match);
@@ -200,10 +200,18 @@ namespace Splatoon.Tests
                     Assert.That(presentation.BlockDebrisCount, Is.EqualTo(expected), "The duplicate ID emits exactly one complete radius-scaled fragment burst");
                     presentation.UpdateFlights(evt.Time + .08, camera);
                     Assert.That(presentation.BlockCubeCount, Is.EqualTo(expected));
-                    Assert.That(presentation.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
+                    var burst = presentation.transform.Cast<Transform>().Single(t => t.name == "Ink explosion" && t.gameObject.activeSelf);
+                    Assert.That(burst.localScale.x, Is.EqualTo(radius).Within(.0001));
+                    var systems = burst.GetComponentsInChildren<ParticleSystem>();
+                    Assert.That(systems.Length, Is.EqualTo(3));
+                    foreach (var ps in systems)
+                    {
+                        Assert.That(ps.main.startColor.color, Is.EqualTo(PrototypeArena.TeamColor(team)));
+                        ps.Simulate(.08f, false, true, false);
+                    }
                     var shown = Pixels(camera);
                     Assert.That(shown.Zip(hidden, (a, b) => Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b) > 20).Count(changed => changed),
-                        Is.GreaterThan(25), "Configured cube fragments visibly render for both teams and both blast radii");
+                        Is.GreaterThan(25), "Original explosion and auxiliary cubes visibly render for both teams and both blast radii");
                     blocks.Unchanged(terrainBeforeVisuals, "Cosmetic blast cannot mutate structure or scores");
                     Assert.That(host.Snapshot.Value.SpecialPoints, Is.EqualTo(visualPoints));
                     // At .3 s all generated .49..7 s lifetimes are still active.
@@ -212,17 +220,18 @@ namespace Splatoon.Tests
                     presentation.Clear(); evt.ShotId = ++id; evt.Time = host.NetworkManager.ServerTime.Time - 1;
                     presentation.Explosion(evt); Assert.That(presentation.BlockDebrisCount, Is.Zero);
                 }
-                // A fully covering opaque wall must reject every fragment pixel.
+                // Place the wall in front of the complete original blast, including its near edge.
                 var depthWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 try
                 {
-                    depthWall.transform.position = visible + Vector3.back * 2; depthWall.transform.localScale = new Vector3(10, 10, .3f);
+                    depthWall.transform.position = visible + Vector3.back * (w.Ammo.ExplosionRadius + 1); depthWall.transform.localScale = new Vector3(10, 10, .3f);
                     Physics.SyncTransforms(); presentation.Clear(); yield return null;
                     var hidden = Pixels(camera); var evt = splash.Explosions[0]; evt.ShotId = ++id; evt.Position = visible;
                     evt.Time = host.NetworkManager.ServerTime.Time + .001;
                     presentation.Explosion(evt); presentation.UpdateFlights(evt.Time + .08, camera);
+                    foreach (var ps in presentation.GetComponentsInChildren<ParticleSystem>()) ps.Simulate(.08f, false, true, false);
                     Assert.That(Pixels(camera).Zip(hidden, (a, b) => Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b) > 6).Count(changed => changed),
-                        Is.LessThan(20), "Opaque wall hides the actual instance draw");
+                        Is.LessThan(20), "Opaque wall hides the original blast and actual instance draw");
                 }
                 finally { UnityEngine.Object.DestroyImmediate(depthWall); }
             }

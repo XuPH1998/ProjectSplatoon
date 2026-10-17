@@ -15,9 +15,11 @@ namespace Splatoon.Tests
 {
     // Private classifier boundary harness, deliberately separate from natural
     // authority discovery and from the unchanged original100 Player gates.
-    // Every index/classifier admission retains4096/.75ms production limits.
+    // The private index bootstrap explicitly admits4096 checks/.75ms.
+    // Production classifier Tick uses the no-command policy:8192 checks/1.5ms.
     public sealed class BlockGravityHistoricalScaleBoundaryTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double Now = 10;
         const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         GameObject _root;
@@ -28,6 +30,8 @@ namespace Splatoon.Tests
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             yield return new EnterPlayMode();
+            yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _root = new GameObject("Full400 classifier boundary acceptance");
             _terrain = _root.AddComponent<BlockTerrain>(); _terrain.Initialize(null);
             // No registered static geometry: the full-height seed has a legal
@@ -39,6 +43,7 @@ namespace Splatoon.Tests
         public IEnumerator Teardown()
         {
             if (_root != null) Object.DestroyImmediate(_root);
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
@@ -98,9 +103,11 @@ namespace Splatoon.Tests
                 {
                     var before = Field("_historicalRecoveryPreparation");
                     if (before != null && (int)Read(before, "Phase") == 12) pairsBefore++;
+                    Assert.That(_terrain.InspectCommandHead().present, Is.False, "The classifier Tick must enter without queued commands.");
                     long checks = _terrain.GravityWorkChecks;
                     _terrain.Tick(true, Now, .016f);
-                    Assert.That(_terrain.GravityWorkChecks - checks, Is.LessThanOrEqualTo(4096));
+                    Assert.That(_terrain.InspectCommandHead().present, Is.False, "The classifier Tick must leave without queued commands.");
+                    Assert.That(_terrain.GravityWorkChecks - checks, Is.LessThanOrEqualTo(BlockPublicationPolicy.GravityChecksAlone));
                     var after = Field("_historicalRecoveryPreparation");
                     if (after != null && (int)Read(after, "Phase") == 12) pairsAfter++;
                     CollectionAssert.AreEqual(frozen, source.EncodeSnapshot());

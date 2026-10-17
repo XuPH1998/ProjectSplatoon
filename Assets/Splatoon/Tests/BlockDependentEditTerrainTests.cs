@@ -23,6 +23,7 @@ namespace Splatoon.Tests
     // material deduction itself is covered by the existing attack/weapon suite.
     public sealed class BlockDependentEditTerrainTests
     {
+        HistoricalBlockWorldHeightScope _historicalHeight;
         const double Epoch = 10;
         const int PumpLimit = 4000, ChainLength = 124, BottomY = 16;
         const float GroundCap = BottomY * BlockWorld.CellSize;
@@ -61,6 +62,7 @@ namespace Splatoon.Tests
             _observedViews.Clear(); _observedMaterials.Clear(); _admissions = null; _workers = null;
             yield return WaitForBootstrapInitialization();
             HeroMigrationTests.Load(); BlockAttackService.Clear();
+            _historicalHeight = new HistoricalBlockWorldHeightScope();
             _tokens.Clear(); _commands.Clear(); _callbacks.Clear(); _completed.Clear(); _issued = 0;
             _directTokens.Clear(); _commandOrder.Clear(); _terminalOrder.Clear(); _destroyCompleted.Clear(); _destroyIssued = 0;
             _root = new GameObject("Targeted dependent metadata Terrain contracts");
@@ -119,6 +121,7 @@ namespace Splatoon.Tests
             _observedPending.Clear(); _observedCommandTasks.Clear(); _observedMeshes.Clear();
             _observedViews.Clear(); _observedMaterials.Clear(); _terrain = null; _root = _floor = null;
             BlockAttackService.Clear(); LubanConfigService.Current.Reset();
+            _historicalHeight?.Dispose(); _historicalHeight = null;
             yield return new ExitPlayMode();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
