@@ -194,6 +194,9 @@ namespace Splatoon.Prototype
             if (frame.SubHeld && !_subWasHeld && frame.SubPressSequence == PresentedState.SubConsumedPress) frame.SubPressSequence = ++_subPressSequence;
             if (!frame.SubHeld && _subWasHeld && frame.SubReleaseSequence == PresentedState.SubConsumedRelease) frame.SubReleaseSequence = ++_subReleaseSequence;
             _subWasHeld = frame.SubHeld;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockDynamicAcceptanceProbe.RecordEnemyInput(this, frame);
+#endif
             if (IsServer) AcceptInput(frame);
             else
             {
@@ -245,6 +248,9 @@ namespace Splatoon.Prototype
             var s = Snapshot.Value;
             ApplyHeroRequest(ref s, phase);
             if (s.IsDead && now >= s.RespawnsAt && phase != MatchPhase.Finished) { Respawn(); return; }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            int diagnosticQueuedBefore = _serverInputs.Count, diagnosticDiscarded = 0;
+#endif
             if (_serverInputs.Count > 0)
             {
                 var pair = _serverInputs.First(); _serverInputs.Remove(pair.Key); _lastInput = pair.Value;
@@ -255,9 +261,16 @@ namespace Splatoon.Prototype
             if (timedOut)
             {
                 if (!s.InputTimedOut) s.InputExpiredAt = NetworkManager.ServerTime.Time;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                diagnosticDiscarded = _serverInputs.Count;
+#endif
                 _serverInputs.Clear(); input.Move = Vector2.zero; input.Fire = input.Swim = input.SubHeld = false; input.CancelFire = input.CancelSub = true; input.FireSequence = s.ConsumedFire; input.JumpSequence = s.ConsumedJump;
             }
             s.InputTimedOut = timedOut;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockDynamicAcceptanceProbe.CoordinateBlastRelease(this, ref input);
+            BlockDynamicAcceptanceProbe.RecordEnemyAuthority(this, s, input, diagnosticQueuedBefore, diagnosticDiscarded);
+#endif
             bool shot;
             _stepPaintCredits.Clear();_insideAuthorityStep=true;
             try{shot=Step(ref s,input,dt,now,phase);}
@@ -329,7 +342,15 @@ namespace Splatoon.Prototype
             if (s.Health <= 0) { if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
             if (IsServer) SwimBody?.ApplyCollision(s);
-            bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, !s.Swimming && _motor.CanStand(s.Position), out var fireResult);
+            bool canShoot = !s.Swimming && _motor.CanStand(s.Position);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            bool traceEnemyWeapon = IsServer && BlockDynamicAcceptanceProbe.TracingEnemy(this);
+            var beforeEnemyWeapon = traceEnemyWeapon ? s : default;
+#endif
+            bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, canShoot, out var fireResult);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (traceEnemyWeapon) BlockDynamicAcceptanceProbe.RecordEnemyWeapon(this, input, beforeEnemyWeapon, s, !beforeEnemyWeapon.Swimming, canShoot, shot, fireResult);
+#endif
             byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
             if (!IsServer && now < s.MistUntil) s.Ink = Mathf.Max(0, s.Ink - s.MistDrainRate * dt);
             ResourceSimulation.Step(ref s, hero, Splatoon.Blocks.BlockTerrain.Current == null && s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);

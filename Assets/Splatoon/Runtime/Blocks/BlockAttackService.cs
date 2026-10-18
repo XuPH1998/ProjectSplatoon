@@ -138,29 +138,98 @@ namespace Splatoon.Blocks
             // A trail pulse is a small part of the payment; it cannot eat all impact capacity.
             int reserved = token.ReserveBuild(Math.Min(perContact, auxiliary ? 8 : token.BuildLimit), auxiliary, entityId);
             if (reserved == 0) return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            long contactStamp = BlockAttackObservation.ContactStamp(token, entityId);
+#endif
+            var terrain = BlockTerrain.Current;
+            if (terrain.SurfaceOnly && !anchorToMap)
+            {
+                int actual = terrain.Dynamic.Build(point, normal, radius * BlockDynamicWorld.BuildRadiusScale, token.Credit.Team, reserved);
+                token.CompleteBuild(reserved, auxiliary, actual, entityId); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, "dynamic", actual, contactStamp);
+#endif
+                return;
+            }
             bool completed = false;
-            BlockTerrain.Current.QueueBuild(point, normal, token.Credit.Team, reserved, radius, anchorToMap, result =>
+            terrain.QueueBuild(point, normal, token.Credit.Team, reserved,
+                terrain.SurfaceOnly ? radius * BlockDynamicWorld.BuildRadiusScale : radius, anchorToMap, result =>
             {
                 if (completed || !Valid(token)) return;
                 completed = true;
                 token.CompleteBuild(reserved, auxiliary, result.Added, entityId); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, "surface", result.Added, contactStamp);
+#endif
             }, ordinaryMainAttack: token.Credit.Kind == PaintAttackKind.Main && !auxiliary);
         }
         public static void Direct(BlockAttackToken token, Vector3 point, int perContact, uint entityId = 0, uint eventOrdinal = 0)
         {
             if (!Valid(token) || !token.BeginEvent(entityId, eventOrdinal, 3)) return;
             int reserved = token.ReserveDirect(perContact); if (reserved == 0) return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            long contactStamp = BlockAttackObservation.ContactStamp(token, entityId);
+#endif
+            int dynamicRemoved = 0, staticQuota = reserved;
+            var terrain = BlockTerrain.Current;
+            if (terrain.SurfaceOnly)
+            {
+                // Select one nearest-first budget across both representations, before mutating either.
+                var candidates = new List<(float distance, ulong dynamicId)>();
+                float reach = token.DirectRadius + BlockWorld.CellSize * .5f + .001f;
+                float squared = reach * reach;
+                var low = BlockWorld.CellAt(point - Vector3.one * reach);
+                var high = BlockWorld.CellAt(point + Vector3.one * reach);
+                for (int z = low.z; z <= high.z; z++) for (int y = low.y; y <= high.y; y++) for (int x = low.x; x <= high.x; x++)
+                {
+                    var cell = new Vector3Int(x, y, z);
+                    if (!terrain.World.TryGet(cell, out var own) || own.Owner == token.Credit.Team) continue;
+                    var center = BlockWorld.Center(cell); float distance = (center - point).sqrMagnitude;
+                    if (distance <= squared && terrain.Dynamic.Visible(point, center)) candidates.Add((distance, 0));
+                }
+                foreach (var body in terrain.Dynamic.Bodies.Values)
+                {
+                    float distance = (body.Body.position - point).sqrMagnitude;
+                    if (body.Owner != token.Credit.Team && distance <= squared && terrain.Dynamic.Visible(point, body.Body.position)) candidates.Add((distance, body.Id));
+                }
+                candidates.Sort((a, b) => { int compare = a.distance.CompareTo(b.distance); return compare != 0 ? compare : a.dynamicId.CompareTo(b.dynamicId); });
+                var ids = new List<ulong>(); staticQuota = 0;
+                for (int i = 0; i < Math.Min(reserved, candidates.Count); i++)
+                    if (candidates[i].dynamicId == 0) staticQuota++; else ids.Add(candidates[i].dynamicId);
+                dynamicRemoved = terrain.Dynamic.DestroyIds(ids, token.Credit.Team);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockDynamicAcceptanceProbe.RecordEnemyDirect(token, entityId, ids, dynamicRemoved);
+                BlockAttackObservation.Effective(token, entityId, "direct", dynamicRemoved, contactStamp);
+#endif
+                if (staticQuota == 0) { token.CompleteDirect(reserved, dynamicRemoved); Award(token); return; }
+                if (dynamicRemoved > 0) { token.CompleteDirect(dynamicRemoved, dynamicRemoved); Award(token); }
+            }
             bool completed = false;
             BlockTerrain.Current.QueueDestroy(point, token.DirectRadius, 0, token.Credit.Team, true, result =>
             {
                 if (completed || !Valid(token)) return;
                 completed = true;
-                token.CompleteDirect(reserved, result.RemovedEnemy); Award(token);
-            }, reserved, 0, ordinaryMainAttack: token.Credit.Kind == PaintAttackKind.Main);
+                token.CompleteDirect(reserved - dynamicRemoved, result.RemovedEnemy); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, "direct", result.RemovedEnemy, contactStamp);
+#endif
+            }, staticQuota, 0, ordinaryMainAttack: token.Credit.Kind == PaintAttackKind.Main);
         }
         public static void Blast(BlockAttackToken token, Vector3 point, float radius, uint entityId = 0, uint eventOrdinal = 0)
         {
             if (!Valid(token) || radius <= 0 || !token.BeginEvent(entityId, eventOrdinal, 4)) return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            var blastObservation = BlockAttackObservation.BeginBlast(token, entityId, eventOrdinal);
+#endif
+            var terrain = BlockTerrain.Current;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            int failuresAtQueue = terrain.FailedTransactions;
+#endif
+            // Capture both target sets in this simulation step. Dynamic deletion is an ID transaction,
+            // independent of the subsequent terrain mesh publication and physics motion.
+            var dynamicResult = terrain.SurfaceOnly ? terrain.Dynamic.DestroyInRadius(point, radius,
+                radius * BlockGameplaySettings.FriendlyBlastRadiusFraction, token.Credit.Team, false) : default;
+            if (dynamicResult.RemovedEnemy > 0) { token.RemovedEnemy += dynamicResult.RemovedEnemy; Award(token); }
             // The terrain queue bounds work per tick. The radius is the gameplay limit;
             // a large blast is completed over several atomic publications, never truncated.
             bool completed = false;
@@ -169,7 +238,17 @@ namespace Splatoon.Blocks
                 if (completed || !Valid(token)) return;
                 completed = true;
                 token.RemovedEnemy += result.RemovedEnemy; Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                // FinishRound cancels commands before Match publishes its Finished phase.
+                // Their ordinary default callbacks are not completed collider publications.
+                if (terrain != null && BlockTerrain.Current == terrain && terrain.Round == blastObservation.Round &&
+                    terrain.Dynamic?.Frozen != true && terrain.FailedTransactions == failuresAtQueue)
+                    BlockAttackObservation.Completed(blastObservation, dynamicResult.Changed + result.Changed);
+#endif
             });
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.Queued(blastObservation, dynamicResult.Changed);
+#endif
         }
         static void Award(BlockAttackToken token)
         {
@@ -184,8 +263,15 @@ namespace Splatoon.Blocks
         public static bool Contact(Collider collider, Vector3 point, Vector3 normal, out BlockContact contact)
         {
             contact = default;
+            if (collider != null && collider.TryGetComponent<BlockDynamicBody>(out var body)) return body.TryContact(point, normal, out contact);
             return BlockTerrain.Current != null && BlockTerrain.Current.TryContact(collider, point, normal, out contact);
         }
-        public static void Clear() { _generation++; Tokens.Clear(); BuildFractions.Clear(); }
+        public static void Clear()
+        {
+            _generation++; Tokens.Clear(); BuildFractions.Clear();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.Clear();
+#endif
+        }
     }
 }

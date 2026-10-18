@@ -63,7 +63,7 @@ namespace Splatoon.Blocks
         }
         void ScheduleSpreadWork()
         {
-            if (_spreadQueued || _cohortIndexPending) return;
+            if (SurfaceOnly || _spreadQueued || _cohortIndexPending) return;
             // An executed search quantum leaves one actual opportunity for
             // outstanding gravity before another spread quantum joins FIFO.
             if (_spreadRound == null && _spreadSeed == null && (_spreadDirty.Count == 0 || _now < _spreadNextAt)) return;
@@ -127,7 +127,7 @@ namespace Splatoon.Blocks
             _spreadQueryChecks++;
             int count = Physics.BoxCastNonAlloc(from, Vector3.one * (BlockWorld.CellSize * .45f),
                 delta / length, _rayHits, Quaternion.identity, length,
-                PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);
+                SurfaceMapMask, QueryTriggerInteraction.Ignore);
             if (count == _rayHits.Length) return false;
             for (int i = 0; i < count; i++) if (_staticColliders.Contains(_rayHits[i].collider)) return false;
             return true;

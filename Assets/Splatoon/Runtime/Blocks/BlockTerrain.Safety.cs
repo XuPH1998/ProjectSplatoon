@@ -221,7 +221,7 @@ namespace Splatoon.Blocks
                     { BuildProtectedByZone++; return true; }
                 }
             }
-            for (int i = 0; i < _safetyPlayerCount; i++) if (CellOccupiesActor(cell, _safetyPlayers[i]))
+            for (int i = 0; !SurfaceOnly && i < _safetyPlayerCount; i++) if (CellOccupiesActor(cell, _safetyPlayers[i]))
             { BuildOccupiedByPlayer++; return true; }
             return false;
         }
@@ -374,7 +374,7 @@ namespace Splatoon.Blocks
                 // elsewhere cannot prove that this exact raycast voxel blocks us.
                 Vector3 half = new(Mathf.Max(.001f, rect.width * .5f - .001f),
                     Mathf.Max(.001f, rect.height * .5f - .001f), Mathf.Max(.001f, thickness * .5f - .001f));
-                if (wall.IsBlock && !CellIntersectsBox(BlockWorld.Center(wall.Cell), BlockWorld.CellSize * .5f,
+                if (!SurfaceOnly && wall.IsBlock && !CellIntersectsBox(BlockWorld.Center(wall.Cell), BlockWorld.CellSize * .5f,
                     center, half, rotation)) continue;
                 int count = Physics.OverlapBoxNonAlloc(center, half, _overlaps, rotation,
                     PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
@@ -490,7 +490,9 @@ namespace Splatoon.Blocks
         }
         void RecoverEmbeddedPlayers()
         {
-            if (!_authority) return;
+            // A coating publication cannot embed a player. Free bodies may be
+            // resolving contact this frame and must not trigger the legacy voxel rescue.
+            if (!_authority || SurfaceOnly) return;
             bool moved = false;
             for (int i = 0; i < _safetyPlayerCount; i++)
             {

@@ -519,7 +519,7 @@ namespace Splatoon.Blocks
                     var command = scan.Reservations.Current;
                     if (command.Done || command.Completed) continue;
                     var center = new Vector2((scan.Column.x + .5f) * BlockWorld.CellSize, (scan.Column.y + .5f) * BlockWorld.CellSize);
-                    float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + .051f;
+                    float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + BlockRadiusPadding;
                     if ((center - new Vector2(command.Point.x, command.Point.z)).sqrMagnitude > radius * radius) continue;
                     scan.HasBlocker = true;
                     if (scan.Blocker == null)

@@ -51,7 +51,7 @@ namespace Splatoon.Combat
             if (!SubWeaponService.FlightCollision(aim, e.State.Position, delta, Mathf.Max(.03f, c.Flight.radius), e.State.Owner, e.State.Team, out hit))
             {
                 e.State.Position += delta;
-                if (e.State.Phase == SubEntityPhase.Grounded && !Physics.Raycast(e.State.Position, Vector3.down, c.Flight.radius + .08f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore))
+                if (e.State.Phase == SubEntityPhase.Grounded && !Physics.Raycast(e.State.Position, Vector3.down, c.Flight.radius + .08f, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore))
                 { e.State.Phase = SubEntityPhase.Flying; e.State.Changed = now; }
                 return SubMotionContact.None;
             }

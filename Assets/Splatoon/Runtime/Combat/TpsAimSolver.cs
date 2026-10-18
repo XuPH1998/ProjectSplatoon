@@ -27,6 +27,7 @@ namespace Splatoon.Combat
     /// <summary>Shared logical aim and collision queries. Never reads animated weapon bones or camera shake.</summary>
     public sealed class TpsAimSolver
     {
+        public static int CombatMask => PlayerMotorSimulation.WorldMask | (1 << BlockTerrain.TerrainLayer);
         public const float ProbeDistance = 100;
         const float Epsilon = .0001f;
         RaycastHit[] _hits = new RaycastHit[64];
@@ -137,6 +138,8 @@ namespace Splatoon.Combat
                     Distance = falling.Distance, Center = origin + direction * falling.Distance,
                     BlockQuery = BlockQueryContact.Falling(BlockTerrain.Current, falling) };
             }
+            if (closest.Collider != null && closest.Collider.TryGetComponent<BlockDynamicBody>(out var dynamicBody))
+                closest.BlockQuery = BlockQueryContact.Dynamic(dynamicBody, closest.Point, closest.Normal);
             return nearest < float.PositiveInfinity;
         }
 
@@ -211,6 +214,8 @@ namespace Splatoon.Combat
                         Distance = falling.Distance, Center = origin, BlockQuery = BlockQueryContact.Falling(terrain, falling) };
                 }
             }
+            if (closest.Collider != null && closest.Collider.TryGetComponent<BlockDynamicBody>(out var dynamicBody))
+                closest.BlockQuery = BlockQueryContact.Dynamic(dynamicBody, closest.Point, closest.Normal);
             return nearest < float.PositiveInfinity;
         }
 

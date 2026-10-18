@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Splatoon.Blocks
 {
+    public enum BlockContactKind : byte { Legacy, SurfaceAttached, Dynamic }
+
     public struct BlockContact
     {
         public byte Owner;
@@ -10,6 +12,8 @@ namespace Splatoon.Blocks
         public bool Stable, Climbable;
         public Vector3Int Cell, Chunk;
         public uint Revision;
+        public BlockContactKind Kind;
+        public ulong DynamicId;
         public bool IsBlock => Owner == 1 || Owner == 2;
     }
 
@@ -46,7 +50,8 @@ namespace Splatoon.Blocks
         public ushort Durability;
         public bool Occupied => Owner == 1 || Owner == 2;
         public bool Anchored => (Flags & 1) != 0;
-        public static BlockCell Create(byte owner, bool anchored = false)
-            => new() { Owner = owner, Flags = (byte)(anchored ? 1 : 0), Durability = 100 };
+        public bool SurfaceAttached => (Flags & 2) != 0;
+        public static BlockCell Create(byte owner, bool anchored = false, bool surfaceAttached = false)
+            => new() { Owner = owner, Flags = (byte)((anchored || surfaceAttached ? 1 : 0) | (surfaceAttached ? 2 : 0)), Durability = 100 };
     }
 }

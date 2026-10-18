@@ -57,7 +57,7 @@ namespace Splatoon.Prototype
                 this.RegisterNetworkUpdate(NetworkUpdateStage.Update);
                 _networkFrameOffset = NetworkManager.ServerTime.Time - Time.timeAsDouble;
             }
-            else { InitialSyncComplete = false; RequestBlockSnapshotRpc(); }
+            else { InitialSyncComplete = false; RequestBlockSnapshotRpc(); RequestDynamicSnapshot(0); }
             Debug.Log($"[LAN] Match spawned server={IsServer} cells={Arena.CellCount} hash={Arena.OwnershipHash()}");
         }
         public void Paint(PaintSurface surface, Vector3 position, Vector3 normal, float radius, byte team, float hardness, float strength, uint? shapeSeed = null, Vector3? direction = null, float depthScale = 1, bool clipEnabled = false, Vector4 clip0 = default, Vector4 clip1 = default, PaintCredit? credit = null)
@@ -102,7 +102,7 @@ namespace Splatoon.Prototype
             // StartRound stays immediate once eligible, and these deadlines never re-anchor later.
             s.StartsAt = _serverClockAnchorTime + System.Math.Max(0, Time.realtimeSinceStartupAsDouble - _serverClockAnchorUnscaled);
             s.EndsAt = s.StartsAt + GameplayConfig.Mode.MatchSeconds;
-            s.PinkArea = s.BlueArea = s.TotalArea = 0; s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = 0; s.TerrainFrozenAt = 0; State.Value = s;
+            s.PinkArea = s.BlueArea = s.TotalArea = 0; s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = s.DynamicBlockRevision = 0; s.TerrainFrozenAt = 0; State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round);
             CombatStats.Reset(s.Round);
             foreach (var p in Players) if (p != null && p.IsSpawned) {p.ResetSpecialCharge(); p.Respawn();}
@@ -114,7 +114,7 @@ namespace Splatoon.Prototype
             if (!IsServer || State.Value.Phase != MatchPhase.Finished) return;
             var s = State.Value; s.Round++; s.Phase = MatchPhase.Practice;
             s.StartsAt = s.EndsAt = s.TerrainFrozenAt = 0; s.PinkArea = s.BlueArea = s.TotalArea = 0;
-            s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = 0;
+            s.PinkBlockCount = s.BlueBlockCount = 0; s.TerrainRevision = s.DynamicBlockRevision = 0;
             State.Value = s;
             ResetPaint(s.Round); ResetRoundClientRpc(s.Round); CombatStats.Reset(s.Round);
             foreach (var player in Players) if (player != null && player.IsSpawned) {player.ResetSpecialCharge(); player.Respawn();}
@@ -130,7 +130,8 @@ namespace Splatoon.Prototype
             _pending.Clear(); _journal.Clear(); _buffered.Clear(); _checkpoint = null; _checkpointBytes = null;
             _transfers.Clear(); _incoming = null; _captureGeneration++; _capturing = false;
             ResetSnapshotTransfer(false);
-            PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear(); InitialSyncComplete = true;
+            PrototypeArena.Current.ClearPaint(); InkPresentation.Current?.Clear();
+            if (Blocks == null) InitialSyncComplete = true; else RefreshInitialBlockSync();
         }
         [ClientRpc] private void ResetRoundClientRpc(uint round) { if (!IsServer && round > _paintRound) ResetPaint(round); }
         private double _simulationTime;
@@ -188,6 +189,10 @@ namespace Splatoon.Prototype
             if(s.Phase!=MatchPhase.Finished)SpecialWeapons.Step(now,1f/GameplayConfig.Global.SimulationRate,Players);
             if(IsHost)foreach(var e in SpecialWeapons.Lifecycle)SpecialPresentation.Lifecycle(e);
             if (IsHost) foreach (var e in SubWeapons.Lifecycle) SubPresentation.Lifecycle(e);
+            Blocks?.Dynamic?.PrepareForPhysics(Players, 1f / GameplayConfig.Global.SimulationRate);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockBodyStateDiagnostic55.MatchTail(this, Blocks?.Dynamic, now);
+#endif
         }
         private void ServerTick()
         {
@@ -247,6 +252,7 @@ namespace Splatoon.Prototype
         public override void OnNetworkDespawn()
         {
             BlockAttackService.Clear(); ResetBlockSync(); DetachBlockPublications(); Blocks?.Clear(0);
+            Blocks?.Dynamic.SetAuthority(false);
             this.UnregisterNetworkUpdate(NetworkUpdateStage.EarlyUpdate);
             this.UnregisterNetworkUpdate(NetworkUpdateStage.Update);
             ServerClockReady = false; _serverClockAnchorTime = _serverClockAnchorUnscaled = 0;

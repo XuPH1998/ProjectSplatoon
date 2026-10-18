@@ -58,6 +58,7 @@ namespace Splatoon.Prototype
         public static void ModifyInput(PrototypePlayer p, ref PlayerInputFrame frame)
         {
             if (BlockTerrainBenchmark.ModifyInput(p, ref frame)) return;
+            if (BlockDynamicAcceptanceProbe.ModifyInput(p, ref frame)) return;
             if (BlockNetworkProbe.ModifyInput(p, ref frame)) return;
             if (!Active) return;
             if (_inkCase == "prediction") { PredictionMovementSmoke.ModifyInput(p, ref frame); return; }
@@ -158,7 +159,7 @@ namespace Splatoon.Prototype
                 var path=System.IO.Path.Combine(output,"smoke-"+_label+".png");
                 CaptureWorld(path);Debug.Log("[SMOKE] Screenshot: "+path);
             }
-            if(!BlockNetworkProbe.Requested&&!BlockTerrainBenchmark.Requested&&_host&&s.Phase==MatchPhase.Finished&&!_restarted)
+            if(!BlockNetworkProbe.Requested&&!BlockTerrainBenchmark.Requested&&!BlockDynamicAcceptanceProbe.Requested&&_host&&s.Phase==MatchPhase.Finished&&!_restarted)
             {
                 if(_finishedAt==0){_finishedAt=Time.realtimeSinceStartup;Debug.Log("[SMOKE] Three-minute round completed");}
                 if(Time.realtimeSinceStartup-_finishedAt>5){_restarted=true;match.ReturnToRoom();match.StartRound();Debug.Log("[SMOKE] Returned to room and started next round");}

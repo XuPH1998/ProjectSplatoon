@@ -12,15 +12,27 @@ namespace Splatoon.Networking
     public static class GameplayContentSignature
     {
         public const int PaintProtocolVersion = 11; // Paired coverage/visual checkpoint and deterministic stamp detail.
-        public const int WeaponSimulationVersion = 39; // Target the actual moving-build blocker while retaining ordinary gravity service.
+        public const int WeaponSimulationVersion = 48; // 2 m activation/settled-sleeper boundary, map-visible free births and effective 2 mm contact offset; retain simulation 47 push tuning.
         public const int BlockProtocolVersion = Splatoon.Blocks.BlockWorld.ProtocolVersion;
-        public const int PaperTraversalSimulationVersion = 11; // Validated contour wall entry and neutral authored geometry under the shared arena root.
+        public const int PaperTraversalSimulationVersion = 12; // Surface deposits are traversal contacts without capsule collision.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
+            Splatoon.Blocks.BlockDynamicWorld.ConfigureCollisionLayers();
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             w.Write(WeaponSimulationVersion);
             w.Write(BlockProtocolVersion); w.Write(Splatoon.Blocks.BlockWorld.CellSize); w.Write(Splatoon.Blocks.BlockWorld.ChunkSize); w.Write(Splatoon.Blocks.BlockWorld.Top);
+            w.Write(BlockDynamicCodec.ProtocolVersion); w.Write(Splatoon.Blocks.BlockDynamicWorld.Layer);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.CollisionPolicyVersion);
+            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.AuthorityCollisionMode);
+            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.FrozenAuthorityCollisionMode);
+            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.ReplicaCollisionMode);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.Mass); w.Write(Splatoon.Blocks.BlockDynamicWorld.StaticFriction);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.DynamicFriction); w.Write(Splatoon.Blocks.BlockDynamicWorld.PushForce);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.PushSpeed); w.Write(Splatoon.Blocks.BlockDynamicWorld.BuildRadiusScale);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.RangeActivationVersion);
+            w.Write(Splatoon.Blocks.BlockDynamicWorld.ActivationRadius); w.Write(Splatoon.Blocks.BlockDynamicWorld.DeactivationRadius);
+            for (int layer = 0; layer < 32; layer++) w.Write(Physics.GetIgnoreLayerCollision(Splatoon.Blocks.BlockDynamicWorld.Layer, layer));
             w.Write(InkAppearanceProfile.AccumulationVersion); w.Write(InkAppearanceProfile.ContentHash);
             foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.OrderBy(h => h.Id))
             { w.Write(hero.Id); w.Write(Splatoon.Config.GameplayConfig.GetSubWeapon(hero.Id).ContentHash); }

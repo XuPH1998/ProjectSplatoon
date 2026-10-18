@@ -1,6 +1,6 @@
 Shader "Splatoon/Blocks"
 {
-    Properties { _TeamColor("Team color", Color) = (1,1,1,1) _GridWidth("Block edge width", Range(0,0.1)) = 0.035 }
+    Properties { _TeamColor("Team color", Color) = (1,1,1,1) _GridWidth("Block edge width", Range(0,0.1)) = 0.035 _BlockCellSize("Block cell size", Float) = 0.3 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
@@ -17,7 +17,7 @@ Shader "Splatoon/Blocks"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float _GridWidth;
+            float _GridWidth, _BlockCellSize;
             CBUFFER_END
             UNITY_INSTANCING_BUFFER_START(PerBlock)
             UNITY_DEFINE_INSTANCED_PROP(float4, _TeamColor)
@@ -34,7 +34,7 @@ Shader "Splatoon/Blocks"
             half4 Frag(Varyings input):SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
-                half3 n=normalize(input.normalWS); float3 grid=input.positionWS*10;
+                half3 n=normalize(input.normalWS); float3 grid=input.positionWS/max(_BlockCellSize,.0001);
                 float3 edge=abs(frac(grid+.0001)-.5); float2 uv=abs(n.y)>.5 ? grid.xz : abs(n.x)>.5 ? grid.yz : grid.xy;
                 float2 distanceToEdge=min(frac(uv+.0001),1-frac(uv+.0001));
                 float width=max(_GridWidth,max(fwidth(uv.x),fwidth(uv.y))*.65);

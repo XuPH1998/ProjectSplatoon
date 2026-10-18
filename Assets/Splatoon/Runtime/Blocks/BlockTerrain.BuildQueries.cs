@@ -28,7 +28,7 @@ namespace Splatoon.Blocks
             int worldSpan = Mathf.CeilToInt(Mathf.Max(Mathf.Max(command.BuildDimensions.x, command.BuildDimensions.y),
                 BlockWorld.Top - command.BuildBottom) / BlockWorld.CellSize);
             int extent = Mathf.CeilToInt(Mathf.Min(command.Radius / BlockWorld.CellSize, worldSpan));
-            int endLayer = Math.Min(worldSpan, Math.Max(1, command.Count)), startLayer = 0;
+            int endLayer = SurfaceOnly ? 1 : Math.Min(worldSpan, Math.Max(1, command.Count)), startLayer = 0;
             // A layer perpendicular to n cannot contain an in-bounds cell if its
             // n coordinate is outside the world. Do not shorten any valid layer.
             while (startLayer < endLayer && !BuildAxisInBounds(first + n * startLayer, n, command.BuildDimensions, command.BuildBottom)) startLayer++;
@@ -367,7 +367,7 @@ namespace Splatoon.Blocks
         bool BuildMapOverlapCached(Vector3Int cell)
         {
             if (ExcludedConstruction(cell)) return true;
-            int mask = PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer);
+            int mask = SurfaceMapMask;
             if (_staticBuildOverlaps.TryGetValue(cell, out var cached))
             {
                 if (_staticColliders.Contains(cached.Collider) && cached.Matches(mask)) { BuildStaticCacheHits++; return true; }

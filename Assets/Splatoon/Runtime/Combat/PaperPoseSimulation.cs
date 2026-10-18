@@ -105,8 +105,12 @@ namespace Splatoon.Combat
                 Vector3 normal = s.GroundNormal.y >= .65f ? s.GroundNormal.normalized : contact.Normal;
                 s.PaperRotation = GroundRotation(normal, s.Yaw);
                 var anchor = new Vector3(s.Position.x, contact.Point.y, s.Position.z);
-                s.PaperCenter = BlockGroundCenter(BlockTerrain.Current.World, anchor, normal, s.PaperRotation,
-                    profile != null ? profile.Size : new Vector2(.9f, 1.8f), offset);
+                // Surface deposits carry ownership on the authored map plane. They are
+                // ignored by the character, so their voxel top cannot lift the paper pose.
+                bool surfaceAttached = BlockTerrain.Current.World.TryGet(contact.Cell, out var source) && source.SurfaceAttached;
+                s.PaperCenter = surfaceAttached ? anchor + normal * offset
+                    : BlockGroundCenter(BlockTerrain.Current.World, anchor, normal, s.PaperRotation,
+                        profile != null ? profile.Size : new Vector2(.9f, 1.8f), offset);
                 return;
             }
             if (next == PaperPose.Ground && Physics.Raycast(s.Position + Vector3.up * .3f, Vector3.down,

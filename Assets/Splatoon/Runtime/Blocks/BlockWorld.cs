@@ -902,11 +902,11 @@ namespace Splatoon.Blocks
     /// <summary>Sparse lattice state. Mutable copies are private to a terrain transaction.</summary>
     public sealed class BlockWorld
     {
-        public const float CellSize = .10f, Gravity = 9.81f;
+        public const float CellSize = .30f, Gravity = 9.81f;
         public static float Top => Splatoon.Config.BlockGameplaySettings.WorldTopHeight;
         public const int ChunkSize = 16, CellsPerChunk = ChunkSize * ChunkSize * ChunkSize;
-        public const int ProtocolVersion = 3, MaxCohortCells = 400, MaxCohortPieceCells = 16;
-        const uint Magic = 0x334B4C42, DeltaMagic = 0x33444C42; // BLK3 / BLD3: explicit shared-motion wire version.
+        public const int ProtocolVersion = 5, MaxCohortCells = 400, MaxCohortPieceCells = 16;
+        const uint Magic = 0x354B4C42, DeltaMagic = 0x35444C42; // BLK5 / BLD5: 30 cm cells and explicit surface attachment.
         internal readonly Dictionary<Vector3Int, BlockChunk> _chunks = new();
         internal readonly Dictionary<Vector3Int, uint> _tombstones = new();
         internal readonly HashSet<Vector3Int> _owned = new();
@@ -957,9 +957,14 @@ namespace Splatoon.Blocks
             => ChunkOrigin(chunk) + new Vector3Int(index % ChunkSize, index / ChunkSize % ChunkSize, index / (ChunkSize * ChunkSize));
         public bool InBounds(Vector3Int cell)
         {
-            var p = Center(cell);
-            return p.x >= -Dimensions.x * .5f && p.x < Dimensions.x * .5f && p.z >= -Dimensions.y * .5f && p.z < Dimensions.y * .5f
-                && p.y >= Bottom && p.y < Top;
+            // Cell size need not divide the map dimensions or the eight-metre ceiling.
+            // Require the entire cube to fit, with only float roundoff tolerance.
+            var min = (Vector3)cell * CellSize;
+            var max = min + Vector3.one * CellSize;
+            const float epsilon = .00001f;
+            return min.x >= -Dimensions.x * .5f - epsilon && max.x <= Dimensions.x * .5f + epsilon
+                && min.z >= -Dimensions.y * .5f - epsilon && max.z <= Dimensions.y * .5f + epsilon
+                && min.y >= Bottom - epsilon && max.y <= Top + epsilon;
         }
         public bool TryGet(Vector3Int cell, out BlockCell value)
         {
@@ -1648,7 +1653,8 @@ namespace Splatoon.Blocks
         static BlockCell ReadCell(BinaryReader r)
         {
             var c = new BlockCell { Owner = r.ReadByte(), Flags = r.ReadByte(), Durability = r.ReadUInt16() };
-            if (c.Owner > 2 || c.Flags > 1 || (c.Occupied && c.Durability == 0)) throw new InvalidDataException("Invalid block cell.");
+            if (c.Owner > 2 || (c.Flags & ~3) != 0 || (c.Occupied && c.Durability == 0) ||
+                c.SurfaceAttached && (!c.Occupied || !c.Anchored)) throw new InvalidDataException("Invalid block cell.");
             return c;
         }
         public void WriteFallingState(BinaryWriter w)

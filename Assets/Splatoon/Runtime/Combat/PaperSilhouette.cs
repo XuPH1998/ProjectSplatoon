@@ -98,6 +98,19 @@ namespace Splatoon.Combat
                 }
                 _previous.Clear(); foreach (var entry in _next) _previous.Add(entry.Key,entry.Value);
             }
+            BuildMesh(mesh, thickness);
+        }
+        internal void Restore(Mesh mesh, IReadOnlyList<Rect> rects, Bounds bounds, float thickness)
+        {
+            // Cached contours are immutable values. Each capture still owns its
+            // scratch list and hit mesh, including after cache eviction.
+            Rects.Clear();
+            for (int i = 0; i < rects.Count; i++) Rects.Add(rects[i]);
+            _bounds[0] = bounds.min; _bounds[1] = bounds.max;
+            BuildMesh(mesh, thickness);
+        }
+        void BuildMesh(Mesh mesh, float thickness)
+        {
             _vertices.Clear(); _indices.Clear();
             foreach (var r in Rects)
             {

@@ -21,8 +21,8 @@ namespace Splatoon.Blocks
         public uint Revision => World?.Revision ?? 0;
         public uint Round => World?.Round ?? 0;
         public double SimulationTime => _now;
-        public int PinkCount => World?.PinkCount ?? 0;
-        public int BlueCount => World?.BlueCount ?? 0;
+        public int PinkCount => (World?.PinkCount ?? 0) + (Dynamic?.PinkCount ?? 0);
+        public int BlueCount => (World?.BlueCount ?? 0) + (Dynamic?.BlueCount ?? 0);
         public int PendingTransactions => _commands.Count + (_pending != null || _fairSeed != null || HasPrivatePreparation || HasHeadPreparation || HasBuildOccupancyPreparation || HasHistoricalRecovery || HasDependentEditPreparation ? 1 : 0) + (_remoteQueued != null ? 1 : 0);
         public event Action<BlockTerrainCommit> PublishedCommit;
         public event Action<BlockMutationResult, double> MutationCompleted;
@@ -127,6 +127,7 @@ namespace Splatoon.Blocks
         static readonly SemaphoreSlim Workers = new(2);
         static readonly BlockWorkerQueue WorkerAdmissions = new(Workers);
         readonly Dictionary<Vector3Int, View> _views = new();
+        readonly List<Bounds> _changingSupportBounds = new(16);
         readonly Dictionary<Collider, Vector3Int> _colliderChunks = new();
         readonly CommandDeque _commands = new();
         readonly HashSet<Command> _destructionReservations = new();
@@ -556,6 +557,7 @@ namespace Splatoon.Blocks
                 if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
                 _material = new Material(shader) { name = "Runtime Block Terrain", enableInstancing = true };
             }
+            _material.SetFloat("_BlockCellSize", BlockWorld.CellSize);
             var cubeWorld = new BlockWorld(Vector2.one); cubeWorld.Set(Vector3Int.zero, BlockCell.Create(1));
             _fallMesh = BlockMeshBuilder.Build(cubeWorld, Vector3Int.zero, false).Upload("Block falling cube");
             var vertices = _fallMesh.vertices; for (int i = 0; i < vertices.Length; i++) vertices[i] = vertices[i] / BlockWorld.CellSize - Vector3.one * .5f;
@@ -613,7 +615,7 @@ namespace Splatoon.Blocks
         }
         public void QueueBuild(Vector3 point, Vector3 normal, byte team, int count, float radius, bool anchorToMap, Action<BlockMutationResult> callback = null, bool ordinaryMainAttack = false)
         {
-            if (!Initialized || !_accepting || team < 1 || team > 2 || count <= 0 || !Finite(point) || !Finite(normal) || !ValidRadius(radius)) { callback?.Invoke(default); return; }
+            if (!Initialized || !_accepting || SurfaceOnly && !anchorToMap || team < 1 || team > 2 || count <= 0 || !Finite(point) || !Finite(normal) || !ValidRadius(radius)) { callback?.Invoke(default); return; }
             CommandsQueued++;
             _commands.Enqueue(new Command { Point = point, Normal = normal.normalized, Team = team, Count = count, Radius = radius, Anchor = anchorToMap, Build = true,
                 Callback = callback, CreatedAt = _now, BuildDimensions = World.Dimensions, BuildBottom = World.Bottom, OrdinaryMainAttack = ordinaryMainAttack });
@@ -634,6 +636,7 @@ namespace Splatoon.Blocks
             if (double.IsFinite(frozenAt)) _now = Math.Max(0, frozenAt);
             if (!_accepting) return;
             _accepting = false; _epoch++;
+            Dynamic?.Freeze();
             ResetBlockSpread();
             AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
             _gravityColumns.Clear(); _gravityCursor.Clear(); ObserveRemoteInstallDiscarded(_remoteQueued, "DiscardedFinishRound"); _remoteQueued = null; ResetGravityCohorts();
@@ -649,6 +652,7 @@ namespace Splatoon.Blocks
             ResetBuildQueriesCache();
             foreach (var view in _views.Values) Dispose(view); _views.Clear(); _colliderChunks.Clear();
             World = new BlockWorld(_arena != null ? _arena.Dimensions : new Vector2(32, 64), round); _accepting = true;
+            Dynamic?.Reset(round);
             Physics.SyncTransforms();
         }
         public void Tick(bool authority, double now, float dt)
@@ -656,7 +660,8 @@ namespace Splatoon.Blocks
             using var marker = TickCpu.Auto();
             using var publicationTiming = MeasurePublicationWork();
             if (!Initialized || _destroying) return;
-            if (authority && !_cohortAuthorityInitialized) { ResetGravityCohorts(true); ResetBlockSpread(true); _cohortAuthorityInitialized = true; }
+            Dynamic?.SetAuthority(authority && _accepting);
+            if (authority && !_cohortAuthorityInitialized) { ResetGravityCohorts(!SurfaceOnly); ResetBlockSpread(!SurfaceOnly); _cohortAuthorityInitialized = true; }
             if (!authority && _pending?.BuildOverlapRepair != null) AbortPending();
             if (!authority) { if (_cohortAuthorityInitialized) ResetBlockSpread(); _cohortAuthorityInitialized = false; AbortPrivatePreparation(); if (_pending != null && _pending.BuildGuard != null) CancelPendingBuildPublication(_pending);
                 else if (_pending != null && (_pending.PrivateGravity || _pending.RecoveryGuard != null)) AbortPending(); }
@@ -730,7 +735,7 @@ namespace Splatoon.Blocks
                         if (!own.Occupied || command.EnemyOnly && own.Owner == command.Team) { yield return default; continue; }
                         float r = own.Owner == command.Team ? command.FriendlyRadius : command.Radius;
                         var point = BlockWorld.Center(cell); float distance = (point - command.Point).sqrMagnitude;
-                        yield return distance <= (r + .051f) * (r + .051f) && Visible(command.Point, point)
+                        yield return distance <= (r + BlockRadiusPadding) * (r + BlockRadiusPadding) && Visible(command.Point, point)
                             ? new DestroyTarget(cell, own.Owner, distance) : default;
                     }
                 }
@@ -754,7 +759,7 @@ namespace Splatoon.Blocks
                     if (!sampledOffset) { offset = run.Offset(command.SourceTime); sampledOffset = true; }
                     var cell = run.Bottom + Vector3Int.up * i; var point = BlockWorld.Center(cell) - Vector3.up * offset;
                     float radiusForTeam = own.Owner == command.Team ? command.FriendlyRadius : command.Radius, distance = (point - command.Point).sqrMagnitude;
-                    yield return distance <= (radiusForTeam + .051f) * (radiusForTeam + .051f) && Visible(command.Point, point)
+                    yield return distance <= (radiusForTeam + BlockRadiusPadding) * (radiusForTeam + BlockRadiusPadding) && Visible(command.Point, point)
                         ? new DestroyTarget(cell, own.Owner, distance, run.Id, i) : default;
                 }
             }
@@ -771,21 +776,21 @@ namespace Splatoon.Blocks
         bool StaticSupport(Vector3Int cell)
         {
             var start = BlockWorld.Center(cell);
-            int count = Physics.RaycastNonAlloc(start, Vector3.down, _rayHits, StaticSupportProbeLength, PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);
+            int count = Physics.RaycastNonAlloc(start, Vector3.down, _rayHits, StaticSupportProbeLength, SurfaceMapMask, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < count; i++) if (IsQuantizedStaticSupport(cell, _rayHits[i])) return true;
             return false;
         }
         bool StaticAnchor(Vector3Int cell, Vector3 normal)
         {
             if (Mathf.Abs(normal.y) > .7f) return false;
-            int count = Physics.RaycastNonAlloc(BlockWorld.Center(cell), -normal, _rayHits, BlockWorld.CellSize * 1.25f, PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);
+            int count = Physics.RaycastNonAlloc(BlockWorld.Center(cell), -normal, _rayHits, BlockWorld.CellSize * 1.25f, SurfaceMapMask, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < count; i++) if (_staticColliders.Contains(_rayHits[i].collider)) return true;
             return false;
         }
         bool Visible(Vector3 from, Vector3 to)
         {
             var delta = to - from; float distance = delta.magnitude; if (distance < .03f) return true;
-            int count = Physics.RaycastNonAlloc(from + delta / distance * .015f, delta / distance, _rayHits, Mathf.Max(0, distance - .03f), PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);
+            int count = Physics.RaycastNonAlloc(from + delta / distance * .015f, delta / distance, _rayHits, Mathf.Max(0, distance - .03f), SurfaceMapMask, QueryTriggerInteraction.Ignore);
             if (count == _rayHits.Length) return false;
             for (int i = 0; i < count; i++) if (_staticColliders.Contains(_rayHits[i].collider)) return false;
             return true;
@@ -801,7 +806,7 @@ namespace Splatoon.Blocks
         }
         static bool FitsBudget(BlockPublicationWindow window, HashSet<Vector3Int> changed, Vector3Int cell)
             => window.CanIncludeCell(changed, cell);
-        void QueueGravity(Vector3Int cell) => QueueGravityCohortCell(cell);
+        void QueueGravity(Vector3Int cell) { if (!SurfaceOnly) QueueGravityCohortCell(cell); }
         bool FallingReady() => _cohortIndexPending || _cohortMotionOrder.Count != 0;
         bool LandingDirty(FallingRun run)
             => _landingGeneration.TryGetValue(new Vector2Int(run.Bottom.x, run.Bottom.z), out uint generation)
@@ -848,6 +853,15 @@ namespace Splatoon.Blocks
             bool coalescedBlast = !FairForegroundStage && commandWork && HasCoalescedBlastWork();
             double commandBudget = coalescedBlast ? 4 : !spreadStage && commandWork ? .5 : .75, gravityBudget = _commands.Count != 0 ? BlockPublicationPolicy.GravityMillisecondsWithCommands : BlockPublicationPolicy.GravityMillisecondsAlone;
             int commandChecks = coalescedBlast ? 32768 : !spreadStage && commandWork ? 3072 : MaxChecks, gravityChecks = _commands.Count != 0 ? BlockPublicationPolicy.GravityChecksWithCommands : BlockPublicationPolicy.GravityChecksAlone;
+            if (SurfaceOnly && commandWork)
+            {
+                // Surface construction has no voxel-gravity phase. Reuse only
+                // the remaining captured frame allowance, including clone,
+                // safety and all earlier Tick/Update work already charged.
+                // HasStageBudget still permits one finite unit for progress.
+                commandBudget = Math.Max(0, _stagePublicationWindow.Policy.FrameSynchronousMilliseconds
+                    - TerrainSynchronousMilliseconds);
+            }
             if (FairForegroundStage)
             {
                 commandBudget = .5; commandChecks = 3072;
@@ -940,7 +954,14 @@ namespace Splatoon.Blocks
                     if (results.Count != 0 || changed.Count != 0) break;
                     StageSpread(command, next, changed, results, ref checks, timer, milliseconds, maxChecks); return;
                 }
-                if (!FairForegroundStage && TryStageUnboundedBlastBatch(next, changed, results, ref checks, timer, milliseconds, maxChecks)) return;
+                if (!FairForegroundStage && TryStageUnboundedBlastBatch(next, changed, results, ref checks, timer, milliseconds, maxChecks))
+                {
+                    // A completed blast prefix keeps its original result ledger.
+                    // Surface-only staging may fill the same captured window with
+                    // the next FIFO command; an unfinished blast stays the barrier.
+                    if (SurfaceOnly && _blastBatch == null) continue;
+                    return;
+                }
                 if (command.Build && _cohortIndexPending) break;
                 var checkpoint = CheckpointCommand(command);
                 if (command.Build && command.Cells == null && FullyProtectedVerticalBuild(command))
@@ -968,14 +989,15 @@ namespace Splatoon.Blocks
                         command.LastCandidate = cell; command.HasCandidate = true; BuildCandidatesVisited++;
                         if (!next.InBounds(cell)) { BuildOutsideBounds++; continue; }
                         if (next.TryGet(cell, out _)) { BuildAlreadyOccupied++; continue; }
-                        if (MapOverlap(cell)) continue;
+                        if (SurfaceOnly ? !SurfaceBuildAllowed(cell, command.Normal) : MapOverlap(cell)) continue;
                         if (!TryCurrentBuildOverlap(cell, ref checks, maxChecks, timer, milliseconds, out bool movingOccupied))
                         { checkpoint.Visited.RemoveLast(); command.Cells = Prepend(cell, command.Cells).GetEnumerator(); limited = true; break; }
                         if (movingOccupied) { BuildMovingOccupied++; continue; }
                         if (!FitsBudget(_stagePublicationWindow, changed, cell)) { BuildDeferredByChunkBudget++; checkpoint.Visited.RemoveLast(); command.Cells = Prepend(cell, command.Cells).GetEnumerator(); limited = true; break; }
                         checks += StaticWallAnchorMaxQueryChecks; CommandWorkChecks += StaticWallAnchorMaxQueryChecks;
-                        var value = BlockCell.Create(command.Team, StaticMapWallAnchor(cell));
-                        if (next.Set(cell, value)) { result.Added++; IncludeCell(changed, cell); QueueGravity(cell); QueueGravityStartupAddition(cell); RecordAddedBuildSlot(command, cell); }
+                        var value = BlockCell.Create(command.Team, SurfaceOnly || StaticMapWallAnchor(cell));
+                        if (SurfaceOnly) value.Flags |= 2;
+                        if (next.Set(cell, value)) { result.Added++; IncludeCell(changed, cell); QueueGravity(cell); if (!SurfaceOnly) QueueGravityStartupAddition(cell); RecordAddedBuildSlot(command, cell); }
                     }
                     else
                     {
@@ -1005,7 +1027,7 @@ namespace Splatoon.Blocks
                             if (!next.TryGet(target.Cell, out var own) || own.Owner != target.Owner) { command.TargetIndex++; continue; }
                             var key = BlockWorld.ChunkAt(target.Cell);
                             if (!FitsBudget(_stagePublicationWindow, changed, target.Cell)) { limited = true; break; }
-                            command.TargetIndex++; next.Set(target.Cell, default); IncludeCell(changed, target.Cell); QueueGravity(target.Cell); QueueGravityStartupRemoval(target.Cell);
+                            command.TargetIndex++; next.Set(target.Cell, default); IncludeCell(changed, target.Cell); QueueGravity(target.Cell); if (!SurfaceOnly) QueueGravityStartupRemoval(target.Cell);
                         }
                         if (friendly) result.RemovedFriendly++; else result.RemovedEnemy++;
                     }
@@ -1092,7 +1114,7 @@ namespace Splatoon.Blocks
         {
             range = default;
             var point = new Vector2(command.Point.x, command.Point.z);
-            float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + .051f;
+            float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + BlockRadiusPadding;
             if (!SafeReservationPoint(point) || !float.IsFinite(radius) || !float.IsFinite(radius * radius)) return false;
             // This is only a conservative candidate box. The original float
             // squared-distance predicate below remains the final authority.
@@ -1143,7 +1165,7 @@ namespace Splatoon.Blocks
             {
                 if (command.Done || command.Completed) continue;
                 ReservationCommandChecks++;
-                float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + .051f;
+                float radius = Mathf.Max(command.Radius, command.EnemyOnly ? 0 : command.FriendlyRadius) + BlockRadiusPadding;
                 if ((center - new Vector2(command.Point.x, command.Point.z)).sqrMagnitude <= radius * radius) return true;
             }
             return false;
@@ -1159,6 +1181,7 @@ namespace Splatoon.Blocks
         }
         bool StageGravity(BlockWorld next, HashSet<Vector3Int> changed, ref int checks, System.Diagnostics.Stopwatch timer, double milliseconds, int maxChecks)
         {
+            if (SurfaceOnly) return false;
             bool mutation;
             if (_settleFirst)
             {
@@ -1236,7 +1259,7 @@ namespace Splatoon.Blocks
             var currentPosition = BlockWorld.Center(lowest) - Vector3.up * run.Offset(_now);
             int current = Mathf.FloorToInt(currentPosition.y / BlockWorld.CellSize);
             int minimum = Mathf.CeilToInt(world.Bottom / BlockWorld.CellSize);
-            int hits = Physics.RaycastNonAlloc(currentPosition, Vector3.down, _rayHits, Mathf.Max(0, currentPosition.y - world.Bottom + BlockWorld.CellSize), PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer), QueryTriggerInteraction.Ignore);
+            int hits = Physics.RaycastNonAlloc(currentPosition, Vector3.down, _rayHits, Mathf.Max(0, currentPosition.y - world.Bottom + BlockWorld.CellSize), SurfaceMapMask, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < hits; i++) if (_staticColliders.Contains(_rayHits[i].collider) && _rayHits[i].normal.y > .2f)
                 minimum = Math.Max(minimum, StaticLandingCellY(_rayHits[i].point.y));
             int landing = minimum;
@@ -1466,6 +1489,27 @@ namespace Splatoon.Blocks
                 return;
             }
             using var reservationScope = reservation;
+            if (Dynamic != null && pending.Pieces.Length != 0)
+            {
+                _changingSupportBounds.Clear();
+                foreach (var piece in pending.Pieces)
+                {
+                    if (_views.TryGetValue(piece.Key, out var prior) && prior.Collider != null)
+                        _changingSupportBounds.Add(prior.Collider.bounds);
+                    // Inactive new colliders have empty native bounds. Transform
+                    // their uploaded mesh bounds before enabling any geometry.
+                    if (piece.View != null && piece.CollisionMesh != null)
+                    {
+                        var bounds = piece.CollisionMesh.bounds;
+                        var matrix = piece.View.Object.transform.localToWorldMatrix;
+                        var extents = Abs(matrix.MultiplyVector(new Vector3(bounds.extents.x, 0, 0)))
+                            + Abs(matrix.MultiplyVector(new Vector3(0, bounds.extents.y, 0)))
+                            + Abs(matrix.MultiplyVector(new Vector3(0, 0, bounds.extents.z)));
+                        _changingSupportBounds.Add(new Bounds(matrix.MultiplyPoint3x4(bounds.center), extents * 2));
+                    }
+                }
+                Dynamic.NotifySupportGeometryChanging(_changingSupportBounds);
+            }
             // No query, event, coroutine or await may occur between these swaps.
             foreach (var piece in pending.Pieces) if (_views.TryGetValue(piece.Key, out var prior)) { prior.Collider.enabled = false; prior.Object.SetActive(false); }
             try
@@ -1620,14 +1664,17 @@ namespace Splatoon.Blocks
             var cell = BlockWorld.CellAt(point - normal * .002f);
             if (!World.TryGet(cell, out var own)) return false;
             contact = new BlockContact { Owner = own.Owner, Point = point, Normal = normal, OrientationNormal = QueryOrientation(point, normal, own.Owner), Stable = true,
+                Kind = own.SurfaceAttached ? BlockContactKind.SurfaceAttached : BlockContactKind.Legacy,
                 Climbable = Mathf.Abs(normal.y) < .7f, Cell = cell, Chunk = BlockWorld.ChunkAt(cell), Revision = World.ChunkRevision(BlockWorld.ChunkAt(cell)) };
             return true;
         }
         public bool TryGetGround(Vector3 feet, out BlockContact contact, float slopeLimit = 45)
         {
             contact = default;
-            return Physics.Raycast(feet + Vector3.up * .08f, Vector3.down, out var hit, .16f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)
-                && hit.normal.y >= Mathf.Cos(slopeLimit * Mathf.Deg2Rad) && TryContact(hit, out contact);
+            int mask = SurfaceOnly ? PlayerMotorSimulation.WorldMask : PlayerMotorSimulation.WorldMask | (1 << TerrainLayer);
+            return Physics.Raycast(feet + Vector3.up * .08f, Vector3.down, out var hit, .16f, mask, QueryTriggerInteraction.Ignore)
+                && hit.normal.y >= Mathf.Cos(slopeLimit * Mathf.Deg2Rad) &&
+                (TrySurfaceContactFromMap(hit, out contact) || TryContact(hit, out contact));
         }
         public Vector3 QueryOrientation(Vector3 point, Vector3 physicalNormal, byte team, float footprint = .35f)
         {
@@ -1707,7 +1754,7 @@ namespace Splatoon.Blocks
             ResetBuildQueriesCache();
             ResetBuildOccupancyQueryCache();
             ResetBlockSpread();
-            _destroying = true; _epoch++; AbortPending(); _blastBatch = null;
+            _destroying = true; Dynamic?.DisposeWorld(); _epoch++; AbortPending(); _blastBatch = null;
             ObserveRemoteInstallDiscarded(_remoteQueued, "DiscardedDestroy");
             while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
             foreach (var view in _views.Values) Dispose(view); _views.Clear();

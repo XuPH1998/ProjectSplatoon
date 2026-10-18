@@ -58,6 +58,8 @@ namespace Splatoon.Prototype
                 if (Blocks == null) Blocks = Arena.gameObject.AddComponent<BlockTerrain>();
                 Blocks.Initialize(Arena);
             }
+            Blocks.EnableSurfaceMode();
+            Blocks.Dynamic.SetAuthority(IsServer);
             if (_blockObservedTerrain == Blocks) return;
             DetachBlockPublications(); _blockObservedTerrain = Blocks;
             _blockObservedTerrain.PublishedCommit += OnBlockPublished;
@@ -84,6 +86,7 @@ namespace Splatoon.Prototype
         {
             if (Blocks == null) return;
             s.PinkBlockCount = Blocks.PinkCount; s.BlueBlockCount = Blocks.BlueCount; s.TerrainRevision = Blocks.Revision;
+            s.DynamicBlockRevision = Blocks.Dynamic?.LifecycleRevision ?? 0;
             // Old area fields remain diagnostic compatibility fields. Product UI
             // and the winner use explicit block counts.
             s.PinkArea = s.PinkBlockCount; s.BlueArea = s.BlueBlockCount; s.TotalArea = s.PinkBlockCount + s.BlueBlockCount;
@@ -96,9 +99,11 @@ namespace Splatoon.Prototype
             _blockIncoming = null; _blockInstalling = _blockInstallPublished = false;
             _blockInstallStarted = 0; _blockInstallFailures = 0;
             _blockCompletedId = 0; _blockLastProgress = _blockLastRequest = _blockBudgetAt = 0; _blockSendBudget = 0;
+            ResetDynamicSync();
         }
         void UpdateBlockSync()
         {
+            UpdateDynamicSync();
             if (!IsServer)
             {
                 double now = Time.unscaledTimeAsDouble;
@@ -106,11 +111,12 @@ namespace Splatoon.Prototype
                     now - _blockInstallStarted > Math.Max(15, GameplayConfig.Global.ConnectionTimeout * 2)))
                 {
                     ObserveCurrentTerrainTransfer("Abandoned", "InstallFailureOrTimeout");
-                    _blockInstalling = _blockInstallPublished = false; _blockIncoming = null; InitialSyncComplete = false;
+                    _blockInstalling = _blockInstallPublished = false; _blockIncoming = null; SetTerrainSyncReady(false);
                     _blockLastRequest = now; RequestBlockSnapshotRpc();
                 }
                 if (InitialSyncComplete && State.Value.Phase == MatchPhase.Finished && Blocks.Round == State.Value.Round &&
-                    Blocks.Revision >= State.Value.TerrainRevision && !_blockInstalling && Blocks.PendingTransactions == 0)
+                    Blocks.Revision >= State.Value.TerrainRevision && !_blockInstalling && Blocks.PendingTransactions == 0 &&
+                    Blocks.Dynamic.Frozen && Blocks.Dynamic.LifecycleRevision >= State.Value.DynamicBlockRevision)
                     Blocks.FinishRound(State.Value.TerrainFrozenAt);
                 if (_blockInstalling && _blockInstallPublished && _blockIncoming != null && Blocks.PendingTransactions == 0 &&
                     Blocks.Round == _blockIncoming.Manifest.Round && Blocks.Revision == _blockIncoming.Manifest.Revision)
@@ -118,11 +124,11 @@ namespace Splatoon.Prototype
                     var manifest = _blockIncoming.Manifest;
                     RememberTerrainAppliedObservation();
                     _blockCompletedId = manifest.Id; _blockIncoming = null; _blockInstalling = _blockInstallPublished = false;
-                    InitialSyncComplete = true;
+                    SetTerrainSyncReady(true);
                     AckBlockAppliedRpc(manifest.Round, manifest.Id, manifest.Revision);
                     ObserveTerrainAppliedAck(manifest, false);
                 }
-                if (!_blockInstalling && ((!InitialSyncComplete && _blockIncoming == null) ||
+                if (!_blockInstalling && ((!_blockTerrainReady && _blockIncoming == null) ||
                     (_blockIncoming != null && now - _blockLastProgress > 3)) && now - _blockLastRequest > 1)
                 {
                     ObserveCurrentTerrainTransfer("Abandoned", "FragmentProgressTimeout");
@@ -182,13 +188,17 @@ namespace Splatoon.Prototype
         }
         void SendBlockTransfers()
         {
-            if (!IsServer || _blockClients.Count == 0) return;
+            if (!IsServer) return;
             using var marker = BlockTransferSendCpu.Auto();
             double now = Time.unscaledTimeAsDouble;
             double rate = BlockGameplaySettings.NetworkBytesPerSecond;
             if (_blockBudgetAt == 0) _blockSendBudget = rate * .1;
             else _blockSendBudget = Math.Min(rate * .25, _blockSendBudget + Math.Max(0, now - _blockBudgetAt) * rate);
             _blockBudgetAt = now;
+            bool terrainPending = false;
+            foreach (var peer in _blockPeers.Values) if (peer.Send != null) { terrainPending = true; break; }
+            SendDynamicTransfers(rate, terrainPending);
+            if (_blockClients.Count == 0) return;
             int budget = 16, idle = 0;
             while (budget-- > 0 && idle < _blockClients.Count)
             {
@@ -240,8 +250,8 @@ namespace Splatoon.Prototype
             if (_blockIncoming == null || unchecked((int)(fragment.Id - _blockIncoming.Manifest.Id)) > 0)
             {
                 if (_blockInstalling) { ObserveTerrainTransfer(fragment, "Ignored", "InstallingOtherTransfer"); return; }
-                if (!fragment.Full && (!InitialSyncComplete || fragment.BaseRevision != Blocks.Revision))
-                { ObserveTerrainTransfer(fragment, "Ignored", "DeltaBaseOrSyncMismatch"); InitialSyncComplete = false; RequestBlockSnapshotRpc(); return; }
+                if (!fragment.Full && (!_blockTerrainReady || fragment.BaseRevision != Blocks.Revision))
+                { ObserveTerrainTransfer(fragment, "Ignored", "DeltaBaseOrSyncMismatch"); SetTerrainSyncReady(false); RequestBlockSnapshotRpc(); return; }
                 ObserveCurrentTerrainTransfer("Abandoned", "SupersededAssembly");
                 _blockIncoming = new BlockTransferAssembly(fragment); _blockLastProgress = Time.unscaledTimeAsDouble;
                 ResetTerrainIncomingObservation();
@@ -260,7 +270,7 @@ namespace Splatoon.Prototype
             bool traceVerified = _blockIncoming.Verify();
             ObserveTerrainTransfer(fragment, "VerifyReturned", "", true, traceVerified);
             if (!traceVerified)
-            { _blockIncoming = null; InitialSyncComplete = false; RequestBlockSnapshotRpc(); return; }
+            { _blockIncoming = null; SetTerrainSyncReady(false); RequestBlockSnapshotRpc(); return; }
             _blockInstallPublished = false; _blockInstallFailures = Blocks.FailedTransactions; _blockInstallStarted = Time.unscaledTimeAsDouble;
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             using var terrainTraceScope = Blocks.ObserveRemoteTransferScope(fragment, GetInstanceID());
@@ -272,7 +282,7 @@ namespace Splatoon.Prototype
 #endif
             ObserveTerrainTransfer(fragment, "ApplyReturned", "", true, accepted);
             if (accepted) _blockInstalling = true;
-            else { _blockIncoming = null; InitialSyncComplete = false; RequestBlockSnapshotRpc(); }
+            else { _blockIncoming = null; SetTerrainSyncReady(false); RequestBlockSnapshotRpc(); }
         }
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable, InvokePermission = RpcInvokePermission.Everyone)]
         void AckBlockFragmentRpc(uint round, uint id, int index, RpcParams rpc = default)

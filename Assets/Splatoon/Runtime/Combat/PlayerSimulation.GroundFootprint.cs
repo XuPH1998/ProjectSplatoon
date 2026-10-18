@@ -54,7 +54,15 @@ namespace Splatoon.Combat
                     face.normal.y < minimumY || !GroundFaceWithinLowerCap(feet, radius, face.point)) continue;
                 TraversalContact candidate;
                 var terrain = BlockTerrain.Current;
-                if (terrain.TryContact(face, out var block))
+                if (terrain.TrySurfaceContactFromMap(face, out var surface))
+                {
+                    candidate = new TraversalContact(surface);
+                }
+                else if (face.collider.GetComponentInParent<BlockDynamicBody>() != null)
+                {
+                    if (!TryBlockTraversalContact(face, out candidate)) continue;
+                }
+                else if (terrain.TryContact(face, out var block))
                 {
                     if (!block.Stable || !terrain.World.TryGet(block.Cell, out _) ||
                         terrain.World.TryGet(block.Cell + Vector3Int.up, out _) ||
@@ -66,7 +74,8 @@ namespace Splatoon.Combat
                     // A stale/unpublished/falling terrain collider is not a
                     // neutral map face. Ordinary authored map geometry remains
                     // eligible for neutral swimming without friendly benefits.
-                    if (BlockTerrain.IsBlockGeometry(face.collider)) continue;
+                    if (face.collider.gameObject.layer == PlayerBlockPushBridge.DynamicLayer ||
+                        BlockTerrain.IsBlockGeometry(face.collider)) continue;
                     candidate = new TraversalContact(face);
                 }
                 float pointDistance = (face.point - feet).sqrMagnitude;

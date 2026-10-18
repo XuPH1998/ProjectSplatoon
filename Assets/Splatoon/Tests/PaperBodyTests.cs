@@ -82,6 +82,116 @@ namespace Splatoon.Tests
             Assert.That(peer.HitMesh,Is.Not.SameAs(capture.HitMesh));
         }
         public static Vector2 BodyPoint(SwimBody body) => body.HitRects.OrderByDescending(r=>r.width*r.height).First().center;
+        static void SameCapturedShape(PaperCapture expected, PaperCapture actual)
+        {
+            CollectionAssert.AreEqual(expected.HitRects, actual.HitRects, "explicit contour rectangles");
+            CollectionAssert.AreEqual(expected.HitMesh.vertices, actual.HitMesh.vertices, "independent hit vertices");
+            CollectionAssert.AreEqual(expected.HitMesh.triangles, actual.HitMesh.triangles, "independent hit triangles");
+            Assert.That(actual.HitMesh.bounds, Is.EqualTo(expected.HitMesh.bounds));
+            Assert.That(actual.PosedBounds, Is.EqualTo(expected.PosedBounds));
+            foreach (var point in new[] { Vector3.zero, new Vector3(-.4f, .7f, .2f), new Vector3(.6f, -.8f, -.1f) })
+                Assert.That(actual.ClosestPoint(point), Is.EqualTo(expected.ClosestPoint(point)), "closest hit point");
+        }
+        [TestCase("RifleGirl")]
+        [TestCase("ShotgunGirl")]
+        public void SharedPoseCacheMatchesFreshUncachedShapesAndFinalRenderedReplay(string hero)
+        {
+            var profile = Profile(hero);
+            using var warm = new PaperCapture(profile);
+            using var live = new PaperCapture(profile);
+            var random = new System.Random(72417);
+            var states = Enumerable.Range(0, 8).Select(_ => new PlayerSnapshot
+            {
+                PaperAnimationTime = (float)(random.NextDouble() * 1000),
+                PaperMove = new Vector2((float)(random.NextDouble() * 2 - 1), (float)(random.NextDouble() * 2 - 1))
+            }).ToArray();
+            // Nonmonotonic correction/replay order exercises an older cached
+            // pose after several later poses, across independent capture stages.
+            foreach (int index in new[] { 5, 1, 7, 0, 6, 2, 4, 3, 1, 5 })
+            {
+                var state = states[index]; warm.Sample(state);
+                long hits = PaperCapture.SharedPoseCacheHits, bakes = PaperCapture.PoseBakeCount;
+                Assert.That(live.Sample(state), Is.True);
+                Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(hits + 1));
+                Assert.That(PaperCapture.PoseBakeCount, Is.EqualTo(bakes), "a shared contour needs no repeated skin bake");
+                using var fresh = new PaperCapture(profile); fresh.SampleUncachedForDiagnostics(state);
+                SameCapturedShape(fresh, live);
+                Assert.That(live.HitMesh, Is.Not.SameAs(warm.HitMesh));
+            }
+            var final = states[5];
+            using var reference = new PaperCapture(profile); reference.SampleUncachedForDiagnostics(final);
+            long renderBakes = PaperCapture.DeferredRenderBakeCount;
+            live.Render(); reference.Render();
+            Assert.That(PaperCapture.DeferredRenderBakeCount, Is.EqualTo(renderBakes + 1), "only the final displayed explicit key is baked");
+            var actualImage = Read(live.Texture); var expectedImage = Read(reference.Texture);
+            try { CollectionAssert.AreEqual(expectedImage.GetPixels32(), actualImage.GetPixels32(), "cache hits render the final simulated pose"); }
+            finally { Object.DestroyImmediate(actualImage); Object.DestroyImmediate(expectedImage); }
+            SameCapturedShape(reference, live);
+        }
+        [Test]
+        public void SharedPoseCacheInvalidatesShapeAndContentAndRetainsEvictedValues()
+        {
+            var profile = Object.Instantiate(Profile("RifleGirl"));
+            try
+            {
+                using var producer = new PaperCapture(profile);
+                using var consumer = new PaperCapture(profile);
+                var state = new PlayerSnapshot { PaperAnimationTime = .13f, PaperMove = new Vector2(.2f, -.2f) };
+                producer.Sample(state); consumer.Sample(state);
+                Action verifyChangedShape = () =>
+                {
+                    long misses = PaperCapture.SharedPoseCacheMisses;
+                    Assert.That(producer.Sample(state), Is.True, "shape/content changes invalidate even an unchanged animation key");
+                    Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1));
+                    using var fresh = new PaperCapture(profile); fresh.SampleUncachedForDiagnostics(state);
+                    SameCapturedShape(fresh, producer);
+                    long hits = PaperCapture.SharedPoseCacheHits;
+                    consumer.Sample(state);
+                    Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(hits + 1));
+                    SameCapturedShape(fresh, consumer);
+                };
+                profile.CaptureCenter += new Vector3(.01f, -.02f, 0); verifyChangedShape();
+                profile.CaptureHeight += .04f; verifyChangedShape();
+                profile.Size += new Vector2(.02f, .03f); verifyChangedShape();
+                profile.Thickness += .01f; verifyChangedShape();
+                profile.ContentHash += "-changed";
+                // A fresh clone has a different captured content identity;
+                // warm it separately after verifying the older clone's miss.
+                long misses = PaperCapture.SharedPoseCacheMisses;
+                producer.Sample(state); consumer.Sample(state);
+                Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1));
+                using (var fresh = new PaperCapture(profile))
+                { fresh.SampleUncachedForDiagnostics(state); SameCapturedShape(fresh, producer); SameCapturedShape(fresh, consumer); }
+                var originalPrefab = profile.CapturePrefab;
+                profile.CapturePrefab = Profile("ShotgunGirl").CapturePrefab;
+                misses = PaperCapture.SharedPoseCacheMisses; producer.Sample(state);
+                Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1), "current prefab invalidates the old clone's same-key sample");
+                using (var rebound = new PaperCapture(profile))
+                using (var peer = new PaperCapture(profile))
+                using (var oracle = new PaperCapture(profile))
+                {
+                    misses = PaperCapture.SharedPoseCacheMisses; rebound.Sample(state);
+                    Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1), "an old clone cannot populate a newly rebound rig's cache");
+                    long hits = PaperCapture.SharedPoseCacheHits; peer.Sample(state);
+                    Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(hits + 1));
+                    oracle.SampleUncachedForDiagnostics(state); SameCapturedShape(oracle, peer);
+                }
+                profile.CapturePrefab = originalPrefab;
+                using var otherProfile = new PaperCapture(Profile("ShotgunGirl"));
+                misses = PaperCapture.SharedPoseCacheMisses; otherProfile.Sample(state);
+                Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1), "hero and rig identity cannot alias");
+                // Eviction may drop cache ownership, never mutate a retained
+                // capture's contour/mesh or turn future misses into stale hits.
+                var finalRects = consumer.HitRects.ToArray(); var finalVertices = consumer.HitMesh.vertices;
+                for (int i = 0; i < 270; i++)
+                { var later = state; later.PaperAnimationTime = (i + 70.25f) / PaperAnimation.FramesPerSecond; producer.Sample(later); }
+                CollectionAssert.AreEqual(finalRects, consumer.HitRects);
+                CollectionAssert.AreEqual(finalVertices, consumer.HitMesh.vertices);
+                misses = PaperCapture.SharedPoseCacheMisses; producer.Sample(state);
+                Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1), "bounded cache recomputes an evicted exact key");
+            }
+            finally { Object.DestroyImmediate(profile); }
+        }
         [TestCaseSource(nameof(Heroes))] public void HeldWeaponIdleAndMovementMatchTheStandingView(string hero)
         {
             var source=AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/GameResource/Characters/{hero}/Prefabs/{hero}Visual.prefab");

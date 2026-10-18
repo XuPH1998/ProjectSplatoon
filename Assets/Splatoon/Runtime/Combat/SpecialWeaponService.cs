@@ -143,7 +143,7 @@ namespace Splatoon.Combat
                     Vector3 from=e.ReefSplashPositions[i],velocity=e.ReefSplashVelocities[i];
                     Vector3 delta=velocity/60+Vector3.down*p.reefSplashGravity/(2*60*60);
                     e.ReefSplashVelocities[i]=velocity+Vector3.down*p.reefSplashGravity/60;
-                    if(Physics.Raycast(from,delta.normalized,out var hit,delta.magnitude,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))
+                    if(Physics.Raycast(from,delta.normalized,out var hit,delta.magnitude,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))
                     {e.ReefSplashPositions[i]=hit.point;e.ReefSplashDone[i]=true;PaintSurface(e,hit,p.reefSplashPaintRadius);}
                     else e.ReefSplashPositions[i]=from+delta;
                 }
@@ -337,7 +337,7 @@ namespace Splatoon.Combat
                     // Follow the local floor; an airborne body whose feet clear the wave is safe.
                     if(s.Movement!=MovementMode.WallInk)
                     {
-                        if(!Physics.Raycast(feet+Vector3.up*.1f,Vector3.down,out var floor,Mathf.Max(p.waveHeightDown,p.waveHeightUp)+1,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))continue;
+                        if(!Physics.Raycast(feet+Vector3.up*.1f,Vector3.down,out var floor,Mathf.Max(p.waveHeightDown,p.waveHeightUp)+1,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))continue;
                         if(feet.y-floor.point.y>.35f*SpecialWeaponDefaults.Scale)continue;
                     }
                     if(!e.WaveHits.Add((player.PlayerId,s.Revision,wave)))continue;
@@ -486,7 +486,7 @@ namespace Splatoon.Combat
                 DamageObject(target.State.Id,e.State.Team,damage*SpecialObjectDamage.ToSonar(e.State.Type));
             }
         }
-        public static bool Visible(Vector3 from,Vector3 to)=>!Physics.Linecast(from,to,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore);
+        public static bool Visible(Vector3 from,Vector3 to)=>!Physics.Linecast(from,to,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore);
         void PaintSurface(Entity e,RaycastHit hit,float radius)
             =>PaintSurface(e,hit.collider,hit.point,hit.normal,radius);
         void PaintSurface(Entity e,Collider collider,Vector3 point,Vector3 normal,float radius)
@@ -514,7 +514,7 @@ namespace Splatoon.Combat
             var stamp=new PaintStamp{Position=point,Normal=normal};InkShapeAtlas.StampBasis(stamp,out var tangent,out var bitangent);
             Vector4 clip0=default,clip1=default;
             for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 dir=tangent*Mathf.Cos(a)+bitangent*Mathf.Sin(a);float extent=radius*1.414214f;
-                if(Physics.Raycast(point+normal*.025f,dir,out var edge,extent,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))extent=Mathf.Max(0,edge.distance-.025f);
+                if(Physics.Raycast(point+normal*.025f,dir,out var edge,extent,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))extent=Mathf.Max(0,edge.distance-.025f);
                 if(i<4)clip0[i]=extent;else clip1[i-4]=extent;}
             PrototypeMatch.Current.Paint(surface,point,normal,radius,e.State.Team,.65f,1,e.State.Id*2654435761u+ ++e.PaintOrdinal,clipEnabled:true,clip0:clip0,clip1:clip1,
                 credit:new PaintCredit(e.State.Owner,e.State.Team,e.State.Round,e.State.HeroRevision,PaintAttackKind.Special));
@@ -526,9 +526,9 @@ namespace Splatoon.Combat
                 if(e.State.Type==SpecialWeaponType.TripleInkstrike)BlockAttackService.Blast(e.BlockAttack,position,radius,e.State.Id,++e.BlockOrdinal);
                 return;
             }
-            if(Physics.Raycast(position+Vector3.up*.1f,Vector3.down,out var floor,radius+2,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))PaintSurface(e,floor,radius);
+            if(Physics.Raycast(position+Vector3.up*.1f,Vector3.down,out var floor,radius+2,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))PaintSurface(e,floor,radius);
             // Splash paints actual nearby receiver planes, with radial clipping at obstacles.
-            for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 d=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));if(Physics.Raycast(position,d,out var hit,radius,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))PaintSurface(e,hit,Mathf.Sqrt(Mathf.Max(0,radius*radius-hit.distance*hit.distance)));}
+            for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 d=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));if(Physics.Raycast(position,d,out var hit,radius,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))PaintSurface(e,hit,Mathf.Sqrt(Mathf.Max(0,radius*radius-hit.distance*hit.distance)));}
         }
         public void ReefContact(PrototypePlayer owner,PlayerSnapshot s,Vector3 previous,double now)
         {

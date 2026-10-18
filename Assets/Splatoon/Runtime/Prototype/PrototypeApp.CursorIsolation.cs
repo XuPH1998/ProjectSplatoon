@@ -68,11 +68,15 @@ namespace Splatoon.Prototype
             }
         }
 
-        static void ReleaseSystemCursorIfDisallowed()
+        // Gameplay can request capture before the window gains native focus.
+        // Retry that intent without resetting input or dismissing a menu.
+        void SynchronizeSystemCursor()
         {
-            if (UnityEngine.Cursor.lockState == UnityEngine.CursorLockMode.None || CanCaptureSystemCursor) return;
-            UnityEngine.Cursor.lockState = UnityEngine.CursorLockMode.None;
-            UnityEngine.Cursor.visible = true;
+            bool captureSystemCursor = _captured && CanCaptureSystemCursor;
+            var desiredLock = captureSystemCursor ? UnityEngine.CursorLockMode.Locked : UnityEngine.CursorLockMode.None;
+            bool desiredVisible = !captureSystemCursor;
+            if (UnityEngine.Cursor.lockState != desiredLock) UnityEngine.Cursor.lockState = desiredLock;
+            if (UnityEngine.Cursor.visible != desiredVisible) UnityEngine.Cursor.visible = desiredVisible;
         }
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

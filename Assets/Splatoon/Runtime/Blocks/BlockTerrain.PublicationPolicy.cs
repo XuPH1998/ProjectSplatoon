@@ -12,6 +12,7 @@ namespace Splatoon.Blocks
         readonly BlockPublicationFrameBudget _publicationFrameBudget = new();
         BlockPublicationWindow _stagePublicationWindow, _gravityRetryPublicationWindow;
         bool _stagePublicationReplayOnly;
+        const int SurfaceBatchOperationLookahead = 8;
         bool _publicationTimingOpen;
         int _authorityPublicationWorkFrame = -1;
         public BlockPublicationPolicy PublicationPolicy
@@ -67,6 +68,18 @@ namespace Splatoon.Blocks
         BlockPublicationWindow CaptureNewPublicationWindow()
         {
             var operations = _commands.Count != 0 ? PublicationOperations(_commands.Peek()) : BlockPublicationOperation.None;
+            if (SurfaceOnly)
+            {
+                // Capture a bounded, continuous fresh prefix. This is an operation
+                // lookahead, never a command count or target truncation limit.
+                // Mixed operations retain their policy's complete minimum key cap.
+                int inspected = 0;
+                foreach (var command in _commands)
+                {
+                    if (inspected++ == SurfaceBatchOperationLookahead || command.Spread || command.RetryWindow != null) break;
+                    operations |= PublicationOperations(command);
+                }
+            }
             if (_gravityColumns.Count != 0 || FallingReady()) operations |= BlockPublicationOperation.Gravity;
             // Capture potential local gravity/index capability at the start.
             // Retries retain this exact lease; ordinary still supplies its
@@ -102,7 +115,11 @@ namespace Splatoon.Blocks
             if (!FairAllowsCommand(command)) return false;
             if (!_stagePublicationWindow.Includes(PublicationOperations(command))) return false;
             if (command.RetryWindow != null && !ReferenceEquals(command.RetryWindow, _stagePublicationWindow)) return false;
-            return !_stagePublicationReplayOnly || command.RetryWindow != null;
+            // A completed surface retry head may share its still-immutable
+            // window with fresh FIFO work only while that exact policy remains
+            // current. Policy replacement still separates old/new admissions.
+            return !_stagePublicationReplayOnly || command.RetryWindow != null
+                || SurfaceOnly && ReferenceEquals(_stagePublicationWindow.Policy, _publicationPolicy);
         }
     }
 }

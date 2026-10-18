@@ -50,7 +50,7 @@ namespace Splatoon.Networking
         public int PlayerCount;
         public double PinkArea, BlueArea, TotalArea;
         public int PinkBlockCount, BlueBlockCount;
-        public uint TerrainRevision;
+        public uint TerrainRevision, DynamicBlockRevision;
         public double StartsAt, EndsAt, TerrainFrozenAt;
         public MatchPhase Phase;
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
@@ -58,6 +58,7 @@ namespace Splatoon.Networking
             s.SerializeValue(ref Tick); s.SerializeValue(ref Round); s.SerializeValue(ref PlayerCount);
             s.SerializeValue(ref PinkArea); s.SerializeValue(ref BlueArea); s.SerializeValue(ref TotalArea);
             s.SerializeValue(ref PinkBlockCount); s.SerializeValue(ref BlueBlockCount); s.SerializeValue(ref TerrainRevision);
+            s.SerializeValue(ref DynamicBlockRevision);
             s.SerializeValue(ref StartsAt); s.SerializeValue(ref EndsAt); s.SerializeValue(ref TerrainFrozenAt); s.SerializeValue(ref Phase);
         }
     }

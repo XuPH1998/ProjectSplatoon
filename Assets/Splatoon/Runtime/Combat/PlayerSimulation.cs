@@ -66,7 +66,9 @@ namespace Splatoon.Combat
             }
         }
         public static bool BlockTraversalEnabled => BlockTerrain.Current != null && BlockTerrain.Current.Initialized;
-        public const int WorldMask = ~((1 << 8) | (1 << SwimBody.HitProxyLayer) | (1 << SubWeaponTarget.Layer));
+        // Attached surface blocks carry gameplay ownership, while the authored
+        // map remains the character's physical floor/wall. Free blocks stay solid.
+        public const int WorldMask = ~((1 << 8) | (1 << SwimBody.HitProxyLayer) | (1 << SubWeaponTarget.Layer) | (1 << BlockTerrain.TerrainLayer));
         readonly CharacterController _controller;
         readonly PrototypeArena _arena;
         PrototypeArena Arena => _arena != null ? _arena : PrototypeArena.Current;
@@ -127,7 +129,22 @@ namespace Splatoon.Combat
         }
         internal static bool TryBlockTraversalContact(RaycastHit hit, out TraversalContact contact)
         {
-            if (BlockTerrain.Current.TryContact(hit, out var block))
+            var terrain = BlockTerrain.Current;
+            if (hit.collider == null)
+            { contact = default; return false; }
+            var looseBody = hit.collider.GetComponentInParent<BlockDynamicBody>();
+            if (looseBody != null)
+            {
+                // A loose body can physically support a human capsule, but never
+                // supplies ink recovery, wall attachment or neutral swimming.
+                if (!looseBody.TryContact(hit.point, hit.normal, out var dynamicContact))
+                { contact = default; return false; }
+                contact = new TraversalContact(dynamicContact);
+                return true;
+            }
+            if (hit.collider.gameObject.layer == PlayerBlockPushBridge.DynamicLayer)
+            { contact = default; return false; }
+            if (terrain.TrySurfaceContactFromMap(hit, out var block) || terrain.TryContact(hit, out block))
             { contact = new TraversalContact(block); return true; }
             // A failed voxel lookup is not bare map geometry. In particular, an
             // empty cell in a published terrain collider cannot grant attachment.
@@ -185,18 +202,25 @@ namespace Splatoon.Combat
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
             BindBody(s.HeroId);
-            // Committed recovery survives trigger release, cancellation and UI focus changes.
-            if (WeaponSimulation.RecoveryLocked(s, now) || now < s.SubRecoveryUntil) { input.Swim = false; shootingMovement = true; }
-            if (now + 1e-8 < s.AttackMoveUntil) shootingMovement = true;
-            BeginMotorTrace(input, wantsFire, shootingMovement);
-            BeginMotorDetails(s);
-            var previous = s;
-            s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
-            StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
-            CompleteTraversalFrame(ref s, previous, dt, now);
-            ValidateCompletedTraversal(ref s, previous, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
-            TraceMotor(MotorTraceBranch.StepComplete, previous, s);
-            EndMotorDetails();
+            var blockPush = BeginBlockMovement(dt);
+            bool committed = false;
+            try
+            {
+                // Committed recovery survives trigger release, cancellation and UI focus changes.
+                if (WeaponSimulation.RecoveryLocked(s, now) || now < s.SubRecoveryUntil) { input.Swim = false; shootingMovement = true; }
+                if (now + 1e-8 < s.AttackMoveUntil) shootingMovement = true;
+                BeginMotorTrace(input, wantsFire, shootingMovement);
+                BeginMotorDetails(s);
+                var previous = s;
+                s.CameraRebaseOffset *= Mathf.Exp(-18 * dt);
+                StepMovement(ref s, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
+                CompleteTraversalFrame(ref s, previous, dt, now);
+                ValidateCompletedTraversal(ref s, previous, input, dt, now, wantsFire, shootMoveSpeed, shootingMovement);
+                TraceMotor(MotorTraceBranch.StepComplete, previous, s);
+                EndMotorDetails();
+                committed = true;
+            }
+            finally { blockPush.EndStep(committed); }
         }
 
         void CompleteTraversalFrame(ref PlayerSnapshot s, PlayerSnapshot previous, float dt, double now)
@@ -371,7 +395,7 @@ namespace Splatoon.Combat
                     float t = Mathf.Clamp01((float)(now - s.MantleStartedAt) / c.MantleSeconds);
                     var apex = new Vector3(s.MantleFrom.x, s.MantleTo.y + .15f, s.MantleFrom.z);
                     Vector3 target = t < .5f ? Vector3.Lerp(s.MantleFrom, apex, t * 2) : Vector3.Lerp(apex, s.MantleTo, (t - .5f) * 2);
-                    SetShape(true); _controller.Move(target - _root.position);
+                    SetShape(true); MoveWithFreeBlocks(target - _root.position, dt);
                     s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Swimming = true;
                     s.CompactBody = false;
                     s.Grounded = _controller.isGrounded; s.TurnDirection = 0;
@@ -484,7 +508,7 @@ namespace Splatoon.Combat
             var traceBeforeMove = MotorTracing ? s : default;
             var destinationCapsule = MotorDetailTracing ? CaptureMoveCapsule(_controller) : default;
             Vector3 requestedMove = (s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt;
-            var collisions = _controller.Move(requestedMove);
+            var collisions = MoveWithFreeBlocks(requestedMove, dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
             TraceMotor(MotorTraceBranch.DestinationMove, traceBeforeMove, s, collisions: collisions, requestedMove: requestedMove);
@@ -580,6 +604,7 @@ namespace Splatoon.Combat
         }
         void RollbackWallMove(ref PlayerSnapshot s, PlayerSnapshot before, Vector3 rootBefore)
         {
+            _blockPush?.DiscardContacts();
             bool enabled = _controller.enabled; _controller.enabled = false;
             _root.position = rootBefore; s = before; SetShape(s.Swimming || s.CompactBody);
             _controller.enabled = enabled;
@@ -589,7 +614,7 @@ namespace Splatoon.Combat
             var beforeWall = rollbackState ?? s; Vector3 rootBefore = _root.position;
             var traceBeforeWall = MotorTracing ? beforeWall : default;
             SetShape(true); var wallCapsule = MotorDetailTracing ? CaptureMoveCapsule(_controller) : default;
-            var collisions = _controller.Move(delta);
+            var collisions = MoveWithFreeBlocks(delta, dt);
             s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position;
             s.Swimming = true; s.TurnDirection = 0; s.VerticalSpeed = 0; s.PlanarVelocity = Vector3.zero;
             s.CompactBody = false;

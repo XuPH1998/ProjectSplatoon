@@ -24,7 +24,7 @@ namespace Splatoon.Blocks
     public static class BlockMeshBuilder
     {
         static readonly Vector3Int[] Axes = { Vector3Int.right, Vector3Int.up, new(0, 0, 1) };
-        // Greedy coplanar rectangles retain the 10 cm appearance through world-space shader lines.
+        // Greedy coplanar rectangles retain the cell-size appearance through world-space shader lines.
         // Only temporary build buffers are cached. Returned ToArray outputs
         // remain owned by each BlockMeshData across later builds and Upload.
         const int MaxCachedScratch = 2;

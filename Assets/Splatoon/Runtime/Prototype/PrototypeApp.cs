@@ -229,11 +229,15 @@ namespace Splatoon.Prototype
             Addressables.Release(handle); handle = default;
         }
         public void CaptureMouse(bool capture)
-        { _captured = capture; if (capture) { _overlay = GameplayOverlay.Game; _fireInputBlocked = true; }
-          else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu; bool captureSystemCursor = capture && CanCaptureSystemCursor; Cursor.lockState = captureSystemCursor ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !captureSystemCursor; }
+        {
+            _captured = capture;
+            if (capture) { _overlay = GameplayOverlay.Game; _fireInputBlocked = true; }
+            else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu;
+            SynchronizeSystemCursor();
+        }
         private void Update()
         {
-            ReleaseSystemCursorIfDisallowed();
+            SynchronizeSystemCursor();
             _discovery.Tick();
 #if UNITY_EDITOR
             ObserveDebugWeaponAssets();
@@ -248,7 +252,7 @@ namespace Splatoon.Prototype
         }
         private void OnApplicationFocus(bool focus)
         {
-            if (focus) return;
+            if (focus) { SynchronizeSystemCursor(); return; }
             _overlay = InRoom ? GameplayOverlay.RoomMenu : GameplayOverlay.Game;
             CaptureMouse(false);
         }

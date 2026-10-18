@@ -272,6 +272,9 @@ namespace Splatoon.Combat
             if (WeaponSimulation.IsFloatingBubble(w) && aim.MuzzleBlocked) shot.Origin = aim.MuzzleHit.Center;
             InkBallistics.ApplyCorrection(ref shot, aim, w);
             Spawned.Add(shot);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockDynamicAcceptanceProbe.RecordEnemySpawn(shot);
+#endif
             if (w.DetailedPaint && pellet == 0 && ShooterDetailSimulation.Foot(shot.RoundIndex, shot.ShotSequence, w))
                 QueuePaintDrop(shot, state.Position + Vector3.up * .1f, born, w.ReferenceFootRadius,
                     WeaponLaunch.FootOrdinal, aim.InitialDirection, w.ReferenceFootDepth);
@@ -480,7 +483,7 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
             enabled |= PaintObserved != null;
 #endif
-            if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return;
+            if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore)) return;
             var surface = h.collider.GetComponentInParent<PaintSurface>();
             bool blockHit = BlockAttackService.Contact(h.collider, h.point, h.normal, out var block);
             if (surface != null || blockHit && block.Owner == shot.Team)
@@ -529,13 +532,22 @@ namespace Splatoon.Combat
             => ResolveCore(shot, hit.Collider, hit.Point, hit.Normal, age, ref ordinal, incomingVelocity, hit.BlockQuery);
         private void ResolveCore(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity, BlockQueryContact blockQuery)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.Contact(shot.BlockAttack, shot.Id);
+#endif
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
             ContactObserved?.Invoke(shot, collider, point, normal, age);
 #endif
             BlockContact block = default;
             bool knownBlock = blockQuery.IsKnown;
-            if (knownBlock && !blockQuery.TryResolveCurrent(out block)) return;
+            if (knownBlock && !blockQuery.TryResolveCurrent(out block))
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockDynamicAcceptanceProbe.RecordEnemyContact(shot, true, false, blockQuery.Contact, point, "stale query rejected");
+#endif
+                return;
+            }
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
             var victim = collider.GetComponentInParent<PrototypePlayer>();
             collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(w,age,shot.Charge));
@@ -544,6 +556,9 @@ namespace Splatoon.Combat
             float actualDamage = 0; bool killed = false;
             if (victim != null)
             {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockDynamicAcceptanceProbe.RecordEnemyContact(shot, knownBlock, knownBlock, block, point, "player contact");
+#endif
                 float before = victim.Snapshot.Value.Health;
                 if (w.ReferenceRules || DualiesNormalSimulation.Enabled(w) || w.MotionMode == ProjectileMotionMode.BouncingBubble || WeaponSimulation.IsBlaster(w) || shot.Velocity.magnitude * InkBallistics.TravelTime(w, age) <= WeaponSimulation.Range(w, shot.Charge))
                     victim.ReceiveDamage(shot.Team, WeaponSimulation.Damage(w, age, shot.Charge), incomingVelocity ?? InkBallistics.Velocity(shot, w, age), shot.Shooter);
@@ -552,6 +567,9 @@ namespace Splatoon.Combat
             else
             {
                 bool blockContact = knownBlock || BlockAttackService.Contact(collider, point, normal, out block);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockDynamicAcceptanceProbe.RecordEnemyContact(shot, knownBlock, blockContact, block, point, blockContact ? "block contact" : "non-block contact");
+#endif
                 if (blockContact && !BlockAttackService.ExplosiveMain(w))
                 {
                     uint blockOrdinal = ++ordinal;

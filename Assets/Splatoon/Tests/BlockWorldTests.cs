@@ -13,19 +13,25 @@ namespace Splatoon.Tests
         [Test]
         public void NegativeCoordinatesUseFloorDivisionAndStableLocalIndices()
         {
-            var cell = BlockWorld.CellAt(new Vector3(-.01f, .05f, -.11f));
+            var cell = BlockWorld.CellAt(new Vector3(-.01f, .05f, -BlockWorld.CellSize * 1.1f));
             Assert.That(cell, Is.EqualTo(new Vector3Int(-1, 0, -2)));
             Assert.That(BlockWorld.ChunkAt(cell), Is.EqualTo(new Vector3Int(-1, 0, -1)));
             Assert.That(BlockWorld.CellFromIndex(BlockWorld.ChunkAt(cell), BlockWorld.Index(cell)), Is.EqualTo(cell));
-            Assert.That(BlockWorld.CellSize, Is.EqualTo(.10f)); Assert.That(BlockWorld.ChunkSize, Is.EqualTo(16));
+            Assert.That(BlockWorld.CellSize, Is.EqualTo(.30f)); Assert.That(BlockWorld.ChunkSize, Is.EqualTo(16));
         }
         [Test]
         public void TopBoundaryAllowsLastCellButRejectsAbove8Metres()
         {
             var world = new BlockWorld(new Vector2(32, 64));
-            Assert.That(world.Set(new Vector3Int(0, 79, 0), BlockCell.Create(1)), Is.True);
-            Assert.That(world.Set(new Vector3Int(0, 80, 0), BlockCell.Create(1)), Is.False);
-            Assert.That(world.Set(new Vector3Int(160, 0, 0), BlockCell.Create(1)), Is.False);
+            Assert.That(world.Set(new Vector3Int(0, 25, 0), BlockCell.Create(1)), Is.True);
+            Assert.That(world.Set(new Vector3Int(0, 26, 0), BlockCell.Create(1)), Is.False);
+            Assert.That(world.InBounds(new Vector3Int(52, 0, 105)), Is.True);
+            Assert.That(world.InBounds(new Vector3Int(-53, 0, -106)), Is.True);
+            Assert.That(world.Set(new Vector3Int(53, 0, 0), BlockCell.Create(1)), Is.False);
+            Assert.That(world.Set(new Vector3Int(-54, 0, 0), BlockCell.Create(1)), Is.False);
+            Assert.That(world.Set(new Vector3Int(0, 0, 106), BlockCell.Create(1)), Is.False);
+            Assert.That(world.InBounds(new Vector3Int(0, -26, 0)), Is.True);
+            Assert.That(world.InBounds(new Vector3Int(0, -27, 0)), Is.False);
             Assert.That(world.PinkCount, Is.EqualTo(1));
         }
         [Test]
@@ -39,16 +45,16 @@ namespace Splatoon.Tests
         [Test]
         public void OnlyAnchorOrSupportDirectlyBelowHoldsAStaticBlock()
         {
-            var world = new BlockWorld(Vector2.one); var wall = new Vector3Int(0, 10, 0);
+            var world = new BlockWorld(Vector2.one * 2); var wall = new Vector3Int(0, 10, 0);
             world.Set(wall, BlockCell.Create(1, true)); world.Set(wall + Vector3Int.right, BlockCell.Create(1));
             Assert.That(world.HasSupport(wall), Is.True); Assert.That(world.HasSupport(wall + Vector3Int.right), Is.False);
             world.Set(wall + Vector3Int.right + Vector3Int.down, BlockCell.Create(2));
             Assert.That(world.HasSupport(wall + Vector3Int.right), Is.True);
         }
-        [TestCase(-8f, -80, -80)]
+        [TestCase(-8f, -26, -26)]
         [TestCase(0f, 0, 0)]
-        [TestCase(-7.78f, -77, -78)]
-        [TestCase(.22f, 3, 2)]
+        [TestCase(-7.78f, -25, -25)]
+        [TestCase(.22f, 1, 1)]
         public void MinimumLandingIsSupportedWithoutSupportingSuspendedOrOutOfBoundsCells(float bottom, int landingY, int lowestLegalY)
         {
             var world = new BlockWorld(Vector2.one, bottom: bottom);
@@ -67,10 +73,10 @@ namespace Splatoon.Tests
             Assert.That(world.Set(landing, BlockCell.Create(1)), Is.True);
             Assert.That(world.HasSupport(landing + Vector3Int.up, _ => false), Is.True);
         }
-        [TestCase(-8f, -80)]
+        [TestCase(-8f, -26)]
         [TestCase(0f, 0)]
-        [TestCase(-7.78f, -78)]
-        [TestCase(.22f, 2)]
+        [TestCase(-7.78f, -25)]
+        [TestCase(.22f, 1)]
         public void MinimumLandingRemainsSupportedAfterDetachSettleAndSnapshot(float bottom, int landingY)
         {
             var world = new BlockWorld(Vector2.one, bottom: bottom);
@@ -167,7 +173,7 @@ namespace Splatoon.Tests
                 run.LandingKnown = true; run.LandingOffset = 2;
                 typeof(BlockTerrain).GetMethod("FindLanding", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                     .Invoke(terrain, new object[] { world, run });
-                Assert.That(run.LandingOffset, Is.EqualTo(.4f).Within(.001));
+                Assert.That(run.LandingOffset, Is.EqualTo(4 * BlockWorld.CellSize).Within(.001));
                 Assert.That(world.Settle(run.Id, new Vector3Int(0, 16, 0), new HashSet<Vector3Int>()), Is.True);
                 Assert.That(world.Falling, Is.Empty); Assert.That(world.PinkCount, Is.EqualTo(5)); Assert.That(world.BlueCount, Is.EqualTo(16));
             }
@@ -217,7 +223,7 @@ namespace Splatoon.Tests
         [Test]
         public void GreedyCollisionMeshHidesInternalFacesAndMergesAdjacentOwners()
         {
-            var world = new BlockWorld(Vector2.one); world.Set(Vector3Int.zero, BlockCell.Create(1)); world.Set(Vector3Int.right, BlockCell.Create(2));
+            var world = new BlockWorld(Vector2.one * 2); world.Set(Vector3Int.zero, BlockCell.Create(1)); world.Set(Vector3Int.right, BlockCell.Create(2));
             var collision = BlockMeshBuilder.Build(world, Vector3Int.zero, true); var render = BlockMeshBuilder.Build(world, Vector3Int.zero, false);
             Assert.That(collision.Triangles.Length, Is.EqualTo(36)); Assert.That(render.Triangles.Length, Is.GreaterThan(collision.Triangles.Length));
             Assert.That(collision.Vertices.Length, Is.EqualTo(24));
@@ -262,13 +268,13 @@ namespace Splatoon.Tests
         static Vector3Int[] OccupiedRowSeed(BlockWorld world)
         {
             var random = new System.Random(1739);
-            var cells = Enumerable.Range(0, 96).Select(_ => new Vector3Int(random.Next(-20, 21), random.Next(-5, 29), random.Next(-20, 21))).Distinct().ToArray();
+            var cells = Enumerable.Range(0, 96).Select(_ => new Vector3Int(random.Next(-20, 21), random.Next(-5, 26), random.Next(-20, 21))).Distinct().ToArray();
             foreach (var cell in cells) world.Set(cell, BlockCell.Create(1));
             return cells;
         }
         [Test] public void OccupiedRowsTrackSetClearOwnerAndDurabilityWithoutChangingTheirMeaning()
         {
-            var world = new BlockWorld(new Vector2(8, 8)); var cells = OccupiedRowSeed(world);
+            var world = new BlockWorld(new Vector2(16, 16)); var cells = OccupiedRowSeed(world);
             AssertOccupiedRowsMatchCells(world);
             for (int i = 0; i < cells.Length; i++)
             {
@@ -283,7 +289,7 @@ namespace Splatoon.Tests
         }
         [Test] public void OccupiedRowArraysAreIndependentAcrossBothDirectionsOfCopyOnWrite()
         {
-            var source = new BlockWorld(new Vector2(8, 8)); var cells = OccupiedRowSeed(source);
+            var source = new BlockWorld(new Vector2(16, 16)); var cells = OccupiedRowSeed(source);
             var copy = source.Clone(); byte[] copyBefore = copy.EncodeSnapshot();
             source.Set(cells[0], default); source.Set(cells[1], BlockCell.Create(2));
             CollectionAssert.AreEqual(copyBefore, copy.EncodeSnapshot());
@@ -293,13 +299,13 @@ namespace Splatoon.Tests
         }
         [Test] public void SnapshotAndDeltaReadChunkRebuildAllRowsWithoutAddingProtocolBytes()
         {
-            var source = new BlockWorld(new Vector2(8, 8), 19); var cells = OccupiedRowSeed(source);
+            var source = new BlockWorld(new Vector2(16, 16), 19); var cells = OccupiedRowSeed(source);
             source.Seal(11, source.Chunks.Keys.ToArray()); byte[] bytes = source.EncodeSnapshot();
             var peer = BlockWorld.DecodeSnapshot(bytes); CollectionAssert.AreEqual(bytes, peer.EncodeSnapshot());
             AssertOccupiedRowsMatchCells(peer);
             var next = source.Clone(); var deleted = BlockWorld.ChunkAt(cells[0]);
             foreach (var cell in cells.Where(c => BlockWorld.ChunkAt(c) == deleted)) next.Set(cell, default);
-            next.Set(new Vector3Int(31, 31, -31), BlockCell.Create(2));
+            next.Set(new Vector3Int(24, 24, -24), BlockCell.Create(2));
             var changed = source.Chunks.Keys.Concat(next.Chunks.Keys).Distinct().ToArray(); next.Seal(12, changed);
             var installed = peer.WithDelta(next.EncodeDelta(11));
             CollectionAssert.AreEqual(next.EncodeSnapshot(), installed.EncodeSnapshot()); AssertOccupiedRowsMatchCells(installed);
@@ -309,7 +315,7 @@ namespace Splatoon.Tests
         }
         [Test] public void DetachRemoveAndSettleKeepOnlyStaticCellsInOccupiedRows()
         {
-            var world = new BlockWorld(new Vector2(8, 8)); var bottom = new Vector3Int(-17, 20, 15);
+            var world = new BlockWorld(new Vector2(12, 12)); var bottom = new Vector3Int(-17, 20, 15);
             for (int i = 0; i < 5; i++) world.Set(bottom + Vector3Int.up * i, BlockCell.Create((byte)(i % 2 + 1)));
             AssertOccupiedRowsMatchCells(world); var run = world.Detach(bottom, 5, 12);
             AssertOccupiedRowsMatchCells(world); Assert.That(world.OccupiedRow(bottom, 1), Is.Zero);
@@ -320,7 +326,7 @@ namespace Splatoon.Tests
         [TestCase(0)] [TestCase(1)] [TestCase(2)]
         public void FullSixteenBitRowsAndMissingNegativeChunksHaveExactMasks(int axis)
         {
-            var world = new BlockWorld(new Vector2(8, 8)); var origin = new Vector3Int(-32, -16, 16);
+            var world = new BlockWorld(new Vector2(24, 24)); var origin = new Vector3Int(-32, -16, 16);
             var step = axis == 0 ? Vector3Int.right : axis == 1 ? Vector3Int.up : new Vector3Int(0, 0, 1);
             for (int i = 0; i < 16; i++) world.Set(origin + step * i, BlockCell.Create(2));
             Assert.That(world.OccupiedRow(origin, axis), Is.EqualTo(ushort.MaxValue));
@@ -339,7 +345,7 @@ namespace Splatoon.Tests
         [Test]
         public void UnsealedDetachSnapshotAndDeltaKeepBothTeamsAndLegacyMotionWithoutStableCells()
         {
-            var source = new BlockWorld(new Vector2(8, 8), 23); var bottom = new Vector3Int(0, 15, 0);
+            var source = new BlockWorld(new Vector2(8, 8), 23); var bottom = new Vector3Int(0, -17, 0);
             for (int i = 0; i < 18; i++) Assert.That(source.Set(bottom + Vector3Int.up * i, BlockCell.Create((byte)(1 + i % 2))), Is.True);
             source.Seal(7, source.Chunks.Keys.ToArray());
             var run = source.Detach(bottom, 18, 123.45);
@@ -354,7 +360,7 @@ namespace Splatoon.Tests
             Assert.That(baseline.PinkCount, Is.EqualTo(9)); Assert.That(baseline.BlueCount, Is.EqualTo(9));
             Assert.That(baseline.Chunks.Count, Is.EqualTo(3));
             var repaired = baseline.WithDelta(source.EncodeDelta(0), out var changed);
-            CollectionAssert.AreEquivalent(new[] { new Vector3Int(0, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(0, 2, 0) }, changed);
+            CollectionAssert.AreEquivalent(new[] { new Vector3Int(0, -2, 0), new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 0) }, changed);
             foreach (var restored in new[] { decoded, repaired })
             {
                 Assert.That(restored.Round, Is.EqualTo(source.Round)); Assert.That(restored.Revision, Is.EqualTo(7u));
@@ -377,7 +383,7 @@ namespace Splatoon.Tests
         [Test]
         public void RebuiltChunkOverlapsOldTombstoneAndKeepsLiveCellsAndExactRevisionInSnapshotAndDelta()
         {
-            var source = new BlockWorld(new Vector2(8, 8), 24); var first = new Vector3Int(1, 32, 1); var second = first + Vector3Int.right;
+            var source = new BlockWorld(new Vector2(8, 8), 24); var first = new Vector3Int(1, 16, 1); var second = first + Vector3Int.right;
             var key = BlockWorld.ChunkAt(first); Assert.That(source.Set(first, BlockCell.Create(1)), Is.True); source.Seal(1, new[] { key });
             Assert.That(source.Set(first, default), Is.True); source.Seal(2, new[] { key });
             Assert.That(source.Chunks, Is.Empty); Assert.That(source.ChunkRevision(key), Is.EqualTo(2u));
@@ -425,7 +431,7 @@ namespace Splatoon.Tests
         [Test]
         public void BatchEncodingKeepsUnsealedRebuiltTombstonesAndEmptyChunksInDeltaMembership()
         {
-            var world = new BlockWorld(new Vector2(8, 8), 24); var cell = new Vector3Int(1, 32, 1); var key = BlockWorld.ChunkAt(cell);
+            var world = new BlockWorld(new Vector2(8, 8), 24); var cell = new Vector3Int(1, 16, 1); var key = BlockWorld.ChunkAt(cell);
             world.Set(cell, BlockCell.Create(1)); world.Seal(1, new[] { key });
             world.Set(cell, default); world.Seal(2, new[] { key });
             world.Set(cell, BlockCell.Create(2)); world.Set(cell + Vector3Int.right, BlockCell.Create(1));

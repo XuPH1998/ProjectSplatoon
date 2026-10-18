@@ -71,6 +71,9 @@ namespace Splatoon.Combat
             public uint BlockOrdinal;
             public bool BlockAttachment;
             public Vector3Int BlockAttachmentCell;
+            public BlockDynamicWorld BlockAttachmentWorld;
+            public uint BlockAttachmentRound;
+            public ulong BlockAttachmentId;
             public bool Removed;
             public SubEntityPhase PublishedPhase;
             public double Fuse, NextAction, GroundAge;
@@ -113,7 +116,7 @@ namespace Splatoon.Combat
         }
         public static bool TryMineGround(PlayerSnapshot s, out RaycastHit hit)
         {
-            if (!Physics.Raycast(PlayerMotorSimulation.HumanPosition(s) + Vector3.up * .3f, Vector3.down, out hit, .8f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < .65f) return false;
+            if (!Physics.Raycast(PlayerMotorSimulation.HumanPosition(s) + Vector3.up * .3f, Vector3.down, out hit, .8f, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore) || hit.normal.y < .65f) return false;
             var surface = hit.collider.GetComponentInParent<PaintSurface>();
             if (BlockAttackService.Contact(hit.collider, hit.point, hit.normal, out var block))
                 return block.Stable && block.Owner == s.Team;
@@ -125,7 +128,7 @@ namespace Splatoon.Combat
             position = s.Position + Vector3.up * (GameplayConfig.GetHero(s.HeroId).StandingHeight * .75f);
             var direction = (aim.AimPoint - position).normalized;
             var muzzle = position + direction * .45f;
-            if (!Physics.Linecast(position, muzzle, out _, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) position = muzzle;
+            if (!Physics.Linecast(position, muzzle, out _, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore)) position = muzzle;
             velocity = direction * c.Flight.speed + Vector3.up * c.Flight.lift;
             if (c.Type == SubWeaponType.CurlingBomb)
             {
@@ -166,10 +169,27 @@ namespace Splatoon.Combat
             var entity = SubWeaponMotion.Create(launch, c, state, now); _entities.Add(entity);
             if (BlockAttackService.Active) entity.BlockAttack = BlockAttackService.Sub(player.PlayerId, s, round, c);
             if (entity.Attached && launch.Surface != null && BlockAttackService.Contact(launch.Surface, launch.Position, launch.Normal, out var support))
-            { entity.BlockAttachment = true; entity.BlockAttachmentCell = support.Cell; }
+                RememberBlockAttachment(entity, support);
             if (c.Type == SubWeaponType.Torpedo) CreateTarget(entity);
             Publish(entity, SubLifecycleKind.Spawn);
             return entity;
+        }
+        static void RememberBlockAttachment(Entity entity, BlockContact support)
+        {
+            entity.BlockAttachment = true;
+            entity.BlockAttachmentCell = support.Cell;
+            entity.BlockAttachmentId = support.Kind == BlockContactKind.Dynamic ? support.DynamicId : 0;
+            entity.BlockAttachmentWorld = entity.BlockAttachmentId != 0 ? BlockTerrain.Current?.Dynamic : null;
+            entity.BlockAttachmentRound = entity.BlockAttachmentWorld != null ? entity.BlockAttachmentWorld.Round : 0;
+        }
+        static bool BlockAttachmentExists(Entity entity)
+        {
+            var terrain = BlockTerrain.Current;
+            if (terrain == null) return false;
+            if (entity.BlockAttachmentId == 0) return terrain.World.TryGet(entity.BlockAttachmentCell, out _);
+            var world = entity.BlockAttachmentWorld;
+            return world != null && terrain.Dynamic == world && world.Round == entity.BlockAttachmentRound &&
+                world.TryGet(entity.BlockAttachmentId, out var body) && world.Contains(body) && body.transform == entity.Attachment;
         }
         public IReadOnlyList<SubEntityState> Capture()
         { _capture.Clear(); foreach (var e in _entities) if (!e.Removed) { Stamp(e); _capture.Add(e.State); } return _capture; }
@@ -182,18 +202,19 @@ namespace Splatoon.Combat
                 var e = _entities[i]; if (e.Removed) continue;
                 if (CleanupOwner(e, players)) { Remove(e); continue; }
                 if(CancelInTornado(e,e.State.Position,now))continue;
-                if(e.BlockAttachment && BlockTerrain.Current != null && !BlockTerrain.Current.World.TryGet(e.BlockAttachmentCell,out _))
+                if(e.BlockAttachment && !BlockAttachmentExists(e))
                 {
                     e.BlockAttachment=false;
+                    e.BlockAttachmentWorld=null;e.BlockAttachmentRound=0;e.BlockAttachmentId=0;
                     if(e.State.Type!=SubWeaponType.SuctionBomb){Remove(e);continue;}
                     // Losing a block face detaches the bomb; its existing fuse keeps ticking.
                     e.Attached=false;e.Attachment=null;e.State.Phase=SubEntityPhase.Flying;e.State.Velocity=Vector3.zero;e.State.Changed=now;
                     Publish(e,SubLifecycleKind.Motion);
                 }
-                // A chunk publication replaces its Transform even when this cell
-                // survives. Block attachments stay at their world contact; only
-                // static-map attachments follow a retained surface Transform.
-                if (e.Attached && !e.BlockAttachment)
+                // A chunk publication replaces its Transform even when the cell
+                // survives. Free bodies retain their Transform, but its pooled
+                // identity must remain valid before an attachment follows it.
+                if (e.Attached && (!e.BlockAttachment || e.BlockAttachmentId != 0))
                 {
                     if (e.Attachment == null) { Remove(e); continue; }
                     e.State.Position = e.Attachment.TransformPoint(e.LocalPosition); e.State.Normal = e.Attachment.TransformDirection(e.LocalNormal);
@@ -253,7 +274,7 @@ namespace Splatoon.Combat
                 if (contact == SubMotionContact.Deploy)
                 {
                     if(BlockAttackService.Contact(h,out var support))
-                    {e.BlockAttachment=true;e.BlockAttachmentCell=support.Cell;}
+                        RememberBlockAttachment(e,support);
                     if (c.Type == SubWeaponType.Sprinkler || c.Type == SubWeaponType.SplashWall) CreateTarget(e);
                     if (!BlockAttackService.Active || c.Type == SubWeaponType.Sprinkler || c.Type == SubWeaponType.SplashWall)
                         PaintRay(e, h.Point + h.Normal * .04f, -h.Normal, .2f, c.Paint.radius);
@@ -294,7 +315,7 @@ namespace Splatoon.Combat
             if (delta.magnitude <= c.Tracking.triggerRadius) { Warn(e, now, c.Autobomb.fuse); return; }
             delta.y = 0; delta = delta.normalized * c.Tracking.speed * dt;
             var next = e.State.Position + delta;
-            if (Physics.Raycast(next + Vector3.up * .75f, Vector3.down, out var ground, 1.5f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) && ground.normal.y > .65f &&
+            if (Physics.Raycast(next + Vector3.up * .75f, Vector3.down, out var ground, 1.5f, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore) && ground.normal.y > .65f &&
                 !_aim.ClosestCast(e.State.Position + Vector3.up * .15f, delta, delta.magnitude, .1f, e.State.Owner, out _, false, e.State.Team))
             { e.State.Position = ground.point + ground.normal * .15f; e.State.Velocity = delta / dt; e.State.Normal = ground.normal; e.State.Yaw = Quaternion.LookRotation(delta).eulerAngles.y; }
             else e.State.Velocity = Vector3.zero;
@@ -353,8 +374,9 @@ namespace Splatoon.Combat
                 var target = h.Collider.GetComponent<SubWeaponTarget>();
                 var sonar=h.Collider.GetComponent<SpecialWeaponTarget>();if(sonar!=null){sonar.Damage(e.State.Team,e.Config.Angle.damage);Remove(e);break;}
                 if (target != null) { DamageObject(target.Id, e.State.Team, e.Config.Angle.damage); Remove(e); break; }
+                bool enemyBlock = BlockAttackService.Contact(h, out var block) && block.Owner != e.State.Team;
                 PaintRay(e, h.Point + h.Normal * .03f, -h.Normal, .1f, e.Config.Paint.radius);
-                if (BlockAttackService.Contact(h, out var block) && block.Owner != e.State.Team)
+                if (enemyBlock)
                 { Remove(e); break; }
                 SubWeaponMotion.ReflectLine(e, h);
                 if (e.State.Explosions > e.Config.Angle.reflections) { Remove(e); break; }

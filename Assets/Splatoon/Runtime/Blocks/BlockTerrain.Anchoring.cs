@@ -18,7 +18,7 @@ namespace Splatoon.Blocks
         {
             if (_staticColliders.Count == 0) return false;
             Vector3 center = BlockWorld.Center(cell);
-            int mask = PlayerMotorSimulation.WorldMask & ~(1 << TerrainLayer);
+            int mask = SurfaceMapMask;
             float half = BlockWorld.CellSize * .45f; // Same construction envelope as BuildMapOverlapCached.
             int nearby = Physics.OverlapBoxNonAlloc(center,
                 new Vector3(StaticWallAnchorProbeLength, half, StaticWallAnchorProbeLength),

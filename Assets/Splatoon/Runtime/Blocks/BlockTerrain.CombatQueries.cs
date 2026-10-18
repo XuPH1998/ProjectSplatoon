@@ -32,6 +32,7 @@ namespace Splatoon.Blocks
                     : fallbackNormal.sqrMagnitude > .00000001f ? fallbackNormal.normalized : Vector3.up;
                 collider = candidate; nearest = squared;
                 contact = new BlockContact { Owner = own.Owner, Point = point, Normal = normal, OrientationNormal = normal,
+                    Kind = own.SurfaceAttached ? BlockContactKind.SurfaceAttached : BlockContactKind.Legacy,
                     Stable = true, Climbable = Mathf.Abs(normal.y) < .7f, Cell = cell, Chunk = chunk, Revision = World.ChunkRevision(chunk) };
             }
             distance = Mathf.Sqrt(nearest); return collider != null;
