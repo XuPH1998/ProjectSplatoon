@@ -21,7 +21,7 @@ namespace Splatoon.Combat
         // the published hit collider, render texture or live capture history.
         PaperCapture _traversalCapture;
         const int TraversalContourCacheCapacity = 64;
-        readonly Dictionary<(int Frame, Vector2 Move), IReadOnlyList<Rect>> _traversalRects = new();
+        readonly Dictionary<(int Frame, Vector2 Move), PaperCapture.SharedPose> _traversalRects = new();
         readonly Queue<(int Frame, Vector2 Move)> _traversalKeys = new();
         (PaperBodyProfile Profile, GameObject Prefab, Vector3 Center, float Height,
             Vector2 Size, float Thickness, string ContentHash) _traversalShape;
@@ -87,30 +87,44 @@ namespace Splatoon.Combat
             if (_traversalCapture == null || !_traversalShape.Equals(shape))
             {
                 ReleaseTraversalCapture(); _traversalShape = shape;
-                _traversalCapture = new PaperCapture(profile);
+                _traversalCapture = PaperCapture.CreateContourEvaluator(profile);
             }
             // Exactly PaperCapture.Sample's quantization for the explicit key
             // supplied by the caller, including final motor validation. No live cache is consulted.
-            int frame = Mathf.FloorToInt(state.PaperAnimationTime * PaperAnimation.FramesPerSecond);
-            var move = new Vector2(Mathf.Round(state.PaperMove.x * 8) / 8, Mathf.Round(state.PaperMove.y * 8) / 8);
+            PaperCapture.PoseCoordinates(state, out int frame, out var move);
             var key = (frame, move);
-            if (_traversalRects.TryGetValue(key, out var cached)) return cached;
-            _traversalCapture.Sample(state);
-            // Sample mutates its scratch list; callers must retain a value that
-            // survives later samples, deterministic FIFO eviction and rebinds.
-            var rects = new List<Rect>(_traversalCapture.HitRects).AsReadOnly();
+            if (_traversalRects.TryGetValue(key, out var cached))
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.TraversalLocalHit);
+#endif
+                return cached.Rects;
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.TraversalLocalMiss);
+#endif
+            // The shared value owns its read-only rectangle snapshot. Retain it
+            // directly across later queries, deterministic eviction and rebinds.
+            var contour = _traversalCapture.QueryContourValue(state);
             if (_traversalKeys.Count == TraversalContourCacheCapacity)
                 _traversalRects.Remove(_traversalKeys.Dequeue());
-            _traversalKeys.Enqueue(key); _traversalRects.Add(key, rects);
-            return rects;
+            _traversalKeys.Enqueue(key); _traversalRects.Add(key, contour);
+            return contour.Rects;
         }
         void Sample(PlayerSnapshot state)
         {
             if (Profile == null || Profile.CapturePrefab == null) return;
             _capture ??= new PaperCapture(Profile);
+            PaperCapture.PoseCoordinates(state, out int frame, out var move);
+            _traversalRects.TryGetValue((frame, move), out var hint);
+            // The body-local lookup is only a hint. Sample checks the FULL captured/current
+            // profile/prefab/content/projection/frame/move key before using an immutable value.
             // Publish a newly sampled silhouette to PhysX once per animation frame.
-            if (_capture.Sample(state) || HitVolume.sharedMesh == null)
-            { HitVolume.sharedMesh = null; HitVolume.sharedMesh = _capture.HitMesh; }
+            if (_capture.SampleWithLocalContour(state, hint) || HitVolume.sharedMesh == null)
+            {
+                using var timing = FramePerformance.PaperHitColliderCook.Auto();
+                HitVolume.sharedMesh = null; HitVolume.sharedMesh = _capture.HitMesh;
+            }
         }
 
         PlayerSnapshot Frame(PlayerSnapshot state)

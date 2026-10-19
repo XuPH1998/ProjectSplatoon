@@ -37,6 +37,12 @@ namespace Splatoon.Combat
     /// <summary>The same collision/movement rules run on the authority and the predicting owner.</summary>
     public sealed partial class PlayerMotorSimulation
     {
+        static readonly Unity.Profiling.ProfilerMarker MotorCanStandCpu = new("Splatoon.Player.Motor.CanStand");
+        static readonly Unity.Profiling.ProfilerMarker MotorStepMovementCpu = new("Splatoon.Player.Motor.StepMovement");
+        static readonly Unity.Profiling.ProfilerMarker MotorResolveGroundCpu = new("Splatoon.Player.Motor.ResolveGround");
+        static readonly Unity.Profiling.ProfilerMarker MotorResolveSupportCpu = new("Splatoon.Player.Motor.ResolveSupport");
+        static readonly Unity.Profiling.ProfilerMarker MotorMapGroundCpu = new("Splatoon.Player.Motor.TryGetMapGround");
+        static readonly Unity.Profiling.ProfilerMarker MotorWallGeometryCpu = new("Splatoon.Player.Motor.WallGeometryFits");
         public readonly struct TraversalContact
         {
             public readonly byte Owner;
@@ -45,24 +51,29 @@ namespace Splatoon.Combat
             public readonly int SurfaceId, RegionId;
             public readonly Vector3Int Cell;
             public readonly uint Revision;
+            public readonly BlockContactKind Kind;
+            public readonly BlockSurfaceKey SurfaceKey;
+            public readonly BlockFixedGridHandle FixedHandle;
             public TraversalContact(InkContact contact)
             {
                 Owner = contact.Owner; Point = contact.Point; Normal = contact.Normal;
                 Climbable = contact.Climbable; IsBlock = false; Stable = true;
                 SurfaceId = contact.Surface.SurfaceId; RegionId = contact.Region.Id;
-                Cell = default; Revision = 0;
+                Cell = default; Revision = 0; Kind = BlockContactKind.Legacy; SurfaceKey = default; FixedHandle = default;
             }
             public TraversalContact(BlockContact contact)
             {
                 Owner = contact.Owner; Point = contact.Point; Normal = contact.Normal;
                 Climbable = contact.Stable && contact.Climbable; IsBlock = true; Stable = contact.Stable;
                 SurfaceId = RegionId = 0; Cell = contact.Cell; Revision = contact.Revision;
+                Kind = contact.Kind; SurfaceKey = contact.SurfaceKey; FixedHandle = contact.FixedHandle;
             }
             public TraversalContact(RaycastHit hit, bool allowWall = false)
             {
                 Owner = 0; Point = hit.point; Normal = hit.normal;
                 Climbable = allowWall && Mathf.Abs(hit.normal.y) < .7f; IsBlock = false; Stable = true;
                 SurfaceId = RegionId = 0; Cell = default; Revision = 0;
+                Kind = BlockContactKind.Legacy; SurfaceKey = default; FixedHandle = default;
             }
         }
         public static bool BlockTraversalEnabled => BlockTerrain.Current != null && BlockTerrain.Current.Initialized;
@@ -81,7 +92,7 @@ namespace Splatoon.Combat
         public PlayerMotorSimulation(CharacterController controller, PrototypeArena arena = null)
         { _controller = controller; _arena = arena; _root = controller.transform; _shape = new HeroBodyShape(controller); }
         public void BindBody(int heroId) => _shape = HeroBodyShape.For(heroId);
-        public bool CanFitHero(int heroId, Vector3 feet) => HeroBodyShape.For(heroId).Fits(feet, _overlap, WorldMask);
+        public bool CanFitHero(int heroId, Vector3 feet) => HeroBodyShape.For(heroId).Fits(feet, _overlap, WorldMask) && FixedShapeFits(HeroBodyShape.For(heroId), feet);
         public void Restore(PlayerSnapshot s, bool updateHitGeometry = true)
         {
             BindBody(s.HeroId);
@@ -114,10 +125,18 @@ namespace Splatoon.Combat
             s.AirHumanOffset += shift;
             TraceMotor(MotorTraceBranch.AirEntry, traceBefore, s, rebaseHeight: shift);
         }
-        public bool CanStand(Vector3 position) => _shape.Fits(position, _overlap, WorldMask);
+        public bool CanStand(Vector3 position)
+        {
+            using var timing = MotorCanStandCpu.Auto();
+            return _shape.Fits(position, _overlap, WorldMask) && FixedShapeFits(_shape, position);
+        }
         public static bool Query(Vector3 origin, Vector3 direction, float distance, out TraversalContact contact)
         {
-            if (Physics.Raycast(origin, direction, out var hit, distance, WorldMask, QueryTriggerInteraction.Ignore))
+            bool mapHit = Physics.Raycast(origin, direction, out var hit, distance, WorldMask, QueryTriggerInteraction.Ignore);
+            if (FixedGridActive && BlockTerrain.Current.TryCastFixed(origin, direction, distance, 0, out var fixedHit) &&
+                (!mapHit || fixedHit.Distance <= hit.distance))
+            { contact = new TraversalContact(BlockTerrain.FixedContact(fixedHit)); return true; }
+            if (mapHit)
             {
                 if (BlockTraversalEnabled)
                     return TryBlockTraversalContact(hit, out contact);
@@ -156,6 +175,19 @@ namespace Splatoon.Combat
             => TryGetGround(feet, out contact, out _, slopeLimit, footprint);
         public static bool TryGetGround(Vector3 feet, out TraversalContact contact, out GroundQueryDetails details, float slopeLimit = 45, float footprint = .35f)
         {
+            bool map = TryGetMapGround(feet, out contact, out details, slopeLimit, footprint);
+            if (FixedGridActive && BlockFixedGridQueries.Support(BlockTerrain.Current.FixedBlocks, feet, Mathf.Max(0, footprint), .08001f,
+                out var fixedHit, Mathf.Cos(slopeLimit * Mathf.Deg2Rad)) && (!map || fixedHit.Point.y >= contact.Point.y - .001f))
+            {
+                contact = new TraversalContact(BlockTerrain.FixedContact(fixedHit));
+                details.EvaluatedPaths |= GroundEvaluated.FixedGrid; details.Winner = GroundWinner.FixedGrid;
+                return true;
+            }
+            return map;
+        }
+        static bool TryGetMapGround(Vector3 feet, out TraversalContact contact, out GroundQueryDetails details, float slopeLimit, float footprint)
+        {
+            using var timing = MotorMapGroundCpu.Auto();
             contact = default;
             bool blocks = BlockTraversalEnabled;
             details = new GroundQueryDetails { Evaluated = true, BlockTraversal = blocks, Feet = feet, SlopeLimit = slopeLimit, Footprint = footprint,
@@ -201,6 +233,7 @@ namespace Splatoon.Combat
         static float WallSpeed(SwimSurface source, cfg.HeroConfig hero) => source == SwimSurface.Neutral ? hero.NeutralSwimSpeed : hero.WallSwimSpeed;
         public void Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed = -1, bool shootingMovement = false)
         {
+            using var timing = FixedMotorCpu.Auto();
             BindBody(s.HeroId);
             var blockPush = BeginBlockMovement(dt);
             bool committed = false;
@@ -225,9 +258,12 @@ namespace Splatoon.Combat
 
         void CompleteTraversalFrame(ref PlayerSnapshot s, PlayerSnapshot previous, float dt, double now)
         {
-            ResolveSupport(ref s, previous, dt);
+            ResolveSupport(ref s, previous, dt,
+                out var groundEvaluated, out var groundFound, out var ground,
+                out var wallEvaluated, out var wallFound, out var wall);
             // Traversal source may survive takeoff or seam grace; recovery requires fresh contact.
-            s.FriendlyInkContact = HasFriendlyInkContact(s);
+            s.FriendlyInkContact = HasFriendlyInkContactFromSupport(s,
+                groundEvaluated, groundFound, ground, wallEvaluated, wallFound, wall);
             var profile = PaperProfile;
             PaperPoseSimulation.Resolve(ref s, previous, profile, now);
             PaperAnimation.Step(ref s, previous, dt, profile);
@@ -324,27 +360,49 @@ namespace Splatoon.Combat
             retained.Velocity = retained.PlanarVelocity = Vector3.zero; retained.VerticalSpeed = 0;
             retained.TurnDirection = 0; retained.WallSeenAt = now;
             BindWall(ref retained, wall);
-            ResolveSupport(ref retained, previous, dt);
-            retained.FriendlyInkContact = HasFriendlyInkContact(retained);
+            ResolveSupport(ref retained, previous, dt,
+                out var groundEvaluated, out var groundFound, out var ground,
+                out var wallEvaluated, out var wallFound, out var supportWall);
+            retained.FriendlyInkContact = HasFriendlyInkContactFromSupport(retained,
+                groundEvaluated, groundFound, ground, wallEvaluated, wallFound, supportWall);
             if ((wall.IsBlock && (!retained.FriendlyInkContact || retained.SupportTerrainRevision == 0)) || !WallGeometryFits(retained)) return false;
             s = retained;
             Restore(s, false);
             return true;
         }
 
-        void ResolveSupport(ref PlayerSnapshot s, PlayerSnapshot previous, float dt)
+        void ResolveSupport(ref PlayerSnapshot s, PlayerSnapshot previous, float dt,
+            out bool groundEvaluated, out bool groundFound, out TraversalContact ground,
+            out bool wallEvaluated, out bool wallFound, out TraversalContact wall)
         {
+            using var timing = MotorResolveSupportCpu.Auto();
+            groundEvaluated = groundFound = wallEvaluated = wallFound = false;
+            ground = wall = default;
             s.SupportCell = default; s.SupportTerrainRevision = 0; s.GroundNormal = Vector3.up;
+            s.SupportIsFixedGrid = false; s.SupportFixedId = 0; s.SupportFixedGeneration = 0;
+            var fixedWorld = FixedGridActive ? BlockTerrain.Current.FixedBlocks : null;
+            s.FixedBlockRevision = fixedWorld != null ? fixedWorld.Revision : 0;
+            s.FixedBlockEpoch = fixedWorld != null ? fixedWorld.Epoch : 0;
+            s.FixedBlockRound = fixedWorld != null ? fixedWorld.Round : 0;
+            s.SupportIsSurfacePaint = false; s.SupportSurfaceFace = s.SupportSurfaceU = s.SupportSurfaceV = 0;
             if (!BlockTraversalEnabled || s.Health <= 0) return;
-            if (s.Movement == MovementMode.WallInk && Query(s.Position + Vector3.up * CompactCenterY,
-                -s.WallNormal, _controller.radius + .065f, out var wall) && CanClimb(wall, s.Team))
+            if (s.Movement == MovementMode.WallInk)
             {
-                if (wall.IsBlock) { s.SupportCell = wall.Cell; s.SupportTerrainRevision = wall.Revision; }
-                s.GroundNormal = wall.Normal;
-                return;
+                wallEvaluated = true;
+                wallFound = Query(s.Position + Vector3.up * CompactCenterY,
+                    -s.WallNormal, _controller.radius + .065f, out wall);
+                if (wallFound && CanClimb(wall, s.Team))
+                {
+                    if (wall.IsBlock) SetSupport(ref s, wall);
+                    s.GroundNormal = wall.Normal;
+                    return;
+                }
             }
-            if (!s.Grounded || !TryGetGround(s.Position, out var ground, _controller.slopeLimit, _controller.radius) || !ground.IsBlock || !ground.Stable) return;
-            s.SupportCell = ground.Cell; s.SupportTerrainRevision = ground.Revision;
+            if (!s.Grounded) return;
+            groundEvaluated = true;
+            groundFound = TryGetGround(s.Position, out ground, _controller.slopeLimit, _controller.radius);
+            if (!groundFound || !ground.IsBlock || !ground.Stable) return;
+            SetSupport(ref s, ground);
             Vector3 normal = ground.Normal;
             if (s.Swimming && ground.Owner == s.Team)
                 normal = BlockTerrain.Current.QueryOrientation(ground.Point, ground.Normal, s.Team, _controller.radius);
@@ -354,18 +412,38 @@ namespace Splatoon.Combat
             s.GroundNormal = continuous ? Vector3.Slerp(previous.GroundNormal, normal, 1 - Mathf.Exp(-18 * dt)).normalized : normal;
         }
 
+        static void SetSupport(ref PlayerSnapshot state, TraversalContact contact)
+        {
+            state.SupportCell = contact.Cell; state.SupportTerrainRevision = contact.Revision;
+            state.SupportIsFixedGrid = contact.Kind == BlockContactKind.FixedGrid;
+            state.SupportFixedId = state.SupportIsFixedGrid ? contact.FixedHandle.Id : 0;
+            state.SupportFixedGeneration = state.SupportIsFixedGrid ? contact.FixedHandle.Generation : 0;
+            state.SupportIsSurfacePaint = contact.Kind == BlockContactKind.SurfacePaint;
+            state.SupportSurfaceFace = state.SupportIsSurfacePaint ? contact.SurfaceKey.FaceId : 0;
+            state.SupportSurfaceU = state.SupportIsSurfacePaint ? contact.SurfaceKey.U : 0;
+            state.SupportSurfaceV = state.SupportIsSurfacePaint ? contact.SurfaceKey.V : 0;
+        }
+
         bool HasFriendlyInkContact(PlayerSnapshot s)
+            => HasFriendlyInkContactFromSupport(s, false, false, default, false, false, default);
+
+        bool HasFriendlyInkContactFromSupport(PlayerSnapshot s,
+            bool groundEvaluated, bool groundFound, TraversalContact ground,
+            bool wallEvaluated, bool wallFound, TraversalContact wall)
         {
             if (s.Health <= 0 || !s.Swimming || s.Team == 0 || s.Team == 255) return false;
             if (s.Movement == MovementMode.GroundInk && s.Grounded)
-                return TryGetGround(s.Position, out var ground, _controller.slopeLimit, _controller.radius) && ground.Owner == s.Team && ground.Stable;
+                return (groundEvaluated ? groundFound : TryGetGround(s.Position, out ground, _controller.slopeLimit, _controller.radius)) &&
+                    ground.Owner == s.Team && ground.Stable;
             if (s.Movement != MovementMode.WallInk) return false;
-            return Query(s.Position + Vector3.up * CompactCenterY, -s.WallNormal, _controller.radius + .065f, out var contact) &&
-                contact.Owner == s.Team && contact.Climbable && Vector3.Dot(contact.Normal, s.WallNormal) > .99f;
+            return (wallEvaluated ? wallFound : Query(s.Position + Vector3.up * CompactCenterY,
+                -s.WallNormal, _controller.radius + .065f, out wall)) &&
+                wall.Owner == s.Team && wall.Climbable && Vector3.Dot(wall.Normal, s.WallNormal) > .99f;
         }
 
         void StepMovement(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, bool wantsFire, float shootMoveSpeed, bool shootingMovement, bool allowWallTraversal = true)
         {
+            using var timing = MotorStepMovementCpu.Auto();
             var c = GameplayConfig.GetHero(s.HeroId);
             var weapon = GameplayConfig.GetWeapon(s.HeroId);
             if (s.Health <= 0) { StepDead(ref s, dt); return; }
@@ -384,7 +462,7 @@ namespace Splatoon.Combat
                 s.AirSwimSource = s.Grounded && s.Swimming && s.SwimSource == SwimSurface.Friendly ? SwimSurface.Friendly : SwimSurface.Neutral;
             bool wasCompact = s.Swimming || s.CompactBody;
             bool wasAirPaper = wasCompact && !s.Grounded && s.Movement == MovementMode.Air;
-            bool canStand = CanStand(HumanPosition(s)), detached = false;
+            bool canStand = !wasCompact || CanStand(HumanPosition(s)), detached = false;
             if (s.Movement == MovementMode.Mantle)
             {
                 bool lostTarget = BlockTraversalEnabled && (!TryGetGround(s.MantleTo, out var mantleGround, _controller.slopeLimit, 0) ||
@@ -398,7 +476,7 @@ namespace Splatoon.Combat
                     SetShape(true); MoveWithFreeBlocks(target - _root.position, dt);
                     s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Swimming = true;
                     s.CompactBody = false;
-                    s.Grounded = _controller.isGrounded; s.TurnDirection = 0;
+                    s.Grounded = _controller.isGrounded || FixedGridActive && TryGetGround(s.Position, out _, _controller.slopeLimit, _controller.radius); s.TurnDirection = 0;
                     if (t < 1) return;
                     s.Movement = MovementMode.Air; s.VerticalSpeed = -2;
                     grounded = TryGetGround(s.Position, out floorContact, _controller.slopeLimit, _controller.radius);
@@ -510,7 +588,8 @@ namespace Splatoon.Combat
             Vector3 requestedMove = (s.PlanarVelocity + Vector3.up * s.VerticalSpeed) * dt;
             var collisions = MoveWithFreeBlocks(requestedMove, dt);
             if ((collisions & CollisionFlags.Above) != 0 && s.VerticalSpeed > 0) s.VerticalSpeed = 0;
-            s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position; s.Grounded = _controller.isGrounded;
+            s.Velocity = (_root.position - s.Position) / dt; s.Position = _root.position;
+            s.Grounded = _controller.isGrounded || (collisions & CollisionFlags.Below) != 0;
             TraceMotor(MotorTraceBranch.DestinationMove, traceBeforeMove, s, collisions: collisions, requestedMove: requestedMove);
             EmitMotorDetails(MotorDetailKind.Move, MotorTraceBranch.DestinationMove, capsule: destinationCapsule);
             // Resolve the destination before resources/presentation, including landing and fresh enemy paint.
@@ -542,7 +621,9 @@ namespace Splatoon.Combat
                 float radius = Mathf.Max(.05f, _shape.Radius - .025f);
                 if (Physics.CheckCapsule(feet + Vector3.up * radius,
                     feet + Vector3.up * Mathf.Max(radius, _shape.CompactHeight - radius), radius,
-                    WorldMask, QueryTriggerInteraction.Ignore))
+                    WorldMask, QueryTriggerInteraction.Ignore) ||
+                    FixedGridActive && BlockTerrain.Current.FixedCapsuleOverlaps(feet + Vector3.up * (_shape.CompactHeight * .5f),
+                        Mathf.Max(0, _shape.CompactHeight * .5f - radius), radius))
                 {
                     TraceMotor(MotorTraceBranch.WallAttachEvaluation, before, s, probeEvaluated: true,
                         probeSucceeded: false, contact: entry, rebaseHeight: conversion);
@@ -556,7 +637,7 @@ namespace Splatoon.Combat
             float gap = Vector3.Dot(physicalStart + Vector3.up * CompactCenterY - entry.Point, entry.Normal);
             Vector3 requested = entry.Normal * (_controller.radius + .015f - gap);
             var attachCapsule = MotorDetailTracing ? CaptureMoveCapsule(_controller) : default;
-            var collisions = _controller.Move(requested);
+            var collisions = MoveWithFreeBlocks(requested, dt);
             // An obstacle can stop the snap. Bind only after the capsule reaches
             // the wall at its converted height, and record the actual contact.
             gap = Vector3.Dot(_root.position + Vector3.up * CompactCenterY - entry.Point, entry.Normal);
@@ -595,6 +676,7 @@ namespace Splatoon.Combat
         }
         bool WallGeometryFits(PlayerSnapshot candidate)
         {
+            using var timing = MotorWallGeometryCpu.Auto();
             if (!BlockTraversalEnabled) return true;
             var player = _root.GetComponent<PrototypePlayer>();
             // An isolated controller has no authored sheet. Do not invent a
@@ -641,6 +723,7 @@ namespace Splatoon.Combat
         }
         void ResolveGround(ref PlayerSnapshot s, PlayerInputFrame input, bool wantsFire)
         {
+            using var timing = MotorResolveGroundCpu.Auto();
             var traceBeforeGround = MotorTracing ? s : default;
             // The support point has now reached the floor. Standing from here
             // uses this contact, not the old human origin below the sheet.
@@ -694,10 +777,10 @@ namespace Splatoon.Combat
         bool TryMantle(ref PlayerSnapshot s, double now)
         {
             Vector3 probe = s.Position + Vector3.up - s.WallNormal * .6f;
-            if (!Physics.Raycast(probe, Vector3.down, out var hit, 1.05f, WorldMask, QueryTriggerInteraction.Ignore) || hit.normal.y < .65f) return false;
-            if (hit.point.y < s.Position.y + .1f || hit.point.y > s.Position.y + .95f) return false;
-            Vector3 target = hit.point + Vector3.up * .025f;
-            if (BlockTraversalEnabled && (!TryBlockTraversalContact(hit, out var ground) || !CanSwimOnGround(ground, s.Team))) return false;
+            if (!Query(probe, Vector3.down, 1.05f, out var ground) || ground.Normal.y < .65f) return false;
+            if (ground.Point.y < s.Position.y + .1f || ground.Point.y > s.Position.y + .95f) return false;
+            Vector3 target = ground.Point + Vector3.up * .025f;
+            if (BlockTraversalEnabled && !CanSwimOnGround(ground, s.Team)) return false;
             if (!CanStand(target) || Mathf.Abs(target.x) > 15.8f || Mathf.Abs(target.z) > 31.8f) return false;
             var apex = new Vector3(s.Position.x, target.y + .15f, s.Position.z);
             if (!InkPathClear(s.Position, apex) || !InkPathClear(apex, target)) return false;
@@ -709,6 +792,9 @@ namespace Splatoon.Combat
         bool InkPathClear(Vector3 from, Vector3 to)
         {
             Vector3 delta = to - from; float radius = Mathf.Max(.05f, _controller.radius - .04f);
+            if (FixedGridActive && BlockFixedGridQueries.CastCapsule(BlockTerrain.Current.FixedBlocks,
+                from + Vector3.up * (_shape.CompactHeight * .5f), Mathf.Max(0, _shape.CompactHeight * .5f - radius),
+                radius, delta, delta.magnitude, out _)) return false;
             return !Physics.CapsuleCast(from + Vector3.up * radius, from + Vector3.up * (_shape.CompactHeight-radius), radius,
                 delta.normalized, delta.magnitude, WorldMask, QueryTriggerInteraction.Ignore);
         }
@@ -721,8 +807,11 @@ namespace Splatoon.Combat
             Vector3 direction = s.VerticalSpeed > 0 ? Vector3.up : Vector3.down;
             float distance = Mathf.Abs(s.VerticalSpeed * dt); s.Grounded = false;
             Vector3 origin = s.Position + Vector3.up * .3f;
-            if (Physics.SphereCast(origin, .25f, direction, out var hit, distance + .05f, WorldMask, QueryTriggerInteraction.Ignore))
-            { distance = Mathf.Max(0, hit.distance - .05f); s.VerticalSpeed = 0; s.Grounded = direction.y < 0; }
+            bool blocked = Physics.SphereCast(origin, .25f, direction, out var hit, distance + .05f, WorldMask, QueryTriggerInteraction.Ignore);
+            float nearest = blocked ? hit.distance : float.PositiveInfinity;
+            if (FixedGridActive && BlockTerrain.Current.TryCastFixed(origin, direction, distance + .05f, .25f, out var fixedHit) &&
+                fixedHit.Distance < nearest) { blocked = true; nearest = fixedHit.Distance; }
+            if (blocked) { distance = Mathf.Max(0, nearest - .05f); s.VerticalSpeed = 0; s.Grounded = direction.y < 0; }
             s.Position += direction * distance; _root.position = s.Position; s.Velocity = direction * (distance / dt);
         }
     }

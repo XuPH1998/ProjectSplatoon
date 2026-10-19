@@ -16,7 +16,7 @@ using UnityEngine.TestTools;
 
 namespace Splatoon.Tests
 {
-    /// <summary>Paid combat through the real host services and asynchronous surface publication.</summary>
+    /// <summary>Paid combat through the real host services, zero-thickness map paint and independent bodies.</summary>
     public sealed class BlockSurfaceCombatPlayTests
     {
         const float Dt = 1f / 60;
@@ -82,14 +82,6 @@ namespace Splatoon.Tests
             Place(_floor.point + Vector3.back * 8 + Vector3.up * .04f);
         }
 
-        static IEnumerable<(Vector3Int cell, BlockCell value)> Cells(BlockWorld world)
-        {
-            foreach (var chunk in world.Chunks)
-                for (int index = 0; index < BlockWorld.CellsPerChunk; index++)
-                    if (chunk.Value.Cells[index].Occupied)
-                        yield return (BlockWorld.CellFromIndex(chunk.Key, index), chunk.Value.Cells[index]);
-        }
-
         IEnumerator Pump(Func<bool> ready, string label, Action simulate = null)
         {
             for (int frame = 0; frame < 1200 && !ready(); frame++)
@@ -119,53 +111,84 @@ namespace Splatoon.Tests
 
         void AssertCounts()
         {
-            Assert.That(Terrain.PinkCount, Is.EqualTo(Terrain.World.PinkCount + Dynamic.PinkCount));
-            Assert.That(Terrain.BlueCount, Is.EqualTo(Terrain.World.BlueCount + Dynamic.BlueCount));
+            Assert.That(Terrain.PinkCount, Is.EqualTo(Terrain.World.PinkCount + Terrain.SurfacePaints.PinkCount + Dynamic.PinkCount));
+            Assert.That(Terrain.BlueCount, Is.EqualTo(Terrain.World.BlueCount + Terrain.SurfacePaints.BlueCount + Dynamic.BlueCount));
             _fixture.FlushEvents();
             Assert.That(_match.State.Value.PinkBlockCount, Is.EqualTo(Terrain.PinkCount));
             Assert.That(_match.State.Value.BlueBlockCount, Is.EqualTo(Terrain.BlueCount));
             Assert.That(_match.State.Value.DynamicBlockRevision, Is.EqualTo(Dynamic.LifecycleRevision));
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidMapThenFriendlyAttachedAndFreeHitsUseIndependentBodies()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidMapThenFriendlyAttachedAndFreeHitsUseIndependentBodies()
         {
             uint paint = _match.PaintSequence;
             var first = _fixture.PaidShot(_host, 1, ++_shotId, _floor.point + Vector3.up * 1.2f, Vector3.down * 32);
             float paidInk = _host.Snapshot.Value.Ink;
             yield return Fire(first);
             Assert.That(first.BlockAttack.Added, Is.GreaterThan(0)); Assert.That(Dynamic.Count, Is.Zero);
-            var cells = Cells(Terrain.World).ToArray();
-            int row = BlockWorld.CellAt(_floor.point + Vector3.up * (BlockWorld.CellSize * .51f)).y;
-            Assert.That(cells.All(pair => pair.value.SurfaceAttached && pair.value.Anchored && pair.cell.y == row), Is.True,
-                "Only the first original-map layer may enter the lattice");
+            var cells = Terrain.SurfacePaints.EnumeratePainted().ToArray();
+            Assert.That(cells.Length, Is.EqualTo(first.BlockAttack.Added));
+            Assert.That(cells.All(cell => cell.Owner == 1 &&
+                Mathf.Abs(Terrain.SurfacePaintCenter(cell.Key).y - _floor.point.y) < .0001f), Is.True,
+                "The paid map disk is zero-thickness paint on the original floor plane");
+            Assert.That(Terrain.World.PinkCount + Terrain.World.BlueCount, Is.Zero,
+                "Ordinary map paint never creates a solid voxel layer");
             Assert.That(Terrain.World.Falling.Count, Is.Zero);
             Assert.That(_host.Snapshot.Value.Ink, Is.EqualTo(paidInk).Within(.001));
             AssertCredit(first.BlockAttack);
+            yield return _fixture.CaptureGameplayFrame("paid-map-paint", _floor.point, new Vector3(1.8f, 2.4f, -3));
 
-            byte[] coating = Terrain.World.EncodeSnapshot();
-            Vector3 center = BlockWorld.Center(cells.OrderBy(pair => (BlockWorld.Center(pair.cell) - _floor.point).sqrMagnitude).First().cell);
+            // Keep native free-body contacts on own colour during this particular
+            // hit-classification test. Bare/enemy landing conversion has its own native fixture.
+            _fixture.SeedMapPaint(_floor, 1, 6);
+            Place(_floor.point + Vector3.back * 1.5f + Vector3.up * .04f);
+            byte[] coating = Terrain.SurfacePaints.ExportFull();
+            Vector3 center = Terrain.SurfacePaintCenter(cells.OrderBy(cell =>
+                (Terrain.SurfacePaintCenter(cell.Key) - _floor.point).sqrMagnitude).First().Key);
             double points = _host.Snapshot.Value.SpecialPoints;
+            long created = Dynamic.CreatedCount;
             var second = _fixture.PaidShot(_host, 1, ++_shotId, center + Vector3.up * .45f, Vector3.down * 32);
             yield return Fire(second);
-            Assert.That(second.BlockAttack.Added, Is.GreaterThan(0)); Assert.That(Dynamic.Count, Is.EqualTo(second.BlockAttack.Added));
-            CollectionAssert.AreEqual(coating, Terrain.World.EncodeSnapshot(), "Friendly coating hits cannot grow another attached layer");
-            Assert.That(Dynamic.Bodies.Values.All(body => !body.Body.isKinematic && body.Body.useGravity && body.Body.mass > 0 &&
+            Assert.That(second.BlockAttack.Added, Is.GreaterThan(0));
+            Assert.That(Dynamic.CreatedCount - created, Is.EqualTo(second.BlockAttack.Added));
+            Assert.That(Dynamic.Count, Is.GreaterThan(0));
+            CollectionAssert.AreEqual(coating, Terrain.SurfacePaints.ExportFull(), "Friendly surface hits create bodies and preserve map ownership");
+            Assert.That(Dynamic.Bodies.Values.Any(body => !body.Body.isKinematic), Is.True,
+                "At least the nearby or airborne newly created bodies are actively simulated");
+            Assert.That(Dynamic.Bodies.Values.All(body => body.Body.useGravity && body.Body.mass > 0 &&
                 body.Collider.size == Vector3.one * BlockWorld.CellSize), Is.True);
             AssertCredit(second.BlockAttack, points);
+            yield return _fixture.CaptureGameplayFrame("paid-friendly-free-bodies", center, new Vector3(2.4f, 2, -3));
 
-            long created = Dynamic.CreatedCount;
+            created = Dynamic.CreatedCount;
             var top = Dynamic.Bodies.Values.OrderByDescending(body => body.Body.position.y).First();
             points = _host.Snapshot.Value.SpecialPoints;
             var third = _fixture.PaidShot(_host, 1, ++_shotId, top.Body.position + Vector3.up * .45f, Vector3.down * 32);
             yield return Fire(third);
             Assert.That(third.BlockAttack.Added, Is.GreaterThan(0));
             Assert.That(Dynamic.CreatedCount - created, Is.EqualTo(third.BlockAttack.Added), "Friendly free body hits also create independent bodies");
-            CollectionAssert.AreEqual(coating, Terrain.World.EncodeSnapshot()); AssertCredit(third.BlockAttack, points);
+            CollectionAssert.AreEqual(coating, Terrain.SurfacePaints.ExportFull()); AssertCredit(third.BlockAttack, points);
             Assert.That(_match.PaintSequence, Is.EqualTo(paint), "Block combat emits no legacy planar paint");
             AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidEnemyHitDestroysAndSharedPelletPaymentCannotBuildTwice()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidEnemyMapPaintIsReplacedDirectlyWithoutRemovalCredit()
+        {
+            _fixture.SeedMapPaint(_floor, 2, 6);
+            int blue = Terrain.SurfacePaints.BlueCount;
+            var shot = _fixture.PaidShot(_host, 1, ++_shotId, _floor.point + Vector3.up * 1.2f, Vector3.down * 32);
+            yield return Fire(shot);
+            Assert.That(shot.BlockAttack.Added, Is.GreaterThan(0));
+            Assert.That(shot.BlockAttack.RemovedEnemy, Is.Zero, "Replacing enemy map colour is one construction award");
+            Assert.That(Dynamic.CreatedCount, Is.Zero); Assert.That(Dynamic.Count, Is.Zero);
+            Assert.That(Terrain.SurfacePaints.PinkCount, Is.EqualTo(shot.BlockAttack.Added));
+            Assert.That(Terrain.SurfacePaints.BlueCount, Is.EqualTo(blue - shot.BlockAttack.Added));
+            Assert.That(Terrain.World.PinkCount + Terrain.World.BlueCount, Is.Zero);
+            AssertCredit(shot.BlockAttack); AssertCounts();
+            yield return _fixture.CaptureGameplayFrame("paid-enemy-paint-replaced", _floor.point, new Vector3(1.8f, 2.4f, -3));
+        }
+
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidEnemyHitDestroysAndSharedPelletPaymentCannotBuildTwice()
         {
             var enemyPosition = _floor.point + Vector3.up * 2;
             Assert.That(Dynamic.TrySpawn(2, enemyPosition, Quaternion.identity, out var enemy), Is.True);
@@ -174,7 +197,7 @@ namespace Splatoon.Tests
             yield return Fire(shot);
             Assert.That(shot.BlockAttack.RemovedEnemy, Is.EqualTo(1)); Assert.That(shot.BlockAttack.Added, Is.Zero);
             Assert.That(Dynamic.CreatedCount, Is.EqualTo(created)); Assert.That(Dynamic.Count, Is.Zero);
-            Assert.That(Terrain.World.PinkCount + Terrain.World.BlueCount, Is.Zero); AssertCredit(shot.BlockAttack);
+            Assert.That(Terrain.PinkCount + Terrain.BlueCount, Is.Zero); AssertCredit(shot.BlockAttack);
 
             Reset();
             const int sharedProjectileHero = 7;
@@ -202,7 +225,8 @@ namespace Splatoon.Tests
             Assert.That(Dynamic.Count, Is.EqualTo(token.Added)); AssertCredit(token); AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidDirectSharesOneNearestQuotaAcrossAttachedAndFreeEnemyBlocks()
+        // Explicit historical solid-voxel contract; never include it in the new paint gameplay selector.
+        [UnityTest, Category("BlockSurfaceSolidLegacy"), Timeout(600000)] public IEnumerator PaidDirectSharesOneNearestQuotaAcrossAttachedAndFreeEnemyBlocks()
         {
             var cell = BlockWorld.CellAt(_floor.point + Vector3.up * (BlockWorld.CellSize * .51f));
             var seed = _fixture.Empty(); seed.Set(cell, BlockCell.Create(2, true, true));
@@ -220,7 +244,7 @@ namespace Splatoon.Tests
             AssertCredit(token); AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidBurstBombKeepsFriendlyRadiusAndCountsBothRepresentationsOnce()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidBurstBombKeepsFriendlyRadiusAndCountsBothRepresentationsOnce()
         {
             float charge = _fixture.PaySub(_host, SubWeaponType.BurstBomb);
             var state = _host.Snapshot.Value; var config = PlayerLoadout.SubWeapon(state);
@@ -228,16 +252,18 @@ namespace Splatoon.Tests
             float friendly = radius * BlockGameplaySettings.FriendlyBlastRadiusFraction;
             Assert.That(friendly, Is.GreaterThan(.5f)); Assert.That(radius - friendly, Is.GreaterThan(.5f));
             float far = (radius + friendly) * .5f;
-            var cell = BlockWorld.CellAt(_floor.point + Vector3.up * (BlockWorld.CellSize * .51f));
-            Vector3 center = BlockWorld.Center(cell);
-            var seed = _fixture.Empty();
+            Assert.That(Terrain.TryGetSurfacePaint(_floor.collider, _floor.point, _floor.normal, out var origin), Is.True);
+            Vector3 center = Terrain.SurfacePaintCenter(origin.Key);
             foreach (var entry in new[] { (x: -.4f, owner: (byte)1), (x: .4f, owner: (byte)2), (x: -far, owner: (byte)1), (x: far, owner: (byte)2) })
-                seed.Set(BlockWorld.CellAt(center + Vector3.right * entry.x), BlockCell.Create(entry.owner, true, true));
-            yield return _fixture.Seed(seed);
+            {
+                Assert.That(Terrain.TryGetSurfacePaint(_floor.collider, center + Vector3.right * entry.x, _floor.normal, out var target), Is.True);
+                Assert.That(Terrain.PaintSurfaceCell(target.Key, entry.owner), Is.True);
+            }
+            Terrain.NotifySurfacePaintChanged();
             foreach (var entry in new[] { (x: -.4f, owner: (byte)1), (x: .4f, owner: (byte)2), (x: -far, owner: (byte)1), (x: far, owner: (byte)2) })
             {
                 Assert.That(Dynamic.TrySpawn(entry.owner, center + new Vector3(entry.x, .6f, .6f), Quaternion.identity, out var body), Is.True);
-                body.Body.Sleep();
+                body.Body.useGravity = false; body.Body.Sleep();
             }
             var burst = _match.SubWeapons.Spawn(_host, state, charge, _fixture.Now, Terrain.Round,
                 new SubLaunchSolution { Position = center + Vector3.up * .8f, Velocity = Vector3.down * 6, Normal = Vector3.up });
@@ -246,7 +272,8 @@ namespace Splatoon.Tests
             yield return _fixture.Publish();
             Assert.That(_match.SubWeapons.Effects.Count(effect => effect.EntityId == burst.State.Id && effect.Kind == SubEffectKind.Explosion), Is.EqualTo(1));
             Assert.That(Terrain.BlueCount, Is.Zero); Assert.That(Terrain.PinkCount, Is.EqualTo(2), "Far friendly coat and free body survive the smaller radius");
-            Assert.That(Terrain.World.PinkCount, Is.EqualTo(1)); Assert.That(Dynamic.PinkCount, Is.EqualTo(1));
+            Assert.That(Terrain.SurfacePaints.PinkCount, Is.EqualTo(1)); Assert.That(Dynamic.PinkCount, Is.EqualTo(1));
+            Assert.That(Terrain.World.PinkCount + Terrain.World.BlueCount, Is.Zero);
             Assert.That(burst.BlockAttack.RemovedEnemy, Is.EqualTo(4)); Assert.That(burst.BlockAttack.Added, Is.Zero);
             Assert.That(_host.Snapshot.Value.Ink, Is.EqualTo(paidInk).Within(.001)); AssertCredit(burst.BlockAttack);
             double points = _host.Snapshot.Value.SpecialPoints;
@@ -254,10 +281,10 @@ namespace Splatoon.Tests
             Assert.That(_host.Snapshot.Value.SpecialPoints, Is.EqualTo(points)); AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidAngleShooterEnemyCoatDestroysAndStopsLine()
+        [UnityTest, Category("BlockSurfaceSolidLegacy"), Timeout(600000)] public IEnumerator PaidAngleShooterEnemyCoatDestroysAndStopsLine()
             => PaidAngleShooterEnemyBlockDestroysAndStopsLine(false);
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidAngleShooterEnemyFreeBodyDestroysAndStopsLine()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidAngleShooterEnemyFreeBodyDestroysAndStopsLine()
             => PaidAngleShooterEnemyBlockDestroysAndStopsLine(true);
 
         IEnumerator PaidAngleShooterEnemyBlockDestroysAndStopsLine(bool free)
@@ -300,7 +327,7 @@ namespace Splatoon.Tests
             AssertCredit(line.BlockAttack); AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidShotHitsMovingRotatingBodyAndCannotResolveItsPooledReplacement()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidShotHitsMovingRotatingBodyAndCannotResolveItsPooledReplacement()
         {
             Vector3 position = _floor.point + Vector3.up * 2;
             Assert.That(Dynamic.TrySpawn(2, position, Quaternion.identity, out var target), Is.True);
@@ -324,7 +351,7 @@ namespace Splatoon.Tests
             AssertCredit(shot.BlockAttack); AssertCounts();
         }
 
-        [UnityTest, Timeout(600000)] public IEnumerator PaidAttachedDevicesFollowFreeBodiesAndRejectReleasedPooledSupports()
+        [UnityTest, Category("BlockSurfacePaintGameplay"), Timeout(600000)] public IEnumerator PaidAttachedDevicesFollowFreeBodiesAndRejectReleasedPooledSupports()
         {
             foreach (var type in new[] { SubWeaponType.SuctionBomb, SubWeaponType.Sprinkler })
             {

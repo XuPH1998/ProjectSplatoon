@@ -416,9 +416,13 @@ namespace Splatoon.Blocks
             using (DynamicStateSortCpu.Auto()) target.Sort((a, b) => a.Id.CompareTo(b.Id));
         }
 
-        public bool ApplySnapshot(uint round, uint revision, ulong sequence, IReadOnlyList<BlockDynamicState> states, bool frozen)
+        public bool ApplySnapshot(uint round, uint revision, ulong sequence, IReadOnlyList<BlockDynamicState> states, bool frozen,
+            Action beforeNotify = null)
         {
             if (IsAuthority || round < Round || round == Round && revision < LifecycleRevision || states == null) return false;
+            // Combined imports follow the match's round reset. Reset itself notifies observers,
+            // so a paired import must not implicitly reset and expose half of its new baseline.
+            if (beforeNotify != null && round != Round) return false;
             _snapshotIds.Clear();
             foreach (var state in states)
                 if (!Valid(state, round) || !_snapshotIds.Add(state.Id) || round == Round && _bodies.TryGetValue(state.Id, out var existing) && existing.Owner != state.Owner) return false;
@@ -431,7 +435,7 @@ namespace Splatoon.Blocks
                 if (!_bodies.TryGetValue(state.Id, out var block)) block = Acquire(state.Id, state.Owner, state.Position, state.Rotation);
                 ApplyState(block, state, sequence, frozen);
             }
-            LifecycleRevision = revision; Physics.SyncTransforms(); Changed?.Invoke(); return true;
+            LifecycleRevision = revision; Physics.SyncTransforms(); beforeNotify?.Invoke(); Changed?.Invoke(); return true;
         }
 
         public bool ApplyMotion(uint round, uint revision, ulong sequence, IReadOnlyList<BlockDynamicState> states)

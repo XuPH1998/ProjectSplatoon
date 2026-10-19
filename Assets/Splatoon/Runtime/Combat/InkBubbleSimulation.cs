@@ -111,14 +111,14 @@ namespace Splatoon.Combat
                         velocity = a.Bubble.VelocityAt(time, a.Shot);
                         bool blockContact = BlockAttackService.Contact(hit, out var block);
                         if (hit.BlockQuery.IsKnown && !blockContact) return true;
-                        if (blockContact && block.Owner != a.Shot.Team || hit.Collider.GetComponentInParent<PrototypePlayer>() != null || hit.Collider.GetComponent<SubWeaponTarget>() != null || hit.Collider.GetComponent<SpecialWeaponTarget>() != null)
+                        if (blockContact && block.Kind != BlockContactKind.SurfacePaint && block.Owner != a.Shot.Team || hit.Collider?.GetComponentInParent<PrototypePlayer>() != null || hit.Collider?.GetComponent<SubWeaponTarget>() != null || hit.Collider?.GetComponent<SpecialWeaponTarget>() != null)
                         { ResolveCollision(a.Shot, hit, time - a.Shot.Born, ref a.PaintOrdinal, velocity); return true; }
                         var reflected = ReflectBubble(velocity, hit.Normal, w, out bool ground);
                         bool terminal = a.Bubble.Sequence >= w.BubbleMaxBounces || ground && a.Bubble.GroundBounces >= w.BubbleGroundBounces ||
                             ++contacts > 8 || Vector3.Dot(velocity, hit.Normal) >= -.0001f || a.Bubble.Travelled >= w.EffectiveRange;
                         if (terminal)
                         { ResolveCollision(a.Shot, hit, time - a.Shot.Born, ref a.PaintOrdinal, velocity); return true; }
-                        var surface = hit.Collider.GetComponentInParent<PaintSurface>();
+                        var surface = hit.Collider?.GetComponentInParent<PaintSurface>();
                         if (surface != null || blockContact) ApplyPaint(surface, a.Shot, hit.Point, hit.Normal,
                             w.ReferenceRules ? BubbleBouncePaintRadius(a.Shot, (int)a.Bubble.Sequence) : Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref a.TrailSeed)),
                             w, ++a.PaintOrdinal, true, null, w.ReferenceRules ? velocity : Vector3.zero, w.ReferenceRules ? w.PaintDepthMax : 1);

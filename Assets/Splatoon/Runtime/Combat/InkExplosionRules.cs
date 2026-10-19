@@ -162,7 +162,7 @@ namespace Splatoon.Combat
         void PaintExplosionRay(InkShot shot, Vector3 origin, Vector3 direction, float distance, bool collision, double age)
         {
             if (!_aim.ClosestCast(origin, direction, distance, 0, shot.Shooter, out var hit, false)) return;
-            var surface = hit.Collider.GetComponentInParent<Splatoon.Painting.PaintSurface>();
+            var surface = hit.Collider?.GetComponentInParent<Splatoon.Painting.PaintSurface>();
             if (surface == null) return;
             if (WeaponSimulation.IsExplosher(shot.Configuration) || WeaponSimulation.IsFloatingBubble(shot.Configuration))
             {
@@ -175,7 +175,7 @@ namespace Splatoon.Combat
                 float planeDistance = Mathf.Abs(Vector3.Dot(origin - hit.Point, hit.Normal));
                 Vector3 point = origin - hit.Normal * Vector3.Dot(origin - hit.Point, hit.Normal);
                 if (!_aim.ClosestCast(point + hit.Normal * .025f, -hit.Normal, .075f, 0, shot.Shooter, out var projected, false) ||
-                    projected.Collider.GetComponentInParent<PaintSurface>() != surface) point = hit.Point;
+                    projected.Collider?.GetComponentInParent<PaintSurface>() != surface) point = hit.Point;
                 float radius = Mathf.Sqrt(Mathf.Max(0, distance * distance - planeDistance * planeDistance));
                 if (radius <= .001f) return;
                 uint ordinal = InkShapeAtlas.Hash(shot.Seed ^ (uint)surface.SurfaceId);
@@ -209,7 +209,7 @@ namespace Splatoon.Combat
             {
                 float angle = i * (Mathf.PI / 4), radius = extent;
                 var direction = tangent * Mathf.Cos(angle) + bitangent * Mathf.Sin(angle);
-                if (_aim.ClosestCast(start, direction, radius, .01f, shot.Shooter, out var edge, false) && edge.Collider.GetComponentInParent<PaintSurface>() != surface)
+                if (_aim.ClosestCast(start, direction, radius, .01f, shot.Shooter, out var edge, false) && edge.Collider?.GetComponentInParent<PaintSurface>() != surface)
                     radius = Mathf.Max(0, edge.Distance - .025f);
                 if (Occluded(origin, start + direction * radius - origin, shot.Shooter))
                 {
@@ -235,7 +235,7 @@ namespace Splatoon.Combat
                 var direction = tangent * Mathf.Cos(angle) + bitangent * Mathf.Sin(angle);
                 var start = point + normal * .025f;
                 if (_aim.ClosestCast(start, direction, result, .01f, shot.Shooter, out var edge, false) &&
-                    edge.Collider.GetComponentInParent<PaintSurface>() != surface)
+                    edge.Collider?.GetComponentInParent<PaintSurface>() != surface)
                     result = Mathf.Min(result, Mathf.Max(0, edge.Distance - .025f));
                 var outer = start + direction * result;
                 if (!Occluded(origin, outer - origin, shot.Shooter)) continue;

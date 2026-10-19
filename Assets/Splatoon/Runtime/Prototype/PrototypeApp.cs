@@ -27,14 +27,16 @@ namespace Splatoon.Prototype
         public bool Busy { get; private set; }
         public bool InRoom { get; private set; }
         public bool IsWeaponDebugRoom { get; private set; }
-        public bool HasControl => InRoom && _captured && _overlay == GameplayOverlay.Game && !Busy && Application.isFocused;
+        public bool HasControl => InRoom && _cursorCapture.AllowsCapture && _overlay == GameplayOverlay.Game && !Busy && Application.isFocused;
         public string Error { get; private set; } = "";
         public string Status { get; private set; } = "正在初始化…";
         public NetworkManager Manager { get; private set; }
         public NgLanSessionService Session { get; private set; }
         private readonly AddressableSceneLoader _loader = new();
         private SceneLoadHandle _scene;
-        private bool _loaded, _captured, _leaving;
+        private bool _loaded, _leaving;
+        readonly CursorCaptureIntent _cursorCapture = new();
+        bool _captured => _cursorCapture.Requested;
         private CancellationTokenSource _operation;
         private AsyncOperationHandle<GameObject> _playerPrefab, _matchPrefab;
         public HeroContentService Heroes { get; } = new();
@@ -230,7 +232,7 @@ namespace Splatoon.Prototype
         }
         public void CaptureMouse(bool capture)
         {
-            _captured = capture;
+            _cursorCapture.Request(capture);
             if (capture) { _overlay = GameplayOverlay.Game; _fireInputBlocked = true; }
             else if (InRoom && _overlay == GameplayOverlay.Game) _overlay = GameplayOverlay.RoomMenu;
             SynchronizeSystemCursor();
@@ -252,9 +254,15 @@ namespace Splatoon.Prototype
         }
         private void OnApplicationFocus(bool focus)
         {
-            if (focus) { SynchronizeSystemCursor(); return; }
-            _overlay = InRoom ? GameplayOverlay.RoomMenu : GameplayOverlay.Game;
-            CaptureMouse(false);
+            _cursorCapture.Focus(focus);
+            if (focus && _cursorCapture.Requested) _fireInputBlocked = true;
+            SynchronizeSystemCursor();
+        }
+        private void OnApplicationPause(bool paused)
+        {
+            _cursorCapture.Pause(paused);
+            if (!paused && _cursorCapture.Requested) _fireInputBlocked = true;
+            SynchronizeSystemCursor();
         }
         private void OnDestroy()
         {
@@ -266,7 +274,7 @@ namespace Splatoon.Prototype
             if (Manager != null) { Manager.Shutdown(); Destroy(Manager.gameObject); }
             Heroes.Dispose();
             LubanConfigService.Current.Reset(); if (Current == this) Current = null;
-            Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+            ReleaseSystemCursorIfPermitted();
             if (_chineseFont != null) Destroy(_chineseFont);
             if (_uiRound != null) Destroy(_uiRound);
             if (_uiFade != null) Destroy(_uiFade);

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace Splatoon.Tests
     public sealed class PaperBodyTests
     {
         public static readonly string[] Heroes={"RifleGirl","DualPistolGirl","ShotgunGirl","PistolGirl","RocketLauncherGirl"};
+        public static readonly string[] ContourHeroes = Heroes.Concat(new[] { "SplooshGirl", "MachineGunGirl", "BubbleGirl" }).ToArray();
         public static PaperBodyProfile Profile(string hero) => AssetDatabase.LoadAssetAtPath<PaperBodyProfile>($"Assets/GameResource/Characters/Shared/Paper/{hero}/Paper.asset");
         [OneTimeSetUp] public void ClearPreviousTestPreviews()
         {
@@ -92,11 +94,58 @@ namespace Splatoon.Tests
             foreach (var point in new[] { Vector3.zero, new Vector3(-.4f, .7f, .2f), new Vector3(.6f, -.8f, -.1f) })
                 Assert.That(actual.ClosestPoint(point), Is.EqualTo(expected.ClosestPoint(point)), "closest hit point");
         }
+        [TestCaseSource(nameof(ContourHeroes))]
+        public void ContourOnlyQueryMatchesUncachedFullSamplesWithoutHitMeshOrRender(string hero)
+        {
+            using var contours = PaperCapture.CreateContourEvaluator(Profile(hero));
+            using var live = new PaperCapture(Profile(hero));
+            var states = new[]
+            {
+                new PlayerSnapshot { PaperAnimationTime = .101f, PaperMove = new Vector2(.2f, -.2f) },
+                new PlayerSnapshot { PaperAnimationTime = .108f, PaperMove = new Vector2(.24f, -.24f) },
+                new PlayerSnapshot { PaperAnimationTime = .63f, PaperMove = new Vector2(-.751f, .629f) },
+                new PlayerSnapshot { PaperAnimationTime = 1023.99f, PaperMove = Vector2.right },
+                new PlayerSnapshot { PaperAnimationTime = 0, PaperMove = Vector2.zero }
+            };
+            foreach (var state in states)
+            {
+                var rects = contours.QueryContour(state);
+                using var oracle = new PaperCapture(Profile(hero)); oracle.SampleUncachedForDiagnostics(state);
+                CollectionAssert.AreEqual(oracle.HitRects, rects, "same explicit frame, eighth-move and contour order");
+                live.Sample(state); SameCapturedShape(oracle, live);
+                Assert.That(contours.HitMesh, Is.Null, "candidate queries never construct a hit Mesh");
+                Assert.That(contours.PoseVersion, Is.Zero, "candidate queries never publish a live pose");
+                contours.Render(); Assert.That(contours.Texture, Is.Null, "candidate evaluators never allocate a render texture");
+            }
+        }
+        [Test]
+        public void ContourValuesAreSharedReadOnlyAndSurviveOtherSamplesAndCaptureDisposal()
+        {
+            IReadOnlyList<Rect> retained;
+            Rect[] frozen;
+            using (var producer = PaperCapture.CreateContourEvaluator(Profile("RifleGirl")))
+            using (var peer = PaperCapture.CreateContourEvaluator(Profile("RifleGirl")))
+            {
+                var state = new PlayerSnapshot { PaperAnimationTime = .137f, PaperMove = Vector2.up };
+                retained = producer.QueryContour(state); frozen = retained.ToArray();
+                long bakes = PaperCapture.PoseBakeCount;
+                Assert.That(peer.QueryContour(state), Is.SameAs(retained), "independent captures retain one immutable snapshot");
+                Assert.That(PaperCapture.PoseBakeCount, Is.EqualTo(bakes), "a shared contour needs no second pose bake");
+                var list = retained as IList<Rect>;
+                Assert.That(list, Is.Not.Null); Assert.That(list.IsReadOnly, Is.True);
+                Assert.Throws<NotSupportedException>(() => list[0] = default);
+                var later = state; later.PaperAnimationTime = .737f; later.PaperMove = Vector2.left;
+                producer.QueryContour(later); peer.QueryContour(later);
+                CollectionAssert.AreEqual(frozen, retained, "a later projection cannot mutate a retained contour");
+            }
+            CollectionAssert.AreEqual(frozen, retained, "capture disposal/cache clear cannot mutate retained managed values");
+        }
         [TestCase("RifleGirl")]
         [TestCase("ShotgunGirl")]
         public void SharedPoseCacheMatchesFreshUncachedShapesAndFinalRenderedReplay(string hero)
         {
             var profile = Profile(hero);
+            using var contours = PaperCapture.CreateContourEvaluator(profile);
             using var warm = new PaperCapture(profile);
             using var live = new PaperCapture(profile);
             var random = new System.Random(72417);
@@ -109,13 +158,14 @@ namespace Splatoon.Tests
             // pose after several later poses, across independent capture stages.
             foreach (int index in new[] { 5, 1, 7, 0, 6, 2, 4, 3, 1, 5 })
             {
-                var state = states[index]; warm.Sample(state);
+                var state = states[index]; var rects = contours.QueryContour(state); warm.Sample(state);
                 long hits = PaperCapture.SharedPoseCacheHits, bakes = PaperCapture.PoseBakeCount;
                 Assert.That(live.Sample(state), Is.True);
                 Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(hits + 1));
                 Assert.That(PaperCapture.PoseBakeCount, Is.EqualTo(bakes), "a shared contour needs no repeated skin bake");
                 using var fresh = new PaperCapture(profile); fresh.SampleUncachedForDiagnostics(state);
                 SameCapturedShape(fresh, live);
+                CollectionAssert.AreEqual(rects, live.HitRects, "contour-only cache entries restore the original live hit geometry");
                 Assert.That(live.HitMesh, Is.Not.SameAs(warm.HitMesh));
             }
             var final = states[5];
@@ -136,8 +186,10 @@ namespace Splatoon.Tests
             {
                 using var producer = new PaperCapture(profile);
                 using var consumer = new PaperCapture(profile);
+                using var contours = PaperCapture.CreateContourEvaluator(profile);
                 var state = new PlayerSnapshot { PaperAnimationTime = .13f, PaperMove = new Vector2(.2f, -.2f) };
                 producer.Sample(state); consumer.Sample(state);
+                var retainedContour = contours.QueryContour(state); var retainedContourValues = retainedContour.ToArray();
                 Action verifyChangedShape = () =>
                 {
                     long misses = PaperCapture.SharedPoseCacheMisses;
@@ -187,6 +239,7 @@ namespace Splatoon.Tests
                 { var later = state; later.PaperAnimationTime = (i + 70.25f) / PaperAnimation.FramesPerSecond; producer.Sample(later); }
                 CollectionAssert.AreEqual(finalRects, consumer.HitRects);
                 CollectionAssert.AreEqual(finalVertices, consumer.HitMesh.vertices);
+                CollectionAssert.AreEqual(retainedContourValues, retainedContour, "global FIFO eviction cannot mutate a retained immutable contour");
                 misses = PaperCapture.SharedPoseCacheMisses; producer.Sample(state);
                 Assert.That(PaperCapture.SharedPoseCacheMisses, Is.EqualTo(misses + 1), "bounded cache recomputes an evicted exact key");
             }

@@ -905,8 +905,8 @@ namespace Splatoon.Blocks
         public const float CellSize = .30f, Gravity = 9.81f;
         public static float Top => Splatoon.Config.BlockGameplaySettings.WorldTopHeight;
         public const int ChunkSize = 16, CellsPerChunk = ChunkSize * ChunkSize * ChunkSize;
-        public const int ProtocolVersion = 5, MaxCohortCells = 400, MaxCohortPieceCells = 16;
-        const uint Magic = 0x354B4C42, DeltaMagic = 0x35444C42; // BLK5 / BLD5: 30 cm cells and explicit surface attachment.
+        public const int ProtocolVersion = 6, MaxCohortCells = 400, MaxCohortPieceCells = 16;
+        const uint Magic = 0x364B4C42, DeltaMagic = 0x36444C42; // BLK6 / BLD6: surface ownership travels in the paired lifecycle stream.
         internal readonly Dictionary<Vector3Int, BlockChunk> _chunks = new();
         internal readonly Dictionary<Vector3Int, uint> _tombstones = new();
         internal readonly HashSet<Vector3Int> _owned = new();

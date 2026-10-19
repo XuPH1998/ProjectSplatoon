@@ -13,7 +13,10 @@ namespace Splatoon.Prototype
         bool _paintReplayPending, _syncReplayPending, _terrainReplayPending;
         readonly Dictionary<Vector3Int, uint> _terrainReplayDependencies = new();
         readonly List<Vector3Int> _publishedReplayDependencies = new();
+        readonly Dictionary<BlockSurfaceKey, uint> _surfaceReplayDependencies = new();
+        readonly List<BlockSurfaceKey> _publishedSurfaceReplayDependencies = new();
         uint _terrainReplayLife, _terrainReplayRound;
+        uint _fixedReplayRevision, _fixedReplayEpoch;
         bool _terrainReplayRoundKnown, _terrainReplayBoundaryKnown, _terrainMovementBoundaryPending;
         public bool TerrainReplayPending => _terrainReplayPending;
         static readonly ProfilerMarker PredictionReplayMarker = new("Splatoon.Prediction.Reconcile");
@@ -22,7 +25,9 @@ namespace Splatoon.Prototype
         {
             _terrainReplayPending = _terrainReplayRoundKnown = _terrainReplayBoundaryKnown = _terrainMovementBoundaryPending = false;
             _terrainReplayLife = _terrainReplayRound = 0;
+            _fixedReplayRevision = _fixedReplayEpoch = 0;
             _terrainReplayDependencies.Clear(); _publishedReplayDependencies.Clear();
+            _surfaceReplayDependencies.Clear(); _publishedSurfaceReplayDependencies.Clear();
         }
 
         static void KeepPublishedMovement(PlayerSnapshot published, ref PlayerSnapshot state)
@@ -34,6 +39,10 @@ namespace Splatoon.Prototype
             state.FriendlyInkContact = published.FriendlyInkContact; state.SwimSource = published.SwimSource;
             state.AirSwimSource = published.AirSwimSource; state.SwimWasHeld = published.SwimWasHeld;
             state.SupportCell = published.SupportCell; state.SupportTerrainRevision = published.SupportTerrainRevision;
+            state.FixedBlockRevision = published.FixedBlockRevision; state.FixedBlockEpoch = published.FixedBlockEpoch; state.FixedBlockRound = published.FixedBlockRound;
+            state.SupportIsFixedGrid = published.SupportIsFixedGrid; state.SupportFixedId = published.SupportFixedId; state.SupportFixedGeneration = published.SupportFixedGeneration;
+            state.SupportIsSurfacePaint = published.SupportIsSurfacePaint; state.SupportSurfaceFace = published.SupportSurfaceFace;
+            state.SupportSurfaceU = published.SupportSurfaceU; state.SupportSurfaceV = published.SupportSurfaceV;
             state.GroundNormal = published.GroundNormal;
             state.WallNormal = published.WallNormal; state.WallPoint = published.WallPoint;
             state.WallSurfaceId = published.WallSurfaceId; state.WallRegionId = published.WallRegionId; state.WallSeenAt = published.WallSeenAt;
@@ -45,11 +54,27 @@ namespace Splatoon.Prototype
 
         static bool TerrainReadyFor(PlayerSnapshot state)
         {
+            var fixedTerrain = BlockTerrain.Current;
+            if (state.FixedBlockEpoch != 0)
+            {
+                var world = fixedTerrain != null && fixedTerrain.FixedGridMode ? fixedTerrain.FixedBlocks : null;
+                if (world == null || world.Epoch != state.FixedBlockEpoch || world.Round != state.FixedBlockRound || world.Revision < state.FixedBlockRevision) return false;
+                if (!state.SupportIsFixedGrid || world.Revision > state.FixedBlockRevision) return true;
+                var handle = new BlockFixedGridHandle { Epoch = state.FixedBlockEpoch, Round = state.FixedBlockRound,
+                    Id = state.SupportFixedId, Generation = state.SupportFixedGeneration };
+                return world.TryGet(handle, out var support) && support.Cell == state.SupportCell && support.Revision == state.SupportTerrainRevision;
+            }
             if (state.SupportTerrainRevision == 0 || state.Health <= 0 || !state.CanMove) return true;
             var terrain = BlockTerrain.Current;
-            return terrain != null && terrain.Initialized &&
-                terrain.ChunkRevision(BlockWorld.ChunkAt(state.SupportCell)) >= state.SupportTerrainRevision;
+            if (terrain == null || !terrain.Initialized) return false;
+            if (state.SupportIsSurfacePaint)
+                return SurfaceReadyFor(terrain, new BlockSurfaceKey(state.SupportSurfaceFace, state.SupportSurfaceU, state.SupportSurfaceV),
+                    state.SupportTerrainRevision);
+            return terrain.ChunkRevision(BlockWorld.ChunkAt(state.SupportCell)) >= state.SupportTerrainRevision;
         }
+
+        static bool SurfaceReadyFor(BlockTerrain terrain, BlockSurfaceKey key, uint revision)
+            => terrain.SurfacePaints != null && terrain.SurfacePaints.TryGet(key, out var cell) && cell.Revision >= revision;
 
         bool TerrainReadyForReplay(PlayerSnapshot state, int observationSource = 0)
         {
@@ -63,31 +88,82 @@ namespace Splatoon.Prototype
             if (boundary) _terrainMovementBoundaryPending = true;
             _terrainReplayBoundaryKnown = true;
             if (boundary || state.Health <= 0 || !state.CanMove || state.InputTimedOut)
-                _terrainReplayDependencies.Clear();
+            {
+                _terrainReplayDependencies.Clear(); _surfaceReplayDependencies.Clear();
+                _publishedReplayDependencies.Clear(); _publishedSurfaceReplayDependencies.Clear();
+            }
+            // Death and input timeout end legacy support replay, but Step still
+            // performs volume queries in those states. Their explicit fixed-world
+            // dependency must survive until that completed commit arrives.
+            if (boundary) _fixedReplayRevision = _fixedReplayEpoch = 0;
             _terrainReplayLife = state.Revision;
             if (terrainAvailable)
             { _terrainReplayRound = terrain.Round; _terrainReplayRoundKnown = true; }
+            if (state.FixedBlockEpoch != 0 || _fixedReplayEpoch != 0 || terrainAvailable && terrain.FixedGridMode)
+            {
+                var world = terrainAvailable && terrain.FixedGridMode ? terrain.FixedBlocks : null;
+                if (world == null)
+                {
+                    if (state.FixedBlockEpoch != 0 && (_fixedReplayEpoch == 0 || _fixedReplayEpoch == state.FixedBlockEpoch))
+                    {
+                        _fixedReplayEpoch = state.FixedBlockEpoch;
+                        _fixedReplayRevision = System.Math.Max(_fixedReplayRevision, state.FixedBlockRevision);
+                    }
+                    EndReplayDependencyObservation(state, boundary, false);
+                    return false;
+                }
+                // Fixed occupancy and paint arrive as one completed commit. A newer
+                // commit can legitimately remove/move an old support: wait on the global
+                // watermark instead of waiting forever for that old occupied cell.
+                if (_fixedReplayEpoch != world.Epoch)
+                { _fixedReplayEpoch = world.Epoch; _fixedReplayRevision = 0; }
+                if (state.FixedBlockEpoch == _fixedReplayEpoch)
+                    _fixedReplayRevision = System.Math.Max(_fixedReplayRevision, state.FixedBlockRevision);
+                var match = PrototypeMatch.Current;
+                bool fixedReady = (match == null || match.IsServer || match.InitialSyncComplete && match.FixedGridBlockSyncReady) &&
+                    world.Revision >= _fixedReplayRevision && TerrainReadyFor(state);
+                EndReplayDependencyObservation(state, boundary, fixedReady);
+                return fixedReady;
+            }
+
             if (state.Health <= 0 || !state.CanMove || state.InputTimedOut)
             { EndReplayDependencyObservation(state, boundary, true); return true; }
 
+            bool checkedDependencies = terrainAvailable && (_terrainReplayDependencies.Count != 0 || _surfaceReplayDependencies.Count != 0);
+            _publishedReplayDependencies.Clear(); _publishedSurfaceReplayDependencies.Clear();
             if (terrainAvailable && _terrainReplayDependencies.Count != 0)
             {
-                _publishedReplayDependencies.Clear();
                 foreach (var dependency in _terrainReplayDependencies)
                     if (terrain.ChunkRevision(dependency.Key) >= dependency.Value)
                         _publishedReplayDependencies.Add(dependency.Key);
                 foreach (var chunk in _publishedReplayDependencies) _terrainReplayDependencies.Remove(chunk);
-                ObserveSatisfiedReplayDependencies();
             }
+            if (terrainAvailable && _surfaceReplayDependencies.Count != 0)
+            {
+                foreach (var dependency in _surfaceReplayDependencies)
+                    if (SurfaceReadyFor(terrain, dependency.Key, dependency.Value))
+                        _publishedSurfaceReplayDependencies.Add(dependency.Key);
+                foreach (var key in _publishedSurfaceReplayDependencies) _surfaceReplayDependencies.Remove(key);
+            }
+            if (checkedDependencies) ObserveSatisfiedReplayDependencies();
             if (!TerrainReadyFor(state))
             {
-                var chunk = BlockWorld.ChunkAt(state.SupportCell);
-                _terrainReplayDependencies.TryGetValue(chunk, out uint required);
-                if (state.SupportTerrainRevision > required) _terrainReplayDependencies[chunk] = state.SupportTerrainRevision;
+                if (state.SupportIsSurfacePaint)
+                {
+                    var key = new BlockSurfaceKey(state.SupportSurfaceFace, state.SupportSurfaceU, state.SupportSurfaceV);
+                    _surfaceReplayDependencies.TryGetValue(key, out uint required);
+                    if (state.SupportTerrainRevision > required) _surfaceReplayDependencies[key] = state.SupportTerrainRevision;
+                }
+                else
+                {
+                    var chunk = BlockWorld.ChunkAt(state.SupportCell);
+                    _terrainReplayDependencies.TryGetValue(chunk, out uint required);
+                    if (state.SupportTerrainRevision > required) _terrainReplayDependencies[chunk] = state.SupportTerrainRevision;
+                }
             }
             // An airborne snapshot has no current support. It does not prove that a
             // previously required collision chunk has arrived for historical replay.
-            bool ready = _terrainReplayDependencies.Count == 0;
+            bool ready = _terrainReplayDependencies.Count == 0 && _surfaceReplayDependencies.Count == 0;
             EndReplayDependencyObservation(state, boundary, ready);
             return ready;
         }

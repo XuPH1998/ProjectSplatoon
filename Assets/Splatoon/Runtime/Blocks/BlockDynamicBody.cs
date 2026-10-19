@@ -31,6 +31,12 @@ namespace Splatoon.Blocks
         internal bool HasReplicaPose;
         internal Vector3 ReplicaWirePosition;
         internal Quaternion ReplicaWireRotation;
+        // Kept across pooling: callbacks already queued for a consumed native collider
+        // cannot convert a replacement born from an observer in the same physics step.
+        internal double SurfacePaintConsumedFixedTime = double.NaN;
+
+        void OnCollisionEnter(Collision collision) => World?.TryConvertSurfaceCollision(this, collision);
+        void OnCollisionStay(Collision collision) => World?.TryConvertSurfaceCollision(this, collision);
 
         public bool TryContact(Vector3 point, Vector3 normal, out BlockContact contact)
         {

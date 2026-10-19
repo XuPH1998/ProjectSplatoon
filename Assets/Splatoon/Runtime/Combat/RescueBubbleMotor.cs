@@ -1,6 +1,7 @@
 using Splatoon.Config;
 using Splatoon.Networking;
 using Splatoon.Prototype;
+using Splatoon.Blocks;
 using UnityEngine;
 
 namespace Splatoon.Combat
@@ -11,6 +12,7 @@ namespace Splatoon.Combat
         const float Skin = .015f;
         readonly SphereCollider _probe;
         readonly Collider[] _overlaps = new Collider[128];
+        readonly TpsAimSolver _aim = new();
         public RescueBubbleMotor()
         {
             var go = new GameObject("Rescue bubble collision probe") { hideFlags = HideFlags.HideAndDontSave, layer = 2 };
@@ -25,6 +27,8 @@ namespace Splatoon.Combat
             {
                 int count = Physics.OverlapSphereNonAlloc(center, radius, _overlaps, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore);
                 bool changed = false;
+                if (BlockTerrain.Current != null && BlockTerrain.Current.TryOverlapFixed(center, radius, Vector3.up, out var fixedHit))
+                { center += fixedHit.Normal * (radius - fixedHit.Distance + Skin); changed = true; }
                 for (int i = 0; i < count; i++)
                 {
                     var other = _overlaps[i];
@@ -46,7 +50,8 @@ namespace Splatoon.Combat
                 {
                     float angle = (dir - 1) * Mathf.PI / 4;
                     Vector3 candidate = origin + (dir == 0 ? Vector3.up : new Vector3(Mathf.Cos(angle), .5f, Mathf.Sin(angle)).normalized) * distance;
-                    if (!Physics.CheckSphere(candidate, radius, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore)) return candidate;
+                    if (!Physics.CheckSphere(candidate, radius, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) &&
+                        !(BlockTerrain.Current != null && BlockTerrain.Current.TryOverlapFixed(candidate, radius, Vector3.up, out _))) return candidate;
                 }
             }
             return center;
@@ -64,14 +69,14 @@ namespace Splatoon.Combat
             for (int iteration = 0; iteration < 4 && displacement.sqrMagnitude > .00000001f; iteration++)
             {
                 float length = displacement.magnitude;
-                if (!Physics.SphereCast(center, s.BubbleRadius, displacement / length, out var hit, length + Skin, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore))
+                if (!_aim.ClosestCast(center, displacement, length + Skin, s.BubbleRadius, 0, out var hit, false))
                 { center += displacement; break; }
-                float advance = Mathf.Clamp(hit.distance - Skin, 0, length);
+                float advance = Mathf.Clamp(hit.Distance - Skin, 0, length);
                 center += displacement / length * advance;
-                displacement = Vector3.ProjectOnPlane(displacement * (1 - advance / length), hit.normal);
-                if (hit.normal.y >= .5f && s.VerticalSpeed <= 0)
+                displacement = Vector3.ProjectOnPlane(displacement * (1 - advance / length), hit.Normal);
+                if (hit.Normal.y >= .5f && s.VerticalSpeed <= 0)
                 { s.VerticalSpeed = c.BubbleBounceSpeed; s.Grounded = true; displacement.y = Mathf.Max(0, displacement.y); }
-                else if (hit.normal.y < -.5f && s.VerticalSpeed > 0) { s.VerticalSpeed = 0; displacement.y = Mathf.Min(0, displacement.y); }
+                else if (hit.Normal.y < -.5f && s.VerticalSpeed > 0) { s.VerticalSpeed = 0; displacement.y = Mathf.Min(0, displacement.y); }
             }
             s.Position = center - Vector3.up * s.BubbleCenterHeight;
             s.Velocity = (s.Position - start) / dt; s.PlanarVelocity = planar;

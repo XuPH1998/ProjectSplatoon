@@ -14,8 +14,10 @@ using Object = UnityEngine.Object;
 
 namespace Splatoon.Tests
 {
-    // These are geometry/accounting contracts. Staging is synchronous here; they
-    // do not claim real host, asynchronous publication, pushing or network acceptance.
+    // Historical solid-coating geometry contracts retained with the legacy code.
+    // Production enables BlockSurfaceWorld; these fixtures explicitly disable that
+    // newer store and do not claim acceptance of the zero-thickness paint rules.
+    [Category("BlockLegacySurfaceVolume")]
     public sealed class BlockSurfaceModeTests
     {
         const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -34,6 +36,7 @@ namespace Splatoon.Tests
             _root = new GameObject("Production map coating contracts");
             _terrain = _root.AddComponent<BlockTerrain>();
             _terrain.Initialize(null); _terrain.EnableSurfaceMode();
+            typeof(BlockTerrain).GetProperty(nameof(BlockTerrain.SurfacePaints)).SetValue(_terrain, null);
         }
 
         [TearDown]
@@ -168,9 +171,9 @@ namespace Splatoon.Tests
         }
 
         [Test]
-        public void ProtocolFiveSnapshotAndDeltaPreserveAttachedFlagsAndRejectOldMagic()
+        public void ProtocolSixSnapshotAndDeltaRetainLegacyFlagsButRejectOldWorldMagic()
         {
-            Assert.That(BlockWorld.CellSize, Is.EqualTo(.30f)); Assert.That(BlockWorld.ProtocolVersion, Is.EqualTo(5));
+            Assert.That(BlockWorld.CellSize, Is.EqualTo(.30f)); Assert.That(BlockWorld.ProtocolVersion, Is.EqualTo(6));
             var world = new BlockWorld(Vector2.one, 7); world.Set(Vector3Int.zero, BlockCell.Create(1, surfaceAttached: true));
             world.Seal(1, new[] { Vector3Int.zero });
             var bytes = world.EncodeSnapshot(); var peer = BlockWorld.DecodeSnapshot(bytes);
@@ -180,7 +183,7 @@ namespace Splatoon.Tests
             var changed = peer.WithDelta(next.EncodeDelta(1));
             Assert.That(changed.TryGet(Vector3Int.zero, out value), Is.True); Assert.That(value.Owner, Is.EqualTo(2));
             Assert.That(value.SurfaceAttached && value.Anchored, Is.True);
-            foreach (byte oldMagic in new[] { (byte)'3', (byte)'4' })
+            foreach (byte oldMagic in new[] { (byte)'3', (byte)'4', (byte)'5' })
             {
                 bytes[3] = oldMagic;
                 Assert.Throws<InvalidDataException>(() => BlockWorld.DecodeSnapshot(bytes));

@@ -69,6 +69,8 @@ namespace Splatoon.Prototype
             public Vector3 position, humanPosition, velocity, planarVelocity, groundNormal, paperCenter;
             public Quaternion paperRotation;
             public Vector3Int supportCell;
+            public bool supportIsSurfacePaint;
+            public int supportSurfaceFace, supportSurfaceU, supportSurfaceV;
             public uint life, acknowledgedInput, heroRevision, requiredSupportRevision, appliedSupportRevision;
             public int heroId;
             public byte team, supportOwner;
@@ -82,6 +84,8 @@ namespace Splatoon.Prototype
                 position = state.Position; humanPosition = state.HumanPosition; velocity = state.Velocity;
                 planarVelocity = state.PlanarVelocity; verticalSpeed = state.VerticalSpeed; groundNormal = state.GroundNormal;
                 paperCenter = state.PaperCenter; paperRotation = state.PaperRotation; supportCell = state.SupportCell;
+                supportIsSurfacePaint = state.SupportIsSurfacePaint; supportSurfaceFace = state.SurfaceKey.FaceId;
+                supportSurfaceU = state.SurfaceKey.U; supportSurfaceV = state.SurfaceKey.V;
                 life = state.Life; acknowledgedInput = state.AcknowledgedInput; heroRevision = state.HeroRevision;
                 requiredSupportRevision = state.RequiredSupportRevision; appliedSupportRevision = state.AppliedSupportRevision;
                 heroId = state.HeroId; team = state.Team; supportOwner = state.SupportOwner; health = state.Health;
@@ -127,6 +131,8 @@ namespace Splatoon.Prototype
             public Vector3 wallNormal, wallPoint, mantleFrom, mantleTo;
             public Quaternion paperRotation;
             public Vector3Int supportCell;
+            public bool supportIsSurfacePaint;
+            public int supportSurfaceFace, supportSurfaceU, supportSurfaceV;
             public uint life, acknowledgedInput, heroRevision, requiredSupportRevision, simulationTick, consumedJump;
             public int heroId;
             public byte team;
@@ -141,6 +147,8 @@ namespace Splatoon.Prototype
                 position = state.Position; humanPosition = PlayerMotorSimulation.HumanPosition(state);
                 velocity = state.Velocity; planarVelocity = state.PlanarVelocity; groundNormal = state.GroundNormal;
                 paperCenter = state.PaperCenter; paperRotation = state.PaperRotation; supportCell = state.SupportCell;
+                supportIsSurfacePaint = state.SupportIsSurfacePaint; supportSurfaceFace = state.SupportSurfaceFace;
+                supportSurfaceU = state.SupportSurfaceU; supportSurfaceV = state.SupportSurfaceV;
                 wallNormal = state.WallNormal; wallPoint = state.WallPoint; mantleFrom = state.MantleFrom; mantleTo = state.MantleTo;
                 life = state.Revision; acknowledgedInput = state.AcknowledgedInput; heroRevision = state.HeroRevision;
                 requiredSupportRevision = state.SupportTerrainRevision; simulationTick = state.SimulationTick; consumedJump = state.ConsumedJump;
@@ -168,6 +176,8 @@ namespace Splatoon.Prototype
             public int collisions, contactSurfaceId, contactRegionId;
             public Vector3 requestedMove, controllerPosition, contactPoint, contactNormal;
             public Vector3Int contactCell;
+            public string contactKind;
+            public int contactSurfaceFace, contactSurfaceU, contactSurfaceV;
             public byte contactOwner;
             public uint contactRevision;
             public bool contactIsBlock, contactStable, contactClimbable;
@@ -397,7 +407,14 @@ namespace Splatoon.Prototype
             _ack = state.AcknowledgedInput;
             double moved = Vector3.Distance(_lastPosition, presented.Position); _lastPosition = presented.Position;
             if ((_stage != "traverse" && _stage != "fall") || !match.InitialSyncComplete || state.Health <= 0 || moved < .001 || player.TerrainReplayPending) return;
-            bool friendly = state.SupportTerrainRevision > 0 && match.Blocks.World.TryGet(state.SupportCell, out var support) && support.Owner == state.Team;
+            bool friendly = false;
+            if (state.SupportTerrainRevision > 0)
+            {
+                if (state.SupportIsSurfacePaint)
+                    friendly = match.Blocks.SurfacePaints != null && match.Blocks.SurfacePaints.TryGet(
+                        new BlockSurfaceKey(state.SupportSurfaceFace, state.SupportSurfaceU, state.SupportSurfaceV), out var surface) && surface.Owner == state.Team;
+                else friendly = match.Blocks.World.TryGet(state.SupportCell, out var support) && support.Owner == state.Team;
+            }
             _report.movingAckSamples++; if (friendly) _report.friendlyMovementSamples++;
             _report.corrections.Add(new CorrectionSample { stage = _stage, acknowledgedInput = _ack, life = _life,
                 terrainRevision = match.Blocks.Revision, serverTime = match.NetworkManager.ServerTime.Time,
@@ -429,6 +446,8 @@ namespace Splatoon.Prototype
                     collisions = (int)observation.Collisions, requestedMove = observation.RequestedMove,
                     controllerPosition = observation.ControllerPosition, rebaseHeight = observation.RebaseHeight,
                     contactPoint = contact.Point, contactNormal = contact.Normal, contactCell = contact.Cell,
+                    contactKind = contact.Kind.ToString(), contactSurfaceFace = contact.SurfaceKey.FaceId,
+                    contactSurfaceU = contact.SurfaceKey.U, contactSurfaceV = contact.SurfaceKey.V,
                     contactOwner = contact.Owner, contactRevision = contact.Revision,
                     contactIsBlock = contact.IsBlock, contactStable = contact.Stable, contactClimbable = contact.Climbable,
                     contactSurfaceId = contact.SurfaceId, contactRegionId = contact.RegionId,

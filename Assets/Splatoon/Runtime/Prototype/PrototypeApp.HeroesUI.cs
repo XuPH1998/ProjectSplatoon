@@ -55,7 +55,7 @@ namespace Splatoon.Prototype
                     _overlayPhase = phase;
                     if (phase == MatchPhase.Finished) { _overlay = GameplayOverlay.RoomMenu; CaptureMouse(false); }
                     else if (phase == MatchPhase.Playing)
-                    { _overlay = GameplayOverlay.Game; CaptureMouse(Application.isFocused); }
+                    { _overlay = GameplayOverlay.Game; CaptureMouse(true); }
                     else if (phase == MatchPhase.Practice && previous == MatchPhase.Finished)
                     { _overlay = GameplayOverlay.RoomMenu; CaptureMouse(false); }
                 }

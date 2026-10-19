@@ -39,7 +39,8 @@ namespace Splatoon.Combat
         {
             if (_controller == null) _controller = GetComponent<CharacterController>();
             _active = true;
-            _authority = player != null && player.IsAuthorityBlockPushStep;
+            _authority = player != null && player.IsAuthorityBlockPushStep &&
+                !(BlockTerrain.Current != null && BlockTerrain.Current.FixedGridMode);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             _observedOwner = player != null ? player.PlayerId : 0;
 #endif

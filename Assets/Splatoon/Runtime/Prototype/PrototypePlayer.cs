@@ -11,7 +11,7 @@ namespace Splatoon.Prototype
     public enum BubbleOutcome : byte { None, Rescued, Executed, Expired }
     public struct PlayerSnapshot : INetworkSerializable
     {
-        public const uint ProtocolVersion = 37;
+        public const uint ProtocolVersion = 39;
         public Vector3 SpecialImpulseVelocity;
         public float SpecialImpulseRetention, SpecialImpulseRemaining;
         public int SubWeaponId, SpecialWeaponId;
@@ -89,6 +89,12 @@ namespace Splatoon.Prototype
         public uint AcknowledgedInput, SimulationTick, ConsumedJump, ConsumedFire, ShotSequence, RequiredPaintSequence;
         public Vector3Int SupportCell;
         public uint SupportTerrainRevision;
+        public uint FixedBlockRevision, FixedBlockEpoch, FixedBlockRound;
+        public bool SupportIsFixedGrid;
+        public ulong SupportFixedId;
+        public uint SupportFixedGeneration;
+        public bool SupportIsSurfacePaint;
+        public int SupportSurfaceFace, SupportSurfaceU, SupportSurfaceV;
         public Vector3 GroundNormal;
         public uint FireBurstSequence, BurstShotIndex;
         public ulong ShotActionId => ((ulong)FireBurstSequence << 32) | BurstShotIndex;
@@ -149,6 +155,10 @@ namespace Splatoon.Prototype
             s.SerializeValue(ref AcknowledgedInput); s.SerializeValue(ref SimulationTick); s.SerializeValue(ref ConsumedJump); s.SerializeValue(ref ConsumedFire); s.SerializeValue(ref ShotSequence);
             s.SerializeValue(ref RequiredPaintSequence);
             s.SerializeValue(ref SupportCell); s.SerializeValue(ref SupportTerrainRevision); s.SerializeValue(ref GroundNormal);
+            s.SerializeValue(ref FixedBlockRevision); s.SerializeValue(ref FixedBlockEpoch); s.SerializeValue(ref FixedBlockRound);
+            s.SerializeValue(ref SupportIsFixedGrid); s.SerializeValue(ref SupportFixedId); s.SerializeValue(ref SupportFixedGeneration);
+            s.SerializeValue(ref SupportIsSurfacePaint); s.SerializeValue(ref SupportSurfaceFace);
+            s.SerializeValue(ref SupportSurfaceU); s.SerializeValue(ref SupportSurfaceV);
             s.SerializeValue(ref FireBurstSequence); s.SerializeValue(ref BurstShotIndex);
             s.SerializeValue(ref SimulatedAt); s.SerializeValue(ref WeaponReadyAt); s.SerializeValue(ref NextShotAt); s.SerializeValue(ref InkRecoverAt); s.SerializeValue(ref LastDamageAt);
             s.SerializeValue(ref WallSeenAt); s.SerializeValue(ref MantleStartedAt); s.SerializeValue(ref VerticalSpeed); s.SerializeValue(ref CurrentSpread); s.SerializeValue(ref CurrentVerticalSpread);

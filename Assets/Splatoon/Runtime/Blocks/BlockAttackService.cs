@@ -22,6 +22,11 @@ namespace Splatoon.Blocks
         public double AwardedPoints;
         readonly HashSet<(uint entity, uint ordinal, byte kind)> _events = new();
         readonly Dictionary<uint, int> _projectileBuildRemaining = new();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        internal BlockAttackObservation.Source ObservationSource;
+        internal long ObservationContactStamp, ObservationContactEpoch;
+        internal uint ObservationContactEntity;
+#endif
 
         public BlockAttackToken(PaintCredit credit, int generation, int buildLimit, int directLimit, double pointLimit, float directRadius = .2f, int projectilesPerPayment = 1)
         {
@@ -76,7 +81,7 @@ namespace Splatoon.Blocks
         }
     }
 
-    /// <summary>Server-only terrain accounting. Results pay credit only after collision publication.</summary>
+    /// <summary>Server-only accounting. Credit follows an actual paint, body or terrain commit.</summary>
     public static class BlockAttackService
     {
         // Live entities retain their token directly. The issuance index only needs
@@ -98,7 +103,11 @@ namespace Splatoon.Blocks
             int direct = weapon.BlockEnemyRemoval;
             token = new BlockAttackToken(new PaintCredit(owner, state.Team, round, state.HeroRevision, PaintAttackKind.Main, true), _generation, build,
                 direct, BlockGameplaySettings.MainSpecialPointCap, weapon.BlockRemovalRadius, WeaponSimulation.IsBubble(weapon) ? weapon.BurstCount : weapon.PelletCount);
-            Tokens[key] = (action, token); return token;
+            Tokens[key] = (action, token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.AcceptPayment(token, state, action, WeaponSimulation.InkCost(weapon, state.LastShotCharge), WeaponConfigService.Current.Revision(state.HeroId));
+#endif
+            return token;
         }
         public static BlockAttackToken Sub(ulong owner, PlayerSnapshot state, uint round, SubWeaponRuntimeConfig config)
         {
@@ -106,14 +115,23 @@ namespace Splatoon.Blocks
             if (Existing(key, state.SubAction, out var token)) return token;
             token = new BlockAttackToken(new PaintCredit(owner, state.Team, round, state.HeroRevision, PaintAttackKind.Sub, true), _generation,
                 BuildBudget(owner, state.HeroRevision, config.Common.inkCost, int.MaxValue), 4096, BlockGameplaySettings.SubSpecialPointCap);
-            Tokens[key] = (state.SubAction, token); return token;
+            Tokens[key] = (state.SubAction, token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.AcceptPayment(token, state, state.SubAction, config.Common.inkCost,
+                SubWeaponConfigService.Current.RevisionById(SubWeaponConfigService.Id(config.Type)));
+#endif
+            return token;
         }
         public static BlockAttackToken Special(ulong owner, PlayerSnapshot state, uint round)
         {
             var key = (round, owner, state.Revision, state.HeroRevision, PaintAttackKind.Special);
             if (Existing(key, state.SpecialAction, out var token)) return token;
             token = new BlockAttackToken(new PaintCredit(owner, state.Team, round, state.HeroRevision, PaintAttackKind.Special, true), _generation, 4096, 8192, 0);
-            Tokens[key] = (state.SpecialAction, token); return token;
+            Tokens[key] = (state.SpecialAction, token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockAttackObservation.AcceptPayment(token, state, state.SpecialAction, 0, 0);
+#endif
+            return token;
         }
         static bool Existing((uint round, ulong owner, uint life, uint equipment, PaintAttackKind kind) source, ulong action, out BlockAttackToken token)
         {
@@ -139,15 +157,43 @@ namespace Splatoon.Blocks
             int reserved = token.ReserveBuild(Math.Min(perContact, auxiliary ? 8 : token.BuildLimit), auxiliary, entityId);
             if (reserved == 0) return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            long contactStamp = BlockAttackObservation.ContactStamp(token, entityId);
+            long contactStamp = BlockAttackObservation.StartEffect(token, entityId, out bool hadContact);
 #endif
             var terrain = BlockTerrain.Current;
+            if (terrain.FixedGridMode)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                using var actualObservation = BlockAttackObservation.BeginActualResult(token, entityId, eventOrdinal, BlockAttackObservation.ActualOperation.Build,
+                    auxiliary, contactStamp, hadContact);
+#endif
+                var result = terrain.BuildFixedImpact(point, normal, radius * BlockTerrain.FixedBuildRadiusScale,
+                    token.Credit.Team, reserved, anchorToMap);
+                // Replacing surface ownership spends one build unit. The removed colour is
+                // a transfer, not a second direct-removal charge or special-point award.
+                token.CompleteBuild(reserved, auxiliary, result.Added, entityId); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, "fixed", result.Added, contactStamp, eventOrdinal, auxiliary, hadContact);
+#endif
+                return;
+            }
+            if (terrain.SurfaceOnly && terrain.SurfacePaints != null && anchorToMap)
+            {
+                // Surface ownership is classified at the real map hit. Enemy colour is
+                // replaced in this one build transaction, never removed for a second award.
+                int actual = terrain.BuildOrPaintMapSurface(point, normal, radius * BlockDynamicWorld.BuildRadiusScale,
+                    token.Credit.Team, reserved, out bool buildsFreeBody);
+                token.CompleteBuild(reserved, auxiliary, actual, entityId); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, buildsFreeBody ? "dynamic" : "surface", actual, contactStamp, eventOrdinal, auxiliary, hadContact);
+#endif
+                return;
+            }
             if (terrain.SurfaceOnly && !anchorToMap)
             {
                 int actual = terrain.Dynamic.Build(point, normal, radius * BlockDynamicWorld.BuildRadiusScale, token.Credit.Team, reserved);
                 token.CompleteBuild(reserved, auxiliary, actual, entityId); Award(token);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                BlockAttackObservation.Effective(token, entityId, "dynamic", actual, contactStamp);
+                BlockAttackObservation.Effective(token, entityId, "dynamic", actual, contactStamp, eventOrdinal, auxiliary, hadContact);
 #endif
                 return;
             }
@@ -159,7 +205,7 @@ namespace Splatoon.Blocks
                 completed = true;
                 token.CompleteBuild(reserved, auxiliary, result.Added, entityId); Award(token);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                BlockAttackObservation.Effective(token, entityId, "surface", result.Added, contactStamp);
+                BlockAttackObservation.Effective(token, entityId, "surface", result.Added, contactStamp, eventOrdinal, auxiliary, hadContact);
 #endif
             }, ordinaryMainAttack: token.Credit.Kind == PaintAttackKind.Main && !auxiliary);
         }
@@ -168,10 +214,23 @@ namespace Splatoon.Blocks
             if (!Valid(token) || !token.BeginEvent(entityId, eventOrdinal, 3)) return;
             int reserved = token.ReserveDirect(perContact); if (reserved == 0) return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            long contactStamp = BlockAttackObservation.ContactStamp(token, entityId);
+            long contactStamp = BlockAttackObservation.StartEffect(token, entityId, out bool hadContact);
 #endif
             int dynamicRemoved = 0, staticQuota = reserved;
             var terrain = BlockTerrain.Current;
+            if (terrain.FixedGridMode)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                using var actualObservation = BlockAttackObservation.BeginActualResult(token, entityId, eventOrdinal, BlockAttackObservation.ActualOperation.Direct,
+                    false, contactStamp, hadContact);
+#endif
+                var result = terrain.DestroyFixedImpact(point, token.DirectRadius, 0, token.Credit.Team, true, reserved, 0);
+                token.CompleteDirect(reserved, result.RemovedEnemy); Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Effective(token, entityId, "direct", result.RemovedEnemy, contactStamp, eventOrdinal, false, hadContact);
+#endif
+                return;
+            }
             if (terrain.SurfaceOnly)
             {
                 // Select one nearest-first budget across both representations, before mutating either.
@@ -199,7 +258,7 @@ namespace Splatoon.Blocks
                 dynamicRemoved = terrain.Dynamic.DestroyIds(ids, token.Credit.Team);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 BlockDynamicAcceptanceProbe.RecordEnemyDirect(token, entityId, ids, dynamicRemoved);
-                BlockAttackObservation.Effective(token, entityId, "direct", dynamicRemoved, contactStamp);
+                BlockAttackObservation.Effective(token, entityId, "direct", dynamicRemoved, contactStamp, eventOrdinal, false, hadContact);
 #endif
                 if (staticQuota == 0) { token.CompleteDirect(reserved, dynamicRemoved); Award(token); return; }
                 if (dynamicRemoved > 0) { token.CompleteDirect(dynamicRemoved, dynamicRemoved); Award(token); }
@@ -211,7 +270,7 @@ namespace Splatoon.Blocks
                 completed = true;
                 token.CompleteDirect(reserved - dynamicRemoved, result.RemovedEnemy); Award(token);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                BlockAttackObservation.Effective(token, entityId, "direct", result.RemovedEnemy, contactStamp);
+                BlockAttackObservation.Effective(token, entityId, "direct", result.RemovedEnemy, contactStamp, eventOrdinal, false, hadContact);
 #endif
             }, staticQuota, 0, ordinaryMainAttack: token.Credit.Kind == PaintAttackKind.Main);
         }
@@ -225,11 +284,28 @@ namespace Splatoon.Blocks
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             int failuresAtQueue = terrain.FailedTransactions;
 #endif
+            if (terrain.FixedGridMode)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                using var actualObservation = BlockAttackObservation.BeginActualResult(token, entityId, eventOrdinal, BlockAttackObservation.ActualOperation.Blast);
+#endif
+                var result = terrain.DestroyFixedImpact(point, radius, radius * BlockGameplaySettings.FriendlyBlastRadiusFraction,
+                    token.Credit.Team, false);
+                token.RemovedEnemy += result.RemovedEnemy; Award(token);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                BlockAttackObservation.Queued(blastObservation, result.Changed);
+                if (terrain.FailedTransactions == failuresAtQueue) BlockAttackObservation.Completed(blastObservation, result.Changed);
+#endif
+                return;
+            }
             // Capture both target sets in this simulation step. Dynamic deletion is an ID transaction,
             // independent of the subsequent terrain mesh publication and physics motion.
             var dynamicResult = terrain.SurfaceOnly ? terrain.Dynamic.DestroyInRadius(point, radius,
                 radius * BlockGameplaySettings.FriendlyBlastRadiusFraction, token.Credit.Team, false) : default;
-            if (dynamicResult.RemovedEnemy > 0) { token.RemovedEnemy += dynamicResult.RemovedEnemy; Award(token); }
+            var surfaceResult = terrain.SurfacePaints != null ? terrain.DestroySurfacePaint(point, radius,
+                radius * BlockGameplaySettings.FriendlyBlastRadiusFraction, token.Credit.Team, false, int.MaxValue) : default;
+            int removedEnemy = dynamicResult.RemovedEnemy + surfaceResult.RemovedEnemy;
+            if (removedEnemy > 0) { token.RemovedEnemy += removedEnemy; Award(token); }
             // The terrain queue bounds work per tick. The radius is the gameplay limit;
             // a large blast is completed over several atomic publications, never truncated.
             bool completed = false;
@@ -243,11 +319,11 @@ namespace Splatoon.Blocks
                 // Their ordinary default callbacks are not completed collider publications.
                 if (terrain != null && BlockTerrain.Current == terrain && terrain.Round == blastObservation.Round &&
                     terrain.Dynamic?.Frozen != true && terrain.FailedTransactions == failuresAtQueue)
-                    BlockAttackObservation.Completed(blastObservation, dynamicResult.Changed + result.Changed);
+                    BlockAttackObservation.Completed(blastObservation, dynamicResult.Changed + surfaceResult.Changed + result.Changed);
 #endif
             });
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            BlockAttackObservation.Queued(blastObservation, dynamicResult.Changed);
+            BlockAttackObservation.Queued(blastObservation, dynamicResult.Changed + surfaceResult.Changed);
 #endif
         }
         static void Award(BlockAttackToken token)
@@ -264,7 +340,9 @@ namespace Splatoon.Blocks
         {
             contact = default;
             if (collider != null && collider.TryGetComponent<BlockDynamicBody>(out var body)) return body.TryContact(point, normal, out contact);
-            return BlockTerrain.Current != null && BlockTerrain.Current.TryContact(collider, point, normal, out contact);
+            var terrain = BlockTerrain.Current;
+            return terrain != null && (terrain.TrySurfacePaintContact(collider, point, normal, out contact) ||
+                terrain.TryContact(collider, point, normal, out contact));
         }
         public static void Clear()
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Splatoon.Config;
 using Splatoon.Prototype;
+using Splatoon.Blocks;
 using UnityEngine;
 
 namespace Splatoon.Combat
@@ -10,6 +11,7 @@ namespace Splatoon.Combat
     {
         public Vector3 Position, Velocity, Normal;
         public Collider Surface;
+        public BlockQueryContact BlockQuery;
         public SubWeaponFailure Failure;
         public bool Valid => Failure == SubWeaponFailure.None;
     }
@@ -51,13 +53,14 @@ namespace Splatoon.Combat
             if (!SubWeaponService.FlightCollision(aim, e.State.Position, delta, Mathf.Max(.03f, c.Flight.radius), e.State.Owner, e.State.Team, out hit))
             {
                 e.State.Position += delta;
-                if (e.State.Phase == SubEntityPhase.Grounded && !Physics.Raycast(e.State.Position, Vector3.down, c.Flight.radius + .08f, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore))
+                if (e.State.Phase == SubEntityPhase.Grounded && !aim.ClosestCast(e.State.Position, Vector3.down,
+                    c.Flight.radius + .08f, 0, e.State.Owner, out _, false))
                 { e.State.Phase = SubEntityPhase.Flying; e.State.Changed = now; }
                 return SubMotionContact.None;
             }
             e.State.Position = hit.Point + hit.Normal * (c.Flight.radius + .005f); e.State.Normal = hit.Normal;
-            var player = hit.Collider.GetComponentInParent<PrototypePlayer>();
-            var target = hit.Collider.GetComponent<SubWeaponTarget>();
+            var player = hit.Collider?.GetComponentInParent<PrototypePlayer>();
+            var target = hit.Collider?.GetComponent<SubWeaponTarget>();
             bool ground = hit.Normal.y >= .65f && player == null && target == null;
             if (target != null && target.Type == SubWeaponType.SplashWall) return SubMotionContact.Explode;
             if (e.State.Phase == SubEntityPhase.Droplet)
@@ -72,7 +75,13 @@ namespace Splatoon.Combat
             if (player == null && target == null && (c.Type == SubWeaponType.SuctionBomb || c.Type == SubWeaponType.Sprinkler || c.Type == SubWeaponType.SplashWall && ground))
             {
                 Stick(e, hit.Collider, hit.Point, hit.Normal, now);
-                if (c.Type == SubWeaponType.SuctionBomb) { e.Fuse = now + c.Suction.fuse; e.State.Expires = e.Fuse + 1; }
+                if (c.Type == SubWeaponType.SuctionBomb)
+                {
+                    // A lost fixed-grid face may lead to another natural contact.
+                    // Start the fuse once; detachment and reattachment keep its original deadline.
+                    if (e.Fuse == 0) e.Fuse = now + c.Suction.fuse;
+                    e.State.Expires = e.Fuse + 1;
+                }
                 if (c.Type == SubWeaponType.Sprinkler) { e.State.Expires = double.MaxValue; e.NextAction = now; }
                 if (c.Type == SubWeaponType.SplashWall) { e.State.Expires = now + c.Wall.expand + c.Wall.lifetime; e.NextAction = now + c.Wall.expand; }
                 return SubMotionContact.Deploy;
@@ -129,7 +138,7 @@ namespace Splatoon.Combat
                     float remaining = c.Angle.range - e.Travelled;
                     bool hit = LineStep(e, aim, remaining, out var contact); points.Add(e.State.Position);
                     if (!hit) break;
-                    if (contact.Collider.GetComponentInParent<PrototypePlayer>() != null || contact.Collider.GetComponent<SubWeaponTarget>() != null) { end = SubPreviewEnd.Impact; break; }
+                    if (contact.Collider?.GetComponentInParent<PrototypePlayer>() != null || contact.Collider?.GetComponent<SubWeaponTarget>() != null) { end = SubPreviewEnd.Impact; break; }
                     ReflectLine(e, contact);
                 }
             }

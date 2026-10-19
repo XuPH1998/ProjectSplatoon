@@ -86,7 +86,7 @@ namespace Splatoon.Combat
                 else playerHit = _aim.ClosestCast(from, delta, length, playerRadius, shot.Shooter,
                     out contact, true, shot.Team, active.Pierced);
                 if (!playerHit || (worldHit && world.Distance <= contact.Distance + .00001f)) break;
-                var victim = contact.Collider.GetComponentInParent<PrototypePlayer>();
+                var victim = contact.Collider?.GetComponentInParent<PrototypePlayer>();
                 if (victim == null || !active.Pierced.Add((victim.PlayerId, victim.Snapshot.Value.Revision))) break;
                 double time = start + (end - start) * contact.Distance / Mathf.Max(.0001f, length);
                 float before = victim.Snapshot.Value.Health;

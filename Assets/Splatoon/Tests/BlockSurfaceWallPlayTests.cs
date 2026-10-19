@@ -18,7 +18,8 @@ using UnityEngine.TestTools;
 
 namespace Splatoon.Tests
 {
-    /// <summary>Original TrainingGround wall traversal with a published, single attached coat.</summary>
+    /// <summary>Original TrainingGround wall traversal with zero-thickness map surface paint.</summary>
+    [Category("BlockSurfacePaintGameplay")]
     public sealed class BlockSurfaceWallPlayTests
     {
         const float Dt = 1f / 60;
@@ -59,7 +60,7 @@ namespace Splatoon.Tests
         {
             if (_trace.Count > 0)
             {
-                const string output = "Reports/BlockPhysics20261017/SurfaceWall";
+                const string output = "Reports/BlockSimulation20261018/SurfaceWall";
                 Directory.CreateDirectory(output);
                 File.WriteAllLines(output + "/" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".jsonl", _trace);
             }
@@ -127,7 +128,8 @@ namespace Splatoon.Tests
             Assert.That(Terrain.TrySurfaceContactFromMap(hit, out var contact), Is.True);
             Assert.That(contact.Owner, Is.EqualTo(1)); Assert.That(contact.Stable, Is.True);
             Assert.That(Vector3.Distance(contact.Point, hit.point), Is.LessThan(.0001f));
-            Assert.That(Terrain.World.TryGet(contact.Cell, out var cell) && cell.SurfaceAttached && cell.Anchored, Is.True);
+            Assert.That(contact.Kind, Is.EqualTo(BlockContactKind.SurfacePaint));
+            Assert.That(Terrain.SurfacePaints.IsCurrent(contact.SurfaceKey, contact.Owner, contact.Revision), Is.True);
         }
 
         void AssertWallPlane(PlayerSnapshot s, float mapX)
@@ -144,7 +146,8 @@ namespace Splatoon.Tests
                 -s.WallNormal, .8f, out var current), Is.True);
             Assert.That(current.IsBlock && current.Stable && current.Climbable && current.Owner == 1, Is.True);
             Assert.That(current.Point.x, Is.EqualTo(mapX).Within(.002f));
-            Assert.That(Terrain.World.TryGet(current.Cell, out var coat) && coat.SurfaceAttached, Is.True);
+            Assert.That(current.Kind, Is.EqualTo(BlockContactKind.SurfacePaint));
+            Assert.That(Terrain.SurfacePaints.IsCurrent(current.SurfaceKey, current.Owner, current.Revision), Is.True);
         }
 
         [UnityTest, Timeout(600000)] public IEnumerator OriginalMapCoatPreservesFriendlyWallEntryRecoveryClimbJumpAndMantle()
@@ -159,7 +162,8 @@ namespace Splatoon.Tests
             yield return Coat(floor, 2.1f);
             yield return Coat(top, 2.1f);
             Assert.That(Terrain.Dynamic.Count, Is.Zero); Assert.That(Terrain.World.Falling.Count, Is.Zero);
-            byte[] originalCoat = Terrain.World.EncodeSnapshot();
+            byte[] originalCoat = Terrain.SurfacePaints.ExportFull();
+            Assert.That(Terrain.World.PinkCount + Terrain.World.BlueCount, Is.Zero);
 
             Reset(new Vector3(15.5f, floor.point.y + .04f, 0));
             var controller = _host.GetComponent<CharacterController>();
@@ -172,6 +176,7 @@ namespace Splatoon.Tests
             for (int i = 0; i < 160 && _host.Snapshot.Value.Movement != MovementMode.WallInk; i++)
                 Tick(true, Vector2.up, stage: "entry");
             var entered = _host.Snapshot.Value; AssertWallPlane(entered, wall.point.x);
+            yield return _fixture.CaptureGameplayFrame("friendly-wall-entry", entered.PaperCenter, new Vector3(3, 1, -3));
 
             entered.Ink = 30; entered.InkRecoverAt = 0; Restore(entered);
             float beforeInk = _host.Snapshot.Value.Ink;
@@ -207,7 +212,8 @@ namespace Splatoon.Tests
             Assert.That(landed.PaperPose, Is.EqualTo(PaperPose.Ground));
             Assert.That(landed.SwimSource, Is.EqualTo(SwimSurface.Friendly)); Assert.That(landed.HasInkRecovery, Is.True);
             Assert.That(landed.PaperCenter.y, Is.EqualTo(top.point.y + _host.SwimBody.Profile.SurfaceOffset).Within(.005f));
-            CollectionAssert.AreEqual(originalCoat, Terrain.World.EncodeSnapshot(), "Traversal never grows, moves or consumes the coating");
+            CollectionAssert.AreEqual(originalCoat, Terrain.SurfacePaints.ExportFull(), "Traversal never grows, moves or consumes map ownership");
+            yield return _fixture.CaptureGameplayFrame("friendly-wall-mantle", landed.PaperCenter, new Vector3(3, 2, -3));
         }
 
         [UnityTest, Timeout(600000)] public IEnumerator FriendlyFreeBlockCannotGrantWallAttachmentOrInkRecovery()

@@ -8,7 +8,7 @@ namespace Splatoon.Prototype
         SubLaunchSolution _lastSubLaunch;
         SubWeaponFailure SubPredictionPlacement(PlayerSnapshot s, SubWeaponRuntimeConfig c)
         {
-            if (c.Type == SubWeaponType.InkMine && (!s.Grounded || !SubWeaponService.TryMineGround(s, out _))) return SubWeaponFailure.InvalidGround;
+            if (c.Type == SubWeaponType.InkMine && (!s.Grounded || !SubWeaponService.TryMineGroundContact(s, out _))) return SubWeaponFailure.InvalidGround;
             if (c.Type == SubWeaponType.Torpedo && PrototypeMatch.Current?.SubPresentation != null && PrototypeMatch.Current.SubPresentation.Count(PlayerId, c.Type) >= c.Torpedo.maxActive) return SubWeaponFailure.ActiveLimit;
             return SubWeaponFailure.None;
         }

@@ -14,6 +14,7 @@ namespace Splatoon.Blocks
         public readonly double SimulationTime;
         public readonly uint WorldRevision, Round;
         public readonly BlockDynamicBody DynamicBody;
+        public readonly BlockFixedGridWorld FixedWorld;
         public bool IsKnown => _kind != 0;
 
         BlockQueryContact(byte kind, BlockTerrain terrain, BlockContact contact, ulong runId, int index, BlockDynamicBody dynamicBody = null)
@@ -24,14 +25,18 @@ namespace Splatoon.Blocks
             WorldRevision = SourceWorld != null ? SourceWorld.Revision : 0;
             Round = SourceWorld != null ? SourceWorld.Round : 0;
             DynamicBody = dynamicBody;
+            FixedWorld = terrain != null ? terrain.FixedBlocks : null;
         }
 
         internal static BlockQueryContact Stable(BlockTerrain terrain, BlockContact contact)
-            => new(1, terrain, contact, 0, -1);
+            => new(contact.Kind == BlockContactKind.SurfacePaint ? (byte)4 : (byte)1, terrain, contact, 0, -1);
 
         internal static BlockQueryContact Dynamic(BlockDynamicBody body, Vector3 point, Vector3 normal)
             => body != null && body.TryContact(point, normal, out var contact)
                 ? new BlockQueryContact(3, BlockTerrain.Current, contact, 0, -1, body) : default;
+
+        internal static BlockQueryContact Fixed(BlockTerrain terrain, BlockFixedGridHit hit)
+            => new(5, terrain, BlockTerrain.FixedContact(hit), 0, -1);
 
         internal static BlockQueryContact Falling(BlockTerrain terrain, BlockFallingHit hit)
         {
@@ -52,6 +57,19 @@ namespace Splatoon.Blocks
         {
             contact = default;
             var current = BlockTerrain.Current;
+            if (_kind == 5)
+            {
+                if (current == null || current != Terrain || !current.FixedGridMode || FixedWorld == null ||
+                    !ReferenceEquals(current.FixedBlocks, FixedWorld) || !FixedWorld.TryGet(Contact.FixedHandle, out var state) ||
+                    state.Cell != Contact.Cell || state.Owner != Contact.Owner || state.Revision != Contact.Revision) return false;
+                contact = Contact; return true;
+            }
+            if (_kind == 4)
+            {
+                if (current == null || current != Terrain || !ReferenceEquals(current.World, SourceWorld) ||
+                    current.SurfacePaints == null || !current.SurfacePaints.IsCurrent(Round, Contact.SurfaceKey, Contact.Owner, Contact.Revision)) return false;
+                contact = Contact; return true;
+            }
             if (_kind == 3)
             {
                 if (current == null || current != Terrain || DynamicBody == null || current.Dynamic == null ||

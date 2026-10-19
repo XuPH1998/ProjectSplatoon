@@ -220,7 +220,7 @@ namespace Splatoon.Combat
                     float before = e.Travelled;
                     bool hit = SubWeaponMotion.LineStep(e, _aim, remaining, out var h); remaining -= e.Travelled-before;
                     if (!hit) break;
-                    if (h.Collider.GetComponentInParent<PrototypePlayer>() != null || h.Collider.GetComponent<SubWeaponTarget>() != null) { p.Stopped = true; break; }
+                    if (h.Collider?.GetComponentInParent<PrototypePlayer>() != null || h.Collider?.GetComponent<SubWeaponTarget>() != null) { p.Stopped = true; break; }
                     SubWeaponMotion.ReflectLine(e,h); if (e.State.Explosions > e.Config.Angle.reflections) { p.Stopped = true; break; }
                 }
                 if (e.Travelled >= e.Config.Angle.range) p.Stopped = true; return;

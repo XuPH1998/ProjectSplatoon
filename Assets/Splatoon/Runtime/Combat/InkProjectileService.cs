@@ -483,15 +483,20 @@ namespace Splatoon.Combat
 #if UNITY_EDITOR
             enabled |= PaintObserved != null;
 #endif
-            if (!enabled || !Physics.Raycast(position, Vector3.down, out var h, w.TrailMaxDrop, TpsAimSolver.CombatMask, QueryTriggerInteraction.Ignore)) return;
-            var surface = h.collider.GetComponentInParent<PaintSurface>();
-            bool blockHit = BlockAttackService.Contact(h.collider, h.point, h.normal, out var block);
+            if (!enabled || !_aim.ClosestCast(position, Vector3.down, w.TrailMaxDrop, 0, shot.Shooter, out var h, false)) return;
+            var surface = h.Collider?.GetComponentInParent<PaintSurface>();
+            bool blockHit = BlockAttackService.Contact(h, out var block);
+            if (BlockAttackService.Active && !BlockAttackService.ExplosiveMain(w) && blockHit &&
+                block.Kind != BlockContactKind.SurfacePaint && block.Owner != shot.Team)
+            {
+                BlockAttackService.Direct(shot.BlockAttack, h.Point, 8, shot.Id, ++ordinal); return;
+            }
             if (surface != null || blockHit && block.Owner == shot.Team)
             {
                 float resolved = radius > 0 ? radius : Mathf.Lerp(w.TrailRadiusMin, w.TrailRadiusMax, InkBallistics.Random01(ref seed));
                 ordinal++;
-                if (foot && surface != null) _legacyFeet.Add(new LegacyFoot { Surface=surface,Shot=shot,Point=h.point,Normal=h.normal,Origin=position,Radius=resolved,Ordinal=ordinal });
-                else ApplyPaint(surface, shot, h.point, h.normal, resolved, w, ordinal, false, position);
+                if (foot && surface != null) _legacyFeet.Add(new LegacyFoot { Surface=surface,Shot=shot,Point=h.Point,Normal=h.Normal,Origin=position,Radius=resolved,Ordinal=ordinal });
+                else ApplyPaint(surface, shot, h.Point, h.Normal, resolved, w, ordinal, false, position);
             }
         }
         private void ApplyPaint(PaintSurface surface, InkShot shot, Vector3 point, Vector3 normal, float radius, WeaponRuntimeConfig w, uint ordinal, bool impact, Vector3? sightFrom = null, Vector3? paintDirection = null, float depthScale = 1)
@@ -533,7 +538,7 @@ namespace Splatoon.Combat
         private void ResolveCore(InkShot shot, Collider collider, Vector3 point, Vector3 normal, double age, ref uint ordinal, Vector3? incomingVelocity, BlockQueryContact blockQuery)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            BlockAttackObservation.Contact(shot.BlockAttack, shot.Id);
+            using var contactObservation = BlockAttackObservation.BeginContact(shot.BlockAttack, shot.Id);
 #endif
 #if UNITY_EDITOR
             TraceObserved?.Invoke(shot, age, point);
@@ -549,9 +554,9 @@ namespace Splatoon.Combat
                 return;
             }
             var w = shot.Configuration ?? GameplayConfig.GetWeapon(shot.HeroId);
-            var victim = collider.GetComponentInParent<PrototypePlayer>();
-            collider.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(w,age,shot.Charge));
-            var subTarget = collider.GetComponent<SubWeaponTarget>();
+            var victim = collider?.GetComponentInParent<PrototypePlayer>();
+            collider?.GetComponent<SpecialWeaponTarget>()?.Hit(shot,WeaponSimulation.Damage(w,age,shot.Charge));
+            var subTarget = collider?.GetComponent<SubWeaponTarget>();
             if (subTarget != null) subTarget.Hit(shot, WeaponSimulation.Damage(w, age, shot.Charge));
             float actualDamage = 0; bool killed = false;
             if (victim != null)
@@ -573,12 +578,13 @@ namespace Splatoon.Combat
                 if (blockContact && !BlockAttackService.ExplosiveMain(w))
                 {
                     uint blockOrdinal = ++ordinal;
-                    if (block.Owner != shot.Team)
+                    if (block.Kind != BlockContactKind.SurfacePaint && block.Owner != shot.Team)
                         BlockAttackService.Direct(shot.BlockAttack, point, WeaponSimulation.IsBubble(w) ? 8 : shot.BlockAttack?.DirectLimit ?? 0, shot.Id, blockOrdinal);
                     else
-                        BlockAttackService.Build(shot.BlockAttack, point, normal, w.PaintRadiusMax, false, false, entityId: shot.Id, eventOrdinal: blockOrdinal);
+                        BlockAttackService.Build(shot.BlockAttack, point, normal, w.PaintRadiusMax, false,
+                            block.Kind == BlockContactKind.SurfacePaint, entityId: shot.Id, eventOrdinal: blockOrdinal);
                 }
-                var surface = collider.GetComponentInParent<PaintSurface>();
+                var surface = collider?.GetComponentInParent<PaintSurface>();
                 if (surface != null && !blockContact)
                 {
                     uint seed = shot.Seed;
@@ -586,7 +592,7 @@ namespace Splatoon.Combat
                     else ApplyPaint(surface, shot, point, normal, Mathf.Lerp(w.PaintRadiusMin, w.PaintRadiusMax, InkBallistics.Random01(ref seed)), w, ++ordinal, true);
                 }
             }
-            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age, directObject:subTarget!=null?subTarget.Id:(uint?)null,directSpecialObject:collider.GetComponent<SpecialWeaponTarget>()?.Id);
+            ResolveExplosion(shot, point, normal, true, victim != null ? victim.PlayerId : (ulong?)null, shot.Born + age, directObject:subTarget!=null?subTarget.Id:(uint?)null,directSpecialObject:collider?.GetComponent<SpecialWeaponTarget>()?.Id);
             Impacts.Add(new InkImpact { Id = shot.Id, Round = shot.Round, Team = shot.Team, Position = point, Normal = normal, Hit = true, Time = shot.Born + age,
                 ActionId = shot.ActionId, Lifecycle = shot.Lifecycle, HeroRevision = shot.HeroRevision, PelletIndex = shot.PelletIndex,
                 Shooter = shot.Shooter, Victim = victim != null ? victim.PlayerId : 0, Damage = actualDamage, Killed = killed });

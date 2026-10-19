@@ -9,9 +9,9 @@ namespace Splatoon.Combat
     public sealed partial class PlayerMotorSimulation
     {
         public enum MotorDetailKind : byte { Begin, Move, GroundQuery, WallDetach, Complete }
-        public enum GroundWinner : byte { None, Center, Right, Left, Forward, Back, SphereCast, PublishedOverlap }
+        public enum GroundWinner : byte { None, Center, Right, Left, Forward, Back, SphereCast, PublishedOverlap, FixedGrid }
         [Flags] public enum GroundEvaluated : ushort
-        { None = 0, Center = 1, Right = 2, Left = 4, Forward = 8, Back = 16, SphereCast = 32, OverlapCheck = 64, PublishedOverlap = 128 }
+        { None = 0, Center = 1, Right = 2, Left = 4, Forward = 8, Back = 16, SphereCast = 32, OverlapCheck = 64, PublishedOverlap = 128, FixedGrid = 256 }
         public enum WallDetachReason : byte
         { None, CurrentMissingInBlockMode, CurrentNotClimbable, SwimReleased, WantsFire, JumpRequested, NextNotClimbable, NextNormalMismatch, NextMissingAfterRecovery, FinalPaperObstructed }
 

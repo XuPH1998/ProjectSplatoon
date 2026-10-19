@@ -20,13 +20,14 @@ namespace Splatoon.Prototype
             public BlockDynamicFragment Manifest;
             public byte[] Bytes;
             public HashSet<ulong> Ids;
+            public uint SurfaceRevision;
             public int Cursor;
             public double LastProgress;
         }
         sealed class DynamicPeer
         {
             public bool Ready, Frozen;
-            public uint Applied;
+            public uint Applied, SurfaceApplied;
             public double NextLifecycleAt;
             public double LastLifecycleAt, LastMotionAt, MaximumLifecycleGap, MaximumMotionGap;
             public readonly BlockDynamicSendScheduler.Peer Schedule = new();
@@ -51,7 +52,7 @@ namespace Splatoon.Prototype
             public long requestsSent, requestsReceived, requestsIgnored, assembliesAbandoned, sendTimeouts, acksMatched, acksRejected;
             public long motionApplied, motionRejected;
             public int peers, incomingReceived, incomingCount, lastVisits, lastPackets, lastScans, lastStop;
-            public uint round, worldRevision, requiredRevision, incomingTransfer, incomingRevision;
+            public uint round, worldRevision, requiredRevision, incomingTransfer, incomingRevision, surfaceRevision;
             public double maximumServiceMs, lastServiceMs, roomCredit, dynamicCredit, incomingUniqueProgressAge;
         }
         [Serializable] public struct DynamicPeerStatistics
@@ -59,6 +60,7 @@ namespace Splatoon.Prototype
             public ulong peer;
             public bool ready, frozen, full;
             public uint round, appliedRevision, targetRevision, currentRevision, transfer, captureTick;
+            public uint appliedSurfaceRevision, targetSurfaceRevision, currentSurfaceRevision;
             public ulong sequence;
             public int knownIds, queuedFragments, fragmentCount;
             public long revisionGap;
@@ -73,16 +75,22 @@ namespace Splatoon.Prototype
         readonly List<BlockDynamicState> _dynamicCapture = new(), _dynamicCreated = new(), _dynamicMerged = new();
         readonly List<ulong> _dynamicRemoved = new();
         readonly Dictionary<ulong, BlockDynamicState> _dynamicMerge = new();
+        readonly HashSet<uint> _dynamicMotionRevisions = new();
+        readonly HashSet<ulong> _dynamicMotionIds = new();
+        readonly List<BlockDynamicState> _dynamicReceiveMotion = new(BlockDynamicCodec.MotionBatchSize);
         BlockDynamicAssembly _dynamicIncoming;
         bool _blockTerrainReady, _dynamicReady;
-        uint _dynamicTransferId, _dynamicCompletedId;
+        uint _dynamicTransferId, _dynamicCompletedId, _dynamicCompletedSurfaceRevision;
         uint _dynamicCapturedTick, _dynamicAppliedTick;
         ulong _dynamicSequence, _dynamicCaptureSerial;
+        ulong _dynamicMotionEpochSequence;
         double _dynamicLastRequest, _dynamicLastProgress, _dynamicCapturedAt = -1;
         double _dynamicLastUniqueProgress, _dynamicLastFailureWarning = -1;
         double _dynamicSendCredit, _dynamicCreditAt;
-        public bool DynamicBlockSyncReady => IsServer || _dynamicReady;
-        public uint DynamicBlockCaptureTick => IsServer ? _dynamicCapturedTick : _dynamicAppliedTick;
+        public bool DynamicBlockSyncReady => Blocks?.FixedGridMode == true ? FixedGridBlockSyncReady : IsServer || _dynamicReady;
+        // Zero means unknown. Live PhysX poses and sparse lifecycle/motion merges do not
+        // form a snapshot of State.Tick; only a future per-body physics clock can prove that.
+        public uint DynamicBlockCaptureTick => IsServer ? 0 : _dynamicAppliedTick;
         public long DynamicBlockBytesSent { get; private set; }
         public event Action<ulong, BlockDynamicMotion, bool> DynamicMotionObserved;
 
@@ -92,6 +100,7 @@ namespace Splatoon.Prototype
             value.peers = _dynamicPeers.Count; value.round = Blocks?.Dynamic?.Round ?? 0;
             value.worldRevision = Blocks?.Dynamic?.LifecycleRevision ?? 0;
             value.requiredRevision = State.Value.DynamicBlockRevision;
+            value.surfaceRevision = Blocks?.SurfacePaints?.Revision ?? 0;
             value.roomCredit = _blockSendBudget; value.dynamicCredit = _dynamicSendCredit;
             if (_dynamicIncoming != null)
             {
@@ -112,6 +121,8 @@ namespace Splatoon.Prototype
                     round = Blocks?.Dynamic?.Round ?? 0, appliedRevision = peer.Applied, targetRevision = m.Revision,
                     transfer = m.Transfer, captureTick = m.Tick, sequence = m.Sequence, full = m.Full,
                     currentRevision = Blocks?.Dynamic?.LifecycleRevision ?? 0,
+                    appliedSurfaceRevision = peer.SurfaceApplied, targetSurfaceRevision = send?.SurfaceRevision ?? 0,
+                    currentSurfaceRevision = Blocks?.SurfacePaints?.Revision ?? 0,
                     revisionGap = (long)(Blocks?.Dynamic?.LifecycleRevision ?? 0) - peer.Applied,
                     knownIds = peer.Ids.Count, queuedFragments = send?.Cursor ?? 0, fragmentCount = send == null ? 0 : m.Count,
                     lastSubmitAge = send == null ? 0 : Math.Max(0, Time.unscaledTimeAsDouble - send.LastProgress),
@@ -125,14 +136,17 @@ namespace Splatoon.Prototype
         void SetTerrainSyncReady(bool ready)
         { _blockTerrainReady = ready; RefreshInitialBlockSync(); }
         void RefreshInitialBlockSync()
-        { InitialSyncComplete = IsServer || _blockTerrainReady && _dynamicReady; }
+        { InitialSyncComplete = IsServer || (Blocks?.FixedGridMode == true ? _fixedGridReady : _blockTerrainReady && _dynamicReady); }
         void ResetDynamicSync()
         {
             _dynamicPeers.Clear(); _dynamicClients.Clear(); _dynamicDeparted.Clear();
             _dynamicCapture.Clear(); _dynamicCreated.Clear(); _dynamicRemoved.Clear(); _dynamicMerged.Clear(); _dynamicMerge.Clear();
             _dynamicIncoming = null; _dynamicCompletedId = 0; _dynamicScheduler.Reset(); _dynamicStats = default;
+            _dynamicCompletedSurfaceRevision = 0;
             _dynamicLastRequest = _dynamicLastProgress = 0; _dynamicCapturedAt = -1;
             _dynamicCapturedTick = _dynamicAppliedTick = 0;
+            _dynamicMotionEpochSequence = 0; _dynamicMotionRevisions.Clear();
+            _dynamicMotionIds.Clear(); _dynamicReceiveMotion.Clear();
             _dynamicSendCredit = _dynamicCreditAt = 0;
             _dynamicLastUniqueProgress = 0; _dynamicMotionScratch.Clear();
             _dynamicReady = _blockTerrainReady = IsServer; RefreshInitialBlockSync();
@@ -142,13 +156,15 @@ namespace Splatoon.Prototype
         {
             using var marker = DynamicCaptureCpu.Auto();
             _dynamicCapture.Clear(); Blocks.Dynamic.CaptureStates(_dynamicCapture);
-            // Tick belongs to this captured pose set, even when budgeted sends happen later.
-            _dynamicCapturedTick = State.Value.Tick;
+            // NGO's State.Tick is not the clock of the native PhysX solve. Do not attach
+            // a fabricated common server tick to these poses or to a later sparse merge.
+            _dynamicCapturedTick = 0;
             _dynamicCaptureSerial++; if (_dynamicCaptureSerial == 0) _dynamicCaptureSerial++;
             _dynamicCapturedAt = now;
         }
         void UpdateDynamicSync()
         {
+            if (Blocks?.FixedGridMode == true) return;
             if (Blocks?.Dynamic == null) return;
             double now = Time.unscaledTimeAsDouble;
             if (!IsServer)
@@ -171,7 +187,8 @@ namespace Splatoon.Prototype
                 if (!_dynamicPeers.TryGetValue(client, out var peer)) _dynamicPeers.Add(client, peer = new DynamicPeer());
                 if (peer.Send != null && now - peer.Send.LastProgress > Math.Max(15, GameplayConfig.Global.ConnectionTimeout * 2))
                 { peer.Send = null; peer.Ready = false; _dynamicStats.sendTimeouts++; }
-                if (peer.Send != null || peer.Ready && peer.Applied == Blocks.Dynamic.LifecycleRevision && peer.Frozen == Blocks.Dynamic.Frozen) continue;
+                if (peer.Send != null || peer.Ready && peer.Applied == Blocks.Dynamic.LifecycleRevision &&
+                    peer.SurfaceApplied == (Blocks.SurfacePaints?.Revision ?? 0) && peer.Frozen == Blocks.Dynamic.Frozen) continue;
                 if (peer.Ready && !Blocks.Dynamic.Frozen && now < peer.NextLifecycleAt) continue;
                 if (!captured) { CaptureDynamicStates(now); captured = true; }
                 StartDynamicTransfer(peer, now);
@@ -192,8 +209,14 @@ namespace Splatoon.Prototype
             { ids.Add(state.Id); if (full || !peer.Ids.Contains(state.Id)) _dynamicCreated.Add(state); }
             if (!full) foreach (ulong id in peer.Ids) if (!ids.Contains(id)) _dynamicRemoved.Add(id);
             byte[] bytes = BlockDynamicCodec.Encode(Blocks.Dynamic.Round, _dynamicCreated, _dynamicRemoved);
+            uint surfaceRevision = Blocks.SurfacePaints?.Revision ?? 0;
+            if (Blocks.SurfacePaints != null)
+            {
+                byte[] surfaceBytes = full ? Blocks.SurfacePaints.ExportFull() : Blocks.SurfacePaints.ExportDelta(peer.SurfaceApplied);
+                bytes = BlockSurfaceDynamicEnvelope.Encode(bytes, surfaceBytes, surfaceRevision, full);
+            }
             uint transfer = ++_dynamicTransferId; if (transfer == 0) transfer = ++_dynamicTransferId;
-            peer.Send = new DynamicSend { Bytes = bytes, Ids = ids, LastProgress = now,
+            peer.Send = new DynamicSend { Bytes = bytes, Ids = ids, LastProgress = now, SurfaceRevision = surfaceRevision,
                 Manifest = new BlockDynamicFragment { Round = Blocks.Dynamic.Round, Transfer = transfer,
                     BaseRevision = full ? 0 : peer.Applied, Revision = Blocks.Dynamic.LifecycleRevision,
                     Tick = _dynamicCapturedTick, Sequence = ++_dynamicSequence, Full = full, Frozen = Blocks.Dynamic.Frozen,
@@ -203,6 +226,7 @@ namespace Splatoon.Prototype
         // Uses the shared whole-room terrain budget; lifecycle is independent of mesh publication.
         void SendDynamicTransfers(double rate, bool terrainPending)
         {
+            if (Blocks?.FixedGridMode == true) return;
             if (!IsServer || Blocks?.Dynamic == null || _dynamicClients.Count == 0) return;
             double now = Time.unscaledTimeAsDouble, share = terrainPending ? rate * .5 : rate;
             _dynamicSendCredit = _dynamicCreditAt == 0 ? share * .1
@@ -247,16 +271,7 @@ namespace Splatoon.Prototype
                 DynamicBlockBytesSent += size; BlockBytesSent += size;
                 return size + 100;
             }
-            if (!peer.Ready || peer.Frozen || _dynamicCapture.Count == 0 || window.Allowance < 100 + BlockDynamicCodec.StateBytes) return 0;
-            int maximum = Math.Min(BlockDynamicCodec.MotionBatchSize, (int)((window.Allowance - 100) / BlockDynamicCodec.StateBytes));
-            BlockDynamicSendScheduler.MotionCursor.Selection selection;
-            using (DynamicMotionSelectCpu.Auto())
-                selection = peer.Schedule.Motion.Select(_dynamicCaptureSerial, _dynamicCapture, peer.Ids, maximum, window, _dynamicMotionScratch);
-            // Skipped unknown IDs can advance even if the selected known IDs cannot be submitted yet.
-            peer.Schedule.Motion.Commit(selection, false);
-            if (_dynamicMotionScratch.Count == 0 || window.Expired) return 0;
-            var motion = new BlockDynamicMotion { Round = Blocks.Dynamic.Round, Revision = peer.Applied,
-                Tick = _dynamicCapturedTick, Sequence = ++_dynamicSequence, States = _dynamicMotionScratch.ToArray() };
+            if (!TryPrepareDynamicMotion(peer, window, out var motion, out var selection)) return 0;
             if (window.Expired) return 0;
             try { DynamicMotionClientRpc(motion, Target(id)); }
             catch (Exception error) { DynamicSendFailed(error); return 0; }
@@ -268,6 +283,33 @@ namespace Splatoon.Prototype
             int cost = 100 + motion.States.Length * BlockDynamicCodec.StateBytes;
             DynamicBlockBytesSent += cost - 100; BlockBytesSent += cost - 100;
             return cost;
+        }
+        bool TryPrepareDynamicMotion(DynamicPeer peer, BlockDynamicSendScheduler.Window window,
+            out BlockDynamicMotion motion, out BlockDynamicSendScheduler.MotionCursor.Selection selection)
+        {
+            motion = default; selection = default;
+            // A reliable transfer can run for several RTTs while paint continues changing.
+            // Already ACKed, still-live IDs keep moving on their approved baseline; births
+            // remain excluded until their lifecycle is ACKed. Deletion never sends a pose.
+            if (!peer.Ready || peer.Frozen || Blocks?.Dynamic == null || Blocks.Dynamic.Frozen ||
+                peer.Applied > Blocks.Dynamic.LifecycleRevision || _dynamicCapture.Count == 0 ||
+                window.Allowance < 100 + BlockDynamicCodec.StateBytes) return false;
+            int maximum = Math.Min(BlockDynamicCodec.MotionBatchSize, (int)((window.Allowance - 100) / BlockDynamicCodec.StateBytes));
+            using (DynamicMotionSelectCpu.Auto())
+                selection = peer.Schedule.Motion.Select(_dynamicCaptureSerial, _dynamicCapture, peer.Ids, maximum, window, _dynamicMotionScratch);
+            peer.Schedule.Motion.Commit(selection, false);
+            for (int i = _dynamicMotionScratch.Count - 1; i >= 0; i--)
+                if (!Blocks.Dynamic.TryGet(_dynamicMotionScratch[i].Id, out var body) || body.Owner != _dynamicMotionScratch[i].Owner)
+                    _dynamicMotionScratch.RemoveAt(i);
+            if (_dynamicMotionScratch.Count == 0)
+            {
+                // Selected IDs that were deleted after capture are consumed without an RPC.
+                peer.Schedule.Motion.Commit(selection, true); return false;
+            }
+            if (window.Expired) return false;
+            motion = new BlockDynamicMotion { Round = Blocks.Dynamic.Round, Revision = peer.Applied,
+                Tick = 0, Sequence = ++_dynamicSequence, States = _dynamicMotionScratch.ToArray() };
+            return true;
         }
         void DynamicSendFailed(Exception error)
         {
@@ -283,7 +325,10 @@ namespace Splatoon.Prototype
             { _dynamicStats.observerFailures++; Debug.LogWarning("[BLOCK] Dynamic motion observer failed: " + error.Message); }
         }
         void RequestDynamicSnapshot(uint rejectedTransfer)
-        { _dynamicStats.requestsSent++; RequestDynamicSnapshotRpc(rejectedTransfer); }
+        {
+            if (Blocks?.FixedGridMode == true) { RequestFixedGridSnapshot(rejectedTransfer); return; }
+            _dynamicStats.requestsSent++; RequestDynamicSnapshotRpc(rejectedTransfer);
+        }
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         void RequestDynamicSnapshotRpc(uint rejectedTransfer = 0, RpcParams rpc = default)
         {
@@ -301,10 +346,11 @@ namespace Splatoon.Prototype
         [ClientRpc]
         void DynamicLifecycleClientRpc(BlockDynamicFragment fragment, ClientRpcParams targets = default)
         {
+            if (Blocks?.FixedGridMode == true) return;
             if (IsServer || Blocks?.Dynamic == null) return;
             if (fragment.Round != _paintRound || !fragment.Valid) { _dynamicStats.fragmentsRejected++; return; }
             if (fragment.Transfer == _dynamicCompletedId)
-            { _dynamicStats.fragmentsDuplicate++; AckDynamicSnapshotRpc(fragment.Round, fragment.Transfer, fragment.Revision); return; }
+            { _dynamicStats.fragmentsDuplicate++; AckDynamicSnapshotRpc(fragment.Round, fragment.Transfer, fragment.Revision, _dynamicCompletedSurfaceRevision); return; }
             if (_dynamicCompletedId != 0 && unchecked((int)(fragment.Transfer - _dynamicCompletedId)) <= 0)
             { _dynamicStats.fragmentsRejected++; return; }
             if (_dynamicIncoming == null || unchecked((int)(fragment.Transfer - _dynamicIncoming.Manifest.Transfer)) > 0)
@@ -326,28 +372,8 @@ namespace Splatoon.Prototype
             try
             {
                 if (!_dynamicIncoming.Verify()) throw new InvalidOperationException("Dynamic lifecycle checksum mismatch.");
-                BlockDynamicCodec.Decode(_dynamicIncoming.Bytes, manifest.Round, _dynamicCreated, _dynamicRemoved);
-                if (manifest.Full && _dynamicRemoved.Count > 0) throw new InvalidOperationException("A full dynamic baseline contains removals.");
-                _dynamicMerged.Clear();
-                if (manifest.Full) _dynamicMerged.AddRange(_dynamicCreated);
-                else
-                {
-                    Blocks.Dynamic.CaptureStates(_dynamicMerged); _dynamicMerge.Clear();
-                    foreach (var state in _dynamicMerged) _dynamicMerge.Add(state.Id, state);
-                    foreach (ulong id in _dynamicRemoved) _dynamicMerge.Remove(id);
-                    foreach (var state in _dynamicCreated)
-                    {
-                        if (_dynamicMerge.ContainsKey(state.Id)) throw new InvalidOperationException("Dynamic creation reuses an existing body ID.");
-                        _dynamicMerge.Add(state.Id, state);
-                    }
-                    _dynamicMerged.Clear(); _dynamicMerged.AddRange(_dynamicMerge.Values);
-                }
-                if (!Blocks.Dynamic.ApplySnapshot(manifest.Round, manifest.Revision, manifest.Sequence, _dynamicMerged, manifest.Frozen))
-                    throw new InvalidOperationException("Dynamic baseline was rejected.");
-                _dynamicIncoming = null; _dynamicCompletedId = manifest.Transfer; _dynamicReady = true;
-                _dynamicStats.assembliesCompleted++;
-                _dynamicAppliedTick = manifest.Tick;
-                RefreshInitialBlockSync(); AckDynamicSnapshotRpc(manifest.Round, manifest.Transfer, manifest.Revision);
+                uint surfaceRevision = ApplyDynamicLifecycle(manifest, _dynamicIncoming.Bytes);
+                AckDynamicSnapshotRpc(manifest.Round, manifest.Transfer, manifest.Revision, surfaceRevision);
             }
             catch (Exception exception)
             {
@@ -357,28 +383,111 @@ namespace Splatoon.Prototype
                 _dynamicLastRequest = Time.unscaledTimeAsDouble; RequestDynamicSnapshot(manifest.Transfer);
             }
         }
+        uint ApplyDynamicLifecycle(BlockDynamicFragment manifest, byte[] bytes)
+        {
+            if (Blocks?.FixedGridMode == true) throw new InvalidOperationException("Legacy dynamic lifecycle is disabled in fixed-grid mode.");
+            if (Blocks?.Dynamic == null || manifest.Round != _paintRound || manifest.Round != Blocks.Dynamic.Round ||
+                manifest.Sequence == 0 || manifest.Sequence < _dynamicMotionEpochSequence ||
+                manifest.Revision < Blocks.Dynamic.LifecycleRevision || Blocks.Dynamic.Frozen && !manifest.Frozen ||
+                manifest.Frozen && !manifest.Full ||
+                !manifest.Full && (!_dynamicReady || manifest.BaseRevision != Blocks.Dynamic.LifecycleRevision))
+                throw new InvalidOperationException("Dynamic lifecycle round, epoch or baseline was rejected.");
+            byte[] dynamicBytes = bytes;
+            BlockSurfaceWorld nextSurface = null; uint surfaceRevision = 0;
+            if (Blocks.SurfacePaints != null)
+            {
+                BlockSurfaceDynamicEnvelope.Decode(bytes, out dynamicBytes, out var surfaceBytes, out surfaceRevision, out bool surfaceFull);
+                if (surfaceFull != manifest.Full || !Blocks.PrepareSurfacePaintImport(surfaceBytes, surfaceFull, out nextSurface) ||
+                    nextSurface == null || nextSurface.Revision != surfaceRevision || nextSurface.Round != manifest.Round)
+                    throw new InvalidOperationException("Surface lifecycle baseline or identity was rejected.");
+            }
+            BlockDynamicCodec.Decode(dynamicBytes, manifest.Round, _dynamicCreated, _dynamicRemoved);
+            if (manifest.Full && _dynamicRemoved.Count > 0) throw new InvalidOperationException("A full dynamic baseline contains removals.");
+            _dynamicMerged.Clear();
+            if (manifest.Full) _dynamicMerged.AddRange(_dynamicCreated);
+            else
+            {
+                Blocks.Dynamic.CaptureStates(_dynamicMerged); _dynamicMerge.Clear();
+                foreach (var state in _dynamicMerged) _dynamicMerge.Add(state.Id, state);
+                foreach (ulong id in _dynamicRemoved) _dynamicMerge.Remove(id);
+                foreach (var state in _dynamicCreated)
+                {
+                    if (_dynamicMerge.ContainsKey(state.Id)) throw new InvalidOperationException("Dynamic creation reuses an existing body ID.");
+                    _dynamicMerge.Add(state.Id, state);
+                }
+                _dynamicMerged.Clear(); _dynamicMerged.AddRange(_dynamicMerge.Values);
+            }
+            // A delta carries no pose for retained IDs. Sequence zero preserves each live
+            // body's own ordering instead of relabelling an old local pose with this transfer's
+            // newer sequence. New bodies receive the actual lifecycle sequence before Changed.
+            Action beforeNotify = () =>
+            {
+                if (!manifest.Full)
+                    foreach (var state in _dynamicCreated)
+                        if (Blocks.Dynamic.TryGet(state.Id, out var body)) body.MotionSequence = manifest.Sequence;
+                if (nextSurface != null) Blocks.InstallSurfacePaints(nextSurface);
+            };
+            if (!Blocks.Dynamic.ApplySnapshot(manifest.Round, manifest.Revision, manifest.Full ? manifest.Sequence : 0,
+                _dynamicMerged, manifest.Frozen, beforeNotify))
+                throw new InvalidOperationException("Dynamic baseline was rejected.");
+            if (manifest.Full)
+            {
+                _dynamicMotionRevisions.Clear();
+                _dynamicMotionEpochSequence = manifest.Sequence;
+            }
+            _dynamicMotionRevisions.Add(manifest.Revision);
+            _dynamicIncoming = null; _dynamicCompletedId = manifest.Transfer; _dynamicReady = true;
+            _dynamicCompletedSurfaceRevision = surfaceRevision; _dynamicStats.assembliesCompleted++;
+            _dynamicAppliedTick = 0;
+            if (nextSurface != null) Blocks.NotifySurfacePaintChanged();
+            RefreshInitialBlockSync(); return surfaceRevision;
+        }
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        void AckDynamicSnapshotRpc(uint round, uint transfer, uint revision, RpcParams rpc = default)
+        void AckDynamicSnapshotRpc(uint round, uint transfer, uint revision, uint surfaceRevision, RpcParams rpc = default)
         {
             if (!IsServer) return;
-            if (round != _paintRound || !_dynamicPeers.TryGetValue(rpc.Receive.SenderClientId, out var peer))
-            { _dynamicStats.acksRejected++; return; }
+            if (ApplyDynamicAcknowledgement(rpc.Receive.SenderClientId, round, transfer, revision, surfaceRevision)) _dynamicStats.acksMatched++;
+            else _dynamicStats.acksRejected++;
+        }
+        bool ApplyDynamicAcknowledgement(ulong client, uint round, uint transfer, uint revision, uint surfaceRevision)
+        {
+            if (round != _paintRound || !_dynamicPeers.TryGetValue(client, out var peer)) return false;
             var send = peer.Send;
-            if (send == null || send.Manifest.Transfer != transfer || send.Manifest.Revision != revision)
-            { _dynamicStats.acksRejected++; return; }
-            peer.Ids.Clear(); peer.Ids.UnionWith(send.Ids); peer.Applied = revision;
+            if (send == null || send.Manifest.Transfer != transfer || send.Manifest.Revision != revision || send.SurfaceRevision != surfaceRevision)
+                return false;
+            peer.Ids.Clear(); peer.Ids.UnionWith(send.Ids); peer.Applied = revision; peer.SurfaceApplied = surfaceRevision;
             peer.Frozen = send.Manifest.Frozen; peer.Ready = true; peer.Send = null;
-            _dynamicStats.acksMatched++;
+            return true;
         }
         [ClientRpc(Delivery = RpcDelivery.Unreliable)]
         void DynamicMotionClientRpc(BlockDynamicMotion motion, ClientRpcParams targets = default)
         {
             if (IsServer || Blocks?.Dynamic == null) return;
-            if (!_dynamicReady || motion.Round != _paintRound || motion.Revision != Blocks.Dynamic.LifecycleRevision || motion.Sequence == 0)
-            { _dynamicStats.motionRejected++; return; }
-            if (Blocks.Dynamic.ApplyMotion(motion.Round, motion.Revision, motion.Sequence, motion.States))
+            if (ApplyDynamicMotion(motion))
             { _dynamicStats.motionApplied++; ObserveDynamicMotion(NetworkManager.LocalClientId, motion, false); }
             else _dynamicStats.motionRejected++;
+        }
+        bool ApplyDynamicMotion(BlockDynamicMotion motion)
+        {
+            if (Blocks?.FixedGridMode == true) return false;
+            if (!_dynamicReady || Blocks?.Dynamic == null || motion.Round != _paintRound || motion.Round != Blocks.Dynamic.Round ||
+                motion.Sequence <= _dynamicMotionEpochSequence || !_dynamicMotionRevisions.Contains(motion.Revision) ||
+                motion.Revision > Blocks.Dynamic.LifecycleRevision || motion.States == null ||
+                motion.States.Length == 0 || motion.States.Length > BlockDynamicCodec.MotionBatchSize) return false;
+            _dynamicReceiveMotion.Clear(); _dynamicMotionIds.Clear();
+            foreach (var state in motion.States)
+            {
+                if (!BlockDynamicCodec.Valid(state, motion.Round) || !_dynamicMotionIds.Add(state.Id)) return false;
+                if (!Blocks.Dynamic.TryGet(state.Id, out var body)) continue;
+                if (body.Owner != state.Owner) return false;
+                _dynamicReceiveMotion.Add(state);
+            }
+            // The wire revision must be a baseline this epoch really committed. The current
+            // world revision then checks the native apply, which only updates surviving IDs.
+            // This permits packets sent before an ACK arrives without resurrecting deletions.
+            if (_dynamicReceiveMotion.Count == 0 || !Blocks.Dynamic.ApplyMotion(motion.Round,
+                Blocks.Dynamic.LifecycleRevision, motion.Sequence, _dynamicReceiveMotion)) return false;
+            _dynamicAppliedTick = 0; return true;
         }
     }
 }

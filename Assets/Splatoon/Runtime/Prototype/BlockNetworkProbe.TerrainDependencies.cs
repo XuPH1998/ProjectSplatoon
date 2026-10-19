@@ -28,18 +28,38 @@ namespace Splatoon.Prototype
             public bool available, truncated;
             public int totalCount, terrainObjectId;
             public uint terrainRound, worldRevision;
+            public uint surfaceRevision;
             public bool worldAvailable;
+            public bool surfaceWorldAvailable;
             public ReplayDependencyEntrySample[] rows;
+            public SurfaceReplayDependencyEntrySample[] surfaceRows;
             internal ReplayDependencySetSample(PrototypePlayer.ReplayDependencyReadSet source)
             {
                 available = source.Available; truncated = source.Truncated; totalCount = source.TotalCount;
                 terrainObjectId = source.TerrainObjectId; terrainRound = source.TerrainRound;
                 worldRevision = source.WorldRevision; worldAvailable = source.WorldAvailable;
+                surfaceRevision = source.SurfaceRevision; surfaceWorldAvailable = source.SurfaceWorldAvailable;
                 rows = new ReplayDependencyEntrySample[source.Rows?.Length ?? 0];
                 for (int i = 0; i < rows.Length; i++) rows[i] = new ReplayDependencyEntrySample
                 { chunk = source.Rows[i].Chunk, requiredRevision = source.Rows[i].Required,
                     appliedRevision = source.Rows[i].Applied, appliedAvailable = source.Rows[i].AppliedAvailable };
+                surfaceRows = new SurfaceReplayDependencyEntrySample[source.SurfaceRows?.Length ?? 0];
+                for (int i = 0; i < surfaceRows.Length; i++) surfaceRows[i] = new SurfaceReplayDependencyEntrySample
+                { face = source.SurfaceRows[i].Key.FaceId, u = source.SurfaceRows[i].Key.U, v = source.SurfaceRows[i].Key.V,
+                    requiredRevision = source.SurfaceRows[i].Required, appliedRevision = source.SurfaceRows[i].Applied,
+                    appliedAvailable = source.SurfaceRows[i].AppliedAvailable };
             }
+        }
+        [Serializable] sealed class SurfaceReplayDependencyEntrySample
+        {
+            public int face, u, v;
+            public uint requiredRevision, appliedRevision;
+            public bool appliedAvailable;
+        }
+        [Serializable] sealed class SurfacePaintCellSample
+        {
+            public int face, u, v;
+            internal SurfacePaintCellSample(BlockSurfaceKey key) { face = key.FaceId; u = key.U; v = key.V; }
         }
         [Serializable] sealed class ReplayDependencyCheckSample
         {
@@ -48,10 +68,14 @@ namespace Splatoon.Prototype
             public TerrainTraceIdentity identity;
             public uint previousLife, previousRound, terrainRound, requiredSupportRevision;
             public Vector3Int supportCell;
+            public bool supportIsSurfacePaint;
+            public int supportSurfaceFace, supportSurfaceU, supportSurfaceV;
             public bool previousRoundKnown, terrainAvailable, boundary, dead, cannotMove, inputTimedOut, ready;
             public bool satisfactionCheckPerformed, satisfiedTruncated;
             public int satisfiedCount;
+            public int satisfiedSurfaceCount;
             public Vector3Int[] satisfiedChunks;
+            public SurfacePaintCellSample[] satisfiedSurfaceCells;
             public ReplayDependencySetSample before, after;
         }
         [Serializable] sealed class TerrainReconcileAssociationSample
@@ -254,9 +278,15 @@ namespace Splatoon.Prototype
                     terrainAvailable = source.TerrainAvailable, terrainRound = source.TerrainRound, boundary = source.Boundary,
                     dead = source.State.Health <= 0, cannotMove = !source.State.CanMove, inputTimedOut = source.State.InputTimedOut,
                     supportCell = source.State.SupportCell, requiredSupportRevision = source.State.SupportTerrainRevision, ready = source.Ready,
+                    supportIsSurfacePaint = source.State.SupportIsSurfacePaint, supportSurfaceFace = source.State.SupportSurfaceFace,
+                    supportSurfaceU = source.State.SupportSurfaceU, supportSurfaceV = source.State.SupportSurfaceV,
                     before = new ReplayDependencySetSample(source.Before), after = new ReplayDependencySetSample(source.After),
                     satisfactionCheckPerformed = source.SatisfactionCheckPerformed, satisfiedCount = source.SatisfiedCount,
-                    satisfiedTruncated = source.SatisfiedTruncated, satisfiedChunks = (Vector3Int[])source.SatisfiedChunks.Clone() };
+                    satisfiedTruncated = source.SatisfiedTruncated, satisfiedChunks = (Vector3Int[])source.SatisfiedChunks.Clone(),
+                    satisfiedSurfaceCount = source.SatisfiedSurfaceCount,
+                    satisfiedSurfaceCells = new SurfacePaintCellSample[source.SatisfiedSurfaceCells?.Length ?? 0] };
+                for (int i = 0; i < row.satisfiedSurfaceCells.Length; i++)
+                    row.satisfiedSurfaceCells[i] = new SurfacePaintCellSample(source.SatisfiedSurfaceCells[i]);
                 report.dependencyChecks.Add(row); _terrainDependencyRows.Add((row.identity.matchObjectId, player.GetInstanceID(), source.Invocation), row.eventId);
                 if (!row.identity.traceConnectionOrdinalKnown || !row.identity.playerIdentityAvailable) report.unavailableIdentityRows++;
                 report.readSetTruncated |= row.before.truncated || row.after.truncated || row.satisfiedTruncated;

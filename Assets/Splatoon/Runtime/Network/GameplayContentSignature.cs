@@ -11,28 +11,31 @@ namespace Splatoon.Networking
 {
     public static class GameplayContentSignature
     {
-        public const int PaintProtocolVersion = 11; // Paired coverage/visual checkpoint and deterministic stamp detail.
-        public const int WeaponSimulationVersion = 48; // 2 m activation/settled-sleeper boundary, map-visible free births and effective 2 mm contact offset; retain simulation 47 push tuning.
-        public const int BlockProtocolVersion = Splatoon.Blocks.BlockWorld.ProtocolVersion;
-        public const int PaperTraversalSimulationVersion = 12; // Surface deposits are traversal contacts without capsule collision.
+        public const int PaintProtocolVersion = 12; // Fixed-grid plus paint atomic checkpoints; rejects legacy free-body rooms during discovery.
+        public const int WeaponSimulationVersion = 56; // Short fixed-grid capsule sweeps retain exact contacts and legacy tie ordering.
+        public const int BlockProtocolVersion = 8; // Paired fixed/paint commits use bounded reliable streams with per-peer progress acknowledgement.
+        public const int PaperTraversalSimulationVersion = 16; // Endpoint-admitted shallow fixed contacts may separate; inward and new contacts retain full sweeps.
         public static byte[] Compute(byte[] tables, string topology, PrototypePlayer player, IEnumerable<HeroContent> heroes = null)
         {
-            Splatoon.Blocks.BlockDynamicWorld.ConfigureCollisionLayers();
             using var stream = new MemoryStream(); using var w = new BinaryWriter(stream);
             w.Write(tables.Length); w.Write(tables); w.Write(topology); w.Write(PlayerSnapshot.ProtocolVersion); w.Write(PaintProtocolVersion); w.Write(InkShapeAtlas.ContentHash);
             w.Write(WeaponSimulationVersion);
             w.Write(BlockProtocolVersion); w.Write(Splatoon.Blocks.BlockWorld.CellSize); w.Write(Splatoon.Blocks.BlockWorld.ChunkSize); w.Write(Splatoon.Blocks.BlockWorld.Top);
-            w.Write(BlockDynamicCodec.ProtocolVersion); w.Write(Splatoon.Blocks.BlockDynamicWorld.Layer);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.CollisionPolicyVersion);
-            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.AuthorityCollisionMode);
-            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.FrozenAuthorityCollisionMode);
-            w.Write((int)Splatoon.Blocks.BlockDynamicWorld.ReplicaCollisionMode);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.Mass); w.Write(Splatoon.Blocks.BlockDynamicWorld.StaticFriction);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.DynamicFriction); w.Write(Splatoon.Blocks.BlockDynamicWorld.PushForce);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.PushSpeed); w.Write(Splatoon.Blocks.BlockDynamicWorld.BuildRadiusScale);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.RangeActivationVersion);
-            w.Write(Splatoon.Blocks.BlockDynamicWorld.ActivationRadius); w.Write(Splatoon.Blocks.BlockDynamicWorld.DeactivationRadius);
-            for (int layer = 0; layer < 32; layer++) w.Write(Physics.GetIgnoreLayerCollision(Splatoon.Blocks.BlockDynamicWorld.Layer, layer));
+            w.Write(Splatoon.Blocks.BlockSurfaceWorld.WireVersion); w.Write(Splatoon.Blocks.BlockSurfaceWorld.CellSize);
+            w.Write(BlockFixedGridCodec.ProtocolVersion); w.Write(BlockFixedGridCodec.StateBytes);
+            w.Write(Splatoon.Blocks.BlockFixedGridWorld.SimulationVersion);
+            w.Write(Splatoon.Blocks.BlockFixedGridWorld.MaximumStackLayers); w.Write(Splatoon.Blocks.BlockFixedGridWorld.MaximumStackHeight);
+            w.Write("fixed-world-grid;map-relative-four-layer-cap;first-downward-support;immediate-resettle;paired-surface-ownership;no-rigidbody;no-motion-v1");
+            var map = PrototypeArena.Current;
+            w.Write(map != null);
+            if (map != null)
+            {
+                var faceTopology = new Splatoon.Blocks.BlockSurfaceWorld(0);
+                Splatoon.Blocks.BlockSurfaceGeometry.Capture(faceTopology, map.GetComponentsInChildren<Collider>(true));
+                w.Write(faceTopology.TopologyHash);
+            }
+            w.Write(Splatoon.Blocks.BlockTerrain.TerrainLayer);
+            for (int layer = 0; layer < 32; layer++) w.Write(Physics.GetIgnoreLayerCollision(Splatoon.Blocks.BlockTerrain.TerrainLayer, layer));
             w.Write(InkAppearanceProfile.AccumulationVersion); w.Write(InkAppearanceProfile.ContentHash);
             foreach (var hero in Splatoon.Config.LubanConfigService.Current.Tables.TbHero.DataList.OrderBy(h => h.Id))
             { w.Write(hero.Id); w.Write(Splatoon.Config.GameplayConfig.GetSubWeapon(hero.Id).ContentHash); }

@@ -27,6 +27,7 @@ namespace Splatoon.Combat
         LineRenderer _preview;GameObject _landing;readonly List<Vector3> _points=new();
         uint _snapshotWatermark;
         Material _cubeMaterial;
+        readonly TpsAimSolver _collisionAim = new();
         readonly AudioSource[] _voices=new AudioSource[12];int _voice;
         static bool BlockMode=>BlockTerrain.Current!=null&&BlockTerrain.Current.Initialized;
         static (ulong,uint,uint,uint) Key(SpecialEntityState s)=>(s.Owner,s.Life,s.HeroRevision,s.Attack);
@@ -145,8 +146,8 @@ namespace Splatoon.Combat
                         Vector3 from=i==0?flight.State.P0:i==1?flight.State.P1:flight.State.P2,delta=to-from;
                         float age=(float)(now-s.Born-i*(double)v.Config.P.lobeDelay);
                         float radius=Mathf.Lerp(v.Config.P.fieldRadiusStart,v.Config.P.fieldRadiusEnd,age/v.Config.P.fieldRadiusTime);
-                        if(Physics.SphereCast(from,radius,delta.normalized,out var hit,delta.magnitude,PlayerMotorSimulation.WorldMask,QueryTriggerInteraction.Ignore))
-                        {to=hit.point;flight.State.LiveLobes=(byte)(flight.State.LiveLobes&~(1<<i));}
+                        if(_collisionAim.ClosestCast(from,delta,delta.magnitude,radius,s.Owner,out var hit,false))
+                        {to=hit.Point;flight.State.LiveLobes=(byte)(flight.State.LiveLobes&~(1<<i));}
                         if(i==0)flight.State.P0=to;else if(i==1)flight.State.P1=to;else flight.State.P2=to;
                     }
                     flight.State.SampledAt=now;v.State=flight.State;

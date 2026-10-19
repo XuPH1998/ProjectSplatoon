@@ -196,6 +196,8 @@ namespace Splatoon.Prototype
                 "Splatoon.Blocks.DynamicLifecyclePrepare", "Splatoon.Blocks.DynamicLifecycleEncode", "Splatoon.Blocks.DynamicMotionSelect",
                 "Splatoon.Blocks.DynamicMotionEncode", "Splatoon.Blocks.DynamicMotionDecode",
                 "Splatoon.Prediction.Reconcile", "Splatoon.Flight.Update", "Splatoon.Paper.Sample", "Splatoon.Paper.Render",
+                "Splatoon.Paper.PoseEvaluate", "Splatoon.Paper.SkinBake", "Splatoon.Paper.MeshRead",
+                "Splatoon.Paper.Contour", "Splatoon.Paper.HitMesh", "Splatoon.Paper.HitMeshRestore",
                 "Splatoon.Probe.Aggregate", "Splatoon.Probe.Serialize", "Splatoon.Probe.Write" })
             {
                 var metric = new CpuMetric { marker = marker };

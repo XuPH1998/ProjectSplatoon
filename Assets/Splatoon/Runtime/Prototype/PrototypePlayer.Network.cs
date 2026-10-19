@@ -12,6 +12,8 @@ namespace Splatoon.Prototype
 {
     public sealed partial class PrototypePlayer
     {
+        static readonly Unity.Profiling.ProfilerMarker AuthoritySimulateCpu = new("Splatoon.Player.AuthoritySimulate");
+        static readonly Unity.Profiling.ProfilerMarker PlayerStepCpu = new("Splatoon.Player.Step");
         public static readonly Dictionary<ulong, PrototypePlayer> ByOwner = new();
         public static PrototypePlayer Local { get; private set; }
         public readonly NetworkVariable<PlayerSnapshot> Snapshot = new();
@@ -104,6 +106,9 @@ namespace Splatoon.Prototype
         {
             GameLatency.Reset(); ResetPredictionDiagnostics();
             ResetTerrainReplayState();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            ResetFixedQueryEvidence();
+#endif
             _paintReplayPending = _syncReplayPending = _terrainReplayPending = _predictionPaused = false;
             if (IsServer)
             {
@@ -242,6 +247,7 @@ namespace Splatoon.Prototype
         }
         public void Simulate(float dt, double now, MatchPhase phase)
         {
+            using var timing = AuthoritySimulateCpu.Auto();
             if (!IsServer) return;
             _inputAssembler.Expire(NetworkManager.ServerTime.Time, GameplayConfig.Global.InputTimeout);
             if (ApplyTeamRequest(phase)) return;
@@ -268,6 +274,7 @@ namespace Splatoon.Prototype
             }
             s.InputTimedOut = timedOut;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            BlockFixedGridAcceptanceProbe.CoordinateBlastRelease(this, ref input);
             BlockDynamicAcceptanceProbe.CoordinateBlastRelease(this, ref input);
             BlockDynamicAcceptanceProbe.RecordEnemyAuthority(this, s, input, diagnosticQueuedBefore, diagnosticDiscarded);
 #endif
@@ -292,27 +299,40 @@ namespace Splatoon.Prototype
         }
         bool Step(ref PlayerSnapshot s, PlayerInputFrame input, float dt, double now, MatchPhase phase)
         {
+            using var timing = PlayerStepCpu.Auto();
             EnsureHeroPresentation(s.HeroId);
             s.SimulatedAt = now; s.SimulationTick++;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            bool fixedProbeStep = IsServer && BlockFixedGridAcceptanceProbe.Requested;
+            var fixedProbeBeforeMotor = fixedProbeStep ? s : default;
+            var fixedProbeRequestedInput = fixedProbeStep ? input : default;
+#endif
             if (phase == MatchPhase.Finished)
             { if(input.HeroRevision==s.HeroRevision)s.SpecialConsumed=input.SpecialSequence; SpecialWeaponSimulation.Interrupt(ref s); WeaponSimulation.Cancel(ref s, input, true); SubWeaponSimulation.Cancel(ref s, input); s.TurnDirection = 0; s.Velocity = s.PlanarVelocity = Vector3.zero; if (IsServer) SwimBody?.ApplyCollision(s); return false; }
             if (s.IsBubble)
             { if(input.HeroRevision==s.HeroRevision)s.SpecialConsumed=input.SpecialSequence; SpecialWeaponSimulation.Interrupt(ref s);
                 WeaponSimulation.Cancel(ref s, input, true); SubWeaponSimulation.Cancel(ref s, input);
                 _controller.enabled = false; BubbleMotor.Step(ref s, input, dt); transform.position = s.Position;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (fixedProbeStep) BlockFixedGridAcceptanceProbe.RecordAuthorityStep(this, fixedProbeRequestedInput, input,
+                    fixedProbeBeforeMotor, s, dt, now, false, false);
+#endif
                 if (IsServer) SwimBody?.ApplyCollision(s); return false;
             }
             var hero = GameplayConfig.GetHero(s.HeroId);
             var w = GameplayConfig.GetWeapon(s.HeroId);
             if (input.HeroRevision != s.HeroRevision) { input.CancelFire = true; input.Fire = false; }
             var special=SpecialWeaponConfigService.Current.Get(s.SpecialWeaponId);
-            bool specialShot=SpecialWeaponSimulation.Step(ref s,input,special,PlayerLoadout.From(s).RequiredPoints,hero.MaxInk,_motor.CanStand(PlayerMotorSimulation.HumanPosition(s)),now);
+            float specialCost = PlayerLoadout.From(s).RequiredPoints;
+            bool specialCanStand = !NeedsSpecialStandingQuery(s, input, specialCost) || QueryCanStand(s, PlayerMotorSimulation.HumanPosition(s));
+            bool specialShot=SpecialWeaponSimulation.Step(ref s,input,special,specialCost,hero.MaxInk,specialCanStand,now);
             bool specialBlocks=SpecialWeaponSimulation.Active(s)||specialShot;
             var specialInput=input;
             if(specialBlocks){input.Fire=false;input.CancelFire=true;input.SubHeld=false;input.CancelSub=true;input.Swim=special.Type==SpecialWeaponType.Trizooka&&s.SpecialShotAt<=0&&now>=s.SpecialReadyAt&&input.Swim;}
             var subConfig = PlayerLoadout.SubWeapon(s);
             var subPlacement = IsServer ? PrototypeMatch.Current.SubWeapons.CanUse(PlayerId, s, subConfig) : SubPredictionPlacement(s, subConfig);
-            SubWeaponSimulation.Step(ref s, input, subConfig, dt, now, _motor.CanStand(PlayerMotorSimulation.HumanPosition(s)), subPlacement, out _, deferCommit:true);
+            bool subCanStand = !NeedsSubStandingQuery(s, input, now) || QueryCanStand(s, PlayerMotorSimulation.HumanPosition(s));
+            SubWeaponSimulation.Step(ref s, input, subConfig, dt, now, subCanStand, subPlacement, out _, deferCommit:true);
             bool subShot = SubWeaponSimulation.ReadyToCommit(s, now);
             bool subBlocks = SubWeaponSimulation.BlocksMain(s, now) || subShot;
             if (subBlocks) { input.Fire = false; input.CancelFire = true; input.Swim = false; }
@@ -320,10 +340,21 @@ namespace Splatoon.Prototype
             bool swimPressed = input.Swim && !s.SwimWasHeld; s.SwimWasHeld = input.Swim;
             if ((WeaponSimulation.IsSemi(w) || WeaponSimulation.IsSplatling(w)) && swimPressed && !wasSwimming) WeaponSimulation.Cancel(ref s, input, true);
             bool fire = WeaponSimulation.WantsFire(s, input, w, now) || subBlocks;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            long fixedQueryToken = BeginFixedQueryEvidence(s);
+            bool fixedQueryCompleted = false;
+            try
+            {
+#endif
             if(specialBlocks&&special.Type==SpecialWeaponType.Reefslider)
                 specialShot=StepReefslider(ref s,specialInput,special,dt,now);
             else _motor.Step(ref s, input, dt, now, fire||specialBlocks&&!input.Swim, specialBlocks?SpecialWeaponSimulation.MovementSpeed(s,special,now):WeaponSimulation.IsSplatling(w) ? SplatlingSimulation.MovementSpeed(s, w) : w.ShootMoveSpeed,
                 specialBlocks&&!input.Swim||((WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsBlaster(w)) || WeaponSimulation.IsBubble(w)) && s.FireVisualUntil > now);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                fixedQueryCompleted = true;
+            }
+            finally { EndFixedQueryEvidence(fixedQueryToken, fixedQueryCompleted); }
+#endif
             StepSpecialImpulse(ref s,dt);
             if(specialShot)
             {
@@ -335,14 +366,21 @@ namespace Splatoon.Prototype
                 subPlacement = IsServer ? PrototypeMatch.Current.SubWeapons.CanUse(PlayerId, s, subConfig) : SubPredictionPlacement(s, subConfig);
                 _lastSubLaunch = SubWeaponService.SolveLaunch(this, s, subConfig, s.SubCharge);
                 if (!_lastSubLaunch.Valid) subPlacement = _lastSubLaunch.Failure;
-                if (SubWeaponSimulation.Commit(ref s, input, subConfig, now, _motor.CanStand(PlayerMotorSimulation.HumanPosition(s)), subPlacement, out float subCharge) && IsServer)
+                if (SubWeaponSimulation.Commit(ref s, input, subConfig, now, QueryCanStand(s,PlayerMotorSimulation.HumanPosition(s)), subPlacement, out float subCharge) && IsServer)
                     PrototypeMatch.Current.SubWeapons.Spawn(this, s, subCharge, now, PrototypeMatch.Current.State.Value.Round, _lastSubLaunch);
             }
             if (IsServer && PrototypeMatch.Current != null) s.RequiredPaintSequence = PrototypeMatch.Current.PaintSequence;
-            if (s.Health <= 0) { if (IsServer) SwimBody?.ApplyCollision(s); return false; }
+            if (s.Health <= 0)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (fixedProbeStep) BlockFixedGridAcceptanceProbe.RecordAuthorityStep(this, fixedProbeRequestedInput, input,
+                    fixedProbeBeforeMotor, s, dt, now, false, false);
+#endif
+                if (IsServer) SwimBody?.ApplyCollision(s); return false;
+            }
             if (Presentation != null) CharacterFacing.Step(ref s, Presentation, dt, now); else s.BodyYaw = s.Yaw;
             if (IsServer) SwimBody?.ApplyCollision(s);
-            bool canShoot = !s.Swimming && _motor.CanStand(s.Position);
+            bool canShoot = !s.Swimming && QueryCanStand(s,s.Position);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             bool traceEnemyWeapon = IsServer && BlockDynamicAcceptanceProbe.TracingEnemy(this);
             var beforeEnemyWeapon = traceEnemyWeapon ? s : default;
@@ -350,12 +388,28 @@ namespace Splatoon.Prototype
             bool shot = WeaponSimulation.Step(ref s, input, w, now, wasSwimming, canShoot, out var fireResult);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (traceEnemyWeapon) BlockDynamicAcceptanceProbe.RecordEnemyWeapon(this, input, beforeEnemyWeapon, s, !beforeEnemyWeapon.Swimming, canShoot, shot, fireResult);
+            if (fixedProbeStep) BlockFixedGridAcceptanceProbe.RecordAuthorityStep(this, fixedProbeRequestedInput, input,
+                fixedProbeBeforeMotor, s, dt, now, canShoot, shot);
 #endif
-            byte floor = PrototypeArena.Current != null ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
+            // Initialized block traversal already owns resource contact rules.
+            byte floor = !PlayerMotorSimulation.BlockTraversalEnabled && PrototypeArena.Current != null
+                ? PrototypeArena.Current.FloorOwner(s.Position) : (byte)255;
             if (!IsServer && now < s.MistUntil) s.Ink = Mathf.Max(0, s.Ink - s.MistDrainRate * dt);
             ResourceSimulation.Step(ref s, hero, Splatoon.Blocks.BlockTerrain.Current == null && s.Grounded && PlayerMotorSimulation.IsEnemy(floor, s.Team), input.Fire && !WeaponSimulation.IsSemi(w) && !WeaponSimulation.IsSplatling(w), dt, now);
             return shot;
         }
+        // Mirror only the exact branches that read canStand in the shared state
+        // machines. Their Step methods still run every tick and consume every edge.
+        static bool NeedsSpecialStandingQuery(PlayerSnapshot state, PlayerInputFrame input, float cost)
+            => state.IsAlive && input.HeroRevision == state.HeroRevision &&
+                input.SpecialSequence != state.SpecialConsumed && !input.CancelFire &&
+                !SpecialWeaponSimulation.Active(state) && !(state.SpecialPoints + 1e-7 < cost);
+        static bool NeedsSubStandingQuery(PlayerSnapshot state, PlayerInputFrame input, double now)
+            => !(state.Health <= 0) && !input.CancelSub && !input.CancelFire &&
+                input.HeroRevision == state.HeroRevision && !input.Swim && !state.SubNeedsRelease &&
+                state.SubPhase == SubWeaponPhase.Idle && input.SubPressSequence != state.SubConsumedPress &&
+                !(now + 1e-8 < state.SubReadyAt || now + 1e-8 < state.AttackRecoveryUntil || now + 1e-8 < state.SubRecoveryUntil);
+
         void Reconcile(PlayerSnapshot before, PlayerSnapshot authority)
         {
             if (ControlsLocalPlayer && (authority.Revision != before.Revision || authority.HeroRevision != before.HeroRevision))
@@ -514,6 +568,9 @@ namespace Splatoon.Prototype
         {
             GameLatency.Reset(); ResetPredictionDiagnostics();
             ResetTerrainReplayState();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            ResetFixedQueryEvidence();
+#endif
             _paintReplayPending = _syncReplayPending = _predictionPaused = false;
             _teamRequest = null; _heroRequest = null; TeamChangePending = HeroChangePending = false;
             DisposeBubble();

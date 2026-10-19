@@ -40,6 +40,7 @@ namespace Splatoon.Prototype
         BlockTransferAssembly _blockIncoming;
         bool _blockInstalling, _blockInstallPublished;
         BlockTerrain _blockObservedTerrain;
+        BlockFixedGridWorld _blockObservedFixedWorld;
         int _blockInstallFailures;
         double _blockInstallStarted;
         uint _blockTransferId, _blockCompletedId;
@@ -47,7 +48,7 @@ namespace Splatoon.Prototype
         double _blockSendBudget;
         int _blockPeerCursor;
         public long BlockBytesSent { get; private set; }
-        public uint AppliedBlockRevision => Blocks != null ? Blocks.Revision : 0;
+        public uint AppliedBlockRevision => Blocks?.FixedGridMode == true ? Blocks.FixedBlocks.Revision : Blocks != null ? Blocks.Revision : 0;
         public bool BlockSyncReady => InitialSyncComplete && Blocks != null;
 
         void EnsureBlocks()
@@ -58,16 +59,29 @@ namespace Splatoon.Prototype
                 if (Blocks == null) Blocks = Arena.gameObject.AddComponent<BlockTerrain>();
                 Blocks.Initialize(Arena);
             }
-            Blocks.EnableSurfaceMode();
-            Blocks.Dynamic.SetAuthority(IsServer);
-            if (_blockObservedTerrain == Blocks) return;
+            Blocks.EnableFixedGridMode();
+            if (_blockObservedTerrain == Blocks && _blockObservedFixedWorld == Blocks.FixedBlocks) return;
             DetachBlockPublications(); _blockObservedTerrain = Blocks;
             _blockObservedTerrain.PublishedCommit += OnBlockPublished;
+            _blockObservedTerrain.SurfacePaintChanged += OnSurfacePaintChanged;
+            _blockObservedFixedWorld = Blocks.FixedBlocks;
+            _blockObservedFixedWorld.Committed += OnFixedGridCommitted;
         }
         void DetachBlockPublications()
         {
-            if (_blockObservedTerrain != null) _blockObservedTerrain.PublishedCommit -= OnBlockPublished;
+            if (_blockObservedTerrain != null)
+            {
+                _blockObservedTerrain.PublishedCommit -= OnBlockPublished;
+                _blockObservedTerrain.SurfacePaintChanged -= OnSurfacePaintChanged;
+            }
+            if (_blockObservedFixedWorld != null) _blockObservedFixedWorld.Committed -= OnFixedGridCommitted;
+            _blockObservedFixedWorld = null;
             _blockObservedTerrain = null;
+        }
+        void OnFixedGridCommitted(BlockFixedGridCommit commit)
+        {
+            if (!IsServer || !IsSpawned || State.Value.Round != commit.Round) return;
+            var state = State.Value; ReadBlockScore(ref state); State.Value = state;
         }
         void OnBlockPublished(BlockTerrainCommit commit)
         {
@@ -82,11 +96,18 @@ namespace Splatoon.Prototype
             if (commit.Round == manifest.Round && commit.Revision == manifest.Revision)
             { _blockInstallPublished = true; ObserveTerrainPublishedCallback(manifest); }
         }
+        void OnSurfacePaintChanged()
+        {
+            if (!IsServer || !IsSpawned || Blocks == null || State.Value.Round != Blocks.Round) return;
+            var state = State.Value; ReadBlockScore(ref state); State.Value = state;
+        }
         void ReadBlockScore(ref MatchStateSnapshot s)
         {
             if (Blocks == null) return;
-            s.PinkBlockCount = Blocks.PinkCount; s.BlueBlockCount = Blocks.BlueCount; s.TerrainRevision = Blocks.Revision;
-            s.DynamicBlockRevision = Blocks.Dynamic?.LifecycleRevision ?? 0;
+            s.PinkBlockCount = Blocks.PinkCount; s.BlueBlockCount = Blocks.BlueCount;
+            s.TerrainRevision = Blocks.FixedGridMode ? Blocks.FixedBlocks.Revision : Blocks.Revision;
+            s.FixedBlockRevision = Blocks.FixedGridMode ? Blocks.FixedBlocks.Revision : 0;
+            s.DynamicBlockRevision = Blocks.FixedGridMode ? 0 : Blocks.Dynamic?.LifecycleRevision ?? 0;
             // Old area fields remain diagnostic compatibility fields. Product UI
             // and the winner use explicit block counts.
             s.PinkArea = s.PinkBlockCount; s.BlueArea = s.BlueBlockCount; s.TotalArea = s.PinkBlockCount + s.BlueBlockCount;
@@ -99,10 +120,11 @@ namespace Splatoon.Prototype
             _blockIncoming = null; _blockInstalling = _blockInstallPublished = false;
             _blockInstallStarted = 0; _blockInstallFailures = 0;
             _blockCompletedId = 0; _blockLastProgress = _blockLastRequest = _blockBudgetAt = 0; _blockSendBudget = 0;
-            ResetDynamicSync();
+            ResetFixedGridSync(); ResetDynamicSync();
         }
         void UpdateBlockSync()
         {
+            if (Blocks?.FixedGridMode == true) { UpdateFixedGridSync(); return; }
             UpdateDynamicSync();
             if (!IsServer)
             {
@@ -188,6 +210,7 @@ namespace Splatoon.Prototype
         }
         void SendBlockTransfers()
         {
+            if (Blocks?.FixedGridMode == true) { SendFixedGridTransfers(); return; }
             if (!IsServer) return;
             using var marker = BlockTransferSendCpu.Auto();
             double now = Time.unscaledTimeAsDouble;
@@ -232,6 +255,7 @@ namespace Splatoon.Prototype
             if (!IsServer || Blocks == null) return;
             ulong client = rpc.Receive.SenderClientId;
             if (client == NetworkManager.LocalClientId || !NetworkManager.ConnectedClients.ContainsKey(client)) return;
+            if (Blocks.FixedGridMode) { QueueFixedGridSnapshot(client, 0); return; }
             if (!_blockPeers.TryGetValue(client, out var peer)) _blockPeers.Add(client, peer = new BlockPeer());
             double now = Time.unscaledTimeAsDouble;
             if (peer.Send != null && now - peer.LastRequest < .5) return;
@@ -240,6 +264,7 @@ namespace Splatoon.Prototype
         [ClientRpc(Delivery = RpcDelivery.Unreliable)]
         void BlockFragmentClientRpc(BlockTransferFragment fragment, ClientRpcParams targets = default)
         {
+            if (Blocks?.FixedGridMode == true) return;
             ObserveTerrainTransfer(fragment, "Received");
             if (IsServer || Blocks == null || fragment.Round != _paintRound || !fragment.Valid)
             { ObserveTerrainTransfer(fragment, "Ignored", "ServerOrTerrainOrRoundOrInvalid"); return; }
@@ -287,6 +312,7 @@ namespace Splatoon.Prototype
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable, InvokePermission = RpcInvokePermission.Everyone)]
         void AckBlockFragmentRpc(uint round, uint id, int index, RpcParams rpc = default)
         {
+            if (Blocks?.FixedGridMode == true) return;
             if (round != _paintRound || !_blockPeers.TryGetValue(rpc.Receive.SenderClientId, out var peer)) return;
             var t = peer.Send;
             if (t != null && t.Id == id && index >= 0 && index < t.Count) t.Ack[index] = true;
@@ -294,6 +320,7 @@ namespace Splatoon.Prototype
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable, InvokePermission = RpcInvokePermission.Everyone)]
         void AckBlockAppliedRpc(uint round, uint id, uint revision, RpcParams rpc = default)
         {
+            if (Blocks?.FixedGridMode == true) return;
             if (round != _paintRound || !_blockPeers.TryGetValue(rpc.Receive.SenderClientId, out var peer)) return;
             var t = peer.Send;
             if (t == null || t.Id != id || t.Revision != revision) return;

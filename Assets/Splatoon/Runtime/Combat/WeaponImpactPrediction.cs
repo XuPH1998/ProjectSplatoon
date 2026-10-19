@@ -48,7 +48,7 @@ namespace Splatoon.Combat
 
         public static bool GuideObstructed(TpsAimSolution aim, WeaponImpactForecast guide) => aim.MuzzleBlocked ||
             guide.Kind == PredictedImpactKind.World && Mathf.Abs(guide.Contact.Normal.y) < .5f &&
-            guide.Contact.Collider != aim.AimHit.Collider;
+            !TpsAimSolver.SameTarget(guide.Contact, aim.AimHit);
 
         public static bool TryPredict(TpsAimSolver solver, TpsAimSolution aim, WeaponRuntimeConfig w,
             PlayerSnapshot state, ulong shooter, out Vector3 point)
@@ -127,7 +127,7 @@ namespace Splatoon.Combat
         {
             result.Contact = hit;
             result.Point = centre ? hit.Center : hit.Point;
-            var player = hit.Collider != null ? hit.Collider.GetComponentInParent<PrototypePlayer>() : null;
+            var player = hit.Collider != null ? hit.Collider?.GetComponentInParent<PrototypePlayer>() : null;
             result.Kind = player != null ? PredictedImpactKind.Player : PredictedImpactKind.World;
             if (player != null && player.PresentedState.Health > 0 && player.PresentedState.Team != team)
             {

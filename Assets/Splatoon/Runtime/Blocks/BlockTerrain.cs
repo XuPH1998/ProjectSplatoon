@@ -16,13 +16,14 @@ namespace Splatoon.Blocks
     {
         public const int TerrainLayer = 29;
         public static BlockTerrain Current { get; private set; }
-        public BlockWorld World { get; private set; }
+        BlockWorld _legacyWorld;
+        public BlockWorld World { get => FixedBlocks?.Storage ?? _legacyWorld; private set => _legacyWorld = value; }
         public bool Initialized { get; private set; }
-        public uint Revision => World?.Revision ?? 0;
+        public uint Revision => FixedBlocks?.Revision ?? World?.Revision ?? 0;
         public uint Round => World?.Round ?? 0;
         public double SimulationTime => _now;
-        public int PinkCount => (World?.PinkCount ?? 0) + (Dynamic?.PinkCount ?? 0);
-        public int BlueCount => (World?.BlueCount ?? 0) + (Dynamic?.BlueCount ?? 0);
+        public int PinkCount => (World?.PinkCount ?? 0) + (Dynamic?.PinkCount ?? 0) + (SurfacePaints?.PinkCount ?? 0);
+        public int BlueCount => (World?.BlueCount ?? 0) + (Dynamic?.BlueCount ?? 0) + (SurfacePaints?.BlueCount ?? 0);
         public int PendingTransactions => _commands.Count + (_pending != null || _fairSeed != null || HasPrivatePreparation || HasHeadPreparation || HasBuildOccupancyPreparation || HasHistoricalRecovery || HasDependentEditPreparation ? 1 : 0) + (_remoteQueued != null ? 1 : 0);
         public event Action<BlockTerrainCommit> PublishedCommit;
         public event Action<BlockMutationResult, double> MutationCompleted;
@@ -573,6 +574,7 @@ namespace Splatoon.Blocks
         public bool ApplyRemoteSnapshot(byte[] bytes)
         {
             using var publicationTiming = MeasurePublicationWork();
+            if (FixedGridMode) return false;
             if (!Initialized) Initialize(PrototypeArena.Current);
             try
             {
@@ -591,6 +593,7 @@ namespace Splatoon.Blocks
         public bool ApplyRemoteDelta(byte[] bytes)
         {
             using var publicationTiming = MeasurePublicationWork();
+            if (FixedGridMode) return false;
             if (!Initialized || _pending != null || _remoteQueued != null) return false;
             try
             {
@@ -605,6 +608,7 @@ namespace Splatoon.Blocks
         public bool QueueSeed(BlockWorld seed)
         {
             using var publicationTiming = MeasurePublicationWork();
+            if (FixedGridMode) return false; // Historical fixtures cannot bypass fixed handles and paired paint commits.
             if (!Initialized || seed == null || seed.Dimensions != World.Dimensions || seed.Round != Round) return false;
             uint revision = Revision + 1; var changed = new HashSet<Vector3Int>(World.RevisionKeys); changed.UnionWith(seed.RevisionKeys);
             _epoch++; AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
@@ -615,7 +619,9 @@ namespace Splatoon.Blocks
         }
         public void QueueBuild(Vector3 point, Vector3 normal, byte team, int count, float radius, bool anchorToMap, Action<BlockMutationResult> callback = null, bool ordinaryMainAttack = false)
         {
+            if (FixedGridMode) { callback?.Invoke(BuildFixedImpact(point, normal, radius, team, count, anchorToMap)); return; }
             if (!Initialized || !_accepting || SurfaceOnly && !anchorToMap || team < 1 || team > 2 || count <= 0 || !Finite(point) || !Finite(normal) || !ValidRadius(radius)) { callback?.Invoke(default); return; }
+            if (SurfacePaints != null) { callback?.Invoke(PaintSurfaceDisk(point, normal, radius, team, count)); return; }
             CommandsQueued++;
             _commands.Enqueue(new Command { Point = point, Normal = normal.normalized, Team = team, Count = count, Radius = radius, Anchor = anchorToMap, Build = true,
                 Callback = callback, CreatedAt = _now, BuildDimensions = World.Dimensions, BuildBottom = World.Bottom, OrdinaryMainAttack = ordinaryMainAttack });
@@ -623,6 +629,7 @@ namespace Splatoon.Blocks
         }
         public void QueueDestroy(Vector3 point, float enemyRadius, float friendlyRadius, byte team, bool enemyOnly, Action<BlockMutationResult> callback = null, int maxEnemyBlocks = int.MaxValue, int maxFriendlyBlocks = int.MaxValue, bool ordinaryMainAttack = false)
         {
+            if (FixedGridMode) { callback?.Invoke(DestroyFixedImpact(point, enemyRadius, friendlyRadius, team, enemyOnly, maxEnemyBlocks, maxFriendlyBlocks)); return; }
             if (!Initialized || !_accepting || team < 1 || team > 2 || !Finite(point) || !ValidRadius(enemyRadius) || !ValidRadius(friendlyRadius) || maxEnemyBlocks < 0 || maxFriendlyBlocks < 0) { callback?.Invoke(default); return; }
             CommandsQueued++;
             var command = new Command { Point = point, Team = team, Radius = enemyRadius, FriendlyRadius = friendlyRadius, EnemyOnly = enemyOnly,
@@ -636,6 +643,7 @@ namespace Splatoon.Blocks
             if (double.IsFinite(frozenAt)) _now = Math.Max(0, frozenAt);
             if (!_accepting) return;
             _accepting = false; _epoch++;
+            FixedBlocks?.Freeze();
             Dynamic?.Freeze();
             ResetBlockSpread();
             AbortPending(); _blastBatch = null; while (_commands.Count > 0) Complete(_commands.Dequeue(), default);
@@ -651,7 +659,10 @@ namespace Splatoon.Blocks
             ClearSafetyState();
             ResetBuildQueriesCache();
             foreach (var view in _views.Values) Dispose(view); _views.Clear(); _colliderChunks.Clear();
-            World = new BlockWorld(_arena != null ? _arena.Dimensions : new Vector2(32, 64), round); _accepting = true;
+            _accepting = true;
+            if (FixedGridMode) { ClearFixedRendering(); ResetFixedRound(round); }
+            else { World = new BlockWorld(_arena != null ? _arena.Dimensions : new Vector2(32, 64), round); SurfacePaints?.Clear(round); }
+            ClearSurfacePaintRendering();
             Dynamic?.Reset(round);
             Physics.SyncTransforms();
         }
@@ -660,6 +671,12 @@ namespace Splatoon.Blocks
             using var marker = TickCpu.Auto();
             using var publicationTiming = MeasurePublicationWork();
             if (!Initialized || _destroying) return;
+            if (FixedGridMode)
+            {
+                _authority = authority; if (_accepting) _now = now;
+                if (authority && _accepting) CaptureSafetyPlayers();
+                CleanupRetired(); AdvanceFixedRendering(); return;
+            }
             Dynamic?.SetAuthority(authority && _accepting);
             if (authority && !_cohortAuthorityInitialized) { ResetGravityCohorts(!SurfaceOnly); ResetBlockSpread(!SurfaceOnly); _cohortAuthorityInitialized = true; }
             if (!authority && _pending?.BuildOverlapRepair != null) AbortPending();
@@ -690,7 +707,7 @@ namespace Splatoon.Blocks
             ScheduleSpreadWork();
             StageAuthority();
         }
-        void Update() { using var publicationTiming = MeasurePublicationWork(); if (Initialized) { CleanupRetired(); AdvancePending(false); } }
+        void Update() { using var publicationTiming = MeasurePublicationWork(); if (Initialized) { CleanupRetired(); if (FixedGridMode) AdvanceFixedRendering(); else AdvancePending(false); } }
         static bool Finite(Vector3 p) => !(float.IsNaN(p.x) || float.IsNaN(p.y) || float.IsNaN(p.z) || float.IsInfinity(p.x) || float.IsInfinity(p.y) || float.IsInfinity(p.z));
         static bool ValidRadius(float radius) => !float.IsNaN(radius) && !float.IsInfinity(radius) && radius >= 0;
         static Vector3Int Axis(Vector3 n)
@@ -1722,6 +1739,8 @@ namespace Splatoon.Blocks
         }
         void LateUpdate()
         {
+            if (FixedGridMode) DrawFixedRendering();
+            if (Initialized) DrawSurfacePaint();
             if (!Initialized || _material == null || World.Falling.Count == 0 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null || !SystemInfo.supportsInstancing) return;
             using var marker = FallingRenderCpu.Auto();
             BeginGravityStartupPresentation();
@@ -1750,6 +1769,8 @@ namespace Splatoon.Blocks
         }
         async void OnDestroy()
         {
+            DisposeFixedGrid();
+            ClearSurfacePaintRendering(); DisposeObject(_surfacePaintMaterial);
             ClearSafetyState();
             ResetBuildQueriesCache();
             ResetBuildOccupancyQueryCache();

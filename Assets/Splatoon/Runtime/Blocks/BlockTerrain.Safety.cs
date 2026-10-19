@@ -9,6 +9,10 @@ namespace Splatoon.Blocks
     public sealed partial class BlockTerrain
     {
         const int MaxSafetyPlayers = 8, SafetySearchCells = 10;
+        static readonly Unity.Profiling.ProfilerMarker FixedSafetyCpu = new("Splatoon.Fixed.Safety");
+        static readonly Unity.Profiling.ProfilerMarker TraversalPoseFitsCpu = new("Splatoon.Fixed.TraversalPoseFits");
+        static readonly Unity.Profiling.ProfilerMarker TraversalPositionFitsCpu = new("Splatoon.Fixed.TraversalPositionFits");
+        static readonly Unity.Profiling.ProfilerMarker PaperWorldOverlapCpu = new("Splatoon.Fixed.PaperWorldOverlap");
         static readonly Vector3Int[] SafetyOffsets = CreateSafetyOffsets();
         HeroChangeZone[] _constructionZones = Array.Empty<HeroChangeZone>();
         ConstructionZoneGeometry[] _stageConstructionZones = Array.Empty<ConstructionZoneGeometry>();
@@ -82,6 +86,130 @@ namespace Splatoon.Blocks
         readonly Dictionary<PrototypePlayer, SafePosition> _safePositions = new(MaxSafetyPlayers);
         readonly List<PrototypePlayer> _staleSafetyPlayers = new(MaxSafetyPlayers);
         int _safetyPlayerCount;
+        BlockWorld _fixedSafetyCandidate;
+        readonly List<FixedSafetyRecovery> _fixedSafetyRecoveries = new(MaxSafetyPlayers);
+        int _fixedSafetyApplied, _fixedSafetyPreviousCount;
+        bool _fixedSafetyRollbackPending;
+        readonly struct FixedSafetyRecovery
+        {
+            public readonly SafetyActor Actor;
+            public readonly PlayerSnapshot Before, Recovered;
+            public readonly bool CapsuleEmbedded, PaperEmbedded;
+            public readonly bool ControllerEnabled, HadSafePosition;
+            public readonly Vector3 TransformPosition;
+            public readonly SafePosition SavedPosition;
+            public FixedSafetyRecovery(SafetyActor actor, PlayerSnapshot recovered, bool capsule, bool paper, bool hadSafe, SafePosition saved)
+            {
+                Actor = actor; Before = actor.Player.Snapshot.Value; Recovered = recovered;
+                CapsuleEmbedded = capsule; PaperEmbedded = paper;
+                ControllerEnabled = actor.Controller.enabled; TransformPosition = actor.Player.transform.position;
+                HadSafePosition = hadSafe; SavedPosition = saved;
+            }
+        }
+
+        internal bool PrepareFixedSafety(BlockFixedGridCommitPreview preview, out string reason)
+        {
+            using var timing = FixedSafetyCpu.Auto();
+            reason = null; _fixedSafetyRecoveries.Clear();
+            _fixedSafetyApplied = 0; _fixedSafetyRollbackPending = false;
+            if (!_authority) return true;
+            CaptureSafetyPlayers();
+            try
+            {
+                for (int i = 0; i < _safetyPlayerCount; i++)
+                {
+                    var actor = _safetyPlayers[i];
+                    Bounds actorBounds = SafetyActorBounds(actor);
+                    bool affected = false;
+                    foreach (var cell in preview.ChangedCells)
+                        if (preview.TryGet(cell, out _) && actorBounds.Intersects(new Bounds(BlockWorld.Center(cell), Vector3.one * BlockWorld.CellSize)))
+                        { affected = true; break; }
+                    if (!affected) continue;
+                    // The immutable complete candidate is deliberately lazy: distant ordinary
+                    // shots only inspect changed-cell bounds and never clone the world.
+                    _fixedSafetyCandidate ??= preview.Storage;
+                    if (!ActorEmbedded(actor, out bool capsule, out bool paper)) continue;
+                    if (!TryRecoverPublishedTraversalPose(actor.Player, actor.State, actor.State, out var recovered))
+                    {
+                        _fixedSafetyRecoveries.Clear();
+                        reason = "Fixed-grid transaction has no verified safe player recovery.";
+                        return false;
+                    }
+                    bool hadSafe = _safePositions.TryGetValue(actor.Player, out var saved);
+                    _fixedSafetyRecoveries.Add(new FixedSafetyRecovery(actor, recovered, capsule, paper, hadSafe, saved));
+                }
+                return true;
+            }
+            finally { _fixedSafetyCandidate = null; }
+        }
+
+        internal void CommitFixedSafety()
+        {
+            _fixedSafetyApplied = 0; _fixedSafetyPreviousCount = SafetyRecoveries;
+            _fixedSafetyRollbackPending = true;
+            try
+            {
+                foreach (var recovery in _fixedSafetyRecoveries)
+                {
+                    var actor = recovery.Actor; var player = actor.Player; var state = recovery.Recovered;
+                    if (player == null || !player.IsSpawned || !player.Snapshot.Value.IsAlive ||
+                        player.Snapshot.Value.Revision != recovery.Before.Revision || player.Snapshot.Value.HeroRevision != recovery.Before.HeroRevision)
+                        throw new InvalidOperationException("A prepared fixed-grid player lifecycle changed before commit.");
+                    // Include the current actor in rollback even if one of its setters throws.
+                    _fixedSafetyApplied++;
+                    state.FixedBlockEpoch = FixedBlocks.Epoch; state.FixedBlockRound = FixedBlocks.Round;
+                    state.FixedBlockRevision = FixedBlocks.Revision;
+                    actor.Controller.enabled = false; actor.Shape.Apply(actor.Controller, state.Swimming || state.CompactBody);
+                    player.transform.position = state.Position; actor.Controller.enabled = recovery.ControllerEnabled;
+                    player.Snapshot.Value = state; player.SwimBody?.ApplyCollision(state);
+                    _safePositions[player] = new SafePosition(state); SafetyRecoveries++;
+                }
+                if (_fixedSafetyApplied != 0) Physics.SyncTransforms();
+            }
+            catch (Exception applyException)
+            {
+                try { RollbackFixedSafety(); }
+                catch (Exception rollbackException) { throw new AggregateException(applyException, rollbackException); }
+                throw;
+            }
+            // Observers only see the complete recovered set. They cannot expose a partial apply.
+            foreach (var recovery in _fixedSafetyRecoveries)
+                RecordSafetyRecovery(recovery.Actor.Player, recovery.Before, recovery.Actor.Player.Snapshot.Value,
+                    recovery.CapsuleEmbedded, recovery.PaperEmbedded, true);
+            // Retain the prepared undo record until the next transaction: the data
+            // owner can still roll back if anything after this guard fails.
+        }
+
+        internal void RollbackFixedSafety()
+        {
+            if (!_fixedSafetyRollbackPending) return;
+            List<Exception> failures = null;
+            void Attempt(Action restore)
+            {
+                try { restore(); }
+                catch (Exception exception) { (failures ??= new List<Exception>()).Add(exception); }
+            }
+            SafetyRecoveries = _fixedSafetyPreviousCount;
+            for (int i = _fixedSafetyApplied - 1; i >= 0; i--)
+            {
+                var recovery = _fixedSafetyRecoveries[i]; var actor = recovery.Actor; var player = actor.Player;
+                if (player == null) continue;
+                Attempt(() => actor.Controller.enabled = false);
+                Attempt(() => actor.Shape.Apply(actor.Controller, recovery.Before.Swimming || recovery.Before.CompactBody));
+                Attempt(() => player.transform.position = recovery.TransformPosition);
+                Attempt(() => actor.Controller.enabled = recovery.ControllerEnabled);
+                Attempt(() => player.Snapshot.Value = recovery.Before);
+                Attempt(() => player.SwimBody?.ApplyCollision(recovery.Before));
+                Attempt(() =>
+                {
+                    if (recovery.HadSafePosition) _safePositions[player] = recovery.SavedPosition;
+                    else _safePositions.Remove(player);
+                });
+            }
+            if (_fixedSafetyApplied != 0) Attempt(Physics.SyncTransforms);
+            _fixedSafetyApplied = 0; _fixedSafetyRollbackPending = false; _fixedSafetyRecoveries.Clear();
+            if (failures != null) throw new AggregateException("Fixed-grid player recovery rollback failed.", failures);
+        }
         public int SafetyRecoveries { get; private set; }
         public int SafetyRecoveryFailures { get; private set; }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -151,6 +279,8 @@ namespace Splatoon.Blocks
         {
             ResetConstructionZoneColumnCache();
             _safePositions.Clear(); _staleSafetyPlayers.Clear();
+            _fixedSafetyCandidate = null; _fixedSafetyRecoveries.Clear();
+            _fixedSafetyApplied = 0; _fixedSafetyRollbackPending = false;
             Array.Clear(_safetyPlayers, 0, _safetyPlayers.Length); _safetyPlayerCount = 0;
             SafetyRecoveries = SafetyRecoveryFailures = 0;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -232,14 +362,41 @@ namespace Splatoon.Blocks
             Vector3 center = BlockWorld.Center(cell); float half = BlockWorld.CellSize * .5f;
             // The live motor capsule is part of the occupied space, including compact movement.
             if (CellIntersectsCapsule(center, half, s.Position, height, shape.Radius)) return true;
-            if (!s.ShowsSwimBody || !CellIntersectsBox(center, half, s.PaperCenter,
-                new Vector3(actor.PaperSize.x * .5f, actor.PaperSize.y * .5f, actor.PaperThickness * .5f), s.PaperRotation)) return false;
-            if (actor.PaperRects == null) return true;
+            if (!s.ShowsSwimBody) return false;
+            if (actor.PaperRects == null) return CellIntersectsBox(center, half, s.PaperCenter,
+                new Vector3(actor.PaperSize.x * .5f, actor.PaperSize.y * .5f, actor.PaperThickness * .5f), s.PaperRotation);
             // The same animated silhouette rectangles generate the actual paper hit mesh.
             foreach (var rect in actor.PaperRects)
                 if (CellIntersectsBox(center, half, s.PaperCenter + s.PaperRotation * new Vector3(rect.center.x, rect.center.y, 0),
                     new Vector3(rect.width * .5f, rect.height * .5f, actor.PaperThickness * .5f), s.PaperRotation)) return true;
             return false;
+        }
+        // A conservative rejection bound only. Nearby cells still use the original
+        // capsule and every live silhouette rectangle, including contours outside PaperSize.
+        static Bounds SafetyActorBounds(SafetyActor actor)
+        {
+            var s = actor.State; var shape = actor.Shape;
+            float height = s.Swimming || s.CompactBody ? shape.CompactHeight : shape.Height;
+            float low = s.Position.y, high = s.Position.y + Mathf.Max(height, shape.Radius * 2);
+            Bounds bounds = new(new Vector3(s.Position.x, (low + high) * .5f, s.Position.z),
+                new Vector3(shape.Radius * 2, high - low, shape.Radius * 2));
+            if (s.ShowsSwimBody)
+            {
+                Vector3 x = Abs(s.PaperRotation * Vector3.right), y = Abs(s.PaperRotation * Vector3.up),
+                    z = Abs(s.PaperRotation * Vector3.forward);
+                if (actor.PaperRects == null) IncludePaper(new Rect(-actor.PaperSize * .5f, actor.PaperSize));
+                else foreach (var rect in actor.PaperRects) IncludePaper(rect);
+                void IncludePaper(Rect rect)
+                {
+                    Vector3 half = x * (rect.width * .5f) + y * (rect.height * .5f) + z * (actor.PaperThickness * .5f);
+                    Vector3 center = s.PaperCenter + s.PaperRotation * new Vector3(rect.center.x, rect.center.y, 0);
+                    bounds.Encapsulate(new Bounds(center, half * 2));
+                }
+            }
+            // The capsule predicate accepts squared-distance epsilon 1e-7;
+            // 0.5 mm per side also covers that tolerance at a degenerate radius.
+            bounds.Expand(.001f);
+            return bounds;
         }
         static bool CellIntersectsCapsule(Vector3 center, float half, Vector3 feet, float height, float radius)
         {
@@ -294,16 +451,19 @@ namespace Splatoon.Blocks
         }
         bool PaperOverlapsWorld(SafetyActor actor, Rect rect, Vector3 displacement = default)
         {
+            using var timing = PaperWorldOverlapCpu.Auto();
             var s = actor.State;
             Vector3 center = s.PaperCenter + displacement + s.PaperRotation * new Vector3(rect.center.x, rect.center.y, 0);
             Vector3 half = new(Mathf.Max(.001f, rect.width * .5f - .001f), Mathf.Max(.001f, rect.height * .5f - .001f), Mathf.Max(.001f, actor.PaperThickness * .5f - .001f));
-            return Physics.OverlapBoxNonAlloc(center, half, _overlaps, s.PaperRotation, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) > 0;
+            return FixedSafetyBoxOverlaps(center, half, s.PaperRotation) ||
+                Physics.OverlapBoxNonAlloc(center, half, _overlaps, s.PaperRotation, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) > 0;
         }
         bool CapsuleOverlapsWorld(Vector3 feet, float height, float radius, float skin)
         {
             float queryRadius = Mathf.Max(.01f, radius - Mathf.Max(.005f, skin));
             float segment = Mathf.Max(0, height * .5f - radius); Vector3 center = feet + Vector3.up * (height * .5f);
-            return Physics.OverlapCapsuleNonAlloc(center - Vector3.up * segment, center + Vector3.up * segment,
+            return FixedSafetyCapsuleOverlaps(center, segment, queryRadius) ||
+                Physics.OverlapCapsuleNonAlloc(center - Vector3.up * segment, center + Vector3.up * segment,
                 queryRadius, _overlaps, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) > 0;
         }
         bool RecoveryPositionFits(SafetyActor actor, Vector3 feet)
@@ -315,6 +475,7 @@ namespace Splatoon.Blocks
         }
         bool CurrentAirPaperPositionFits(SafetyActor actor, Vector3 displacement)
         {
+            using var timing = TraversalPositionFitsCpu.Auto();
             var s = actor.State; var shape = actor.Shape; Vector3 feet = s.Position + displacement;
             float height = s.Swimming || s.CompactBody ? shape.CompactHeight : shape.Height;
             if (!Finite(feet) || World == null || Mathf.Abs(feet.x) + shape.Radius > World.Dimensions.x * .5f ||
@@ -364,6 +525,20 @@ namespace Splatoon.Blocks
                 reach = Mathf.Max(reach, Vector3.Dot(center - origin, direction) + radius);
             }
             float distance = Mathf.Max(baseDistance, reach + Mathf.Max(0, skin));
+            if (FixedGridMode && TryCastFixed(origin, direction, distance, 0, out var fixedHit) &&
+                (!Physics.Raycast(origin, direction, out var mapHit, distance, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) ||
+                    fixedHit.Distance <= mapHit.distance))
+            {
+                foreach (var rect in rects)
+                {
+                    Vector3 center = candidate.PaperCenter + rotation * new Vector3(rect.center.x, rect.center.y, 0);
+                    Vector3 half = new(Mathf.Max(.001f, rect.width * .5f - .001f), Mathf.Max(.001f, rect.height * .5f - .001f),
+                        Mathf.Max(.001f, thickness * .5f - .001f));
+                    if (!CellIntersectsBox(BlockWorld.Center(fixedHit.State.Cell), BlockWorld.CellSize * .5f, center, half, rotation)) continue;
+                    contact = new PlayerMotorSimulation.TraversalContact(FixedContact(fixedHit)); return true;
+                }
+                return false;
+            }
             if (!Physics.Raycast(origin, direction, out var hit, distance, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) ||
                 !PlayerMotorSimulation.TryBlockTraversalContact(hit, out var wall)) return false;
 
@@ -388,6 +563,7 @@ namespace Splatoon.Blocks
         /// authored contour. Does not relocate state or change live capture/hit publication.</summary>
         public bool PublishedTraversalPoseFits(PrototypePlayer player, PlayerSnapshot state)
         {
+            using var timing = TraversalPoseFitsCpu.Auto();
             if (!Initialized || World == null || player == null) return false;
             var rects = state.ShowsSwimBody && player.SwimBody != null
                 ? player.SwimBody.QueryTraversalRects(state) : Array.Empty<Rect>();
@@ -434,6 +610,8 @@ namespace Splatoon.Blocks
             recovered.Grounded = recovered.Swimming = recovered.CompactBody = recovered.FriendlyInkContact = recovered.SwimWasHeld = false;
             recovered.AirHumanOffset = 0; recovered.SwimSource = recovered.AirSwimSource = SwimSurface.None; recovered.Movement = MovementMode.Air;
             recovered.SupportCell = default; recovered.SupportTerrainRevision = 0; recovered.GroundNormal = Vector3.up;
+            recovered.SupportIsFixedGrid = false; recovered.SupportFixedId = 0; recovered.SupportFixedGeneration = 0;
+            recovered.SupportIsSurfacePaint = false; recovered.SupportSurfaceFace = recovered.SupportSurfaceU = recovered.SupportSurfaceV = 0;
             recovered.WallNormal = recovered.WallPoint = recovered.MantleFrom = recovered.MantleTo = Vector3.zero;
             recovered.WallSurfaceId = recovered.WallRegionId = 0;
             recovered.PaperPose = PaperPose.None; recovered.PaperCenter = safe; recovered.PaperRotation = Quaternion.identity;
@@ -517,6 +695,8 @@ namespace Splatoon.Blocks
                     s.Grounded = s.Swimming = s.CompactBody = s.FriendlyInkContact = s.SwimWasHeld = false;
                     s.AirHumanOffset = 0; s.SwimSource = s.AirSwimSource = SwimSurface.None; s.Movement = MovementMode.Air;
                     s.SupportCell = default; s.SupportTerrainRevision = 0; s.GroundNormal = Vector3.up;
+                    s.SupportIsFixedGrid = false; s.SupportFixedId = 0; s.SupportFixedGeneration = 0;
+                    s.SupportIsSurfacePaint = false; s.SupportSurfaceFace = s.SupportSurfaceU = s.SupportSurfaceV = 0;
                     s.WallNormal = s.WallPoint = s.MantleFrom = s.MantleTo = Vector3.zero; s.WallSurfaceId = s.WallRegionId = 0;
                     s.PaperPose = PaperPose.None; s.PaperCenter = safe; s.PaperRotation = Quaternion.identity;
                 }

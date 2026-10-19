@@ -2,8 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using NUnit.Framework;
 using Splatoon.Blocks;
 using Splatoon.Combat;
@@ -14,6 +16,24 @@ using UnityEngine;
 
 namespace Splatoon.Tests
 {
+    // The EditMode runner manually steps test enumerators, even after EnterPlayMode.
+    // Use a real runtime coroutine for rendering yield instructions.
+    internal sealed class BlockGameplayFramePump : MonoBehaviour
+    {
+        public Coroutine Capture(Action capture, Action<Exception> completed)
+            => StartCoroutine(AtEndOfFrame(capture, completed));
+
+        static IEnumerator AtEndOfFrame(Action capture, Action<Exception> completed)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            Exception error = null;
+            try { capture(); }
+            catch (Exception exception) { error = exception; }
+            completed(error);
+        }
+    }
+
     /// <summary>Test-only default terrain publication and real resource-payment fixture.</summary>
     internal sealed class BlockDefaultContractFixture : IDisposable
     {
@@ -67,6 +87,182 @@ namespace Splatoon.Tests
             CollectionAssert.AreEqual(before, Capture(), label + ": positions, ownership, counts and revision are unchanged");
         }
         public void FlushEvents() => _serverTick();
+
+        // Diagnostic support only: resource-payment acceptance uses PayMain/PaySub below.
+        public BlockMutationResult SeedMapPaint(RaycastHit map, byte owner, float radius)
+        {
+            Assert.That(Terrain.IsAuthoredMapCollider(map.collider), Is.True);
+            var result = Terrain.PaintSurfaceDisk(map.point, map.normal, radius, owner, 4096);
+            Assert.That(Terrain.TryGetSurfacePaint(map.collider, map.point, map.normal, out var cell), Is.True);
+            Assert.That(cell.Owner, Is.EqualTo(owner), "The complete test support route has its intended surface owner");
+            return result;
+        }
+
+        [Serializable] sealed class GameplayFrame
+        {
+            public string stage, path, sha256, camera, utc, capturePhase, activeRenderTarget, error;
+            public string overlayBefore, overlayAtCapture, overlayAfter;
+            public int width, height, pinkSurface, blueSurface, pinkDynamic, blueDynamic;
+            public int frame, screenWidth, screenHeight, cameraPixelWidth, cameraPixelHeight;
+            public int activeRenderTargetWidth, activeRenderTargetHeight;
+            public double fixedTime, realtime, elapsedSeconds;
+            public bool normalMainCamera, captured;
+            public bool gameplayCapturedBefore, gameplayCapturedAtCapture, gameplayCapturedAfter;
+            public bool fireInputBlockedBefore, fireInputBlockedAtCapture, fireInputBlockedAfter, appStateRestored;
+            public Vector3 cameraPosition, focus;
+        }
+
+        static void InspectGameplayFrame(GameplayFrame receipt, Camera camera)
+        {
+            receipt.utc = DateTime.UtcNow.ToString("o");
+            receipt.frame = Time.frameCount; receipt.fixedTime = Time.fixedTimeAsDouble;
+            receipt.realtime = Time.realtimeSinceStartupAsDouble;
+            receipt.screenWidth = Screen.width; receipt.screenHeight = Screen.height;
+            receipt.camera = camera != null ? camera.name : null;
+            receipt.cameraPixelWidth = camera != null ? camera.pixelWidth : 0;
+            receipt.cameraPixelHeight = camera != null ? camera.pixelHeight : 0;
+            receipt.cameraPosition = camera != null ? camera.transform.position : default;
+            receipt.normalMainCamera = camera != null && Camera.main == camera && camera.isActiveAndEnabled && camera.targetTexture == null;
+            var active = RenderTexture.active;
+            receipt.activeRenderTarget = active != null ? active.name : null;
+            receipt.activeRenderTargetWidth = active != null ? active.width : 0;
+            receipt.activeRenderTargetHeight = active != null ? active.height : 0;
+        }
+
+        // Capture the production main camera's real backbuffer. This is an inspectable
+        // gameplay image, not an automated visual-correctness or network acceptance oracle.
+        public IEnumerator CaptureGameplayFrame(string stage, Vector3 focus, Vector3 offset)
+        {
+            var camera = Camera.main;
+            const string directory = "Reports/BlockSimulation20261018/GameplayImages";
+            Directory.CreateDirectory(directory);
+            string path = Path.GetFullPath(Path.Combine(directory, stage + "-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff") + ".png"));
+            var receipt = new GameplayFrame { stage = stage, path = path, focus = focus, capturePhase = "setup" };
+            InspectGameplayFrame(receipt, camera);
+            if (!receipt.normalMainCamera)
+            {
+                receipt.error = "Gameplay images require the active production main camera and its original backbuffer";
+                File.WriteAllText(Path.ChangeExtension(path, ".failure.json"), JsonUtility.ToJson(receipt, true));
+                Assert.Fail(receipt.error);
+            }
+            var app = PrototypeApp.Current;
+            Assert.That(app, Is.Not.Null, "The gameplay capture keeps the existing application and HUD");
+            const BindingFlags appFields = BindingFlags.Instance | BindingFlags.NonPublic;
+            var capturedField = typeof(PrototypeApp).GetField("_captured", appFields);
+            var overlayField = typeof(PrototypeApp).GetField("_overlay", appFields);
+            var fireBlockedField = typeof(PrototypeApp).GetField("_fireInputBlocked", appFields);
+            Assert.That(capturedField, Is.Not.Null); Assert.That(overlayField, Is.Not.Null); Assert.That(fireBlockedField, Is.Not.Null);
+            bool capturedBefore = (bool)capturedField.GetValue(app);
+            var overlayBefore = (GameplayOverlay)overlayField.GetValue(app);
+            bool fireBlockedBefore = (bool)fireBlockedField.GetValue(app);
+            receipt.gameplayCapturedBefore = capturedBefore; receipt.overlayBefore = overlayBefore.ToString();
+            receipt.fireInputBlockedBefore = fireBlockedBefore;
+            Assert.That(capturedBefore, Is.False, "Gameplay screenshot fixtures must already release logical mouse capture");
+            Vector3 position = camera.transform.position;
+            Quaternion rotation = camera.transform.rotation;
+            Texture2D texture = null;
+            GameObject captureObject = null;
+            BlockGameplayFramePump pump = null;
+            Coroutine capture = null;
+            var deadline = System.Diagnostics.Stopwatch.StartNew();
+            try
+            {
+                bool completed = false; Exception error = null;
+                try
+                {
+                    // Hide only the room menu for this image. Logical capture remains false;
+                    // do not call CaptureMouse/CloseOverlay or touch the system cursor.
+                    overlayField.SetValue(app, GameplayOverlay.Game);
+                    // These fixtures disable automatic player simulation. Invoke the
+                    // existing presentation path once so images display the tested state.
+                    var present = typeof(PrototypePlayer).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic);
+                    foreach (var player in Match.Players)
+                        if (player != null && !player.enabled) present.Invoke(player, null);
+                    camera.transform.SetPositionAndRotation(focus + offset, Quaternion.LookRotation(-offset));
+                    captureObject = new GameObject("BlockGameplayFramePump") { hideFlags = HideFlags.HideAndDontSave };
+                    pump = captureObject.AddComponent<BlockGameplayFramePump>();
+                    receipt.capturePhase = "waiting-runtime-end-of-frame";
+                    capture = pump.Capture(() =>
+                    {
+                        receipt.capturePhase = "runtime-end-of-frame";
+                        InspectGameplayFrame(receipt, camera);
+                        Assert.That(PrototypeApp.Current, Is.SameAs(app), "The same application still owns the gameplay HUD");
+                        receipt.gameplayCapturedAtCapture = (bool)capturedField.GetValue(app);
+                        receipt.overlayAtCapture = ((GameplayOverlay)overlayField.GetValue(app)).ToString();
+                        receipt.fireInputBlockedAtCapture = (bool)fireBlockedField.GetValue(app);
+                        Assert.That(receipt.gameplayCapturedAtCapture, Is.False, "The screenshot must not acquire gameplay or system mouse capture");
+                        Assert.That(receipt.overlayAtCapture, Is.EqualTo(GameplayOverlay.Game.ToString()), "The room menu must not cover the gameplay milestone");
+                        Assert.That(receipt.normalMainCamera, Is.True, "The original production camera still renders its backbuffer");
+                        var viewport = camera.WorldToViewportPoint(focus);
+                        Assert.That(viewport.z > 0 && viewport.x > 0 && viewport.x < 1 && viewport.y > 0 && viewport.y < 1,
+                            Is.True, "The captured gameplay milestone is inside the main-camera view");
+                        texture = ScreenCapture.CaptureScreenshotAsTexture();
+                        Assert.That(texture, Is.Not.Null);
+                        receipt.width = texture.width; receipt.height = texture.height; receipt.captured = true;
+                    }, exception => { error = exception; completed = true; });
+                }
+                catch (Exception exception)
+                {
+                    InspectGameplayFrame(receipt, camera);
+                    receipt.error = exception.ToString(); receipt.elapsedSeconds = deadline.Elapsed.TotalSeconds;
+                    File.WriteAllText(Path.ChangeExtension(path, ".failure.json"), JsonUtility.ToJson(receipt, true));
+                    throw;
+                }
+                while (!completed && deadline.Elapsed.TotalSeconds < 10) yield return null;
+                receipt.elapsedSeconds = deadline.Elapsed.TotalSeconds;
+                if (!completed || error != null)
+                {
+                    if (!completed) InspectGameplayFrame(receipt, camera);
+                    receipt.error = error?.ToString() ?? "The runtime end-of-frame capture did not complete within 10 seconds";
+                    string failure = Path.ChangeExtension(path, ".failure.json");
+                    File.WriteAllText(failure, JsonUtility.ToJson(receipt, true));
+                    Assert.Fail(receipt.error + "\nCapture diagnostics: " + failure);
+                }
+                try
+                {
+                    byte[] png = texture.EncodeToPNG();
+                    File.WriteAllBytes(path, png);
+                    using var digest = SHA256.Create();
+                    receipt.sha256 = BitConverter.ToString(digest.ComputeHash(png)).Replace("-", "");
+                    receipt.pinkSurface = Terrain.SurfacePaints.PinkCount; receipt.blueSurface = Terrain.SurfacePaints.BlueCount;
+                    receipt.pinkDynamic = Terrain.Dynamic.PinkCount; receipt.blueDynamic = Terrain.Dynamic.BlueCount;
+                }
+                catch (Exception exception)
+                {
+                    receipt.error = exception.ToString();
+                    File.WriteAllText(Path.ChangeExtension(path, ".failure.json"), JsonUtility.ToJson(receipt, true));
+                    throw;
+                }
+            }
+            finally
+            {
+                try
+                {
+                    if (pump != null && capture != null) pump.StopCoroutine(capture);
+                    if (captureObject != null) UnityEngine.Object.Destroy(captureObject);
+                    if (texture != null) UnityEngine.Object.Destroy(texture);
+                    if (camera != null) camera.transform.SetPositionAndRotation(position, rotation);
+                }
+                finally
+                {
+                    if (app != null)
+                    {
+                        capturedField.SetValue(app, capturedBefore); overlayField.SetValue(app, overlayBefore);
+                        fireBlockedField.SetValue(app, fireBlockedBefore);
+                        receipt.gameplayCapturedAfter = (bool)capturedField.GetValue(app);
+                        receipt.overlayAfter = ((GameplayOverlay)overlayField.GetValue(app)).ToString();
+                        receipt.fireInputBlockedAfter = (bool)fireBlockedField.GetValue(app);
+                        receipt.appStateRestored = receipt.gameplayCapturedAfter == capturedBefore &&
+                            receipt.overlayAfter == overlayBefore.ToString() && receipt.fireInputBlockedAfter == fireBlockedBefore;
+                    }
+                    if (!receipt.appStateRestored) receipt.error = (receipt.error ?? "") + "\nGameplay screenshot application state was not restored";
+                    if (receipt.error != null || receipt.captured && receipt.sha256 != null)
+                        File.WriteAllText(Path.ChangeExtension(path, receipt.error != null ? ".failure.json" : ".json"), JsonUtility.ToJson(receipt, true));
+                    Assert.That(receipt.appStateRestored, Is.True, "The screenshot restores logical capture, overlay and fire-input blocking exactly");
+                }
+            }
+            TestContext.Out.WriteLine("Gameplay backbuffer: " + path + " SHA256 " + receipt.sha256);
+        }
 
         public BlockAttackToken PayMain(PrototypePlayer owner, int hero)
         {

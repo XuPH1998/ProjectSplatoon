@@ -15,7 +15,8 @@ using UnityEngine.TestTools;
 
 namespace Splatoon.Tests
 {
-    /// <summary>Real map/controller/PhysX acceptance for the attached and loose block split.</summary>
+    /// <summary>Real map/controller/PhysX acceptance for zero-thickness paint and loose blocks.</summary>
+    [Category("BlockSurfacePaintGameplay")]
     public sealed class BlockSurfaceMotorPlayTests
     {
         const float Dt = .02f;
@@ -113,6 +114,8 @@ namespace Splatoon.Tests
             Assert.That(physical.point.y, Is.EqualTo(_floor.point.y).Within(.002f));
             Assert.That(PlayerMotorSimulation.TryGetGround(_floor.point + Vector3.up * .035f, out var contact), Is.True);
             Assert.That(contact.Owner, Is.EqualTo(1));
+            Assert.That(contact.Kind, Is.EqualTo(BlockContactKind.SurfacePaint));
+            Assert.That(_match.Blocks.SurfacePaints.IsCurrent(contact.SurfaceKey, contact.Owner, contact.Revision), Is.True);
             Assert.That(contact.Point.y, Is.EqualTo(_floor.point.y).Within(.002f), "Traversal uses the map support plane");
             var motor = Motor(_floor.point + Vector3.up * .035f, out var controller);
             var state = Standing(controller.transform.position);
@@ -126,6 +129,7 @@ namespace Splatoon.Tests
             Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Friendly));
             Assert.That(state.FriendlyInkContact, Is.True);
             Assert.That(state.Position.y - _floor.point.y, Is.LessThan(.1f), "The surface coating cannot act as a character stair");
+            yield return _fixture.CaptureGameplayFrame("friendly-ground-plane", _floor.point, new Vector3(1.8f, 1.8f, -2.5f));
             state.Team = 2; motor.Restore(state, false);
             motor.Step(ref state, input, Dt, _fixture.Now + 9 * Dt, false);
             Assert.That(state.Swimming, Is.False, "Enemy coating keeps its traversal restriction");
@@ -133,6 +137,9 @@ namespace Splatoon.Tests
 
         [UnityTest, Timeout(600000)] public IEnumerator AuthorityPushesLooseCubeWhileReplayCannotApplyForceOrAutoStep()
         {
+            // Native landing converts bare/enemy contacts into surface paint. Keep
+            // this push test on own-colour support for its whole real movement route.
+            _fixture.SeedMapPaint(_floor, 1, 6);
             Vector3 spawn = _floor.point + new Vector3(0, BlockWorld.CellSize * .5f + .002f, .6f);
             Assert.That(_match.Blocks.Dynamic.TrySpawn(1, spawn, Quaternion.identity, out var loose), Is.True,
                 "An actual authority cube in an empty map-floor position");
@@ -166,9 +173,12 @@ namespace Splatoon.Tests
             Assert.That(loose.transform.position.z - start, Is.GreaterThan(.15f), "The player's real authority capsule pushes the mass");
             Assert.That(highest - standing.Position.y, Is.LessThan(.12f), "Walking into one loose cube cannot auto-step onto its top");
             Assert.That(_host.GetComponent<CharacterController>().stepOffset, Is.EqualTo(.3f).Within(.00001f));
+            Assert.That(_match.Blocks.Dynamic.TryGet(loose.Id, out var live) && live == loose, Is.True,
+                "The pushed own-colour body remains a live independent rigidbody");
             Assert.That(PlayerMotorSimulation.Query(loose.transform.position + Vector3.back,
                 Vector3.forward, 2, out var freeContact) && PlayerMotorSimulation.CanClimb(freeContact, 1), Is.False,
                 "A loose cube cannot become a neutral or friendly traversal wall");
+            yield return _fixture.CaptureGameplayFrame("authority-push-own-support", loose.Body.position, new Vector3(1.8f, 1.5f, -2.5f));
         }
     }
 }

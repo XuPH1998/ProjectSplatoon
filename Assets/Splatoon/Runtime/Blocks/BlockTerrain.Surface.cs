@@ -14,12 +14,13 @@ namespace Splatoon.Blocks
         public BlockDynamicWorld Dynamic { get; private set; }
         public bool IsAuthoredMapCollider(Collider collider) => collider != null && _staticColliders.Contains(collider);
 
-        /// <summary>Production mode keeps map coatings in the lattice and free bodies outside it.</summary>
+        /// <summary>Production mode keeps flat map ownership separate from free bodies and legacy solid voxels.</summary>
         public void EnableSurfaceMode()
         {
             if (SurfaceOnly) return;
             if (!Initialized) throw new InvalidOperationException("Initialize block terrain before enabling surface mode.");
             SurfaceOnly = true;
+            InitializeSurfacePaints();
             _gravityColumns.Clear(); _gravityCursor.Clear();
             ResetGravityCohorts(); ResetBlockSpread();
             BlockDynamicWorld.ConfigureCollisionLayers();
@@ -102,6 +103,7 @@ namespace Splatoon.Blocks
         public bool TrySurfaceContactFromMap(RaycastHit hit, out BlockContact contact)
         {
             contact = default;
+            if (SurfacePaints != null) return TrySurfacePaintContact(hit.collider, hit.point, hit.normal, out contact);
             if (!SurfaceOnly || !Initialized || hit.collider == null || !_staticColliders.Contains(hit.collider) ||
                 hit.collider.GetComponentInParent<PaintSurface>() == null || hit.normal.sqrMagnitude < .000001f) return false;
             var axis = Axis(hit.normal);

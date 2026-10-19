@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Splatoon.Blocks
 {
-    public enum BlockContactKind : byte { Legacy, SurfaceAttached, Dynamic }
+    public enum BlockContactKind : byte { Legacy, SurfaceAttached, Dynamic, SurfacePaint, FixedGrid }
 
     public struct BlockContact
     {
@@ -14,6 +14,8 @@ namespace Splatoon.Blocks
         public uint Revision;
         public BlockContactKind Kind;
         public ulong DynamicId;
+        public BlockSurfaceKey SurfaceKey;
+        public BlockFixedGridHandle FixedHandle;
         public bool IsBlock => Owner == 1 || Owner == 2;
     }
 

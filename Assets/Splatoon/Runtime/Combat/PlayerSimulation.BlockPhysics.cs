@@ -16,6 +16,6 @@ namespace Splatoon.Combat
         }
 
         CollisionFlags MoveWithFreeBlocks(Vector3 displacement, float dt)
-            => _blockPush != null ? _blockPush.Move(displacement, dt) : _controller.Move(displacement);
+            => FixedGridActive ? MoveWithFixedBlocks(displacement) : _blockPush != null ? _blockPush.Move(displacement, dt) : _controller.Move(displacement);
     }
 }

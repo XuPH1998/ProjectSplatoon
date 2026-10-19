@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Splatoon.Blocks;
 using Splatoon.Combat;
 using Splatoon.Config;
 using Splatoon.Networking;
@@ -80,12 +81,14 @@ namespace Splatoon.Tests
         PlayerMotorSimulation _motor;
         PaintSurface _floor;
         PlayerSnapshot _authority;
+        readonly List<BlockTerrain> _createdFixedTerrains = new();
         List<PlayerInputFrame> History => (List<PlayerInputFrame>)typeof(PrototypePlayer).GetField("_history", Private).GetValue(_player);
         PlayerSnapshot Predicted => (PlayerSnapshot)typeof(PrototypePlayer).GetField("_predicted", Private).GetValue(_player);
         object Call(string name, params object[] args) => typeof(PrototypePlayer).GetMethod(name, Private).Invoke(_player, args);
         void Set(string name, object value) => typeof(PrototypePlayer).GetField(name, Private).SetValue(_player, value);
         [SetUp] public void Setup()
         {
+            _createdFixedTerrains.Clear();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); HeroMigrationTests.Load();
             SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear();
             foreach (var row in LubanConfigService.Current.Tables.TbSubWeapon.DataList)
@@ -110,14 +113,34 @@ namespace Splatoon.Tests
         }
         [TearDown] public void Cleanup()
         {
-            PaperBodyTests.ReleaseTestBodies(); SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            try { BlockFixedGridEditFixtureCleanup.ReleaseOwnedTerrains(_createdFixedTerrains); }
+            finally
+            {
+                _createdFixedTerrains.Clear();
+                PaperBodyTests.ReleaseTestBodies(); SubWeaponConfigService.Current.Clear(); SpecialWeaponConfigService.Current.Clear(); LubanConfigService.Current.Reset();
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            }
         }
         void Paint(byte team) { foreach (var region in _floor.GameplayRegions) for (int i = 0; i < region.Grid.Cells.Length; i++) region.Grid.Set(i, team); }
         PlayerInputFrame Input(uint sequence, uint jump = 0) => new() { Sequence = sequence, Revision = 5, Swim = true, Move = Vector2.up, JumpSequence = jump };
         void AddHistory(int count) { for (uint i = 1; i <= count; i++) History.Add(Input(i)); }
         void Reconcile(PlayerSnapshot state, bool sync = true, uint applied = 0) => Call("ReconcilePrediction", state, false, sync, applied, MatchPhase.Practice);
         void Refresh(PlayerSnapshot state, bool sync, uint applied) => Call("RefreshPredictionPaint", state, sync, applied, MatchPhase.Practice);
+        BlockTerrain FixedTerrain(string name)
+        {
+            var root = new GameObject(name);
+            var arena = root.AddComponent<PrototypeArena>();
+            _floor.SurfaceId = 73; _floor.transform.SetParent(root.transform, true);
+            var terrain = root.AddComponent<BlockTerrain>();
+            _createdFixedTerrains.Add(terrain); // Track before Initialize/Enable can fail.
+            Physics.SyncTransforms();
+            // Production captures map colliders from its arena before baking paint charts.
+            // Initialize(null) intentionally has no authored map, even with a floor in the scene.
+            terrain.Initialize(arena); terrain.EnableFixedGridMode();
+            Assert.That(terrain.IsAuthoredMapCollider(_floor.GetComponent<Collider>()), Is.True,
+                "The catch-up commit must paint an authored map surface.");
+            return terrain;
+        }
 
         [TestCase((byte)0)] [TestCase((byte)1)]
         public void RemotePaintLagDoesNotStopGroundReplayOrNewInput(byte ink)
@@ -177,6 +200,90 @@ namespace Splatoon.Tests
             Reconcile(respawn, false); Assert.That(History, Is.Empty);
             Assert.That(Predicted.Team, Is.EqualTo(2)); Assert.That(Predicted.Position, Is.EqualTo(respawn.Position));
             Assert.That(_player.GetComponent<CharacterController>().enabled, Is.True);
+        }
+
+        [TestCase(false)] [TestCase(true)]
+        public void MissingFixedCommitPausesDeadPredictionWithoutReplacingItsPublishedPose(bool worldAvailable)
+        {
+            BlockTerrain terrain = null;
+            if (worldAvailable)
+                terrain = FixedTerrain("Fixed prediction dependency");
+            var dead = _authority;
+            dead.Health = 0; dead.LifeState = PlayerLifeState.Dead; dead.Movement = MovementMode.Dead;
+            dead.Swimming = dead.CompactBody = false; dead.PaperPose = PaperPose.None;
+            dead.FixedBlockEpoch = worldAvailable ? terrain.FixedBlocks.Epoch : 3;
+            dead.FixedBlockRound = worldAvailable ? terrain.FixedBlocks.Round : 1;
+            dead.FixedBlockRevision = worldAvailable ? terrain.FixedBlocks.Revision + 1 : 1182;
+            dead.SimulationTick = 2961;
+            Reconcile(dead);
+            Assert.That(_player.TerrainReplayPending, Is.True);
+            Assert.That(_player.GetComponent<CharacterController>().enabled, Is.False, "Death metadata still applies immediately.");
+            var published = Predicted;
+            long queries = _player.InspectFixedQueryDependency().StartedSteps;
+            uint steps = _player.PredictionSteps;
+            for (uint i = 1; i <= 3; i++)
+                Assert.That((bool)Call("PredictInput", Input(i), true, MatchPhase.Practice), Is.False);
+            var after = Predicted;
+            Assert.That(_player.PredictionSteps, Is.EqualTo(steps));
+            Assert.That(_player.InspectFixedQueryDependency().StartedSteps, Is.EqualTo(queries), "No CanStand or motor data query may execute during the wait.");
+            Assert.That(after.FixedBlockEpoch, Is.EqualTo(dead.FixedBlockEpoch));
+            Assert.That(after.FixedBlockRound, Is.EqualTo(dead.FixedBlockRound));
+            Assert.That(after.FixedBlockRevision, Is.EqualTo(dead.FixedBlockRevision), "A dead motor cannot overwrite the source dependency with an older local world.");
+            Assert.That(after.SimulationTick, Is.EqualTo(published.SimulationTick));
+            Assert.That(after.SimulatedAt, Is.EqualTo(published.SimulatedAt));
+            Assert.That(after.Position, Is.EqualTo(published.Position));
+            Assert.That(after.CompactBody, Is.EqualTo(published.CompactBody));
+            Assert.That(after.PaperCenter, Is.EqualTo(published.PaperCenter));
+            Assert.That(after.PaperRotation, Is.EqualTo(published.PaperRotation));
+            if (worldAvailable)
+            {
+                Assert.That(terrain.TryGetSurfacePaint(_floor.GetComponent<Collider>(), new Vector3(2.1f, 0, 2.1f), Vector3.up, out var paint), Is.True);
+                Assert.That(terrain.PaintSurfaceCell(paint.Key, 1), Is.True);
+                Assert.That(terrain.FixedBlocks.Revision, Is.EqualTo(dead.FixedBlockRevision));
+                Refresh(dead, true, 0);
+                Assert.That(_player.TerrainReplayPending, Is.False, "The completed paired commit resumes reconciliation without dropping the source dependency.");
+                Assert.That(Predicted.FixedBlockRevision, Is.EqualTo(dead.FixedBlockRevision));
+                Assert.That(Predicted.SimulationTick, Is.EqualTo(dead.SimulationTick));
+            }
+        }
+
+        [TestCase(false)] [TestCase(true)]
+        public void RespawnOrRoundBoundaryWaitsForItsOwnFixedCommitBeforeRunningAnyVolumeQuery(bool newRound)
+        {
+            var terrain = FixedTerrain("Fixed lifecycle dependency");
+            var dead = _authority;
+            dead.Health = 0; dead.LifeState = PlayerLifeState.Dead; dead.Movement = MovementMode.Dead;
+            dead.FixedBlockEpoch = terrain.FixedBlocks.Epoch; dead.FixedBlockRound = terrain.FixedBlocks.Round;
+            dead.FixedBlockRevision = 1182;
+            Reconcile(dead);
+            Assert.That(_player.TerrainReplayPending, Is.True);
+            if (newRound) terrain.Clear(terrain.Round + 1);
+            var respawn = _authority;
+            if (!newRound) respawn.Revision++;
+            respawn.Swimming = respawn.CompactBody = false; respawn.Movement = MovementMode.Human;
+            respawn.Position = new Vector3(-2, .04f, -2);
+            respawn.FixedBlockEpoch = terrain.FixedBlocks.Epoch; respawn.FixedBlockRound = terrain.FixedBlocks.Round;
+            respawn.FixedBlockRevision = terrain.FixedBlocks.Revision + 1;
+            History.Add(Input(30));
+            Reconcile(respawn);
+            Assert.That(History, Is.Empty, "Prior life/round inputs cannot query or move the replacement actor.");
+            Assert.That(_player.TerrainReplayPending, Is.True);
+            Assert.That(Predicted.Position, Is.EqualTo(respawn.Position));
+            Assert.That(_player.GetComponent<CharacterController>().enabled, Is.True, "Authority life metadata is independent of prediction readiness.");
+            long queries = _player.InspectFixedQueryDependency().StartedSteps;
+            Assert.That((bool)Call("PredictInput", Input(31), true, MatchPhase.Practice), Is.False);
+            Assert.That(_player.InspectFixedQueryDependency().StartedSteps, Is.EqualTo(queries));
+            Assert.That(Predicted.FixedBlockRevision, Is.EqualTo(respawn.FixedBlockRevision));
+            Assert.That(Predicted.SimulationTick, Is.EqualTo(respawn.SimulationTick));
+
+            Assert.That(terrain.TryGetSurfacePaint(_floor.GetComponent<Collider>(), new Vector3(2.1f, 0, 2.1f), Vector3.up, out var paint), Is.True);
+            Assert.That(terrain.PaintSurfaceCell(paint.Key, 1), Is.True);
+            Refresh(respawn, true, 0);
+            Assert.That(_player.TerrainReplayPending, Is.False, "Only the replacement lifecycle's required commit must arrive; its predecessor's watermark is retired.");
+            Assert.That(Predicted.Position, Is.EqualTo(respawn.Position));
+            Assert.That(Predicted.FixedBlockEpoch, Is.EqualTo(respawn.FixedBlockEpoch));
+            Assert.That(Predicted.FixedBlockRound, Is.EqualTo(respawn.FixedBlockRound));
+            Assert.That(Predicted.FixedBlockRevision, Is.EqualTo(respawn.FixedBlockRevision));
         }
         [Test] public void ReplayNeverBakesIntermediatePaperButAuthorityRestoreStillDoes()
         {

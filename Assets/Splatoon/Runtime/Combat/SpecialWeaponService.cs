@@ -42,6 +42,9 @@ namespace Splatoon.Combat
             public uint BlockOrdinal;
             public bool BlockAttachment;
             public Vector3Int BlockAttachmentCell;
+            public BlockFixedGridWorld FixedAttachmentWorld;
+            public BlockFixedGridHandle FixedAttachmentHandle;
+            public Vector3 FixedAttachmentOffset;
             public readonly HashSet<(ulong,uint)> Hit=new();
             public readonly Dictionary<(ulong,uint),float> PlayerDamage=new();
             public readonly HashSet<(ulong,uint,int)> WaveHits=new();
@@ -105,7 +108,12 @@ namespace Splatoon.Combat
                 if(e.Removed)continue;
                 if(!PrototypePlayer.ByOwner.TryGetValue(e.State.Owner,out var owner)||owner.Snapshot.Value.HeroRevision!=e.State.HeroRevision||owner.Snapshot.Value.Team!=e.State.Team){Remove(e);continue;}
                 if(now+1e-6>=e.State.Expires){Remove(e);continue;}
-                if(e.BlockAttachment&&e.State.Health>0&&BlockTerrain.Current!=null&&!BlockTerrain.Current.World.TryGet(e.BlockAttachmentCell,out _))
+                if(e.FixedAttachmentHandle.Id!=0&&e.State.Health>0)
+                {
+                    if(!TryFollowFixedAttachment(e))
+                    {e.BlockAttachment=false;e.FixedAttachmentHandle=default;DestroyGenerator(e,true);if(e.Removed)continue;}
+                }
+                if(e.BlockAttachment&&e.FixedAttachmentHandle.Id==0&&e.State.Health>0&&BlockTerrain.Current!=null&&!BlockTerrain.Current.World.TryGet(e.BlockAttachmentCell,out _))
                 {e.BlockAttachment=false;DestroyGenerator(e,true);if(e.Removed)continue;}
                 if(e.State.Phase==SpecialEntityPhase.Flying){if(e.State.Type==SpecialWeaponType.Trizooka)StepTrizooka(e,dt);else StepThrow(e,dt);}
                 else if(e.State.Type==SpecialWeaponType.TripleInkstrike)StepTornado(e,players,dt);
@@ -115,6 +123,21 @@ namespace Splatoon.Combat
                 e.State.SampledAt=now;
             }
             _entities.RemoveAll(e=>e.Removed);
+        }
+        static bool TryFollowFixedAttachment(Entity e)
+        {
+            if(BlockTerrain.Current==null||!ReferenceEquals(BlockTerrain.Current.FixedBlocks,e.FixedAttachmentWorld)||
+                !e.FixedAttachmentWorld.TryGet(e.FixedAttachmentHandle,out var support))return false;
+            e.State.Position=BlockWorld.Center(support.Cell)+e.FixedAttachmentOffset;
+            e.BlockAttachmentCell=support.Cell;
+            if(e.Target!=null&&e.Target.transform.position!=e.State.Position)
+            {
+                e.Target.transform.position=e.State.Position;
+                // Restacking can move the support between two combat queries. Publish
+                // the actual hit shape before the same step's sonar/damage queries.
+                Physics.SyncTransforms();
+            }
+            return true;
         }
         void StartReefSplashes(Entity e,Vector3 feet)
         {
@@ -143,8 +166,8 @@ namespace Splatoon.Combat
                     Vector3 from=e.ReefSplashPositions[i],velocity=e.ReefSplashVelocities[i];
                     Vector3 delta=velocity/60+Vector3.down*p.reefSplashGravity/(2*60*60);
                     e.ReefSplashVelocities[i]=velocity+Vector3.down*p.reefSplashGravity/60;
-                    if(Physics.Raycast(from,delta.normalized,out var hit,delta.magnitude,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))
-                    {e.ReefSplashPositions[i]=hit.point;e.ReefSplashDone[i]=true;PaintSurface(e,hit,p.reefSplashPaintRadius);}
+                    if(_aim.ClosestCast(from,delta,delta.magnitude,0,e.State.Owner,out var hit,false))
+                    {e.ReefSplashPositions[i]=hit.Point;e.ReefSplashDone[i]=true;PaintCollision(e,hit,p.reefSplashPaintRadius);}
                     else e.ReefSplashPositions[i]=from+delta;
                 }
             }
@@ -181,15 +204,15 @@ namespace Splatoon.Combat
                 while(!embedded&&(_aim.Overlap(from,pr,e.State.Owner,-velocity.normalized,out var player,true,e.State.Team,e.Hit)||
                     _aim.ClosestCast(from,delta,playerDistance,pr,e.State.Owner,out player,true,e.State.Team,e.Hit)))
                 {
-                    var victim=player.Collider.GetComponentInParent<PrototypePlayer>();
+                    var victim=player.Collider?.GetComponentInParent<PrototypePlayer>();
                     ApplyVolleyDamage(e,victim,p.directDamage,velocity);
                 }
                 if(wh)
                 {
                     var h=wall;
                     to=h.Point;e.State.Normal=h.Normal;
-                    var sub=h.Collider.GetComponent<SubWeaponTarget>();if(sub!=null)PrototypeMatch.Current.SubWeapons.DamageObject(sub.Id,e.State.Team,VolleyObjectIncrement(e.ObjectDamage,sub.Id,p.directDamage)*SpecialObjectDamage.ToSub(e.State.Type,sub.Type));
-                    var target=h.Collider.GetComponent<SpecialWeaponTarget>();if(target!=null)target.Damage(e.State.Team,VolleyObjectIncrement(e.SpecialObjectDamage,target.Id,p.directDamage));
+                    var sub=h.Collider?.GetComponent<SubWeaponTarget>();if(sub!=null)PrototypeMatch.Current.SubWeapons.DamageObject(sub.Id,e.State.Team,VolleyObjectIncrement(e.ObjectDamage,sub.Id,p.directDamage)*SpecialObjectDamage.ToSub(e.State.Type,sub.Type));
+                    var target=h.Collider?.GetComponent<SpecialWeaponTarget>();if(target!=null)target.Damage(e.State.Team,VolleyObjectIncrement(e.SpecialObjectDamage,target.Id,p.directDamage));
                     Blast(e,to,null,true);e.State.LiveLobes=(byte)(e.State.LiveLobes&~(1<<i));
                     if(i==0)e.State.P0=to;else if(i==1)e.State.P1=to;else e.State.P2=to;
                     Publish(e);
@@ -288,7 +311,9 @@ namespace Splatoon.Combat
                     if(knownBlock)
                     {
                         // A falling contact cannot borrow a stable support from its shared point.
-                        if(support.Stable){e.BlockAttachment=true;e.BlockAttachmentCell=support.Cell;}
+                        if(support.Stable&&support.Kind!=BlockContactKind.SurfacePaint){e.BlockAttachment=true;e.BlockAttachmentCell=support.Cell;}
+                        if(support.Kind==BlockContactKind.FixedGrid)
+                        {e.FixedAttachmentWorld=BlockTerrain.Current.FixedBlocks;e.FixedAttachmentHandle=support.FixedHandle;e.FixedAttachmentOffset=e.State.Position-BlockWorld.Center(support.Cell);}
                     }
                     else
                     {
@@ -337,8 +362,8 @@ namespace Splatoon.Combat
                     // Follow the local floor; an airborne body whose feet clear the wave is safe.
                     if(s.Movement!=MovementMode.WallInk)
                     {
-                        if(!Physics.Raycast(feet+Vector3.up*.1f,Vector3.down,out var floor,Mathf.Max(p.waveHeightDown,p.waveHeightUp)+1,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))continue;
-                        if(feet.y-floor.point.y>.35f*SpecialWeaponDefaults.Scale)continue;
+                        if(!_aim.ClosestCast(feet+Vector3.up*.1f,Vector3.down,Mathf.Max(p.waveHeightDown,p.waveHeightUp)+1,0,e.State.Owner,out var floor,false))continue;
+                        if(feet.y-floor.Point.y>.35f*SpecialWeaponDefaults.Scale)continue;
                     }
                     if(!e.WaveHits.Add((player.PlayerId,s.Revision,wave)))continue;
                     player.ReceiveDamage(e.State.Team,p.innerDamage,d,e.State.Owner);Mark(player,e.State.Team,p.markSeconds);
@@ -486,7 +511,8 @@ namespace Splatoon.Combat
                 DamageObject(target.State.Id,e.State.Team,damage*SpecialObjectDamage.ToSonar(e.State.Type));
             }
         }
-        public static bool Visible(Vector3 from,Vector3 to)=>!Physics.Linecast(from,to,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore);
+        public static bool Visible(Vector3 from,Vector3 to)
+        {var delta=to-from;return !StormThrowAim.ClosestCast(from,delta,Mathf.Max(0,delta.magnitude-.001f),0,0,out _,false);}
         void PaintSurface(Entity e,RaycastHit hit,float radius)
             =>PaintSurface(e,hit.collider,hit.point,hit.normal,radius);
         void PaintSurface(Entity e,Collider collider,Vector3 point,Vector3 normal,float radius)
@@ -505,12 +531,12 @@ namespace Splatoon.Combat
                 bool blockHit=blockQuery.IsKnown?blockQuery.TryResolveCurrent(out block):BlockAttackService.Contact(collider,point,normal,out block);
                 if(blockQuery.IsKnown&&!blockHit)return;
                 uint ordinal=++e.BlockOrdinal;
-                if(blockHit&&block.Owner!=e.State.Team)BlockAttackService.Direct(e.BlockAttack,point,8,e.State.Id,ordinal);
-                else if(blockHit||collider.GetComponentInParent<PaintSurface>()!=null)
-                    BlockAttackService.Build(e.BlockAttack,point,normal,radius,false,!blockHit,8,e.State.Id,ordinal);
+                if(blockHit&&block.Kind!=BlockContactKind.SurfacePaint&&block.Owner!=e.State.Team)BlockAttackService.Direct(e.BlockAttack,point,8,e.State.Id,ordinal);
+                else if(blockHit||collider?.GetComponentInParent<PaintSurface>()!=null)
+                    BlockAttackService.Build(e.BlockAttack,point,normal,radius,false,!blockHit||block.Kind==BlockContactKind.SurfacePaint,8,e.State.Id,ordinal);
                 return;
             }
-            var surface=collider.GetComponentInParent<PaintSurface>();if(surface==null)return;
+            var surface=collider?.GetComponentInParent<PaintSurface>();if(surface==null)return;
             var stamp=new PaintStamp{Position=point,Normal=normal};InkShapeAtlas.StampBasis(stamp,out var tangent,out var bitangent);
             Vector4 clip0=default,clip1=default;
             for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 dir=tangent*Mathf.Cos(a)+bitangent*Mathf.Sin(a);float extent=radius*1.414214f;
@@ -526,9 +552,9 @@ namespace Splatoon.Combat
                 if(e.State.Type==SpecialWeaponType.TripleInkstrike)BlockAttackService.Blast(e.BlockAttack,position,radius,e.State.Id,++e.BlockOrdinal);
                 return;
             }
-            if(Physics.Raycast(position+Vector3.up*.1f,Vector3.down,out var floor,radius+2,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))PaintSurface(e,floor,radius);
+            if(_aim.ClosestCast(position+Vector3.up*.1f,Vector3.down,radius+2,0,e.State.Owner,out var floor,false))PaintCollision(e,floor,radius);
             // Splash paints actual nearby receiver planes, with radial clipping at obstacles.
-            for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 d=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));if(Physics.Raycast(position,d,out var hit,radius,TpsAimSolver.CombatMask,QueryTriggerInteraction.Ignore))PaintSurface(e,hit,Mathf.Sqrt(Mathf.Max(0,radius*radius-hit.distance*hit.distance)));}
+            for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Vector3 d=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));if(_aim.ClosestCast(position,d,radius,0,e.State.Owner,out var hit,false))PaintCollision(e,hit,Mathf.Sqrt(Mathf.Max(0,radius*radius-hit.Distance*hit.Distance)));}
         }
         public void ReefContact(PrototypePlayer owner,PlayerSnapshot s,Vector3 previous,double now)
         {
@@ -542,7 +568,7 @@ namespace Splatoon.Combat
             while(_aim.Overlap(from,p.ridePlayerRadius,owner.PlayerId,-s.SpecialDirection,out var contact,true,s.Team,examined)||
                 _aim.ClosestCast(from,delta,delta.magnitude,p.ridePlayerRadius,owner.PlayerId,out contact,true,s.Team,examined))
             {
-                var target=contact.Collider.GetComponentInParent<PrototypePlayer>();var t=target.Snapshot.Value;
+                var target=contact.Collider?.GetComponentInParent<PrototypePlayer>();var t=target.Snapshot.Value;
                 examined.Add((target.PlayerId,t.Revision));
                 Vector3 end=from+delta;
                 Vector3 point=target.SwimBody!=null&&target.SwimBody.FlatHitActive?target.SwimBody.ClosestHitPoint(end):contact.Collider.ClosestPoint(end);

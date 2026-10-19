@@ -228,8 +228,8 @@ namespace Splatoon.Tests
             using var reader=new Unity.Netcode.FastBufferReader(writer,Unity.Collections.Allocator.Temp);reader.ReadNetworkSerializable(out PlayerSnapshot actual);
             foreach(var field in fields) Assert.That(field.GetValue(actual),Is.EqualTo(field.GetValue(expected)),field.Name+" must survive network serialization");
             Assert.That(JsonUtility.ToJson(actual),Is.EqualTo(JsonUtility.ToJson(expected)));
-            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(37));
-            Assert.That(writer.Length,Is.EqualTo(855)); // Protocol 37: 827 + support cell (12), terrain revision (4), ground normal (12).
+            Assert.That(PlayerSnapshot.ProtocolVersion,Is.EqualTo(39));
+            Assert.That(writer.Length,Is.EqualTo(893)); // Protocol 39: 855 + fixed dependencies (12), fixed support (13), paint support (13).
         }
         [Test] public void RifleGirlLogicalMuzzleProjectileHitsFloorOnCorrectedTrajectory()
         {

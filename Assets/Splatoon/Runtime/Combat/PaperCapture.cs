@@ -27,7 +27,7 @@ namespace Splatoon.Combat
         // Profile/prefab content is authored and immutable during a capture.
         // Keep both captured and current content identities so an older clone
         // cannot populate a newly rebound shape's cache after an asset change.
-        readonly struct PoseKey : IEquatable<PoseKey>
+        internal readonly struct PoseKey : IEquatable<PoseKey>
         {
             readonly (PaperBodyProfile, GameObject, GameObject, string, string, Vector3, float, Vector2, float, int, Vector2) _value;
             public PoseKey(PaperBodyProfile profile, GameObject prefab, string capturedContent, int frame, Vector2 move)
@@ -37,12 +37,13 @@ namespace Splatoon.Combat
             public override bool Equals(object obj) => obj is PoseKey other && Equals(other);
             public override int GetHashCode() => _value.GetHashCode();
         }
-        sealed class SharedPose
+        internal sealed class SharedPose
         {
-            public readonly Rect[] Rects;
+            internal readonly PoseKey Key;
+            public readonly IReadOnlyList<Rect> Rects;
             public readonly Bounds Bounds;
-            public SharedPose(PaperSilhouette silhouette)
-            { Rects = silhouette.Rects.ToArray(); Bounds = silhouette.CaptureBounds; }
+            internal SharedPose(PoseKey key, PaperSilhouette silhouette)
+            { Key = key; Rects = Array.AsReadOnly(silhouette.Rects.ToArray()); Bounds = silhouette.CaptureBounds; }
         }
         static readonly Dictionary<PoseKey, SharedPose> SharedPoses = new();
         static readonly Queue<PoseKey> SharedPoseOrder = new();
@@ -50,6 +51,7 @@ namespace Splatoon.Combat
         readonly PaperBodyProfile _profile;
         readonly GameObject _capturePrefab;
         readonly string _capturedContent;
+        readonly bool _contourOnly;
         readonly Scene _scene;
         readonly GameObject _root, _character;
         readonly Animator _animator;
@@ -75,6 +77,8 @@ namespace Splatoon.Combat
         public static long SharedPoseCacheMisses { get; private set; }
         public static long PoseBakeCount { get; private set; }
         public static long DeferredRenderBakeCount { get; private set; }
+        // Shared lookup genuinely missed, but this body's immutable exact contour survived locally.
+        public static long LocalContourHandoffHits { get; private set; }
         // Independent uncached fresh captures exercise the original pose path
         // in regression checks; normal gameplay always shares exact pose keys.
         public bool SampleUncachedForDiagnostics(PlayerSnapshot state) => Sample(state, false);
@@ -85,11 +89,15 @@ namespace Splatoon.Combat
             SharedPoses.Clear(); SharedPoseOrder.Clear();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             SharedPoseCacheHits = SharedPoseCacheMisses = PoseBakeCount = DeferredRenderBakeCount = 0;
+            LocalContourHandoffHits = 0;
 #endif
         }
-        public PaperCapture(PaperBodyProfile profile)
+        public PaperCapture(PaperBodyProfile profile) : this(profile, false) { }
+        /// <summary>Independent candidate evaluator with no hit mesh or render stage.</summary>
+        public static PaperCapture CreateContourEvaluator(PaperBodyProfile profile) => new(profile, true);
+        PaperCapture(PaperBodyProfile profile, bool contourOnly)
         {
-            _profile = profile;
+            _profile = profile; _contourOnly = contourOnly;
             _capturePrefab = profile.CapturePrefab; _capturedContent = profile.ContentHash ?? "";
 #if UNITY_EDITOR
             _scene = !Application.isPlaying ? UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene() : SceneManager.CreateScene("Paper capture " + Guid.NewGuid().ToString("N"));
@@ -127,6 +135,7 @@ namespace Splatoon.Combat
                 // Copy once to keep CPU data available in player builds.
                 _parts.Add(new Part { Mesh=mesh, Renderer=renderer, Indices=new NativeArray<int>(mesh.triangles,Allocator.Persistent), Projected=new NativeArray<Vector3>(mesh.vertexCount,Allocator.Persistent) }); renderer.enabled=false;
             }
+            if (_contourOnly) { _activeCaptures++; return; }
             var cameraObject=new GameObject("Paper virtual camera",typeof(Camera)); cameraObject.transform.SetParent(_root.transform,false);
             _camera=cameraObject.GetComponent<Camera>(); _camera.enabled=false; _camera.cameraType=CameraType.Game;
 #if UNITY_EDITOR
@@ -146,47 +155,118 @@ namespace Splatoon.Combat
             _activeCaptures++;
         }
         public bool Sample(PlayerSnapshot state) => Sample(state, true);
-        bool Sample(PlayerSnapshot state, bool share)
+        internal static void PoseCoordinates(PlayerSnapshot state, out int frame, out Vector2 move)
         {
-            int frame=Mathf.FloorToInt(state.PaperAnimationTime*PaperAnimation.FramesPerSecond);
-            var move=new Vector2(Mathf.Round(state.PaperMove.x*8)/8,Mathf.Round(state.PaperMove.y*8)/8);
-            var key = new PoseKey(_profile, _capturePrefab, _capturedContent, frame, move);
-            if (_hasSample && _sampleKey.Equals(key)) return false;
+            frame = Mathf.FloorToInt(state.PaperAnimationTime * PaperAnimation.FramesPerSecond);
+            move = new Vector2(Mathf.Round(state.PaperMove.x * 8) / 8, Mathf.Round(state.PaperMove.y * 8) / 8);
+        }
+        /// <summary>Immutable exact-key contour. Does not build or publish a hit mesh.</summary>
+        public IReadOnlyList<Rect> QueryContour(PlayerSnapshot state)
+            => QueryContourValue(state).Rects;
+
+        internal SharedPose QueryContourValue(PlayerSnapshot state)
+        {
+            if (!_contourOnly) throw new InvalidOperationException("Use an independent contour evaluator for candidate queries.");
             using var sample = SampleMarker.Auto();
-            _frame=frame; _move=move; _sampleKey=key; _hasSample=true;
-            if (share && SharedPoses.TryGetValue(key, out var cached))
+            PoseCoordinates(state, out int frame, out var move);
+            var key = new PoseKey(_profile, _capturePrefab, _capturedContent, frame, move);
+            if (SharedPoses.TryGetValue(key, out var cached))
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 SharedPoseCacheHits++;
+                PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.QueryGlobalHit);
 #endif
+                return cached;
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            SharedPoseCacheMisses++;
+            PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.QueryRealMiss);
+#endif
+            ProjectPose(frame, move);
+            using (FramePerformance.PaperContour.Auto())
+                _silhouette.BuildContour(_profile.Size);
+            return RememberPose(key);
+        }
+        internal bool SampleWithLocalContour(PlayerSnapshot state, SharedPose hint)
+            => Sample(state, true, hint);
+
+        bool Sample(PlayerSnapshot state, bool share, SharedPose hint = null)
+        {
+            if (_contourOnly) throw new InvalidOperationException("Contour evaluators query immutable contours instead of publishing hit meshes.");
+            PoseCoordinates(state, out int frame, out var move);
+            var key = new PoseKey(_profile, _capturePrefab, _capturedContent, frame, move);
+            if (_hasSample && _sampleKey.Equals(key))
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (share) PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.LiveNoop);
+#endif
+                return false;
+            }
+            using var sample = SampleMarker.Auto();
+            _frame=frame; _move=move; _sampleKey=key; _hasSample=true;
+            SharedPose cached = null;
+            bool sharedHit = share && SharedPoses.TryGetValue(key, out cached);
+            bool handoffHit = !sharedHit && share && hint != null && hint.Key.Equals(key);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (share)
+            {
+                if (sharedHit) PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.LiveGlobalHit);
+                else if (handoffHit) PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.HandoffHit);
+                else if (hint != null) PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.HintReject);
+            }
+#endif
+            if (sharedHit || handoffHit)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (sharedHit) SharedPoseCacheHits++;
+                else { SharedPoseCacheMisses++; LocalContourHandoffHits++; }
+#endif
+                cached ??= hint;
                 PosedBounds = cached.Bounds;
-                _silhouette.Restore(HitMesh, cached.Rects, cached.Bounds, _profile.Thickness);
+                using (FramePerformance.PaperHitMeshRestore.Auto())
+                    _silhouette.Restore(HitMesh, cached.Rects, cached.Bounds, _profile.Thickness);
                 PoseVersion++; return true;
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (share) SharedPoseCacheMisses++;
+            if (share)
+            {
+                SharedPoseCacheMisses++;
+                PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.LiveRealMiss);
+            }
 #endif
+            ProjectPose(frame, move);
+            PosedBounds=_silhouette.CaptureBounds;
+            using (FramePerformance.PaperHitMesh.Auto())
+                _silhouette.Build(HitMesh,_profile.Size,_profile.Thickness);
+            if (share) RememberPose(key);
+            PoseVersion++; return true;
+        }
+        SharedPose RememberPose(PoseKey key)
+        {
+            var pose = new SharedPose(key, _silhouette);
+            if (SharedPoses.Count == SharedPoseCapacity) SharedPoses.Remove(SharedPoseOrder.Dequeue());
+            SharedPoses.Add(key, pose); SharedPoseOrder.Enqueue(key);
+            return pose;
+        }
+        void ProjectPose(int frame, Vector2 move)
+        {
             BakePose(frame, move);
             _silhouette.Clear();
             foreach (var part in _parts)
             {
+                using (FramePerformance.PaperMeshRead.Auto())
                 using (var meshData=Mesh.AcquireReadOnlyMeshData(part.Mesh)) meshData[0].GetVertices(part.Projected);
                 Matrix4x4 matrix=_root.transform.worldToLocalMatrix*part.Renderer.transform.localToWorldMatrix;
-                _silhouette.Add(part.Projected,part.Indices,matrix,_profile.CaptureCenter,_profile.CaptureHeight);
+                using (FramePerformance.PaperContour.Auto())
+                    _silhouette.Add(part.Projected,part.Indices,matrix,_profile.CaptureCenter,_profile.CaptureHeight);
             }
-            PosedBounds=_silhouette.CaptureBounds;
-            _silhouette.Build(HitMesh,_profile.Size,_profile.Thickness);
-            if (share)
-            {
-                if (SharedPoses.Count == SharedPoseCapacity) SharedPoses.Remove(SharedPoseOrder.Dequeue());
-                SharedPoses.Add(key, new SharedPose(_silhouette)); SharedPoseOrder.Enqueue(key);
-            }
-            PoseVersion++; return true;
         }
         void BakePose(int frame, Vector2 move)
         {
-            _rig.Evaluate(frame/(float)PaperAnimation.FramesPerSecond,move);
-            foreach (var part in _parts) if (part.Skin != null) part.Skin.BakeMesh(part.Mesh);
+            using (FramePerformance.PaperPoseEvaluate.Auto())
+                _rig.Evaluate(frame/(float)PaperAnimation.FramesPerSecond,move);
+            using (FramePerformance.PaperSkinBake.Auto())
+                foreach (var part in _parts) if (part.Skin != null) part.Skin.BakeMesh(part.Mesh);
             _bakedFrame = frame; _bakedMove = move;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             PoseBakeCount++;
@@ -194,6 +274,7 @@ namespace Splatoon.Combat
         }
         public void Render()
         {
+            if (_contourOnly) return;
             if (_renderedVersion==PoseVersion || SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null) return;
             using var marker = FramePerformance.PaperRender.Auto();
             // A shared hit contour is authoritative immediately. Only the
@@ -204,6 +285,7 @@ namespace Splatoon.Combat
                 BakePose(_frame, _move);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 DeferredRenderBakeCount++;
+                PaperSamplingDiagnostics.Record(PaperSamplingDiagnostics.Event.DeferredRenderBake);
 #endif
             }
             if (Texture == null)
@@ -232,7 +314,8 @@ namespace Splatoon.Combat
             foreach (var part in _parts)
             { part.Indices.Dispose(); part.Projected.Dispose(); if (part.Skin != null) Destroy(part.Mesh); }
             _silhouette.Dispose();
-            Destroy(HitMesh); Destroy(_root);
+            if (HitMesh != null) Destroy(HitMesh);
+            Destroy(_root);
             if (--_activeCaptures == 0) ResetSharedPoses();
 #if UNITY_EDITOR
             if (!Application.isPlaying) { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(_scene); return; }

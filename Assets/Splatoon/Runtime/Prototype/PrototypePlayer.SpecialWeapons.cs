@@ -107,6 +107,9 @@ namespace Splatoon.Prototype
                 s.SpecialRideStage=0;s.SpecialStartedAt=now;s.SpecialUntil=now+p.duration;
                 s.SpecialReadyAt=now+p.rideStartup;s.SpecialChargeLockedUntil=now+p.chargeLock;s.SpecialPoints=0;
             }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            EndFixedQueryEvidenceBeforeCommit();
+#endif
             if(IsServer&&s.SpecialRideStage==1)PrototypeMatch.Current.SpecialWeapons.ReefContact(this,s,before,now);
             if(s.SpecialRideStage==1&&(flags&CollisionFlags.Sides)!=0){s.SpecialRideStage=2;s.SpecialBurstAt=now+p.rideBurstDelay;}
             if(s.SpecialRideStage==2&&now+1e-6>=s.SpecialBurstAt)

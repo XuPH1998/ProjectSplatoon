@@ -18,6 +18,7 @@ namespace Splatoon.Prototype
             public readonly Vector3 Position, HumanPosition, Velocity, PlanarVelocity, GroundNormal, PaperCenter;
             public readonly Quaternion PaperRotation;
             public readonly Vector3Int SupportCell;
+            public readonly BlockSurfaceKey SurfaceKey;
             public readonly uint Life, AcknowledgedInput, HeroRevision, RequiredSupportRevision, AppliedSupportRevision;
             public readonly int HeroId;
             public readonly byte Team, SupportOwner;
@@ -27,6 +28,9 @@ namespace Splatoon.Prototype
             public readonly PaperPose PaperPose;
             public readonly PlayerLifeState LifeState;
             public readonly bool Grounded, Swimming, CompactBody, InputTimedOut, CanMove, SupportPresent, TerrainAvailable;
+            public readonly bool SupportIsSurfacePaint, SupportIsFixedGrid;
+            public readonly BlockFixedGridHandle FixedHandle;
+            public readonly uint FixedBlockRevision, AppliedFixedBlockRevision;
 
             public ReconcileTelemetryState(PlayerSnapshot state, BlockTerrain terrain)
             {
@@ -34,17 +38,48 @@ namespace Splatoon.Prototype
                 Velocity = state.Velocity; PlanarVelocity = state.PlanarVelocity; VerticalSpeed = state.VerticalSpeed;
                 GroundNormal = state.GroundNormal; PaperCenter = state.PaperCenter; PaperRotation = state.PaperRotation;
                 SupportCell = state.SupportCell; Life = state.Revision; AcknowledgedInput = state.AcknowledgedInput;
+                SupportIsSurfacePaint = state.SupportIsSurfacePaint;
+                SupportIsFixedGrid = state.SupportIsFixedGrid;
+                FixedHandle = new BlockFixedGridHandle { Epoch = state.FixedBlockEpoch, Round = state.FixedBlockRound,
+                    Id = state.SupportFixedId, Generation = state.SupportFixedGeneration };
+                FixedBlockRevision = state.FixedBlockRevision;
+                AppliedFixedBlockRevision = terrain != null && terrain.FixedGridMode ? terrain.FixedBlocks.Revision : 0;
+                SurfaceKey = SupportIsSurfacePaint ? new BlockSurfaceKey(state.SupportSurfaceFace, state.SupportSurfaceU, state.SupportSurfaceV) : default;
                 HeroId = state.HeroId; HeroRevision = state.HeroRevision; Team = state.Team; Health = state.Health;
                 AirHumanOffset = state.AirHumanOffset; CameraRebaseOffset = state.CameraRebaseOffset;
                 SimulatedAt = state.SimulatedAt; Movement = state.Movement; PaperPose = state.PaperPose; LifeState = state.LifeState;
                 Grounded = state.Grounded; Swimming = state.Swimming; CompactBody = state.CompactBody;
                 InputTimedOut = state.InputTimedOut; CanMove = state.CanMove;
                 RequiredSupportRevision = state.SupportTerrainRevision;
-                TerrainAvailable = terrain != null && terrain.Initialized && terrain.World != null;
-                AppliedSupportRevision = TerrainAvailable ? terrain.ChunkRevision(BlockWorld.ChunkAt(state.SupportCell)) : 0;
-                BlockCell support = default;
-                SupportPresent = TerrainAvailable && terrain.World.TryGet(state.SupportCell, out support);
-                SupportOwner = SupportPresent ? support.Owner : (byte)0;
+                TerrainAvailable = terrain != null && terrain.Initialized &&
+                    (SupportIsFixedGrid ? terrain.FixedGridMode : SupportIsSurfacePaint ? terrain.SurfacePaints != null : terrain.World != null);
+                AppliedSupportRevision = 0; SupportPresent = false; SupportOwner = 0;
+                if (TerrainAvailable)
+                {
+                    if (SupportIsFixedGrid)
+                    {
+                        if (terrain.FixedBlocks.TryGet(FixedHandle, out var fixedSupport))
+                        {
+                            AppliedSupportRevision = fixedSupport.Revision;
+                            SupportPresent = fixedSupport.Cell == state.SupportCell;
+                            SupportOwner = SupportPresent ? fixedSupport.Owner : (byte)0;
+                        }
+                    }
+                    else if (SupportIsSurfacePaint)
+                    {
+                        if (terrain.SurfacePaints.TryGet(SurfaceKey, out var surface))
+                        {
+                            AppliedSupportRevision = surface.Revision;
+                            SupportPresent = surface.Owner != 0; SupportOwner = surface.Owner;
+                        }
+                    }
+                    else
+                    {
+                        AppliedSupportRevision = terrain.ChunkRevision(BlockWorld.ChunkAt(state.SupportCell));
+                        SupportPresent = terrain.World.TryGet(state.SupportCell, out var support);
+                        SupportOwner = SupportPresent ? support.Owner : (byte)0;
+                    }
+                }
             }
         }
 

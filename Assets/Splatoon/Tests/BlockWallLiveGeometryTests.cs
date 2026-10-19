@@ -24,6 +24,8 @@ namespace Splatoon.Tests
     public sealed class BlockWallLiveGeometryTests
     {
         const float Dt = 1f / 60;
+        const int WallCellZ = 3;
+        const float WallFront = WallCellZ * BlockWorld.CellSize;
         BlockTerrain terrain;
         PrototypePlayer player;
         CharacterController controller;
@@ -41,6 +43,8 @@ namespace Splatoon.Tests
             yield return HistoricalBlockWorldHeightScope.WaitForBootstrap();
             HeroMigrationTests.Load();
             terrain = new GameObject("Real silhouette wall terrain").AddComponent<BlockTerrain>(); terrain.Initialize(null);
+            Assert.That(terrain.Initialized && terrain.World != null && !terrain.FixedGridMode, Is.True,
+                "This fixture exercises historical voxel publication with the current Paper geometry.");
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameResource/Gameplay/Prototype/Prefabs/PrototypePlayer.prefab");
             player = Object.Instantiate(prefab).GetComponent<PrototypePlayer>(); player.gameObject.layer = 8;
             Body.Bind(PaperBodyTests.Profile("RifleGirl"));
@@ -62,8 +66,11 @@ namespace Splatoon.Tests
         static BlockWorld Wall()
         {
             var world = new BlockWorld(new Vector2(32, 64));
-            for (int x = -8; x <= 8; x++) for (int y = 0; y < 50; y++)
-                world.Set(new Vector3Int(x, y, 10), BlockCell.Create(1, true));
+            int left = Mathf.FloorToInt(-.8f / BlockWorld.CellSize);
+            int right = Mathf.CeilToInt(.9f / BlockWorld.CellSize);
+            int top = Mathf.CeilToInt(5 / BlockWorld.CellSize);
+            for (int x = left; x < right; x++) for (int y = 0; y < top; y++)
+                Assert.That(world.Set(new Vector3Int(x, y, WallCellZ), BlockCell.Create(1, true)), Is.True);
             return world;
         }
         IEnumerator Publish(BlockWorld world)
@@ -80,7 +87,7 @@ namespace Splatoon.Tests
         {
             state = new PlayerSnapshot { HeroId = 1, HeroRevision = 1, Revision = 1, Team = 1,
                 Health = 100, Ink = 43, LifeState = PlayerLifeState.Alive,
-                Position = new Vector3(.05f, 2.87f, .48f), Movement = MovementMode.Air,
+                Position = new Vector3(.05f, 2.87f, WallFront - .52f), Movement = MovementMode.Air,
                 Swimming = true, Grounded = false, PaperPose = PaperPose.Air,
                 AirHumanOffset = .87f, CameraRebaseOffset = -.2f, VerticalSpeed = -.1f,
                 Velocity = Vector3.down * .1f, GroundNormal = Vector3.up,
@@ -111,10 +118,10 @@ namespace Splatoon.Tests
         {
             var candidate = state;
             candidate.Position.y = state.PaperCenter.y - Body.Profile.Size.y * .5f;
-            candidate.Position.z = 1 - controller.radius - .015f;
+            candidate.Position.z = WallFront - controller.radius - .015f;
             candidate.Movement = MovementMode.WallInk; candidate.Swimming = true;
             candidate.CompactBody = false; candidate.Grounded = false; candidate.AirHumanOffset = 0;
-            candidate.WallNormal = Vector3.back; candidate.WallPoint = new Vector3(candidate.Position.x, candidate.Position.y, 1);
+            candidate.WallNormal = Vector3.back; candidate.WallPoint = new Vector3(candidate.Position.x, candidate.Position.y, WallFront);
             PaperPoseSimulation.Resolve(ref candidate, state, Body.Profile, state.SimulatedAt);
             return candidate;
         }
@@ -262,12 +269,23 @@ namespace Splatoon.Tests
             var sample = new PlayerSnapshot { PaperAnimationTime = .101f, PaperMove = new Vector2(.2f, -.2f) };
             var retained = Body.QueryTraversalRects(sample); var frozen = retained.ToArray();
             Assert.That(Body.Capture, Is.Null, "A candidate lookup must not promote its private evaluator to live capture");
+            var evaluator = (PaperCapture)typeof(SwimBody).GetField("_traversalCapture", System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic).GetValue(Body);
+            Assert.That(evaluator.HitMesh, Is.Null, "Traversal uses a contour-only stage without an unused hit Mesh");
+            Assert.That(evaluator.Texture, Is.Null);
             var same = sample; same.PaperAnimationTime = .108f; same.PaperMove = new Vector2(.24f, -.24f);
             Assert.That(Body.QueryTraversalRects(same), Is.SameAs(retained), "Exactly the 30 Hz/eighth-move key is shared");
-            for (int i = 1; i <= 65; i++)
+            for (int i = 1; i <= 63; i++)
             { var later = sample; later.PaperAnimationTime = (3 + i + .25f) / PaperAnimation.FramesPerSecond; Body.QueryTraversalRects(later); }
+            long sharedHits = PaperCapture.SharedPoseCacheHits;
+            Assert.That(Body.QueryTraversalRects(sample), Is.SameAs(retained), "The first entry remains at exactly 64 local keys");
+            Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(sharedHits), "A local hit does not look up the shared cache or refresh FIFO order");
+            var overflow = sample; overflow.PaperAnimationTime = (3 + 64 + .25f) / PaperAnimation.FramesPerSecond;
+            Body.QueryTraversalRects(overflow);
+            sharedHits = PaperCapture.SharedPoseCacheHits;
             var recomputed = Body.QueryTraversalRects(sample);
-            Assert.That(recomputed, Is.Not.SameAs(retained), "The first entry really passed deterministic FIFO eviction");
+            Assert.That(PaperCapture.SharedPoseCacheHits, Is.EqualTo(sharedHits + 1), "The 65th key evicts the oldest local FIFO entry even after a read");
+            Assert.That(recomputed, Is.SameAs(retained), "Reuse the immutable shared contour without a second rectangle copy");
             CollectionAssert.AreEqual(frozen, retained); CollectionAssert.AreEqual(frozen, recomputed);
             var mutable = retained as IList<Rect>; Assert.That(mutable, Is.Not.Null); Assert.That(mutable.IsReadOnly, Is.True);
             Assert.Throws<NotSupportedException>(() => mutable[0] = default);
@@ -630,8 +648,8 @@ namespace Splatoon.Tests
             origin.SpecialImpulseVelocity = new Vector3(1.25f, 0, -.5f);
             origin.SpecialImpulseRetention = .83f; origin.SpecialImpulseRemaining = .47f;
             originalInput.Move = held ? stationary ? Vector2.zero : Vector2.up * .1f : Vector2.up;
-            // First attachment probes along input yaw: from z=.48 to the
-            // actual wall at z=1, .6*cos(37deg) cannot cover the .52m gap.
+            // First attachment probes along input yaw. Across the preserved
+            // .52m wall gap, .6*cos(37deg) cannot reach the wall.
             // Keep the held-wall camera change, and use a reachable first-attach
             // heading that still differs from the saved airborne yaw.
             originalInput.Look = new Vector2(held ? 37 : 15, -11);
@@ -801,7 +819,7 @@ namespace Splatoon.Tests
             yield return Publish(new BlockWorld(new Vector2(32, 64)));
             var map = new GameObject("Bare wall for actual final contour rollback");
             var wall = map.AddComponent<BoxCollider>(); wall.size = new Vector3(1.7f, 5, .1f);
-            map.transform.position = new Vector3(.05f, 2.5f, 1.05f); Physics.SyncTransforms();
+            map.transform.position = new Vector3(.05f, 2.5f, WallFront + .05f); Physics.SyncTransforms();
             Air(); Step(true); Attached(true);
             Assert.That(state.SwimSource, Is.EqualTo(SwimSurface.Neutral));
             yield return FindFinalFrameExpansion(true, false, true);

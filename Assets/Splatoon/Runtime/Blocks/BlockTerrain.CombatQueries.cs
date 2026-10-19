@@ -12,6 +12,11 @@ namespace Splatoon.Blocks
         {
             collider = null; contact = default; distance = float.PositiveInfinity;
             if (!Initialized || !Finite(origin) || !float.IsFinite(radius) || radius < 0) return false;
+            if (FixedGridMode)
+            {
+                if (!TryOverlapFixed(origin, radius, fallbackNormal, out var fixedHit)) return false;
+                contact = FixedContact(fixedHit); distance = fixedHit.Distance; return true;
+            }
             var low = BlockWorld.CellAt(origin - Vector3.one * (radius + .000001f));
             var high = BlockWorld.CellAt(origin + Vector3.one * radius);
             float nearest = float.PositiveInfinity, radiusSquared = radius * radius;

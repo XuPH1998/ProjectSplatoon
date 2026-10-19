@@ -57,6 +57,7 @@ namespace Splatoon.Prototype
         { int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback; }
         public static void ModifyInput(PrototypePlayer p, ref PlayerInputFrame frame)
         {
+            if (BlockFixedGridAcceptanceProbe.ModifyInput(p, ref frame)) return;
             if (BlockTerrainBenchmark.ModifyInput(p, ref frame)) return;
             if (BlockDynamicAcceptanceProbe.ModifyInput(p, ref frame)) return;
             if (BlockNetworkProbe.ModifyInput(p, ref frame)) return;
@@ -126,7 +127,7 @@ namespace Splatoon.Prototype
                 catch (Exception e) { Debug.LogException(e); Application.Quit(5); return; }
             }
             if(_leaveAfter>0&&t>_leaveAfter&&!_cycling){Cycle().Forget();return;}
-            if (!BlockNetworkProbe.Requested && !BlockTerrainBenchmark.Requested && _host && !_started && s.PlayerCount >= 2 &&
+            if (!BlockFixedGridAcceptanceProbe.Requested && !BlockNetworkProbe.Requested && !BlockTerrainBenchmark.Requested && _host && !_started && s.PlayerCount >= 2 &&
                 ((_inkCase == "combat" && t > 25) || (_inkCase == "inkperf" && _inkPerfRound && t > 5)))
             { match.StartRound(); _started = true; }
             if (Time.realtimeSinceStartup-_lastLog>2)
@@ -159,7 +160,7 @@ namespace Splatoon.Prototype
                 var path=System.IO.Path.Combine(output,"smoke-"+_label+".png");
                 CaptureWorld(path);Debug.Log("[SMOKE] Screenshot: "+path);
             }
-            if(!BlockNetworkProbe.Requested&&!BlockTerrainBenchmark.Requested&&!BlockDynamicAcceptanceProbe.Requested&&_host&&s.Phase==MatchPhase.Finished&&!_restarted)
+            if(!BlockFixedGridAcceptanceProbe.Requested&&!BlockNetworkProbe.Requested&&!BlockTerrainBenchmark.Requested&&!BlockDynamicAcceptanceProbe.Requested&&_host&&s.Phase==MatchPhase.Finished&&!_restarted)
             {
                 if(_finishedAt==0){_finishedAt=Time.realtimeSinceStartup;Debug.Log("[SMOKE] Three-minute round completed");}
                 if(Time.realtimeSinceStartup-_finishedAt>5){_restarted=true;match.ReturnToRoom();match.StartRound();Debug.Log("[SMOKE] Returned to room and started next round");}

@@ -11,6 +11,9 @@
     "Unity.Addressables",
     "Unity.ResourceManager",
     "Unity.Netcode.Runtime",
+    "Unity.Collections",
+    "Unity.Mathematics",
+    "Unity.Burst",
     "Unity.RenderPipelines.Universal.Runtime",
     "Unity.Animation.Rigging",
     "Unity.RenderPipelines.Core.Runtime"

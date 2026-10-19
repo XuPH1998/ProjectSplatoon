@@ -75,8 +75,10 @@ namespace Splatoon.Combat
                     {
                         bool blockContact = BlockAttackService.Contact(blockHit, out var contact);
                         if (blockHit.BlockQuery.IsKnown && !blockContact) { done = true; break; }
-                        var receiver = blockHit.Collider.GetComponentInParent<PaintSurface>();
-                        if (receiver != null || blockContact && contact.Owner == d.Shot.Team)
+                        var receiver = blockHit.Collider?.GetComponentInParent<PaintSurface>();
+                        if (blockContact && contact.Kind != BlockContactKind.SurfacePaint && contact.Owner != d.Shot.Team)
+                            BlockAttackService.Direct(d.Shot.BlockAttack, blockHit.Point, 8, d.Shot.Id, d.Ordinal);
+                        else if (receiver != null || blockContact && contact.Owner == d.Shot.Team)
                             ApplyPaint(receiver, d.Shot, blockHit.Point, blockHit.Normal, d.Radius, w, d.Ordinal, false);
                         done = true; break;
                     }
@@ -105,20 +107,35 @@ namespace Splatoon.Combat
                     Vector3 previous = d.Origin + Vector3.down * d.Distance + d.Normal * .025f;
                     d.Distance += .125f;
                     Vector3 point = d.Origin + Vector3.down * d.Distance + d.Normal * .025f;
-                    if (Physics.Raycast(previous, Vector3.down, out var floor, .125f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) && floor.normal.y > .5f)
+                    if (_aim.ClosestCast(previous, Vector3.down, .125f, 0, d.Shot.Shooter, out var floor, false) && floor.Normal.y > .5f)
                     {
-                        var surface = floor.collider.GetComponentInParent<PaintSurface>();
-                        if (surface != null) ApplyPaint(surface, d.Shot, floor.point, floor.normal, w.WallDropGroundRadius, w, ++d.Ordinal, false);
+                        var surface = floor.Collider?.GetComponentInParent<PaintSurface>();
+                        bool blockContact = BlockAttackService.Contact(floor, out var block);
+                        if (floor.BlockQuery.IsKnown && !blockContact) { done = true; break; }
+                        if (BlockAttackService.Active && blockContact && block.Kind != BlockContactKind.SurfacePaint && block.Owner != d.Shot.Team)
+                            BlockAttackService.Direct(d.Shot.BlockAttack, floor.Point, 8, d.Shot.Id, ++d.Ordinal);
+                        else if (surface != null || blockContact)
+                            ApplyPaint(surface, d.Shot, floor.Point, floor.Normal, w.WallDropGroundRadius, w, ++d.Ordinal, false);
                         done = true; break;
                     }
-                    if (!Physics.Raycast(point, -d.Normal, out var hit, .075f, PlayerMotorSimulation.WorldMask, QueryTriggerInteraction.Ignore) ||
-                        hit.collider.GetComponentInParent<PaintSurface>() != d.Surface)
+                    bool wallHit = _aim.ClosestCast(point, -d.Normal, .075f, 0, d.Shot.Shooter, out var hit, false);
+                    bool fixedWall = wallHit && hit.BlockQuery.IsKnown;
+                    if (fixedWall)
+                    {
+                        if (!BlockAttackService.Contact(hit, out var block)) { done = true; break; }
+                        if (block.Kind != BlockContactKind.SurfacePaint && block.Owner != d.Shot.Team)
+                            BlockAttackService.Direct(d.Shot.BlockAttack, hit.Point, 8, d.Shot.Id, ++d.Ordinal);
+                        else ApplyPaint(hit.Collider?.GetComponentInParent<PaintSurface>(), d.Shot, hit.Point, hit.Normal,
+                            w.WallDropRadius, w, ++d.Ordinal, false, null, Vector3.down, 1.2f);
+                        done = true; break;
+                    }
+                    if (!wallHit || hit.Collider?.GetComponentInParent<PaintSurface>() != d.Surface)
                     {
                         double age = w.UsesDetailedPaint ? ShooterDetailSimulation.WallAge(d.Distance, d.FirstSeconds, d.LastSeconds, w) : d.Distance / w.WallDropSpeed;
                         QueuePaintDrop(d.Shot, point, d.Born + age, w.WallDropGroundRadius, ++d.Ordinal, Vector3.down, 1,
                             Vector3.zero, w.UsesDetailedPaint ? w.ShooterWallGravity : -1); done = true; break;
                     }
-                    ApplyPaint(d.Surface, d.Shot, hit.point, hit.normal, w.WallDropRadius, w, ++d.Ordinal, false, null, Vector3.down, 1.2f);
+                    ApplyPaint(d.Surface, d.Shot, hit.Point, hit.Normal, w.WallDropRadius, w, ++d.Ordinal, false, null, Vector3.down, 1.2f);
                 }
                 if (done || until >= d.Born + duration) _wallDrops.RemoveAt(i); else _wallDrops[i] = d;
             }

@@ -16,7 +16,8 @@
     "Unity.RenderPipelines.Core.Runtime",
     "Unity.Animation.Rigging",
     "Unity.Burst",
-    "Unity.Collections"
+    "Unity.Collections",
+    "Unity.Mathematics"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

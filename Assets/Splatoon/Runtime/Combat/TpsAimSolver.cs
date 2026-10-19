@@ -13,6 +13,7 @@ namespace Splatoon.Combat
         public Vector3 Point, Normal, Center;
         public float Distance;
         [NonSerialized] public BlockQueryContact BlockQuery;
+        public bool HasContact => Collider != null || BlockQuery.IsKnown;
     }
 
     public struct TpsAimSolution
@@ -61,7 +62,7 @@ namespace Splatoon.Combat
 
         public static void UnembedFloatingContact(ref TpsCollision contact, float radius)
         {
-            if (contact.BlockQuery.IsKnown || contact.Collider == null || contact.Collider.GetComponentInParent<PrototypePlayer>() != null ||
+            if (contact.BlockQuery.IsKnown || contact.Collider == null || contact.Collider?.GetComponentInParent<PrototypePlayer>() != null ||
                 (contact.Point - contact.Center).sqrMagnitude > 1e-8f) return;
             Vector3 normal = contact.Normal.sqrMagnitude > .0001f ? contact.Normal.normalized : Vector3.back;
             float length = contact.Collider.bounds.size.magnitude + radius + 1;
@@ -98,7 +99,26 @@ namespace Splatoon.Combat
             if (forward <= Epsilon) return false;
             float distance = Mathf.Max(0, Vector3.Dot(aim.AimPoint - aim.Muzzle, aim.Forward) / forward);
             return ClosestCast(aim.Muzzle, aim.InitialDirection, distance, radius, shooter, out var hit, null, ignoreTeam)
-                && hit.Collider != aim.AimHit.Collider;
+                && !SameTarget(hit, aim.AimHit);
+        }
+
+        public static bool SameTarget(TpsCollision a, TpsCollision b)
+        {
+            if (a.BlockQuery.IsKnown || b.BlockQuery.IsKnown)
+                return a.BlockQuery.IsKnown && b.BlockQuery.IsKnown &&
+                    a.BlockQuery.Terrain == b.BlockQuery.Terrain &&
+                    a.BlockQuery.Contact.Kind == b.BlockQuery.Contact.Kind &&
+                    (a.BlockQuery.Contact.Kind switch
+                    {
+                        BlockContactKind.FixedGrid => a.BlockQuery.Contact.FixedHandle == b.BlockQuery.Contact.FixedHandle,
+                        BlockContactKind.SurfacePaint => a.BlockQuery.Contact.SurfaceKey == b.BlockQuery.Contact.SurfaceKey,
+                        BlockContactKind.Dynamic => a.BlockQuery.Contact.DynamicId == b.BlockQuery.Contact.DynamicId &&
+                            ReferenceEquals(a.BlockQuery.DynamicBody, b.BlockQuery.DynamicBody),
+                        _ => a.BlockQuery.Contact.Cell == b.BlockQuery.Contact.Cell &&
+                            a.BlockQuery.FallingRunId == b.BlockQuery.FallingRunId &&
+                            ReferenceEquals(a.BlockQuery.SourceWorld, b.BlockQuery.SourceWorld)
+                    });
+            return a.Collider != null && a.Collider == b.Collider;
         }
 
         public static Vector2 ReticleViewport(Camera camera, Vector3 aimPoint)
@@ -130,7 +150,16 @@ namespace Splatoon.Combat
                 }
             // Falling blocks have no locomotion collider. Their authoritative column
             // geometry still participates in shooting, including friendly blocks.
+            var terrain = BlockTerrain.Current;
+            if (playersOnly != true && terrain != null &&
+                terrain.TryCastFixed(origin, direction, distance, radius, out var fixedHit) && fixedHit.Distance < nearest)
+            {
+                nearest = fixedHit.Distance;
+                closest = new TpsCollision { Point = fixedHit.Point, Normal = fixedHit.Normal, Distance = fixedHit.Distance,
+                    Center = origin + direction * fixedHit.Distance, BlockQuery = BlockQueryContact.Fixed(terrain, fixedHit) };
+            }
             if (playersOnly != true && BlockTerrain.Current != null &&
+                !BlockTerrain.Current.FixedGridMode &&
                 BlockTerrain.Current.RaycastFalling(origin, direction, distance, radius, out var falling) && falling.Distance < nearest)
             {
                 nearest = falling.Distance;
@@ -198,7 +227,13 @@ namespace Splatoon.Combat
             }
             if (playersOnly != true && terrain != null)
             {
-                if (terrain.TryOverlapStable(origin, radius, fallbackNormal, out var blockCollider, out var block, out float distance)
+                if (terrain.TryOverlapFixed(origin, radius, fallbackNormal, out var fixedHit) && fixedHit.Distance * fixedHit.Distance < nearest)
+                {
+                    nearest = fixedHit.Distance * fixedHit.Distance;
+                    closest = new TpsCollision { Point = fixedHit.Point, Normal = fixedHit.Normal, Distance = fixedHit.Distance,
+                        Center = origin, BlockQuery = BlockQueryContact.Fixed(terrain, fixedHit) };
+                }
+                if (!terrain.FixedGridMode && terrain.TryOverlapStable(origin, radius, fallbackNormal, out var blockCollider, out var block, out float distance)
                     && Valid(blockCollider, shooter, ignoreTeam) && !Ignored(blockCollider, ignored)
                     && distance * distance < nearest)
                 {
@@ -207,7 +242,7 @@ namespace Splatoon.Combat
                         Distance = distance, Center = origin, BlockQuery = BlockQueryContact.Stable(terrain, block) };
                 }
                 Vector3 direction = fallbackNormal.sqrMagnitude > Epsilon * Epsilon ? -fallbackNormal.normalized : Vector3.down;
-                if (terrain.RaycastFalling(origin, direction, Epsilon, radius, out var falling) && falling.Distance * falling.Distance < nearest)
+                if (!terrain.FixedGridMode && terrain.RaycastFalling(origin, direction, Epsilon, radius, out var falling) && falling.Distance * falling.Distance < nearest)
                 {
                     nearest = falling.Distance * falling.Distance;
                     closest = new TpsCollision { Collider = falling.Collider, Point = falling.Point, Normal = falling.Normal,

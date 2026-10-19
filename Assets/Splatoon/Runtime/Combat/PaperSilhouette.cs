@@ -83,6 +83,11 @@ namespace Splatoon.Combat
         }
         public void Build(Mesh mesh, Vector2 size, float thickness)
         {
+            BuildContour(size);
+            BuildMesh(mesh, thickness);
+        }
+        internal void BuildContour(Vector2 size)
+        {
             Rects.Clear(); _previous.Clear();
             for (int y=0; y<Rows; y++)
             {
@@ -98,7 +103,6 @@ namespace Splatoon.Combat
                 }
                 _previous.Clear(); foreach (var entry in _next) _previous.Add(entry.Key,entry.Value);
             }
-            BuildMesh(mesh, thickness);
         }
         internal void Restore(Mesh mesh, IReadOnlyList<Rect> rects, Bounds bounds, float thickness)
         {
